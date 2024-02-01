@@ -10,6 +10,7 @@ import (
 	"main/config"
 	"main/controller"
 	database "main/db"
+	"main/middleware"
 	repository "main/repository/impl"
 	service "main/service/impl"
 )
@@ -19,6 +20,9 @@ func main() {
 		JSONEncoder: json.Marshal,
 		JSONDecoder: json.Unmarshal,
 	})
+
+	app.Use(middleware.NewTimer())
+
 	appConfig := config.NewConfig()
 
 	app.Use(cors.New(
