@@ -32,11 +32,7 @@ func (c *UserController) Route(router fiber.Router) {
 }
 
 func (c *UserController) Me(ctx *fiber.Ctx) error {
-	token := ctx.Locals("user").(*jwt.Token)
-
-	claims := token.Claims.(jwt.MapClaims)
-
-	userId := int64(claims["id"].(float64))
+	userId := GetUserIdFromCtx(ctx)
 	user, _ := c.UserService.GetById(userId)
 
 	return ctx.JSON(user)
@@ -153,4 +149,12 @@ func makeToken(id int64, email, key string, expireTime time.Duration) string {
 
 	t, _ := token.SignedString([]byte(key))
 	return t
+}
+
+func GetUserIdFromCtx(ctx *fiber.Ctx) int64 {
+	token := ctx.Locals("user").(*jwt.Token)
+
+	claims := token.Claims.(jwt.MapClaims)
+
+	return int64(claims["id"].(float64))
 }

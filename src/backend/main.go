@@ -47,8 +47,13 @@ func main() {
 	userService := service.NewUserService(&userRepository)
 	userController := controller.NewUserController(&userService, appConfig)
 
+	wishlistRepository := repository.NewWishlistRepository(db)
+	wishlistService := service.NewWishlistService(&wishlistRepository)
+	wishlistController := controller.NewWishlistController(&wishlistService, appConfig)
+
 	api := app.Group("/api")
 
 	userController.Route(api)
+	wishlistController.Route(api)
 	log.Fatal(app.Listen(":8080"))
 }
