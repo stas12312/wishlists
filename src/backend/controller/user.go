@@ -1,0 +1,156 @@
+package controller
+
+import (
+	"fmt"
+	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v5"
+	"main/config"
+	"main/middleware"
+	"main/model"
+	"main/service"
+	"time"
+)
+
+func NewUserController(userService *service.UserService, config *config.Config) *UserController {
+	return &UserController{*userService, config}
+}
+
+type UserController struct {
+	service.UserService
+	*config.Config
+}
+
+func (c *UserController) Route(router fiber.Router) {
+	auth := router.Group("/auth")
+	auth.Post("/login", c.Auth)
+	auth.Post("/register", c.Register)
+	auth.Post("/refresh", c.RefreshToken)
+
+	user := router.Group("/user")
+	user.Use(middleware.Protected())
+	user.Get("/me", c.Me)
+}
+
+func (c *UserController) Me(ctx *fiber.Ctx) error {
+	token := ctx.Locals("user").(*jwt.Token)
+
+	claims := token.Claims.(jwt.MapClaims)
+
+	userId := int64(claims["id"].(float64))
+	user, _ := c.UserService.GetById(userId)
+
+	return ctx.JSON(user)
+
+}
+
+func (c *UserController) Register(ctx *fiber.Ctx) error {
+	type RegisterModel struct {
+		Email    string `json:"email" validate:"required"`
+		Password string `json:"password" validate:"required,min=8,max=50"`
+		Name     string `json:"name"`
+	}
+
+	register := new(RegisterModel)
+
+	if err := ctx.BodyParser(register); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Некорректные данные", Details: err.Error()})
+	}
+
+	if errs := NewValidator().Validate(register); len(errs) > 0 {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ValidateErrorResponse{Message: "Некорректно заполнены поля", Fields: errs})
+	}
+	existsUser, err := c.GetByEmail(register.Email)
+	if existsUser.Id != 0 {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Пользователь уже зарегистрирован", Details: ""})
+	}
+
+	user, err := c.UserService.Register(register.Email, register.Password, register.Name)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Ошибка при регистрации", Details: err.Error()})
+	}
+	tokenPair := makeTokenPair(user.Id, user.Email, &c.JWT)
+	return ctx.JSON(tokenPair)
+}
+
+func (c *UserController) Auth(ctx *fiber.Ctx) error {
+	type AuthModel struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	auth := new(AuthModel)
+
+	err := ctx.BodyParser(auth)
+	if err != nil {
+		return err
+	}
+
+	user, err := c.Login(auth.Email, auth.Password)
+	if err != nil {
+		return err
+	}
+	tokenPair := makeTokenPair(user.Id, user.Email, &c.JWT)
+	return ctx.JSON(tokenPair)
+}
+
+func (c *UserController) RefreshToken(ctx *fiber.Ctx) error {
+	type RefreshRequest struct {
+		RefreshToken string `json:"refresh_token"`
+	}
+
+	refreshRequest := new(RefreshRequest)
+
+	if err := ctx.BodyParser(refreshRequest); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Не передан токен", Details: err.Error()})
+	}
+
+	tokenString := refreshRequest.RefreshToken
+
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+
+		return []byte(c.Config.JWT.RefreshSecretKey), nil
+	})
+
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Некорретный токен", Details: err.Error()})
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok {
+		id := int64(claims["id"].(float64))
+		email := claims["email"].(string)
+		newTokenPair := makeTokenPair(id, email, &c.Config.JWT)
+		return ctx.JSON(newTokenPair)
+	} else {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Ошибка формирования токена", Details: err.Error()})
+	}
+
+}
+
+func makeTokenPair(id int64, email string, jwtConfig *config.JWTConfig) model.TokenPariResponse {
+	accessToken := makeToken(id, email, jwtConfig.AccessSecretKey, jwtConfig.AccessExpireTime)
+	refreshToken := makeToken(id, email, jwtConfig.RefreshSecretKey, jwtConfig.RefreshExpireTime)
+
+	return model.TokenPariResponse{AccessToken: accessToken, RefreshToken: refreshToken}
+}
+
+func makeToken(id int64, email, key string, expireTime time.Duration) string {
+	token := jwt.New(jwt.SigningMethodHS256)
+
+	claims := token.Claims.(jwt.MapClaims)
+	claims["id"] = id
+	claims["email"] = email
+	claims["exp"] = time.Now().Add(time.Minute * expireTime).Unix()
+
+	t, _ := token.SignedString([]byte(key))
+	return t
+}
