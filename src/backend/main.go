@@ -44,7 +44,7 @@ func main() {
 	}
 
 	userRepository := repository.NewUserRepositoryImpl(db)
-	userService := service.NewUserService(&userRepository)
+	userService := service.NewUserService(userRepository)
 	userController := controller.NewUserController(&userService, appConfig)
 
 	wishlistRepository := repository.NewWishlistRepository(db)

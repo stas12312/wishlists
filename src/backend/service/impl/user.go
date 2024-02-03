@@ -1,14 +1,15 @@
 package impl
 
 import (
+	"errors"
 	"golang.org/x/crypto/bcrypt"
 	"main/model"
 	"main/repository"
 	"main/service"
 )
 
-func NewUserService(userRepository *repository.UserRepository) service.UserService {
-	return &userServiceImpl{*userRepository}
+func NewUserService(userRepository repository.UserRepository) service.UserService {
+	return &userServiceImpl{userRepository}
 }
 
 type userServiceImpl struct {
@@ -31,7 +32,7 @@ func (u *userServiceImpl) Login(email, password string) (*model.User, error) {
 	}
 
 	if !checkPasswordHash(password, user.Password) {
-		return nil, nil
+		return nil, errors.New("wrong password")
 	}
 
 	return user, err
