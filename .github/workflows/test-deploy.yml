@@ -1,0 +1,20 @@
+name: Deploy on test
+
+on:
+  push:
+    branches: [ main ]
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.TEST_SERVER_HOST }}
+          username: ${{ secrets.TEST_SERVER_USER }}
+          key: ${{ secrets.TEST_SERVER_PRIVATE_KEY }}
+          script: |
+            cd ${{ secrets.TEST_PROJECT_PATH }}
+            git pull
+            docker-compose build && docker-compose up -d
