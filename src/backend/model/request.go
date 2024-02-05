@@ -4,6 +4,10 @@ type Response struct {
 	Data interface{} `json:"data"`
 }
 
+type ResponseWithMessage struct {
+	Message string `json:"message"`
+}
+
 type ErrorResponse struct {
 	Message string `json:"message"`
 	Details string `json:"details"`

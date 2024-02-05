@@ -36,6 +36,7 @@ func main() {
 
 	db, err := sqlx.Connect("postgres", appConfig.PostgresUrl)
 	if err != nil {
+		log.Info(appConfig.PostgresUrl)
 		log.Fatal(err)
 	}
 
@@ -48,7 +49,8 @@ func main() {
 	userController := controller.NewUserController(&userService, appConfig)
 
 	wishlistRepository := repository.NewWishlistRepository(db)
-	wishlistService := service.NewWishlistService(&wishlistRepository)
+	wishRepository := repository.NewWishRepositoryImpl(db)
+	wishlistService := service.NewWishlistService(wishlistRepository, wishRepository)
 	wishlistController := controller.NewWishlistController(&wishlistService, appConfig)
 
 	api := app.Group("/api")

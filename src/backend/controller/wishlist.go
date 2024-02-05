@@ -81,13 +81,85 @@ func (c *WishlistController) Update(ctx *fiber.Ctx) error {
 	return ctx.JSON(model.Response{Data: updatedWishlist})
 }
 
+func (c *WishlistController) CreateWishHandler(ctx *fiber.Ctx) error {
+	userId := GetUserIdFromCtx(ctx)
+
+	wish := &model.Wish{}
+
+	if err := ctx.BodyParser(wish); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Некорректные данные", Details: err.Error()})
+	}
+
+	if errs := NewValidator().Validate(wish); len(errs) > 0 {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ValidateErrorResponse{Message: "Некорректно заполнены поля", Fields: errs})
+	}
+
+	createdWish, err := c.AddWish(userId, wish)
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).
+			JSON(model.ErrorResponse{Message: "", Details: err.Error()})
+	}
+
+	return ctx.JSON(model.Response{Data: createdWish})
+}
+
+func (c *WishlistController) ListWishesForWishlistHandler(ctx *fiber.Ctx) error {
+	userId := GetUserIdFromCtx(ctx)
+	wishlistUuid := ctx.Params("uuid")
+
+	wishers, err := c.ListWishesForWishlist(userId, wishlistUuid)
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).
+			JSON(model.ErrorResponse{Details: err.Error()})
+	}
+
+	return ctx.JSON(model.Response{Data: wishers})
+}
+
+func (c *WishlistController) DeleteWishHandler(ctx *fiber.Ctx) error {
+	wishUuid := ctx.Params("uuid")
+	userId := GetUserIdFromCtx(ctx)
+	if err := c.DeleteWish(userId, wishUuid); err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).
+			JSON(model.ErrorResponse{Details: err.Error()})
+	}
+
+	return ctx.JSON(model.ResponseWithMessage{Message: "Запись удалена"})
+}
+
+func (c *WishlistController) UpdateWishHandler(ctx *fiber.Ctx) error {
+	userId := GetUserIdFromCtx(ctx)
+	wish := &model.Wish{}
+
+	if err := ctx.BodyParser(wish); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Некорректные данные", Details: err.Error()})
+	}
+
+	updatedWith, err := c.UpdateWish(userId, wish)
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).
+			JSON(model.ErrorResponse{Details: err.Error()})
+	}
+
+	return ctx.JSON(updatedWith)
+}
+
 func (c *WishlistController) Route(router fiber.Router) {
 
-	group := router.Group("/wishlists")
-	group.Use(middleware.Protected())
+	wishlistGroup := router.Group("/wishlists")
+	wishlistGroup.Use(middleware.Protected())
 
-	group.Post("/", c.Create)
-	group.Get("/", c.GetUserWishlists)
-	group.Get("/:uuid", c.GetWishlist)
-	group.Post("/:uuid", c.Update)
+	wishlistGroup.Post("/", c.Create)
+	wishlistGroup.Get("/", c.GetUserWishlists)
+	wishlistGroup.Get("/:uuid", c.GetWishlist)
+	wishlistGroup.Post("/:uuid", c.Update)
+	wishlistGroup.Get("/:uuid/wishes", c.ListWishesForWishlistHandler)
+
+	wishGroup := router.Group("/wishes")
+	wishGroup.Use(middleware.Protected())
+	wishGroup.Post("/", c.CreateWishHandler)
+	wishGroup.Delete("/:uuid", c.DeleteWishHandler)
 }
