@@ -3,10 +3,9 @@ package impl
 import (
 	"github.com/jmoiron/sqlx"
 	"main/model"
-	"main/repository"
 )
 
-func NewWishlistRepository(db *sqlx.DB) repository.WishlistRepository {
+func NewWishlistRepository(db *sqlx.DB) *WishlistImpl {
 	return &WishlistImpl{db}
 }
 
