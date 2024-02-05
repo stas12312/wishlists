@@ -14,8 +14,18 @@ type JWTConfig struct {
 	RefreshExpireTime time.Duration
 }
 
+type S3Config struct {
+	AccessKey       string
+	SecretAccessKey string
+	Region          string
+	EndpointUrl     string
+	Bucket          string
+	Domain          string
+}
+
 type Config struct {
 	JWT         JWTConfig
+	S3          S3Config
 	PostgresUrl string
 
 	Environment string
@@ -34,7 +44,15 @@ func NewConfig() *Config {
 	}
 
 	return &Config{
-		JWT:         jwt,
+		JWT: jwt,
+		S3: S3Config{
+			AccessKey:       os.Getenv("S3_ACCESS_KEY"),
+			SecretAccessKey: os.Getenv("S3_SECRET_ACCESS_KEY"),
+			Region:          os.Getenv("S3_REGION"),
+			EndpointUrl:     os.Getenv("S3_ENDPOINT_URL"),
+			Bucket:          os.Getenv("S3_BUCKET"),
+			Domain:          os.Getenv("S3_DOMAIN"),
+		},
 		PostgresUrl: os.Getenv("POSTGRES_URL"),
 		Environment: os.Getenv("ENVIRONMENT"),
 	}

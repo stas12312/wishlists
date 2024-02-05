@@ -5,6 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"main/config"
@@ -53,9 +54,15 @@ func main() {
 	wishlistService := service.NewWishlistService(wishlistRepository, wishRepository)
 	wishlistController := controller.NewWishlistController(&wishlistService, appConfig)
 
+	imageRepository := repository.NewS3ImageRepository(&appConfig.S3)
+	imageService := service.NewImageService(imageRepository, uuid.NewString)
+	imageController := controller.NewImageController(imageService)
+
 	api := app.Group("/api")
 
 	userController.Route(api)
 	wishlistController.Route(api)
+	imageController.Route(api)
+
 	log.Fatal(app.Listen(":8080"))
 }
