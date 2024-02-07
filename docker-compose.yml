@@ -28,7 +28,7 @@ services:
       - ${UI_PORT}:3000
     volumes:
       - ./src/frontend:/app
-      - ./app/node_modules
+      - ./src/frontend:/app/node_modules
     stdin_open: true
     tty: true
 volumes:
