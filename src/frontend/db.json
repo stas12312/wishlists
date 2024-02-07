@@ -1,0 +1,10 @@
+{
+  "auth/register": [
+    {
+        "email": "i@svrush.ru",
+        "password": "Password",
+        "name": "Станислав"
+    }
+  ]
+
+}

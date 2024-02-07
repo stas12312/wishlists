@@ -25,3 +25,15 @@ services:
       - ./src/backend:/app/backand
     links:
       - db
+  frontend:
+    build:
+      context: src/frontend
+      target: dev
+    container_name: frontend
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./src/frontend:/app
+      - ./app/node_modules
+    stdin_open: true
+    tty: true

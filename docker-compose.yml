@@ -20,6 +20,16 @@ services:
       - ${API_PORT}:8080
     links:
       - db
-
+  frontend:
+    build:
+      context: src/frontend
+    container_name: frontend
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./src/frontend:/app
+      - ./app/node_modules
+    stdin_open: true
+    tty: true
 volumes:
   postgres_data:
