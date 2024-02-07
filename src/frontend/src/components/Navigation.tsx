@@ -31,7 +31,7 @@ function Navigation(props: any) {
                             color="inherit"
                             sx={{mr: 1, justifyContent: 'flex-end'}}
                             component={RouterLink}
-                            to="/api/auth/login">
+                            to="/auth/login">
                             Sign In
                         </Button>}
 
@@ -39,7 +39,7 @@ function Navigation(props: any) {
                             color="inherit"
                             variant="outlined"
                             component={RouterLink}
-                            to="/api/auth/register">
+                            to="/auth/register">
                             Sign Up
                         </Button>}
 
@@ -49,7 +49,7 @@ function Navigation(props: any) {
                                 await store.logout();
                             }}
                             component={RouterLink}
-                            to="/api/user/me">
+                            to="/profile">
                             Profile
                         </Button>}
 
@@ -60,7 +60,7 @@ function Navigation(props: any) {
                                 await store.logout();
                             }}
                             component={RouterLink}
-                            to="/api/auth/login">
+                            to="/auth/login">
                             Log Out
                         </Button>}
                     </div>

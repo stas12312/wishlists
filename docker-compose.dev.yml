@@ -31,7 +31,7 @@ services:
       target: dev
     container_name: frontend
     ports:
-      - '3000:3000'
+      - ${BASE_URL}:3000
     volumes:
       - ./src/frontend:/app
       - ./app/node_modules
