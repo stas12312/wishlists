@@ -41,7 +41,7 @@ function SignUp(props: any) {
     const {store} = useContext(Context);
 
     if (store.isAuth) {
-        return (<Navigate replace to={"/api/user/me"}/>)
+        return (<Navigate replace to={"/profile"}/>)
     } else {
         return (
             <ThemeProvider theme={defaultTheme}>

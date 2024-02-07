@@ -42,13 +42,13 @@ function App() {
                         element={<Welcome />}
                         errorElement={<ErrorBoundary/>}
                     />
-                    <Route path="/api/auth/login"
+                    <Route path="/auth/login"
                            element={<SignIn />}
                            errorElement={<ErrorBoundary/>}/>
-                    <Route path="/api/auth/register"
+                    <Route path="/auth/register"
                            element={<SignUp/>}
                            errorElement={<ErrorBoundary/>}/>
-                    <Route path="/api/user/me"
+                    <Route path="/profile"
                            element={
                                <Profile
                                    name={'name'}

@@ -45,7 +45,7 @@ function SignIn() {
     };
 
     if (store.isAuth) {
-        return (<Navigate replace to={"/api/user/me"}/>)
+        return (<Navigate replace to={"/profile"}/>)
     } else {
         return (
             <ThemeProvider theme={defaultTheme}>
@@ -108,7 +108,7 @@ function SignIn() {
                                     </Link>
                                 </Grid>
                                 <Grid item>
-                                    <Link href="/api/auth/register" variant="body2">
+                                    <Link href="/auth/register" variant="body2">
                                         {"Don't have an account? Sign Up"}
                                     </Link>
                                 </Grid>

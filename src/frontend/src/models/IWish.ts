@@ -1,7 +1,7 @@
 export interface IWish {
     email: string;
     id: number;
-    name: string
+    name: string;
 }
 
 export interface IWishList {
