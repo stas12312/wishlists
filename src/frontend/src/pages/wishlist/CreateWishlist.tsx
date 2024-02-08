@@ -52,7 +52,7 @@ function CreateWishlist(props: any) {
                     value={name}
                     id="wishlist-name"
                     margin="dense"
-                    label="Название вишлиста"
+                    label="Название"
                     fullWidth
                 />
                 <TextField
@@ -60,7 +60,7 @@ function CreateWishlist(props: any) {
                     name={description}
                     id="wishlist-description"
                     margin="dense"
-                    label="Опиание"
+                    label="Описание"
                     fullWidth
                 />
                 <DatePicker
