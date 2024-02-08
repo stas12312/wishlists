@@ -5,12 +5,13 @@ import {jwtDecode} from "jwt-decode";
 import UserService from "../services/UserService";
 import {AxiosResponse} from "axios";
 import WishlistService from "../services/WishlistService";
-import {IWishList} from "../models/IWish";
+import {IWish} from "../models/IWish";
+import {WishlistResponse} from "../models/response/WishlistResponse";
 
 export default class Store {
     user = {} as IUser;
     isAuth = false;
-    wishlist = {} as IWishList;
+    wishlist = [] as IWish[];
 
     constructor() {
         makeAutoObservable(this);
@@ -22,10 +23,6 @@ export default class Store {
 
     setUser(user: IUser) {
         this.user = user;
-    }
-
-    setWishlist(wishlist: IWishList) {
-        this.wishlist = wishlist
     }
 
     async login(email: string, password: string) {
@@ -79,23 +76,13 @@ export default class Store {
 
     async getUserInfo() {
         try {
-            const response = await UserService.fetchUsers();
-            console.log(response);
-            this.setUser(response.data);
+            const userResponse = await UserService.fetchUsers();
+            const wishlistsResponse = await WishlistService.list();
+            console.log(userResponse);
+            this.setUser(userResponse.data);
         } catch (e: any) {
             console.log(e.response?.data);
 
-        }
-    }
-
-    async createNewWishlist(name: string, description: string) {
-        try {
-            const response = await WishlistService.create(name, description);
-            console.log(response);
-            this.setAuth(true);
-        } catch (error: any) {
-            console.log(error.response?.data?.message);
-            return error;
         }
     }
 }

@@ -1,8 +1,7 @@
-import {IWishList} from "../IWish";
+import {IWish} from "../IWish";
 
 export interface WishlistResponse {
     access_token: string;
     refresh_token: string;
-    wishlist: IWishList;
-
+    data: IWish[];
 }

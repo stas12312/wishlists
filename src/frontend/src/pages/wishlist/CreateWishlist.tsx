@@ -1,29 +1,90 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {observer} from "mobx-react-lite";
-import Grid from "@mui/material/Grid";
-import Typography from '@mui/material/Typography';
-import {Context} from "../../index";
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    TextField,
+    Button, IconButton
+} from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
+import {DatePicker} from "@mui/x-date-pickers";
+import dayjs, { Dayjs } from 'dayjs';
 
 
-function Profile(props: any) {
-    const [user, setUser] = useState<object>({})
-    const {store} = useContext(Context);
+function CreateWishlist(props: any) {
+    const {
+        open,
+        onClose,
+        onSubmit
+    } = props;
 
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
+    const [date, setDate] = React.useState<Dayjs | null>(dayjs(null));
 
     return (
-        <Grid container spacing={2}
-              columns={16}>
-            <Grid item
-                  mt={10}
-                  xs={12}>
-                <Typography component="h1"
-                            variant="h3"
-                            sx={{fontWeight: 900}}>
-                    Пока что желаний нет
-                </Typography>
-            </Grid>
-        </Grid>
+        <Dialog
+            open={open}
+            onClose={onClose}
+            PaperProps={{
+                component: 'form'
+            }}
+        >
+            <DialogTitle>Создать вишлист</DialogTitle>
+            <IconButton
+                aria-label="close"
+                onClick={onClose}
+                sx={{
+                    position: 'absolute',
+                    right: 8,
+                    top: 8,
+                    color: (theme) => theme.palette.grey[500],
+                }}
+            >
+                <CloseIcon/>
+            </IconButton>
+            <DialogContent>
+                <TextField
+                    required
+                    onChange={e => setName(e.target.value)}
+                    value={name}
+                    id="wishlist-name"
+                    margin="dense"
+                    label="Название вишлиста"
+                    fullWidth
+                />
+                <TextField
+                    onChange={e => setDescription(e.target.value)}
+                    name={description}
+                    id="wishlist-description"
+                    margin="dense"
+                    label="Опиание"
+                    fullWidth
+                />
+                <DatePicker
+                    onChange={(value) => setDate(value)}
+                    label="Дата события"
+                    value={date}
+                    slotProps={{
+                        actionBar: {
+                            actions: ['clear'],
+                        },
+                    }}
+                    sx={{
+                        marginTop: 1
+                    }}
+                    format="DD.MM.YYYY"/>
+            </DialogContent>
+            <DialogActions>
+                <Button type="submit" onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+                    event.preventDefault();
+                    onSubmit(event, name, description, date);
+                }}>Сохранить</Button>
+            </DialogActions>
+        </Dialog>
     );
 }
 
-export default observer(Profile);
+export default observer(CreateWishlist);

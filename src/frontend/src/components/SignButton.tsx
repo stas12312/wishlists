@@ -1,14 +1,10 @@
 import * as React from 'react';
-import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import {useContext, useState} from "react";
+import {useContext} from "react";
 import {Context} from "../index";
 import {Modal} from "@mui/material";
-import Box from "@mui/material/Box";
 import {Alert} from "@mui/lab";
-import {AuthResponse} from "../models/response/AuthResponse";
-import {AxiosResponse} from "axios";
 
 const style = {
     position: 'absolute' as 'absolute',
