@@ -28,7 +28,7 @@ function Navigation(props: any) {
                         sx={{mr: 1, justifyContent: 'flex-end'}}
                         component={RouterLink}
                         to="/auth/login">
-                        Sign In
+                        Войти
                     </Button>}
 
                     {!props.isAuth && <Button
@@ -36,14 +36,14 @@ function Navigation(props: any) {
                         variant="outlined"
                         component={RouterLink}
                         to="/auth/register">
-                        Sign Up
+                        Регистрация
                     </Button>}
 
                     {props.isAuth && <Button
                         color="inherit"
                         component={RouterLink}
                         to="/profile">
-                        Profile
+                        Профиль
                     </Button>}
 
                     {props.isAuth && <Button
@@ -54,7 +54,7 @@ function Navigation(props: any) {
                         }}
                         component={RouterLink}
                         to="/auth/login">
-                        Log Out
+                        Выйти
                     </Button>}
                 </div>
 

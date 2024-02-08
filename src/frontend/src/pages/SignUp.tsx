@@ -57,7 +57,7 @@ function SignUp(props: any) {
                 >
 
                     <Typography component="h1" variant="h5">
-                        Sign up
+                        Регистрация
                     </Typography>
                     <Box component="form" noValidate sx={{mt: 1}}>
                         <TextField
@@ -96,21 +96,10 @@ function SignUp(props: any) {
                         />
                         <FormControlLabel
                             control={<Checkbox value="remember" color="primary"/>}
-                            label="Remember me"
+                            label="Запомнить меня"
                         />
-                        {/*<Button*/}
-                        {/*    fullWidth*/}
-                        {/*    variant="contained"*/}
-                        {/*    sx={{mt: 3, mb: 2, bgcolor: '#d37089'}}*/}
-                        {/*    onClick={async (event) => {*/}
-                        {/*        event.preventDefault();*/}
-                        {/*        await store.registration(name, email, password);*/}
-                        {/*    }}*/}
-                        {/*>*/}
-                        {/*    Sign Up*/}
-                        {/*</Button>*/}
                         <SignButton isSignUp={true}
-                                    buttonTitle="Sign Up"
+                                    buttonTitle="Регистрация"
                                     name={name}
                                     email={email}
                                     password={password}/>

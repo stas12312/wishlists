@@ -58,7 +58,7 @@ function SignIn() {
                         <LockOutlinedIcon/>
                     </Avatar>
                     <Typography component="h1" variant="h5">
-                        Sign in
+                        Войти
                     </Typography>
                     <Box component="form" noValidate sx={{mt: 1}}>
                         <TextField
@@ -85,21 +85,21 @@ function SignIn() {
                         />
                         <FormControlLabel
                             control={<Checkbox value="remember" color="primary"/>}
-                            label="Remember me"
+                            label="Запомнить меня"
                         />
                         <SignButton isSignUp={false}
-                                    buttonTitle="Sign In"
+                                    buttonTitle="Войти"
                                     email={email}
                                     password={password}/>
                         <Grid container>
                             <Grid item xs>
                                 <Link href="#" variant="body2">
-                                    Forgot password?
+                                    Забыли пароль?
                                 </Link>
                             </Grid>
                             <Grid item>
                                 <Link href="/auth/register" variant="body2">
-                                    {"Don't have an account? Sign Up"}
+                                    {"Нет аккаунта? Зарегистрируйтесь"}
                                 </Link>
                             </Grid>
                         </Grid>

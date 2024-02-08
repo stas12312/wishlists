@@ -83,7 +83,7 @@ function Profile(props: any) {
                                     onClick={handleClickOpen}
                                     sx={{borderColor: '#6d6faa'}}>
                                     <Typography color="text.secondary">
-                                        Make Wishlist
+                                        Создать
                                     </Typography>
                                 </Button>
                                 <CreateWishlist open={open} onClose={handleClose} onSubmit={submitWindow}/>
