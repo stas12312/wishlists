@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import {BrowserRouter} from "react-router-dom";
 import Store from "./store/store";
+import {createTheme, ThemeProvider, ThemeOptions} from "@mui/material/styles";
 
 interface  State {
     store: Store
@@ -13,6 +14,40 @@ const root = ReactDOM.createRoot(
 );
 
 const store = new Store();
+const themeOptions: ThemeOptions = {
+    palette: {
+        mode: 'light',
+        primary: {
+            main: '#56569c',
+            contrastText: '#eaebf3',
+        },
+        secondary: {
+            main: '#56799c',
+        },
+        background: {
+            default: '#c9cce2',
+        },
+        error: {
+            main: '#9c5656',
+        },
+        success: {
+            main: '#569c79',
+        },
+        info: {
+            main: '#9c569c',
+        },
+        text: {
+            primary: '#56569c',
+            secondary: '#6d6faa',
+            disabled: '#504e93'
+        },
+    },
+    shape: {
+        borderRadius: 20
+    }
+};
+
+const themeDefault = createTheme(themeOptions);
 
 export const Context = createContext<State>({
     store
@@ -24,7 +59,9 @@ root.render(
           store
       }}>
           <BrowserRouter>
-              <App />
+              <ThemeProvider theme={themeDefault}>
+                  <App />
+              </ThemeProvider>
           </BrowserRouter>
       </Context.Provider>
   </React.StrictMode>

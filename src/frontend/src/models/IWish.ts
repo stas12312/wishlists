@@ -1,12 +1,11 @@
-export interface IWish {
-    email: string;
-    id: number;
-    name: string;
-}
+import {Dayjs} from "dayjs";
 
-export interface IWishList {
+export interface IWish {
     description: string;
-    date: number;
     name: string;
     uuid: string;
+    created_at?: Dayjs;
+    date?: Dayjs;
+    user_id: number;
+    is_active: boolean;
 }
