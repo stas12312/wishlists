@@ -46,7 +46,7 @@ function App() {
                     <Route path="/auth/register"
                            element={<SignUp/>}
                            errorElement={<ErrorBoundary/>}/>
-                    <Route path="/profile"
+                    <Route path="/wishlists"
                            element={
                                <Profile
                                    name={'name'}

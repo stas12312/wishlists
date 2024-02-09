@@ -42,7 +42,7 @@ function Navigation(props: any) {
                     {props.isAuth && <Button
                         color="inherit"
                         component={RouterLink}
-                        to="/profile">
+                        to="/wishlists">
                         Профиль
                     </Button>}
 
