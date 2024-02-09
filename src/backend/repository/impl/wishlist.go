@@ -27,7 +27,13 @@ func (r *WishlistImpl) Create(wishlist *model.Wishlist) (*model.Wishlist, error)
 
 func (r *WishlistImpl) ListByUserId(userId int64) ([]model.Wishlist, error) {
 	q := `
-		SELECT *
+		SELECT 
+		    *,
+			(
+			    SELECT COUNT(*)
+			    FROM wishes
+			    WHERE wishes.wishlist_uuid = wishlists.wishlist_uuid 
+			) as wishes_count
 		FROM wishlists
 		WHERE 
 		    user_id = $1
@@ -41,7 +47,13 @@ func (r *WishlistImpl) ListByUserId(userId int64) ([]model.Wishlist, error) {
 
 func (r *WishlistImpl) GetByUUID(UUID string) (*model.Wishlist, error) {
 	q := `
-	SELECT *
+	SELECT 
+	    *,
+	    (
+			SELECT COUNT(*)
+			FROM wishes
+			WHERE wishes.wishlist_uuid = wishlists.wishlist_uuid 
+		) as wishes_count   
 	FROM wishlists
 	WHERE wishlist_uuid = $1
 `
