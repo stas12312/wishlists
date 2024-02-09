@@ -36,7 +36,7 @@ function SignIn() {
     const {store} = useContext(Context);
 
     if (store.isAuth) {
-        return (<Navigate replace to={"/profile"}/>)
+        return (<Navigate replace to={"/wishlists"}/>)
     } else {
         return (
             <Container component="main" maxWidth="xs" sx={{
