@@ -6,8 +6,8 @@ import (
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/google/uuid"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
 	"main/config"
 	"main/controller"
 	database "main/db"
@@ -35,7 +35,7 @@ func main() {
 		},
 	))
 
-	db, err := sqlx.Connect("postgres", appConfig.PostgresUrl)
+	db, err := sqlx.Connect("pgx", appConfig.PostgresUrl)
 	if err != nil {
 		log.Info(appConfig.PostgresUrl)
 		log.Fatal(err)
