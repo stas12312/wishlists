@@ -2,7 +2,8 @@ package service
 
 import "main/model"
 
-// UserService Интерфес сервиса для работы с пользователем
+//go:generate mockery --name UserService
+
 type UserService interface {
 	Register(email, password, name string) (*model.User, error)
 	Login(email, password string) (*model.User, error)

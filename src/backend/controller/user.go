@@ -82,12 +82,14 @@ func (c *UserController) Auth(ctx *fiber.Ctx) error {
 
 	err := ctx.BodyParser(auth)
 	if err != nil {
-		return err
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Некорректные данные", Details: err.Error()})
 	}
 
 	user, err := c.Login(auth.Email, auth.Password)
 	if err != nil {
-		return err
+		return ctx.Status(fiber.StatusNotFound).
+			JSON(model.ErrorResponse{Message: "Некорректный email или пароль", Details: err.Error()})
 	}
 	tokenPair := makeTokenPair(user.Id, user.Email, &c.JWT)
 	return ctx.JSON(tokenPair)
