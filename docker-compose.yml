@@ -26,5 +26,7 @@ services:
     container_name: frontend
     ports:
       - ${UI_PORT}:3000
+    env_file:
+      - .env
 volumes:
   postgres_data:
