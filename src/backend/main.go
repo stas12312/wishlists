@@ -35,13 +35,13 @@ func main() {
 		},
 	))
 
-	db, err := sqlx.Connect("pgx", appConfig.PostgresUrl)
+	db, err := sqlx.Connect("pgx", appConfig.Postgres.Url)
 	if err != nil {
-		log.Info(appConfig.PostgresUrl)
+		log.Info(appConfig.Postgres.Url)
 		log.Fatal(err)
 	}
 
-	if err := database.ExecMigrate(); err != nil {
+	if err := database.ExecMigrate(appConfig); err != nil {
 		log.Info(err)
 	}
 
