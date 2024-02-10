@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-export const API_URL = 'https://test-wishlists.sv-rush.ru';
-
 const $api = axios.create({
     withCredentials: true,
-    baseURL: API_URL
+    baseURL: process.env.REACT_APP_API_URL,
+    timeout: 1000
+
 })
 
 $api.interceptors.request.use((config) => {

@@ -68,7 +68,7 @@ function SignIn() {
                             required
                             fullWidth
                             id="email"
-                            label="Email Address"
+                            label="Почта"
                             name="email"
                             autoFocus
                         />
@@ -79,7 +79,7 @@ function SignIn() {
                             required
                             fullWidth
                             name="password"
-                            label="Password"
+                            label="Пароль"
                             type="password"
                             id="password"
                         />

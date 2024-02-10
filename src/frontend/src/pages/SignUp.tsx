@@ -67,7 +67,7 @@ function SignUp(props: any) {
                             required
                             fullWidth
                             id="name"
-                            label="Name"
+                            label="Имя"
                             name="name"
                             autoComplete="name"
                             autoFocus
@@ -79,7 +79,7 @@ function SignUp(props: any) {
                             required
                             fullWidth
                             id="email"
-                            label="Email Address"
+                            label="Почта"
                             name="email"
                             autoComplete="email"
                         />
@@ -90,7 +90,7 @@ function SignUp(props: any) {
                             required
                             fullWidth
                             name="password"
-                            label="Password"
+                            label="Пароль"
                             type="password"
                             id="password"
                         />
