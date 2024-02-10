@@ -4,13 +4,14 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"os"
+	"main/config"
 )
 
-func ExecMigrate() error {
+func ExecMigrate(config *config.Config) error {
 	m, err := migrate.New(
 		"file://./db/migrations",
-		os.Getenv("POSTGRES_URL"))
+		config.Postgres.Url,
+	)
 	if err != nil {
 		return err
 	}

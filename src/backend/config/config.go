@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+	"github.com/gofiber/fiber/v2/log"
 	"os"
 	"strconv"
 	"time"
@@ -23,11 +25,40 @@ type S3Config struct {
 	Domain          string
 }
 
+func NewPostgresConfig(pgHost, pgDatabase, pgUser, pgPassword, pgPort string) PostgresConfig {
+
+	converterPgPort, err := strconv.Atoi(pgPort)
+	postgresUrl := fmt.Sprintf(
+		"postgres://%s:%s@%s:%d/%s?sslmode=disable",
+		pgUser, pgPassword, pgHost, converterPgPort, pgDatabase,
+	)
+	if err != nil {
+		log.Panic(err.Error())
+	}
+
+	return PostgresConfig{
+		Host:     pgHost,
+		Database: pgDatabase,
+		User:     pgUser,
+		Password: pgPassword,
+		Port:     converterPgPort,
+		Url:      postgresUrl,
+	}
+}
+
+type PostgresConfig struct {
+	Host     string
+	Database string
+	User     string
+	Password string
+	Port     int
+	Url      string
+}
+
 type Config struct {
 	JWT         JWTConfig
 	S3          S3Config
-	PostgresUrl string
-
+	Postgres    PostgresConfig
 	Environment string
 }
 
@@ -53,7 +84,10 @@ func NewConfig() *Config {
 			Bucket:          os.Getenv("S3_BUCKET"),
 			Domain:          os.Getenv("S3_DOMAIN"),
 		},
-		PostgresUrl: os.Getenv("POSTGRES_URL"),
+		Postgres: NewPostgresConfig(
+			os.Getenv("PG_HOST"), os.Getenv("PG_DATABASE"), os.Getenv("PG_USER"),
+			os.Getenv("PG_PASSWORD"), os.Getenv("PG_PORT"),
+		),
 		Environment: os.Getenv("ENVIRONMENT"),
 	}
 
