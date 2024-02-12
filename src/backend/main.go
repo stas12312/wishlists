@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
@@ -8,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
+	"github.com/redis/go-redis/v9"
 	"main/config"
 	"main/controller"
 	database "main/db"
@@ -44,6 +46,12 @@ func main() {
 	if err := database.ExecMigrate(appConfig); err != nil {
 		log.Info(err)
 	}
+
+	redisClient := redis.NewClient(&redis.Options{
+		Addr: appConfig.Redis.Address,
+	})
+
+	log.Info(redisClient.Info(context.Background(), "server").Result())
 
 	userRepository := repository.NewUserRepositoryImpl(db)
 	userService := service.NewUserService(userRepository)
