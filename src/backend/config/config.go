@@ -55,11 +55,27 @@ type PostgresConfig struct {
 	Url      string
 }
 
+func NewRedisConfig(host string, port int) RedisConfig {
+	address := fmt.Sprintf("%s:%d", host, port)
+	return RedisConfig{
+		Port:    port,
+		Host:    host,
+		Address: address,
+	}
+}
+
+type RedisConfig struct {
+	Host    string
+	Port    int
+	Address string
+}
+
 type Config struct {
 	JWT         JWTConfig
 	S3          S3Config
 	Postgres    PostgresConfig
 	Environment string
+	Redis       RedisConfig
 }
 
 func NewConfig() *Config {
@@ -73,6 +89,8 @@ func NewConfig() *Config {
 		RefreshSecretKey:  os.Getenv("JWT_REFRESH_SECRET_KEY"),
 		RefreshExpireTime: time.Duration(refreshExpireTime),
 	}
+
+	redisPort, _ := strconv.ParseInt(os.Getenv("REDIS_PORT"), 10, 64)
 
 	return &Config{
 		JWT: jwt,
@@ -89,6 +107,7 @@ func NewConfig() *Config {
 			os.Getenv("PG_PASSWORD"), os.Getenv("PG_PORT"),
 		),
 		Environment: os.Getenv("ENVIRONMENT"),
+		Redis:       NewRedisConfig(os.Getenv("REDIS_HOST"), int(redisPort)),
 	}
 
 }

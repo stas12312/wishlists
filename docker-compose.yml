@@ -9,6 +9,11 @@ services:
       POSTGRES_USER: ${PG_USER}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+  redis:
+    image: redis:7-alpine
+    restart: always
+    volumes:
+      - redis_data:/data
   backend:
     build:
       context: src/backend
@@ -20,6 +25,7 @@ services:
       - ${API_PORT}:8080
     links:
       - db
+      - redis
   frontend:
     build:
       context: src/frontend
@@ -33,3 +39,4 @@ services:
       - .env
 volumes:
   postgres_data:
+  redis_data:
