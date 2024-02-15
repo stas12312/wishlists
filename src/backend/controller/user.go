@@ -25,7 +25,7 @@ func (c *UserController) Route(router fiber.Router) {
 	auth.Post("/login", c.Auth)
 	auth.Post("/register", c.Register)
 	auth.Post("/refresh", c.RefreshToken)
-
+	auth.Post("/confirm", c.Confirm)
 	user := router.Group("/user")
 	user.Use(middleware.Protected())
 	user.Get("/me", c.Me)
@@ -57,19 +57,20 @@ func (c *UserController) Register(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).
 			JSON(model.ValidateErrorResponse{Message: "Некорректно заполнены поля", Fields: errs})
 	}
-	existsUser, err := c.GetByEmail(register.Email)
-	if existsUser.Id != 0 {
-		return ctx.Status(fiber.StatusBadRequest).
-			JSON(model.ErrorResponse{Message: "Пользователь уже зарегистрирован", Details: ""})
-	}
 
-	user, err := c.UserService.Register(register.Email, register.Password, register.Name)
+	_, confirmCode, err := c.UserService.Register(register.Email, register.Password, register.Name)
 	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).
 			JSON(model.ErrorResponse{Message: "Ошибка при регистрации", Details: err.Error()})
 	}
-	tokenPair := makeTokenPair(user.Id, user.Email, &c.JWT)
-	return ctx.JSON(tokenPair)
+
+	// Данные доступны для тестового окружения
+	if c.Config.Environment != "test" {
+		confirmCode.Code = ""
+		confirmCode.Key = ""
+	}
+
+	return ctx.JSON(confirmCode)
 }
 
 func (c *UserController) Auth(ctx *fiber.Ctx) error {
@@ -131,6 +132,30 @@ func (c *UserController) RefreshToken(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).
 			JSON(model.ErrorResponse{Message: "Ошибка формирования токена", Details: err.Error()})
 	}
+
+}
+
+func (c *UserController) Confirm(ctx *fiber.Ctx) error {
+
+	code := &model.ConfirmCode{}
+
+	if err := ctx.BodyParser(code); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Некорректные данные", Details: err.Error()})
+	}
+
+	user, autoLogin, err := c.UserService.Confirm(code)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Не удалось подтвердить email", Details: err.Error()})
+	}
+
+	if autoLogin {
+		tokenPair := makeTokenPair(user.Id, user.Email, &c.Config.JWT)
+		return ctx.JSON(tokenPair)
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(user)
 
 }
 

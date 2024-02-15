@@ -13,9 +13,11 @@ import (
 	"main/config"
 	"main/controller"
 	database "main/db"
+	"main/mail/impl"
 	"main/middleware"
 	repository "main/repository/impl"
 	service "main/service/impl"
+	"time"
 )
 
 func main() {
@@ -54,7 +56,9 @@ func main() {
 	log.Info(redisClient.Info(context.Background(), "server").Result())
 
 	userRepository := repository.NewUserRepositoryImpl(db)
-	userService := service.NewUserService(userRepository)
+	confirmCoreRepository := repository.NewConfirmCodeRedis(redisClient, 30*time.Minute)
+	mailClient := impl.NewSMPTClient(&appConfig.SMTP)
+	userService := service.NewUserService(userRepository, confirmCoreRepository, mailClient, appConfig)
 	userController := controller.NewUserController(&userService, appConfig)
 
 	wishlistRepository := repository.NewWishlistRepository(db)
