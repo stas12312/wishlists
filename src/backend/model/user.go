@@ -5,6 +5,7 @@ type User struct {
 	Email    string `json:"email"`
 	Name     string `json:"name"`
 	Password string `json:"-"`
+	IsActive bool   `json:"-" db:"is_active"`
 }
 
 type TokenPariResponse struct {

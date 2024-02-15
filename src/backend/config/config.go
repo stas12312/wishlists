@@ -64,6 +64,14 @@ func NewRedisConfig(host string, port int) RedisConfig {
 	}
 }
 
+type SMTPConfig struct {
+	Host     string
+	Port     int
+	Username string
+	Password string
+	From     string
+}
+
 type RedisConfig struct {
 	Host    string
 	Port    int
@@ -76,6 +84,8 @@ type Config struct {
 	Postgres    PostgresConfig
 	Environment string
 	Redis       RedisConfig
+	SMTP        SMTPConfig
+	BaseUrl     string
 }
 
 func NewConfig() *Config {
@@ -91,7 +101,7 @@ func NewConfig() *Config {
 	}
 
 	redisPort, _ := strconv.ParseInt(os.Getenv("REDIS_PORT"), 10, 64)
-
+	smtpPort, _ := strconv.ParseInt(os.Getenv("SMTP_PORT"), 10, 64)
 	return &Config{
 		JWT: jwt,
 		S3: S3Config{
@@ -102,12 +112,20 @@ func NewConfig() *Config {
 			Bucket:          os.Getenv("S3_BUCKET"),
 			Domain:          os.Getenv("S3_DOMAIN"),
 		},
+		BaseUrl: os.Getenv("BASE_URL"),
 		Postgres: NewPostgresConfig(
 			os.Getenv("PG_HOST"), os.Getenv("PG_DATABASE"), os.Getenv("PG_USER"),
 			os.Getenv("PG_PASSWORD"), os.Getenv("PG_PORT"),
 		),
 		Environment: os.Getenv("ENVIRONMENT"),
 		Redis:       NewRedisConfig(os.Getenv("REDIS_HOST"), int(redisPort)),
+		SMTP: SMTPConfig{
+			Host:     os.Getenv("SMTP_HOST"),
+			Port:     int(smtpPort),
+			Username: os.Getenv("SMTP_USERNAME"),
+			Password: os.Getenv("SMTP_PASSWORD"),
+			From:     os.Getenv("SMTP_FROM"),
+		},
 	}
 
 }

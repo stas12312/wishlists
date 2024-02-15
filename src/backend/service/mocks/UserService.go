@@ -13,6 +13,43 @@ type UserService struct {
 	mock.Mock
 }
 
+// Confirm provides a mock function with given fields: code
+func (_m *UserService) Confirm(code *model.ConfirmCode) (*model.User, bool, error) {
+	ret := _m.Called(code)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Confirm")
+	}
+
+	var r0 *model.User
+	var r1 bool
+	var r2 error
+	if rf, ok := ret.Get(0).(func(*model.ConfirmCode) (*model.User, bool, error)); ok {
+		return rf(code)
+	}
+	if rf, ok := ret.Get(0).(func(*model.ConfirmCode) *model.User); ok {
+		r0 = rf(code)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*model.User)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(*model.ConfirmCode) bool); ok {
+		r1 = rf(code)
+	} else {
+		r1 = ret.Get(1).(bool)
+	}
+
+	if rf, ok := ret.Get(2).(func(*model.ConfirmCode) error); ok {
+		r2 = rf(code)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
+}
+
 // GetByEmail provides a mock function with given fields: email
 func (_m *UserService) GetByEmail(email string) (*model.User, error) {
 	ret := _m.Called(email)
@@ -104,7 +141,7 @@ func (_m *UserService) Login(email string, password string) (*model.User, error)
 }
 
 // Register provides a mock function with given fields: email, password, name
-func (_m *UserService) Register(email string, password string, name string) (*model.User, error) {
+func (_m *UserService) Register(email string, password string, name string) (*model.User, *model.ConfirmCode, error) {
 	ret := _m.Called(email, password, name)
 
 	if len(ret) == 0 {
@@ -112,8 +149,9 @@ func (_m *UserService) Register(email string, password string, name string) (*mo
 	}
 
 	var r0 *model.User
-	var r1 error
-	if rf, ok := ret.Get(0).(func(string, string, string) (*model.User, error)); ok {
+	var r1 *model.ConfirmCode
+	var r2 error
+	if rf, ok := ret.Get(0).(func(string, string, string) (*model.User, *model.ConfirmCode, error)); ok {
 		return rf(email, password, name)
 	}
 	if rf, ok := ret.Get(0).(func(string, string, string) *model.User); ok {
@@ -124,13 +162,21 @@ func (_m *UserService) Register(email string, password string, name string) (*mo
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(string, string, string) error); ok {
+	if rf, ok := ret.Get(1).(func(string, string, string) *model.ConfirmCode); ok {
 		r1 = rf(email, password, name)
 	} else {
-		r1 = ret.Error(1)
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(*model.ConfirmCode)
+		}
 	}
 
-	return r0, r1
+	if rf, ok := ret.Get(2).(func(string, string, string) error); ok {
+		r2 = rf(email, password, name)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
 }
 
 // NewUserService creates a new instance of UserService. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
