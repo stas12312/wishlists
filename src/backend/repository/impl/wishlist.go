@@ -68,16 +68,15 @@ func (r *WishlistImpl) Update(wishlist *model.Wishlist) (*model.Wishlist, error)
 	UPDATE wishlists SET
 		name = $2,
 		description = $3,
-		date = $4,
-		is_active = $5  
+		date = $4
 	WHERE wishlist_uuid = $1
 	RETURNING *
 `
 	updatedWishlist := &model.Wishlist{}
 
 	err := r.Get(
-		updatedWishlist, q, wishlist.Uuid, wishlist.Name, wishlist.Description, wishlist.Date, wishlist.IsActive,
+		updatedWishlist, q, wishlist.Uuid, wishlist.Name, wishlist.Description, wishlist.Date,
 	)
 
-	return wishlist, err
+	return updatedWishlist, err
 }

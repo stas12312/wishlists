@@ -64,8 +64,12 @@ func (c *WishlistController) GetWishlist(ctx *fiber.Ctx) error {
 
 func (c *WishlistController) Update(ctx *fiber.Ctx) error {
 	userId := GetUserIdFromCtx(ctx)
+	wishlistUuid := ctx.Params("uuid")
 
-	wishlist := &model.Wishlist{}
+	wishlist := &model.Wishlist{
+		Uuid:     wishlistUuid,
+		IsActive: true,
+	}
 
 	if err := ctx.BodyParser(wishlist); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).
@@ -131,7 +135,11 @@ func (c *WishlistController) DeleteWishHandler(ctx *fiber.Ctx) error {
 
 func (c *WishlistController) UpdateWishHandler(ctx *fiber.Ctx) error {
 	userId := GetUserIdFromCtx(ctx)
-	wish := &model.Wish{}
+	wishUuid := ctx.Params("uuid")
+	wish := &model.Wish{
+		Uuid:     wishUuid,
+		IsActive: true,
+	}
 
 	if err := ctx.BodyParser(wish); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).

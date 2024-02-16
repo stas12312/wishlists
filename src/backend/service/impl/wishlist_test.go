@@ -420,8 +420,7 @@ func TestWishlistImpl_UpdateForUser(t *testing.T) {
 			mocksBehaviour: func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository) {
 				wlMock.
 					On("GetByUUID", "0").
-					Once().
-					Return(&model.Wishlist{UserId: 1}, nil)
+					Return(&model.Wishlist{UserId: 1, Uuid: "0"}, nil)
 
 				wlMock.
 					On("Update", &model.Wishlist{Uuid: "0", UserId: 1}).
@@ -439,8 +438,7 @@ func TestWishlistImpl_UpdateForUser(t *testing.T) {
 			mocksBehaviour: func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository) {
 				wlMock.
 					On("GetByUUID", "0").
-					Once().
-					Return(&model.Wishlist{UserId: 1}, nil)
+					Return(&model.Wishlist{UserId: 1, Uuid: "0"}, nil)
 			},
 			wantErr: true,
 		},

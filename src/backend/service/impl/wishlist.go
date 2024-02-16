@@ -44,7 +44,11 @@ func (s *WishlistImpl) UpdateForUser(userId int64, wishlist *model.Wishlist) (*m
 		return nil, errors.New("user can't edit wishlist")
 	}
 
-	return s.WishlistRepository.Update(wishlist)
+	_, err = s.WishlistRepository.Update(wishlist)
+	if err != nil {
+		return nil, err
+	}
+	return s.WishlistRepository.GetByUUID(wishlist.Uuid)
 }
 
 func (s *WishlistImpl) AddWish(userId int64, wish *model.Wish) (*model.Wish, error) {
