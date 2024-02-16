@@ -8,7 +8,7 @@ on:
 
 jobs:
 
-  build:
+  Tests:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -20,6 +20,7 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: '1.21.x'
+          cache-dependency-path: src/backend/go.sum
 
       - name: Install dependencies
         run: go get .
@@ -28,4 +29,11 @@ jobs:
         run: go build -v ./...
 
       - name: Test
-        run: go test -v ./...
+        run: go test -json -v ./... -json > TestResults.json
+
+      - name: Upload Go test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Go-results
+          path: ./src/backend/TestResults.json
+          if-no-files-found: error
