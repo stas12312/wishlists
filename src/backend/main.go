@@ -56,7 +56,7 @@ func main() {
 	log.Info(redisClient.Info(context.Background(), "server").Result())
 
 	userRepository := repository.NewUserRepositoryImpl(db)
-	confirmCoreRepository := repository.NewConfirmCodeRedis(redisClient, 30*time.Minute)
+	confirmCoreRepository := repository.NewConfirmCodeRedis(redisClient, 60*time.Minute)
 	mailClient := impl.NewSMPTClient(&appConfig.SMTP)
 	userService := service.NewUserService(userRepository, confirmCoreRepository, mailClient, appConfig)
 	userController := controller.NewUserController(&userService, appConfig)

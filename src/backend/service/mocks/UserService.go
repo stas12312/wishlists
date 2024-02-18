@@ -13,8 +13,38 @@ type UserService struct {
 	mock.Mock
 }
 
+// CheckCode provides a mock function with given fields: code
+func (_m *UserService) CheckCode(code *model.Code) (*model.Code, bool) {
+	ret := _m.Called(code)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CheckCode")
+	}
+
+	var r0 *model.Code
+	var r1 bool
+	if rf, ok := ret.Get(0).(func(*model.Code) (*model.Code, bool)); ok {
+		return rf(code)
+	}
+	if rf, ok := ret.Get(0).(func(*model.Code) *model.Code); ok {
+		r0 = rf(code)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*model.Code)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(*model.Code) bool); ok {
+		r1 = rf(code)
+	} else {
+		r1 = ret.Get(1).(bool)
+	}
+
+	return r0, r1
+}
+
 // Confirm provides a mock function with given fields: code
-func (_m *UserService) Confirm(code *model.ConfirmCode) (*model.User, bool, error) {
+func (_m *UserService) Confirm(code *model.Code) (*model.User, bool, error) {
 	ret := _m.Called(code)
 
 	if len(ret) == 0 {
@@ -24,10 +54,10 @@ func (_m *UserService) Confirm(code *model.ConfirmCode) (*model.User, bool, erro
 	var r0 *model.User
 	var r1 bool
 	var r2 error
-	if rf, ok := ret.Get(0).(func(*model.ConfirmCode) (*model.User, bool, error)); ok {
+	if rf, ok := ret.Get(0).(func(*model.Code) (*model.User, bool, error)); ok {
 		return rf(code)
 	}
-	if rf, ok := ret.Get(0).(func(*model.ConfirmCode) *model.User); ok {
+	if rf, ok := ret.Get(0).(func(*model.Code) *model.User); ok {
 		r0 = rf(code)
 	} else {
 		if ret.Get(0) != nil {
@@ -35,13 +65,13 @@ func (_m *UserService) Confirm(code *model.ConfirmCode) (*model.User, bool, erro
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*model.ConfirmCode) bool); ok {
+	if rf, ok := ret.Get(1).(func(*model.Code) bool); ok {
 		r1 = rf(code)
 	} else {
 		r1 = ret.Get(1).(bool)
 	}
 
-	if rf, ok := ret.Get(2).(func(*model.ConfirmCode) error); ok {
+	if rf, ok := ret.Get(2).(func(*model.Code) error); ok {
 		r2 = rf(code)
 	} else {
 		r2 = ret.Error(2)
@@ -141,7 +171,7 @@ func (_m *UserService) Login(email string, password string) (*model.User, error)
 }
 
 // Register provides a mock function with given fields: email, password, name
-func (_m *UserService) Register(email string, password string, name string) (*model.User, *model.ConfirmCode, error) {
+func (_m *UserService) Register(email string, password string, name string) (*model.User, *model.Code, error) {
 	ret := _m.Called(email, password, name)
 
 	if len(ret) == 0 {
@@ -149,9 +179,9 @@ func (_m *UserService) Register(email string, password string, name string) (*mo
 	}
 
 	var r0 *model.User
-	var r1 *model.ConfirmCode
+	var r1 *model.Code
 	var r2 error
-	if rf, ok := ret.Get(0).(func(string, string, string) (*model.User, *model.ConfirmCode, error)); ok {
+	if rf, ok := ret.Get(0).(func(string, string, string) (*model.User, *model.Code, error)); ok {
 		return rf(email, password, name)
 	}
 	if rf, ok := ret.Get(0).(func(string, string, string) *model.User); ok {
@@ -162,11 +192,11 @@ func (_m *UserService) Register(email string, password string, name string) (*mo
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(string, string, string) *model.ConfirmCode); ok {
+	if rf, ok := ret.Get(1).(func(string, string, string) *model.Code); ok {
 		r1 = rf(email, password, name)
 	} else {
 		if ret.Get(1) != nil {
-			r1 = ret.Get(1).(*model.ConfirmCode)
+			r1 = ret.Get(1).(*model.Code)
 		}
 	}
 
@@ -177,6 +207,66 @@ func (_m *UserService) Register(email string, password string, name string) (*mo
 	}
 
 	return r0, r1, r2
+}
+
+// Reset provides a mock function with given fields: code, password
+func (_m *UserService) Reset(code *model.Code, password *model.ResetPassword) (*model.User, error) {
+	ret := _m.Called(code, password)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Reset")
+	}
+
+	var r0 *model.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(*model.Code, *model.ResetPassword) (*model.User, error)); ok {
+		return rf(code, password)
+	}
+	if rf, ok := ret.Get(0).(func(*model.Code, *model.ResetPassword) *model.User); ok {
+		r0 = rf(code, password)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*model.User)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(*model.Code, *model.ResetPassword) error); ok {
+		r1 = rf(code, password)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// Restore provides a mock function with given fields: email
+func (_m *UserService) Restore(email string) (*model.Code, error) {
+	ret := _m.Called(email)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Restore")
+	}
+
+	var r0 *model.Code
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (*model.Code, error)); ok {
+		return rf(email)
+	}
+	if rf, ok := ret.Get(0).(func(string) *model.Code); ok {
+		r0 = rf(email)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*model.Code)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(email)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // NewUserService creates a new instance of UserService. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

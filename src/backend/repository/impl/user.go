@@ -79,3 +79,15 @@ func (r *userRepositoryImpl) Update(user *model.User) (*model.User, error) {
 	return updatedUser, err
 
 }
+
+func (r *userRepositoryImpl) UpdatePassword(userId int64, hashPassword string) error {
+	query := `
+	UPDATE users
+	SET
+	    password = $2
+	WHERE user_id = $1
+`
+
+	_, err := r.Exec(query, userId, hashPassword)
+	return err
+}

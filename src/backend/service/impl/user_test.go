@@ -24,7 +24,7 @@ func TestNewUserService(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			userRepository := mocks.NewUserRepository(t)
 			mailClient := mocks2.NewClient(t)
-			confirmCodeRepository := mocks.NewConfirmCodeRepository(t)
+			confirmCodeRepository := mocks.NewCodeRepository(t)
 			newConfig := &config.Config{}
 			NewUserService(userRepository, confirmCodeRepository, mailClient, newConfig)
 
@@ -125,7 +125,7 @@ func Test_userServiceImpl_GetByEmail(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			userRepository := mocks.NewUserRepository(t)
-			confirmCodeRepository := mocks.NewConfirmCodeRepository(t)
+			codeRepository := mocks.NewCodeRepository(t)
 
 			userRepository.
 				On("GetByEmail", tt.args.email).
@@ -133,8 +133,8 @@ func Test_userServiceImpl_GetByEmail(t *testing.T) {
 				Return(&model.User{Id: 1, Email: tt.args.email, Name: "name"}, nil)
 
 			u := &userServiceImpl{
-				UserRepository:        userRepository,
-				ConfirmCodeRepository: confirmCodeRepository,
+				UserRepository: userRepository,
+				CodeRepository: codeRepository,
 			}
 			got, err := u.GetByEmail(tt.args.email)
 			if (err != nil) != tt.wantErr {
@@ -173,7 +173,7 @@ func Test_userServiceImpl_GetById(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 
 			userRepository := mocks.NewUserRepository(t)
-			confirmCodeRepository := mocks.NewConfirmCodeRepository(t)
+			codeRepository := mocks.NewCodeRepository(t)
 
 			userRepository.
 				On("GetById", tt.args.id).
@@ -181,8 +181,8 @@ func Test_userServiceImpl_GetById(t *testing.T) {
 				Return(&model.User{Id: tt.args.id, Name: "name"}, nil)
 
 			u := &userServiceImpl{
-				UserRepository:        userRepository,
-				ConfirmCodeRepository: confirmCodeRepository,
+				UserRepository: userRepository,
+				CodeRepository: codeRepository,
 			}
 			got, err := u.GetById(tt.args.id)
 			if (err != nil) != tt.wantErr {
@@ -308,7 +308,7 @@ func Test_userServiceImpl_Register(t *testing.T) {
 		codeExists    bool
 		mockBehaviour func(
 			userRepository *mocks.UserRepository,
-			confirmCodeRepository *mocks.ConfirmCodeRepository,
+			confirmCodeRepository *mocks.CodeRepository,
 		)
 		sendEmail bool
 		mailError error
@@ -326,7 +326,7 @@ func Test_userServiceImpl_Register(t *testing.T) {
 				Id:    1,
 			},
 			codeExists: true,
-			mockBehaviour: func(userRepository *mocks.UserRepository, confirmCodeRepository *mocks.ConfirmCodeRepository) {
+			mockBehaviour: func(userRepository *mocks.UserRepository, confirmCodeRepository *mocks.CodeRepository) {
 				userRepository.
 					On("GetByEmail", "email").
 					Once().
@@ -337,9 +337,9 @@ func Test_userServiceImpl_Register(t *testing.T) {
 					Return(&model.User{Name: "name", Email: "email", Id: 1}, nil)
 
 				confirmCodeRepository.
-					On("Create", mock.AnythingOfType("*model.ConfirmCode")).
+					On("Create", mock.AnythingOfType("*model.Code")).
 					Once().
-					Return(&model.ConfirmCode{Code: "123456"}, nil)
+					Return(&model.Code{Code: "123456"}, nil)
 			},
 			sendEmail: true,
 		},
@@ -352,7 +352,7 @@ func Test_userServiceImpl_Register(t *testing.T) {
 			},
 			wantUser:   nil,
 			codeExists: false,
-			mockBehaviour: func(userRepository *mocks.UserRepository, confirmCodeRepository *mocks.ConfirmCodeRepository) {
+			mockBehaviour: func(userRepository *mocks.UserRepository, confirmCodeRepository *mocks.CodeRepository) {
 				userRepository.
 					On("GetByEmail", "email").
 					Once().
@@ -372,7 +372,7 @@ func Test_userServiceImpl_Register(t *testing.T) {
 			codeExists: false,
 			wantErr:    true,
 			sendEmail:  false,
-			mockBehaviour: func(userRepository *mocks.UserRepository, confirmCodeRepository *mocks.ConfirmCodeRepository) {
+			mockBehaviour: func(userRepository *mocks.UserRepository, confirmCodeRepository *mocks.CodeRepository) {
 				userRepository.
 					On("GetByEmail", "email").
 					Once().
@@ -394,7 +394,7 @@ func Test_userServiceImpl_Register(t *testing.T) {
 			codeExists: false,
 			wantErr:    true,
 			sendEmail:  false,
-			mockBehaviour: func(userRepository *mocks.UserRepository, confirmCodeRepository *mocks.ConfirmCodeRepository) {
+			mockBehaviour: func(userRepository *mocks.UserRepository, confirmCodeRepository *mocks.CodeRepository) {
 				userRepository.
 					On("GetByEmail", "email").
 					Once().
@@ -405,7 +405,7 @@ func Test_userServiceImpl_Register(t *testing.T) {
 					Return(&model.User{}, nil)
 
 				confirmCodeRepository.
-					On("Create", mock.AnythingOfType("*model.ConfirmCode")).
+					On("Create", mock.AnythingOfType("*model.Code")).
 					Once().
 					Return(nil, errors.New("error"))
 			},
@@ -421,7 +421,7 @@ func Test_userServiceImpl_Register(t *testing.T) {
 			codeExists: false,
 			wantErr:    true,
 			sendEmail:  true,
-			mockBehaviour: func(userRepository *mocks.UserRepository, confirmCodeRepository *mocks.ConfirmCodeRepository) {
+			mockBehaviour: func(userRepository *mocks.UserRepository, confirmCodeRepository *mocks.CodeRepository) {
 				userRepository.
 					On("GetByEmail", "email").
 					Once().
@@ -432,9 +432,9 @@ func Test_userServiceImpl_Register(t *testing.T) {
 					Return(&model.User{}, nil)
 
 				confirmCodeRepository.
-					On("Create", mock.AnythingOfType("*model.ConfirmCode")).
+					On("Create", mock.AnythingOfType("*model.Code")).
 					Once().
-					Return(&model.ConfirmCode{Code: "123123"}, nil)
+					Return(&model.Code{Code: "123123"}, nil)
 			},
 			mailError: errors.New("error"),
 		},
@@ -443,7 +443,7 @@ func Test_userServiceImpl_Register(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 
 			userRepository := mocks.NewUserRepository(t)
-			confirmCodeRepository := mocks.NewConfirmCodeRepository(t)
+			codeRepository := mocks.NewCodeRepository(t)
 			mailClient := mocks2.NewClient(t)
 			appConfig := &config.Config{BaseUrl: "http://test"}
 
@@ -457,13 +457,13 @@ func Test_userServiceImpl_Register(t *testing.T) {
 					Return(tt.mailError)
 			}
 
-			tt.mockBehaviour(userRepository, confirmCodeRepository)
+			tt.mockBehaviour(userRepository, codeRepository)
 
 			u := &userServiceImpl{
-				UserRepository:        userRepository,
-				ConfirmCodeRepository: confirmCodeRepository,
-				Client:                mailClient,
-				Config:                appConfig,
+				UserRepository: userRepository,
+				CodeRepository: codeRepository,
+				MailClient:     mailClient,
+				Config:         appConfig,
 			}
 			gotUser, gotCode, err := u.Register(tt.args.email, tt.args.password, tt.args.name)
 			if (err != nil) != tt.wantErr {
@@ -483,11 +483,11 @@ func Test_userServiceImpl_Register(t *testing.T) {
 
 func Test_userServiceImpl_Confirm(t *testing.T) {
 	type args struct {
-		code *model.ConfirmCode
+		code *model.Code
 	}
 	tests := []struct {
 		name          string
-		mockBehaviour func(userRepository *mocks.UserRepository, confirmCodeRespository *mocks.ConfirmCodeRepository)
+		mockBehaviour func(userRepository *mocks.UserRepository, codeRepository *mocks.CodeRepository)
 		args          args
 		want          *model.User
 		AutoLogin     bool
@@ -496,18 +496,24 @@ func Test_userServiceImpl_Confirm(t *testing.T) {
 		{
 			name: "OK by Code",
 			args: args{
-				&model.ConfirmCode{UUID: "uuid", Code: "123", SecretKey: "key"},
+				&model.Code{UUID: "uuid", Code: "123", SecretKey: "key"},
 			},
 			want:      &model.User{Id: 1, IsActive: true},
 			AutoLogin: true,
 			mockBehaviour: func(
 				userRepository *mocks.UserRepository,
-				confirmCodeRepository *mocks.ConfirmCodeRepository,
+				confirmCodeRepository *mocks.CodeRepository,
 			) {
 				confirmCodeRepository.
-					On("GetByUUID", "uuid").
+					On("Get", "uuid").
 					Once().
-					Return(&model.ConfirmCode{UUID: "uuid", Code: "123", SecretKey: "key", UserId: 1}, nil)
+					Return(&model.Code{
+						UUID:      "uuid",
+						Code:      "123",
+						SecretKey: "key",
+						UserId:    1,
+						CodeType:  model.ConfirmEmailCode,
+					}, nil)
 
 				confirmCodeRepository.
 					On("DeleteByUUID", "uuid").
@@ -528,23 +534,24 @@ func Test_userServiceImpl_Confirm(t *testing.T) {
 		{
 			name: "OK by Key",
 			args: args{
-				&model.ConfirmCode{UUID: "uuid", Code: "123", Key: "urlkey", SecretKey: "wrong_key"},
+				&model.Code{UUID: "uuid", Code: "123", Key: "urlkey", SecretKey: "wrong_key"},
 			},
 			want:      &model.User{Id: 1, IsActive: true},
 			AutoLogin: false,
 			mockBehaviour: func(
 				userRepository *mocks.UserRepository,
-				confirmCodeRepository *mocks.ConfirmCodeRepository,
+				confirmCodeRepository *mocks.CodeRepository,
 			) {
 				confirmCodeRepository.
-					On("GetByUUID", "uuid").
+					On("Get", "uuid").
 					Once().
-					Return(&model.ConfirmCode{
+					Return(&model.Code{
 						UUID:      "uuid",
 						Code:      "123",
 						SecretKey: "key",
 						Key:       "urlkey",
 						UserId:    1,
+						CodeType:  model.ConfirmEmailCode,
 					}, nil)
 
 				confirmCodeRepository.
@@ -566,19 +573,19 @@ func Test_userServiceImpl_Confirm(t *testing.T) {
 		{
 			name: "Wrong key",
 			args: args{
-				&model.ConfirmCode{UUID: "uuid", Code: "123", Key: "wrong_key", SecretKey: "wrong_key"},
+				&model.Code{UUID: "uuid", Code: "123", Key: "wrong_key", SecretKey: "wrong_key"},
 			},
 			want:      nil,
 			wantErr:   true,
 			AutoLogin: false,
 			mockBehaviour: func(
 				userRepository *mocks.UserRepository,
-				confirmCodeRepository *mocks.ConfirmCodeRepository,
+				codeRepository *mocks.CodeRepository,
 			) {
-				confirmCodeRepository.
-					On("GetByUUID", "uuid").
+				codeRepository.
+					On("Get", "uuid").
 					Once().
-					Return(&model.ConfirmCode{
+					Return(&model.Code{
 						UUID:      "uuid",
 						Code:      "123",
 						SecretKey: "key",
@@ -592,15 +599,15 @@ func Test_userServiceImpl_Confirm(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 
 			userRepository := mocks.NewUserRepository(t)
-			confirmCodeRepository := mocks.NewConfirmCodeRepository(t)
+			codeRepository := mocks.NewCodeRepository(t)
 			mailClient := mocks2.NewClient(t)
 
-			tt.mockBehaviour(userRepository, confirmCodeRepository)
+			tt.mockBehaviour(userRepository, codeRepository)
 
 			u := &userServiceImpl{
-				UserRepository:        userRepository,
-				ConfirmCodeRepository: confirmCodeRepository,
-				Client:                mailClient,
+				UserRepository: userRepository,
+				CodeRepository: codeRepository,
+				MailClient:     mailClient,
 			}
 			got, got1, err := u.Confirm(tt.args.code)
 			if (err != nil) != tt.wantErr {
@@ -617,9 +624,9 @@ func Test_userServiceImpl_Confirm(t *testing.T) {
 	}
 }
 
-func Test_getMailMessage(t *testing.T) {
+func Test_getConfirmEmailMessage(t *testing.T) {
 	type args struct {
-		code    *model.ConfirmCode
+		code    *model.Code
 		baseUrl string
 	}
 	tests := []struct {
@@ -630,7 +637,7 @@ func Test_getMailMessage(t *testing.T) {
 		{
 			name: "OK",
 			args: args{
-				code: &model.ConfirmCode{
+				code: &model.Code{
 					Code: "123",
 					UUID: "uuid",
 					Key:  "key",
@@ -642,8 +649,310 @@ func Test_getMailMessage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getMailMessage(tt.args.code, tt.args.baseUrl); got != tt.want {
-				t.Errorf("getMailMessage() = %v, want %v", got, tt.want)
+			if got := getConfirmEmailMessage(tt.args.code, tt.args.baseUrl); got != tt.want {
+				t.Errorf("getConfirmEmailMessage() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_getRestorePasswordMessage(t *testing.T) {
+	type args struct {
+		code    *model.Code
+		baseUrl string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "OK",
+			args: args{
+				code: &model.Code{
+					Code: "123",
+					UUID: "uuid",
+					Key:  "key",
+				},
+				baseUrl: "http://test.ru",
+			},
+			want: "Код для сброса пароля: 123\n" +
+				"Ссылка для сброса пароля: http://test.ru/auth/reset-password?uuid=uuid&key=key",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := getRestorePasswordMessage(tt.args.code, tt.args.baseUrl); got != tt.want {
+				t.Errorf("getConfirmEmailMessage() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_userServiceImpl_CheckCodeWithType(t *testing.T) {
+
+	type args struct {
+		code     *model.Code
+		codeType int
+	}
+	tests := []struct {
+		name         string
+		args         args
+		want         *model.Code
+		mockBehavior func(mock *mocks.CodeRepository)
+		want1        bool
+	}{
+		{
+			name: "OK",
+			args: args{
+				code: &model.Code{
+					UUID:      "uuid",
+					Code:      "code",
+					Key:       "key",
+					SecretKey: "secret_key",
+					UserId:    1,
+				},
+				codeType: model.ConfirmEmailCode,
+			},
+			mockBehavior: func(mock *mocks.CodeRepository) {
+				mock.
+					On("Get", "uuid").
+					Once().
+					Return(
+						&model.Code{
+							UUID:      "uuid",
+							Code:      "code",
+							Key:       "key",
+							SecretKey: "secret_key",
+							UserId:    1,
+							CodeType:  model.ConfirmEmailCode,
+						},
+						nil,
+					)
+			},
+			want: &model.Code{
+				UUID:      "uuid",
+				Code:      "code",
+				Key:       "key",
+				SecretKey: "secret_key",
+				UserId:    1,
+				CodeType:  model.ConfirmEmailCode,
+			},
+			want1: true,
+		},
+		{
+			name: "Wrong code type",
+			args: args{
+				code: &model.Code{
+					UUID:      "uuid",
+					Code:      "code",
+					Key:       "key",
+					SecretKey: "secret_key",
+					UserId:    1,
+				},
+				codeType: model.ResetPasswordCode,
+			},
+			mockBehavior: func(mock *mocks.CodeRepository) {
+				mock.
+					On("Get", "uuid").
+					Once().
+					Return(
+						&model.Code{
+							UUID:      "uuid",
+							Code:      "code",
+							Key:       "key",
+							SecretKey: "secret_key",
+							UserId:    1,
+							CodeType:  model.ConfirmEmailCode,
+						},
+						nil,
+					)
+			},
+			want: &model.Code{
+				UUID:      "uuid",
+				Code:      "code",
+				Key:       "key",
+				SecretKey: "secret_key",
+				UserId:    1,
+				CodeType:  model.ConfirmEmailCode,
+			},
+			want1: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			userRepository := mocks.NewUserRepository(t)
+			codeRepository := mocks.NewCodeRepository(t)
+
+			u := &userServiceImpl{
+				UserRepository: userRepository,
+				CodeRepository: codeRepository,
+			}
+
+			tt.mockBehavior(codeRepository)
+
+			got, got1 := u.CheckCodeWithType(tt.args.code, tt.args.codeType)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("CheckCodeWithType() got = %v, want %v", got, tt.want)
+			}
+			if got1 != tt.want1 {
+				t.Errorf("CheckCodeWithType() got1 = %v, want %v", got1, tt.want1)
+			}
+		})
+	}
+}
+
+func Test_userServiceImpl_Restore(t *testing.T) {
+
+	type args struct {
+		email string
+	}
+	tests := []struct {
+		name           string
+		args           args
+		mockBehavior   func(codeMock *mocks.CodeRepository, userMock *mocks.UserRepository, mailMock *mocks2.Client)
+		wantCodeUserId int64
+		wantErr        bool
+	}{
+		{
+			name: "OK",
+			args: args{
+				email: "email@mail.ru",
+			},
+			mockBehavior: func(codeMock *mocks.CodeRepository, userMock *mocks.UserRepository, mailMock *mocks2.Client) {
+				codeMock.
+					On("Create", mock.AnythingOfType("*model.Code")).
+					Once().
+					Return(&model.Code{UserId: 1}, nil)
+
+				userMock.
+					On("GetByEmail", "email@mail.ru").
+					Once().
+					Return(&model.User{Id: 1, IsActive: true, Email: "email@mail.ru"}, nil)
+				mailMock.
+					On(
+						"Send", []string{"email@mail.ru"},
+						"Восстановление пароля",
+						mock.AnythingOfType("string"),
+					).
+					Once().
+					Return(nil)
+			},
+			wantCodeUserId: 1,
+		},
+		{
+			name: "User is not active",
+			args: args{
+				email: "email@mail.ru",
+			},
+			mockBehavior: func(codeMock *mocks.CodeRepository, userMock *mocks.UserRepository, mailMock *mocks2.Client) {
+				userMock.
+					On("GetByEmail", "email@mail.ru").
+					Once().
+					Return(&model.User{Id: 1, IsActive: false}, nil)
+			},
+			wantErr:        true,
+			wantCodeUserId: 0,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			userRepository := mocks.NewUserRepository(t)
+			codeRepository := mocks.NewCodeRepository(t)
+			mailClient := mocks2.NewClient(t)
+
+			u := &userServiceImpl{
+				UserRepository: userRepository,
+				CodeRepository: codeRepository,
+				MailClient:     mailClient,
+				Config:         &config.Config{BaseUrl: "https://test.ru"},
+			}
+
+			tt.mockBehavior(codeRepository, userRepository, mailClient)
+			got, err := u.Restore(tt.args.email)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Restore() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !(got.UserId == tt.wantCodeUserId) {
+				t.Errorf("Restore() got = %v, want %v", got.UserId, tt.wantCodeUserId)
+			}
+		})
+	}
+}
+
+func Test_userServiceImpl_Reset(t *testing.T) {
+	type args struct {
+		code     *model.Code
+		password *model.ResetPassword
+	}
+
+	type test struct {
+		name         string
+		args         args
+		want         *model.User
+		mockBehavior func(codeMock *mocks.CodeRepository, userMock *mocks.UserRepository, tt *test)
+		wantErr      bool
+	}
+
+	tests := []test{
+		{
+			name: "OK",
+			args: args{
+				code:     &model.Code{UUID: "uuid", Key: "key"},
+				password: &model.ResetPassword{Password: "newPassword"},
+			},
+
+			mockBehavior: func(codeMock *mocks.CodeRepository, userMock *mocks.UserRepository, tt *test) {
+				codeMock.
+					On("Get", tt.args.code.UUID).
+					Once().
+					Return(&model.Code{
+						UUID:     tt.args.code.UUID,
+						Key:      "key",
+						UserId:   1,
+						CodeType: model.ResetPasswordCode,
+					}, nil)
+
+				userMock.
+					On("UpdatePassword", int64(1), mock.AnythingOfType("string")).
+					Once().
+					Return(nil)
+
+				codeMock.
+					On("DeleteByUUID", tt.args.code.UUID).
+					Once().
+					Return(nil)
+
+				userMock.
+					On("GetById", int64(1)).
+					Once().
+					Return(&model.User{Id: 1}, nil)
+			},
+			want: &model.User{Id: 1},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			userRepository := mocks.NewUserRepository(t)
+			codeRepository := mocks.NewCodeRepository(t)
+
+			u := &userServiceImpl{
+				UserRepository: userRepository,
+				CodeRepository: codeRepository,
+			}
+
+			tt.mockBehavior(codeRepository, userRepository, &tt)
+			got, err := u.Reset(tt.args.code, tt.args.password)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Reset() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Reset() got = %v, want %v", got, tt.want)
 			}
 		})
 	}

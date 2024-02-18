@@ -12,3 +12,7 @@ type TokenPariResponse struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 }
+
+type ResetPassword struct {
+	Password string `json:"password"`
+}

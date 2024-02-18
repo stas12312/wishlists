@@ -1,6 +1,7 @@
 package impl
 
 import (
+	"errors"
 	"github.com/redis/go-redis/v9"
 	"golang.org/x/net/context"
 	"main/model"
@@ -10,16 +11,16 @@ import (
 func NewConfirmCodeRedis(
 	client *redis.Client,
 	codeTTL time.Duration,
-) *ConfirmCodeRedis {
-	return &ConfirmCodeRedis{client, codeTTL}
+) *CodeRedis {
+	return &CodeRedis{client, codeTTL}
 }
 
-type ConfirmCodeRedis struct {
+type CodeRedis struct {
 	redisClient *redis.Client
 	codeTTL     time.Duration
 }
 
-func (c ConfirmCodeRedis) Create(code *model.ConfirmCode) (*model.ConfirmCode, error) {
+func (c CodeRedis) Create(code *model.Code) (*model.Code, error) {
 	result := c.redisClient.HSet(context.Background(), code.UUID, code)
 
 	c.redisClient.Expire(context.Background(), code.UUID, c.codeTTL)
@@ -28,18 +29,24 @@ func (c ConfirmCodeRedis) Create(code *model.ConfirmCode) (*model.ConfirmCode, e
 
 }
 
-func (c ConfirmCodeRedis) GetByUUID(uuid string) (*model.ConfirmCode, error) {
+func (c CodeRedis) Get(uuid string) (*model.Code, error) {
 
 	result := c.redisClient.HGetAll(context.Background(), uuid)
 	if result.Err() != nil {
 		return nil, result.Err()
 	}
-	confirmCode := &model.ConfirmCode{}
+	if len(result.Val()) == 0 {
+		return nil, errors.New("code not found")
+	}
+
+	confirmCode := &model.Code{}
 	err := result.Scan(confirmCode)
+	confirmCode.UUID = uuid
+
 	return confirmCode, err
 }
 
-func (c ConfirmCodeRedis) DeleteByUUID(uuid string) error {
+func (c CodeRedis) DeleteByUUID(uuid string) error {
 	result := c.redisClient.Del(context.Background(), uuid)
 	return result.Err()
 }

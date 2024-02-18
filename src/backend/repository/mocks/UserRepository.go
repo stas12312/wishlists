@@ -133,6 +133,24 @@ func (_m *UserRepository) Update(_a0 *model.User) (*model.User, error) {
 	return r0, r1
 }
 
+// UpdatePassword provides a mock function with given fields: userId, hashPassword
+func (_m *UserRepository) UpdatePassword(userId int64, hashPassword string) error {
+	ret := _m.Called(userId, hashPassword)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdatePassword")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(int64, string) error); ok {
+		r0 = rf(userId, hashPassword)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // NewUserRepository creates a new instance of UserRepository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewUserRepository(t interface {
