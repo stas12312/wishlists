@@ -9,4 +9,5 @@ type UserRepository interface {
 	GetById(id int64) (*model.User, error)
 	Create(email string, hash string, name string) (*model.User, error)
 	Update(*model.User) (*model.User, error)
+	UpdatePassword(userId int64, hashPassword string) error
 }

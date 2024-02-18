@@ -26,6 +26,9 @@ func (c *UserController) Route(router fiber.Router) {
 	auth.Post("/register", c.Register)
 	auth.Post("/refresh", c.RefreshToken)
 	auth.Post("/confirm", c.Confirm)
+	auth.Post("/restore", c.Restore)
+	auth.Post("/reset-password", c.Reset)
+	auth.Post("/check-code", c.CheckCode)
 	user := router.Group("/user")
 	user.Use(middleware.Protected())
 	user.Get("/me", c.Me)
@@ -137,7 +140,7 @@ func (c *UserController) RefreshToken(ctx *fiber.Ctx) error {
 
 func (c *UserController) Confirm(ctx *fiber.Ctx) error {
 
-	code := &model.ConfirmCode{}
+	code := &model.Code{}
 
 	if err := ctx.BodyParser(code); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).
@@ -156,6 +159,72 @@ func (c *UserController) Confirm(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(user)
+
+}
+
+func (c *UserController) Restore(ctx *fiber.Ctx) error {
+	type restoreRequest struct {
+		Email string `json:"email"`
+	}
+
+	request := &restoreRequest{}
+
+	if err := ctx.BodyParser(request); err != nil {
+		return ctx.Status(fiber.StatusUnprocessableEntity).
+			JSON(model.ErrorResponse{Message: "Некоректные данные"})
+	}
+
+	code, err := c.UserService.Restore(request.Email)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Ошибка", Details: err.Error()})
+	}
+
+	// Данные доступны для тестового окружения
+	if c.Config.Environment != "test" {
+		code.Code = ""
+		code.Key = ""
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(code)
+}
+
+func (c *UserController) Reset(ctx *fiber.Ctx) error {
+
+	code := &model.Code{}
+	password := &model.ResetPassword{}
+
+	if err := ctx.BodyParser(code); err != nil {
+		return ctx.Status(fiber.StatusUnprocessableEntity).
+			JSON(model.ErrorResponse{Message: "Некорректные данные", Details: err.Error()})
+	}
+	if err := ctx.BodyParser(password); err != nil {
+		return ctx.Status(fiber.StatusUnprocessableEntity).
+			JSON(model.ErrorResponse{Message: "Некорректные данные", Details: err.Error()})
+	}
+
+	user, err := c.UserService.Reset(code, password)
+	if err != nil {
+		return ctx.Status(fiber.StatusUnprocessableEntity).
+			JSON(model.ErrorResponse{Message: "Недействительный код"})
+	}
+
+	newTokenPair := makeTokenPair(user.Id, user.Email, &c.Config.JWT)
+	return ctx.JSON(newTokenPair)
+
+}
+
+func (c *UserController) CheckCode(ctx *fiber.Ctx) error {
+
+	code := &model.Code{}
+	if err := ctx.BodyParser(code); err != nil {
+		return ctx.Status(fiber.StatusUnprocessableEntity).
+			JSON(model.ErrorResponse{Message: "Некорректные данные", Details: err.Error()})
+	}
+
+	_, isCorrect := c.UserService.CheckCode(code)
+
+	return ctx.JSON(model.Response{Data: isCorrect})
 
 }
 

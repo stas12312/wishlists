@@ -48,7 +48,7 @@ func (_m *WishlistRepository) GetByUUID(uuid string) (*model.Wishlist, error) {
 	ret := _m.Called(uuid)
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetByUUID")
+		panic("no return value specified for Get")
 	}
 
 	var r0 *model.Wishlist

@@ -2,6 +2,6 @@ package mail
 
 //go:generate mockery --name Client
 
-type Client interface {
+type MailClient interface {
 	Send(toList []string, subject, body string) error
 }
