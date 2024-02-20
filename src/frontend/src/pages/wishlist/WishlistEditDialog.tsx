@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {observer} from "mobx-react-lite";
 import {
     Dialog,
@@ -11,18 +11,41 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import {DatePicker} from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from 'dayjs';
+import WishlistService from "../../services/WishlistService";
 
 
-function CreateWishlist(props: any) {
+function WishlistEditDialog(props: any) {
     const {
         open,
         onClose,
-        onSubmit
+        onSubmit,
+        dialogTitle,
+        wishlistUuid,
+        wishlistName,
+        wishlistDescription,
+        wishlistDate,
+        onUpdate
     } = props;
 
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
-    const [date, setDate] = React.useState<Dayjs | null>(dayjs(null));
+    // useEffect(() => {
+    //     WishlistService.get(wishlistUuid, wishlistName, wishlistDescription, wishlistDate)
+    //         .then((response) => {
+    //
+    //     });
+    // }, [])
+
+    const [name, setName] = useState(wishlistName || '');
+    const [description, setDescription] = useState(wishlistDescription || '');
+    const [date, setDate] = React.useState<Dayjs | null>(dayjs(wishlistDate || null));
+
+    const handleSubmitChanges = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+        if (onSubmit) {
+            onSubmit(event, name, description, date);
+        } else if (onUpdate) {
+            onUpdate(event, name, description, date)
+        }
+    }
 
     return (
         <Dialog
@@ -32,7 +55,7 @@ function CreateWishlist(props: any) {
                 component: 'form'
             }}
         >
-            <DialogTitle>Создать вишлист</DialogTitle>
+            <DialogTitle>{dialogTitle}</DialogTitle>
             <IconButton
                 aria-label="close"
                 onClick={onClose}
@@ -57,7 +80,7 @@ function CreateWishlist(props: any) {
                 />
                 <TextField
                     onChange={e => setDescription(e.target.value)}
-                    name={description}
+                    value={description}
                     id="wishlist-description"
                     margin="dense"
                     label="Описание"
@@ -78,13 +101,10 @@ function CreateWishlist(props: any) {
                     format="DD.MM.YYYY"/>
             </DialogContent>
             <DialogActions>
-                <Button type="submit" onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
-                    event.preventDefault();
-                    onSubmit(event, name, description, date);
-                }}>Сохранить</Button>
+                <Button type="submit" onClick={handleSubmitChanges}>Сохранить</Button>
             </DialogActions>
         </Dialog>
     );
 }
 
-export default observer(CreateWishlist);
+export default observer(WishlistEditDialog);

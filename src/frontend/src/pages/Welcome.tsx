@@ -8,7 +8,7 @@ const defaultTheme = createTheme();
 function Welcome() {
 
     return (
-        <div> Nothing here yet</div>
+        <div> {process.env.REACT_APP_API_URL}</div>
     );
 }
 

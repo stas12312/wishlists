@@ -6,20 +6,20 @@ import {Context} from "../index";
 import Wishlists from "./wishlist/Wishlists";
 import {Button} from "@mui/material";
 import {Navigate} from "react-router-dom";
-import CreateWishlist from "./wishlist/CreateWishlist";
+import WishlistEditDialog from "./wishlist/WishlistEditDialog";
 import EmptyWishlist from "./wishlist/EmptyWishlist";
 import {IWish} from "../models/IWish";
 import WishlistService from "../services/WishlistService";
 import {Dayjs} from "dayjs";
 
 function Profile(props: any) {
+
     const {store} = useContext(Context);
     const [open, setOpen] = useState(false);
     const [lists, setLists] = useState<IWish[]>([]);
 
     useEffect(() => {
         store.getUserInfo().then(() => {
-            const wishlistsArray = store.wishlist.slice();
             WishlistService.list().then((response) => {
                 setLists(response.data.data)
             });
@@ -30,7 +30,7 @@ function Profile(props: any) {
     const submitWindow = async (event: React.MouseEvent<HTMLButtonElement>, name: string, description: string, date: Dayjs | null) => {
         event.preventDefault();
         await WishlistService.create(name, description, date);
-        const newList = await WishlistService.list()
+        const newList = await WishlistService.list();
         setLists(newList.data.data);
         setOpen(false);
     }
@@ -42,7 +42,15 @@ function Profile(props: any) {
         setOpen(false);
     };
 
-    const wishlistTemplate = Boolean(lists.length) ? <Wishlists lists={lists}/> : <EmptyWishlist/>;
+    const handleItemsChange = async () => {
+        const newList = await WishlistService.list();
+        setLists(newList.data.data);
+    }
+
+    const wishlistTemplate = Boolean(lists.length) ?
+        <Wishlists lists={lists}
+                   onItemsChange={handleItemsChange}/> :
+        <EmptyWishlist/>;
 
     if (store.isAuth) {
         return (
@@ -86,7 +94,10 @@ function Profile(props: any) {
                                         Создать
                                     </Typography>
                                 </Button>
-                                <CreateWishlist open={open} onClose={handleClose} onSubmit={submitWindow}/>
+                                <WishlistEditDialog open={open}
+                                                    onClose={handleClose}
+                                                    onSubmit={submitWindow}
+                                                    dialogTitle="Создать вишлист"/>
                             </React.Fragment>
                         </Grid>
                     </Grid>

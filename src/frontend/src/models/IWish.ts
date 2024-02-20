@@ -7,5 +7,5 @@ export interface IWish {
     created_at?: Dayjs;
     date?: Dayjs;
     user_id: number;
-    is_active: boolean;
+    is_active?: boolean;
 }
