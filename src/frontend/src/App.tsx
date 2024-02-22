@@ -14,6 +14,7 @@ import Container from "@mui/material/Container";
 import Welcome from "./pages/Welcome";
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
+import SuccessConfirm from "./pages/SuccessConfirm";
 
 function App() {
 
@@ -50,6 +51,12 @@ function App() {
                            element={
                                <Profile
                                    name={'name'}
+                                   isAuth={store.isAuth}/>}
+                           errorElement={<ErrorBoundary/>}/>
+                    <Route path="/auth/confirm/*"
+                           element={
+                               <SuccessConfirm
+                                   name={'confirm'}
                                    isAuth={store.isAuth}/>}
                            errorElement={<ErrorBoundary/>}/>
                 </Routes>

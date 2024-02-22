@@ -3,8 +3,9 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import {useContext} from "react";
 import {Context} from "../index";
-import {Modal} from "@mui/material";
+import {Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Modal as BaseModal} from "@mui/material";
 import {Alert} from "@mui/lab";
+import TextField from "@mui/material/TextField";
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -14,8 +15,17 @@ const style = {
     width: 400,
     borderRadius: '16px',
     boxShadow: 24,
-    p: 4,
+    p: 4
 };
+
+interface IRegResponse {
+    message?: string;
+    data: {
+        uuid: string;
+        secret_key: string;
+    }
+}
+
 export default function SignButton(props: any) {
     const {
         isSignUp,
@@ -27,24 +37,49 @@ export default function SignButton(props: any) {
 
     const {store} = useContext(Context);
     const [open, setOpen] = React.useState(false);
+    const [confirmation, setConfirmation] = React.useState(false);
+    const [userInfo, setUserInfo] = React.useState({
+        uuid: '',
+        secret_key: ''
+    });
+    const [code, setCode] = React.useState('');
     const [error, setError] = React.useState('');
 
     const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        const request: Promise<any> = isSignUp ? store.registration(name, email, password) : store.login(email, password);
-        await request.then((res) => {
-            if (res) {
-                setError(res.response.data?.message);
-                setOpen(true);
-            }
-        })
+        const request: IRegResponse = isSignUp ? await store.registration(name, email, password) : await store.login(email, password);
 
+        if (request?.message) {
+            setError(request.message);
+            setOpen(true);
+        } else {
+            setUserInfo({
+                uuid: request.data.uuid,
+                secret_key: request.data.secret_key
+            });
+            setConfirmation(true);
+        }
     };
 
     const handleClose = () => {
-        setOpen(false);
+        if (open) {
+            setOpen(false);
+        }
+
+        if (confirmation) {
+            setConfirmation(false);
+        }
+
         setError('');
     };
+
+    const handleConfirmation = async () => {
+        const request = await store.confirm(userInfo.uuid, code, userInfo.secret_key);
+        if (request?.message) {
+            setError(request.message);
+            setOpen(true);
+        }
+    }
 
     return (
         <div>
@@ -55,7 +90,7 @@ export default function SignButton(props: any) {
                     onClick={handleClick}>
                 {buttonTitle}
             </Button>
-            <Modal
+            <BaseModal
                 open={open}
                 onClose={handleClose}
                 aria-labelledby="modal-modal-title"
@@ -63,13 +98,42 @@ export default function SignButton(props: any) {
             >
                 <Alert severity="error" sx={style}>
                     <Typography id="modal-modal-title" variant="h6" component="h2">
-                        Error!
+                        Ошибка!
                     </Typography>
-                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                    <Typography id="modal-modal-description" sx={{mt: 2}}>
                         {error}
                     </Typography>
                 </Alert>
-            </Modal>
+            </BaseModal>
+            <Dialog
+                open={confirmation}
+                onClose={handleClose}
+                PaperProps={{
+                    component: 'form',
+                    onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                        event.preventDefault();
+                        handleConfirmation();
+                        handleClose();
+                    },
+                }}
+            >
+                <DialogTitle>Введите код подтверждения</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        name="code"
+                        label="Код подтверждения"
+                        fullWidth
+                        variant="standard"
+                        onChange={e => setCode(e.target.value)}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button type="submit">Отправить</Button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 }

@@ -11,6 +11,10 @@ export default class AuthService {
         return $api.post<AuthResponse>('/api/auth/register', {email, password, name})
     }
 
+    static  async confirm(uuid: string, code: string, secret_key: string): Promise<AxiosResponse<AuthResponse>> {
+        return $api.post<AuthResponse>('/api/auth/confirm', {uuid, code, secret_key})
+    }
+
     static  async logout(): Promise<AxiosResponse<AuthResponse>> {
         return $api.post('/api/auth/logout')
     }

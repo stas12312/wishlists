@@ -34,7 +34,7 @@ export default class Store {
             this.setAuth(true);
         } catch (error: any) {
             console.log(error.response?.data?.message);
-            return error;
+            return error.response?.data;
         }
     }
 
@@ -42,12 +42,26 @@ export default class Store {
         try {
             const response = await AuthService.registration(name, email, password);
             console.log(response);
+            return response;
+            // localStorage.setItem('access_token', response.data.access_token);
+            // localStorage.setItem('refresh_token', response.data.refresh_token);
+            // this.setAuth(true);
+        } catch (error: any) {
+            console.log(error.response?.data?.message);
+            return error.response?.data;
+        }
+    }
+
+    async confirm(uuid: string, code: string, secret_key: string) {
+        try {
+            const response = await AuthService.confirm(uuid, code, secret_key);
+            console.log(response);
             localStorage.setItem('access_token', response.data.access_token);
             localStorage.setItem('refresh_token', response.data.refresh_token);
             this.setAuth(true);
         } catch (error: any) {
             console.log(error.response?.data?.message);
-            return error;
+            return error.response?.data;
         }
     }
 
