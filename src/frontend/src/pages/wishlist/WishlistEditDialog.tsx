@@ -20,19 +20,11 @@ function WishlistEditDialog(props: any) {
         onClose,
         onSubmit,
         dialogTitle,
-        wishlistUuid,
         wishlistName,
         wishlistDescription,
         wishlistDate,
         onUpdate
     } = props;
-
-    // useEffect(() => {
-    //     WishlistService.get(wishlistUuid, wishlistName, wishlistDescription, wishlistDate)
-    //         .then((response) => {
-    //
-    //     });
-    // }, [])
 
     const [name, setName] = useState(wishlistName || '');
     const [description, setDescription] = useState(wishlistDescription || '');

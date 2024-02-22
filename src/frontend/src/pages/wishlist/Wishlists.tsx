@@ -64,7 +64,6 @@ function ActionList(props: IWishLists) {
                 name,
                 description,
                 date,
-                user_id,
                 uuid
             }).then(() => {
                 onItemsChange()

@@ -29,7 +29,7 @@ function Profile(props: any) {
 
     const submitWindow = async (event: React.MouseEvent<HTMLButtonElement>, name: string, description: string, date: Dayjs | null) => {
         event.preventDefault();
-        await WishlistService.create(name, description, date);
+        await WishlistService.create({name, description, date});
         const newList = await WishlistService.list();
         setLists(newList.data.data);
         setOpen(false);
