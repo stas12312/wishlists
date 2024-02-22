@@ -36,14 +36,11 @@ services:
   frontend:
     build:
       context: src/frontend
-      target: dev
     container_name: frontend
     ports:
       - ${UI_PORT}:3000
     volumes:
-      - ./src/frontend:/app/frontend
-      - ./src/frontend:/app/frontend/node_modules
+      - ./src/frontend:/app
+      - /app/node_modules
     env_file:
       - .env
-    stdin_open: true
-    tty: true

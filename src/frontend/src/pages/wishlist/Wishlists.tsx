@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component, useCallback, useContext, useEffect, useState} from 'react';
 import {observer} from "mobx-react-lite";
 import Typography from '@mui/material/Typography';
 import {IWish} from "../../models/IWish";
@@ -12,10 +12,28 @@ import {
     IconButton
 } from "@mui/material";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import WishlistService from "../../services/WishlistService";
+import WishlistEditDialog from "./WishlistEditDialog";
+import dayjs, {Dayjs, extend} from "dayjs";
+import {Context} from "../../index";
 
-function ActionList() {
+interface IWishLists extends IWish {
+    onItemsChange: Function
+}
+
+function ActionList(props: IWishLists) {
+    const {
+        uuid,
+        name,
+        description,
+        date,
+        user_id,
+        onItemsChange
+    } = props;
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [openEditDialog, setOpenEditDialog] = useState(false);
     const open = Boolean(anchorEl);
+
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
@@ -26,6 +44,33 @@ function ActionList() {
     const handleDelete = () => {
         setAnchorEl(null);
     };
+
+    const handleOpenEditDialog = async () => {
+        setOpenEditDialog(true);
+    }
+
+    const handleCloseEditDialog = async () => {
+        setOpenEditDialog(false);
+    }
+
+    const handleUpdateEditDialog = useCallback(
+        (event: React.MouseEvent<HTMLButtonElement>,
+         name: string,
+         description: string,
+         date: Dayjs
+        ) => {
+            event.preventDefault();
+            WishlistService.update({
+                name,
+                description,
+                date,
+                uuid
+            }).then(() => {
+                onItemsChange()
+            });
+            setOpenEditDialog(false);
+            setAnchorEl(null);
+        }, [onItemsChange]);
 
     return (
         <>
@@ -52,7 +97,16 @@ function ActionList() {
                       horizontal: 'right',
                   }}
                   sx={{borderColor: '#6d6faa'}}>
-                <MenuItem onClick={handleClose}>Редактировать</MenuItem>
+                <MenuItem onClick={handleOpenEditDialog}>Редактировать</MenuItem>
+                <WishlistEditDialog open={openEditDialog}
+                                    onClose={handleCloseEditDialog}
+                                    onUpdate={handleUpdateEditDialog}
+                                    dialogTitle="Создать вишлист"
+                                    wishlistName={name}
+                                    wishlistUuid={uuid}
+                                    wishlistDescription={description}
+                                    wishlistDate={date}
+                />
                 <MenuItem onClick={handleClose}>
                     Удалить
                 </MenuItem>
@@ -61,7 +115,7 @@ function ActionList() {
     )
 }
 
-function Wishes(props: IWish) {
+function Wishes(props: IWishLists) {
     const {
         description,
         is_active,
@@ -69,7 +123,8 @@ function Wishes(props: IWish) {
         uuid,
         user_id,
         date,
-        created_at
+        created_at,
+        onItemsChange
     } = props;
     return (
         <Grid item
@@ -79,7 +134,13 @@ function Wishes(props: IWish) {
             <Card sx={{maxWidth: 345, borderRadius: '16px'}}>
                 <CardHeader
                     action={
-                        <ActionList/>
+                        <ActionList uuid={uuid}
+                                    name={name}
+                                    description={description}
+                                    date={date}
+                                    user_id={user_id}
+                                    onItemsChange={onItemsChange}
+                        />
                     }
                     title={
                         <Typography variant="h6"
@@ -90,16 +151,22 @@ function Wishes(props: IWish) {
                     }
                 />
                 <CardContent>
-                {/* TODO: Заменить на контентную часть карточки вишлиста*/}
+                    {/* TODO: Заменить на контентную часть карточки вишлиста*/}
                 </CardContent>
             </Card>
         </Grid>
     )
 }
 
-function Wishlists(props: any) {
+interface IWishList {
+    lists: IWish[];
+    onItemsChange: Function;
+}
+
+function Wishlists(props: IWishList) {
     const {
-        lists
+        lists,
+        onItemsChange
     } = props;
 
     return (
@@ -117,7 +184,8 @@ function Wishlists(props: any) {
                                 user_id={wishlist.user_id}
                                 date={wishlist.date}
                                 created_at={wishlist.created_at}
-                                key={wishlist.uuid}/>
+                                key={wishlist.uuid}
+                                onItemsChange={onItemsChange}/>
 
                     )
                 })}
@@ -125,4 +193,5 @@ function Wishlists(props: any) {
         </>
     );
 }
+
 export default observer(Wishlists);
