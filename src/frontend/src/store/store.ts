@@ -58,11 +58,7 @@ export default class Store {
             } else {
                 response = await AuthService.confirm(uuid, <string>code, secret_key);
             }
-
-            console.log(response);
-            localStorage.setItem('access_token', response.data.access_token);
-            localStorage.setItem('refresh_token', response.data.refresh_token);
-            this.setAuth(true);
+            return response.data;
         } catch (error: any) {
             console.log(error.response?.data?.message);
             return error.response?.data;
