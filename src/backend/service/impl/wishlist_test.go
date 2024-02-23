@@ -590,3 +590,51 @@ func TestWishlistImpl_UserCanEditWishlist(t *testing.T) {
 		})
 	}
 }
+
+func TestWishlistImpl_DeleteWishlist(t *testing.T) {
+	type args struct {
+		userId       int64
+		wishlistUuid string
+	}
+	tests := []struct {
+		name           string
+		mocksBehaviour func(wlMock *mocks.WishlistRepository)
+		args           args
+		wantErr        bool
+	}{
+		{
+			name: "OK",
+			args: args{
+				userId:       1,
+				wishlistUuid: "uuid",
+			},
+			mocksBehaviour: func(wlMock *mocks.WishlistRepository) {
+				wlMock.
+					On("GetByUUID", "uuid").
+					Once().
+					Return(&model.Wishlist{UserId: 1}, nil)
+
+				wlMock.
+					On("Delete", "uuid").
+					Once().
+					Return(nil)
+
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			wlRepository := mocks.NewWishlistRepository(t)
+			wRepository := mocks.NewWishRepository(t)
+			tt.mocksBehaviour(wlRepository)
+
+			s := &WishlistImpl{
+				WishlistRepository: wlRepository,
+				WishRepository:     wRepository,
+			}
+			if err := s.DeleteWishlist(tt.args.userId, tt.args.wishlistUuid); (err != nil) != tt.wantErr {
+				t.Errorf("DeleteWishlist() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}

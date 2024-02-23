@@ -80,3 +80,14 @@ func (r *WishlistRepositoryPostgres) Update(wishlist *model.Wishlist) (*model.Wi
 
 	return updatedWishlist, err
 }
+
+func (r *WishlistRepositoryPostgres) Delete(uuid string) error {
+	q := `
+	UPDATE wishlists SET
+		is_active = FALSE
+	WHERE wishlist_uuid = $1
+`
+
+	_, err := r.Exec(q, uuid)
+	return err
+}
