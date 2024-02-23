@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"github.com/gofiber/fiber/v2"
+	"github.com/stretchr/testify/mock"
 	"main/config"
 	"main/model"
 	"main/service/mocks"
@@ -21,9 +22,9 @@ func TestUserController_Auth(t *testing.T) {
 	}{
 		{
 			name: "OK",
-			mocksBehavior: func(mock *mocks.UserService) {
-				mock.
-					On("Login", "user@email.ru", "password").
+			mocksBehavior: func(userMock *mocks.UserService) {
+				userMock.
+					On("Login", mock.Anything, "user@email.ru", "password").
 					Once().
 					Return(&model.User{Id: 1, Email: "user@email.ru"}, nil)
 			},
@@ -32,9 +33,9 @@ func TestUserController_Auth(t *testing.T) {
 		},
 		{
 			name: "User isn't exists",
-			mocksBehavior: func(mock *mocks.UserService) {
-				mock.
-					On("Login", "user@email.ru", "password").
+			mocksBehavior: func(userMock *mocks.UserService) {
+				userMock.
+					On("Login", mock.Anything, "user@email.ru", "password").
 					Once().
 					Return(&model.User{}, errors.New("errors"))
 			},

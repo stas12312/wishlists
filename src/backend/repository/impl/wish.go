@@ -1,19 +1,19 @@
 package impl
 
 import (
-	"github.com/jmoiron/sqlx"
+	"main/db"
 	"main/model"
 )
 
-func NewWishRepositoryImpl(db *sqlx.DB) *WishRepositoryImpl {
-	return &WishRepositoryImpl{db}
+func NewWishRepositoryImpl(connection db.Connection) *WishRepositoryPostgres {
+	return &WishRepositoryPostgres{connection}
 }
 
-type WishRepositoryImpl struct {
-	*sqlx.DB
+type WishRepositoryPostgres struct {
+	db.Connection
 }
 
-func (r *WishRepositoryImpl) Create(wish *model.Wish) (*model.Wish, error) {
+func (r *WishRepositoryPostgres) Create(wish *model.Wish) (*model.Wish, error) {
 	createdWish := &model.Wish{}
 
 	query := `
@@ -23,7 +23,7 @@ func (r *WishRepositoryImpl) Create(wish *model.Wish) (*model.Wish, error) {
 	RETURNING *
 `
 
-	err := r.DB.Get(
+	err := r.Connection.Get(
 		createdWish, query, wish.Name, wish.Comment, wish.Link,
 		wish.WishlistUuid, wish.Image, wish.Desirability, wish.Cost,
 	)
@@ -32,7 +32,7 @@ func (r *WishRepositoryImpl) Create(wish *model.Wish) (*model.Wish, error) {
 
 }
 
-func (r *WishRepositoryImpl) Update(wish *model.Wish) (*model.Wish, error) {
+func (r *WishRepositoryPostgres) Update(wish *model.Wish) (*model.Wish, error) {
 
 	updatedWish := &model.Wish{}
 
@@ -49,7 +49,7 @@ func (r *WishRepositoryImpl) Update(wish *model.Wish) (*model.Wish, error) {
 	RETURNING *
 `
 
-	err := r.DB.Get(
+	err := r.Connection.Get(
 		updatedWish, query,
 		wish.WishlistUuid,
 		wish.Name,
@@ -62,18 +62,18 @@ func (r *WishRepositoryImpl) Update(wish *model.Wish) (*model.Wish, error) {
 	return updatedWish, err
 }
 
-func (r *WishRepositoryImpl) Get(wishUuid string) (*model.Wish, error) {
+func (r *WishRepositoryPostgres) Get(wishUuid string) (*model.Wish, error) {
 	query := `
 		SELECT wishes.*, wishlists.user_id FROM wishes
 		JOIN wishlists USING (wishlist_uuid)
 		WHERE wish_uuid = $1
 `
 	wish := &model.Wish{}
-	err := r.DB.Get(wish, query, wishUuid)
+	err := r.Connection.Get(wish, query, wishUuid)
 	return wish, err
 }
 
-func (r *WishRepositoryImpl) ListForWishlist(wishlistUuid string) (*[]model.Wish, error) {
+func (r *WishRepositoryPostgres) ListForWishlist(wishlistUuid string) (*[]model.Wish, error) {
 	query := `
 		SELECT wishes.*, wishlists.user_id FROM wishes
 		JOIN wishlists USING (wishlist_uuid)
@@ -83,17 +83,17 @@ func (r *WishRepositoryImpl) ListForWishlist(wishlistUuid string) (*[]model.Wish
 `
 	wishes := &[]model.Wish{}
 
-	err := r.DB.Select(wishes, query, wishlistUuid)
+	err := r.Connection.Select(wishes, query, wishlistUuid)
 	return wishes, err
 }
 
-func (r *WishRepositoryImpl) Delete(wishUuid string) error {
+func (r *WishRepositoryPostgres) Delete(wishUuid string) error {
 
 	query := `
 	UPDATE wishes
 		SET is_active = FALSE
 		WHERE wish_uuid = $1
 `
-	_, err := r.DB.Exec(query, wishUuid)
+	_, err := r.Connection.Exec(query, wishUuid)
 	return err
 }

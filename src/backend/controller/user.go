@@ -36,7 +36,7 @@ func (c *UserController) Route(router fiber.Router) {
 
 func (c *UserController) Me(ctx *fiber.Ctx) error {
 	userId := GetUserIdFromCtx(ctx)
-	user, _ := c.UserService.GetById(userId)
+	user, _ := c.UserService.GetById(ctx.UserContext(), userId)
 
 	return ctx.JSON(user)
 
@@ -61,7 +61,7 @@ func (c *UserController) Register(ctx *fiber.Ctx) error {
 			JSON(model.ValidateErrorResponse{Message: "Некорректно заполнены поля", Fields: errs})
 	}
 
-	_, confirmCode, err := c.UserService.Register(register.Email, register.Password, register.Name)
+	_, confirmCode, err := c.UserService.Register(ctx.UserContext(), register.Email, register.Password, register.Name)
 	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).
 			JSON(model.ErrorResponse{Message: "Ошибка при регистрации", Details: err.Error()})
@@ -90,7 +90,7 @@ func (c *UserController) Auth(ctx *fiber.Ctx) error {
 			JSON(model.ErrorResponse{Message: "Некорректные данные", Details: err.Error()})
 	}
 
-	user, err := c.Login(auth.Email, auth.Password)
+	user, err := c.Login(ctx.UserContext(), auth.Email, auth.Password)
 	if err != nil {
 		return ctx.Status(fiber.StatusNotFound).
 			JSON(model.ErrorResponse{Message: "Некорректный email или пароль", Details: err.Error()})
@@ -147,7 +147,7 @@ func (c *UserController) Confirm(ctx *fiber.Ctx) error {
 			JSON(model.ErrorResponse{Message: "Некорректные данные", Details: err.Error()})
 	}
 
-	user, autoLogin, err := c.UserService.Confirm(code)
+	user, autoLogin, err := c.UserService.Confirm(ctx.UserContext(), code)
 	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).
 			JSON(model.ErrorResponse{Message: "Не удалось подтвердить email", Details: err.Error()})
@@ -174,7 +174,7 @@ func (c *UserController) Restore(ctx *fiber.Ctx) error {
 			JSON(model.ErrorResponse{Message: "Некоректные данные"})
 	}
 
-	code, err := c.UserService.Restore(request.Email)
+	code, err := c.UserService.Restore(ctx.UserContext(), request.Email)
 	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).
 			JSON(model.ErrorResponse{Message: "Ошибка", Details: err.Error()})
@@ -203,7 +203,7 @@ func (c *UserController) Reset(ctx *fiber.Ctx) error {
 			JSON(model.ErrorResponse{Message: "Некорректные данные", Details: err.Error()})
 	}
 
-	user, err := c.UserService.Reset(code, password)
+	user, err := c.UserService.Reset(ctx.UserContext(), code, password)
 	if err != nil {
 		return ctx.Status(fiber.StatusUnprocessableEntity).
 			JSON(model.ErrorResponse{Message: "Недействительный код"})
@@ -222,7 +222,7 @@ func (c *UserController) CheckCode(ctx *fiber.Ctx) error {
 			JSON(model.ErrorResponse{Message: "Некорректные данные", Details: err.Error()})
 	}
 
-	_, isCorrect := c.UserService.CheckCode(code)
+	_, isCorrect := c.UserService.CheckCode(ctx.UserContext(), code)
 
 	return ctx.JSON(model.Response{Data: isCorrect})
 

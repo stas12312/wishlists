@@ -1,6 +1,7 @@
 package impl
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
@@ -9,17 +10,18 @@ import (
 	"main/model"
 	"main/repository"
 	"main/service"
+	"main/uof"
 	"strings"
 )
 
 func NewUserService(
-	userRepository repository.UserRepository,
+	uof uof.UnitOfWork,
 	codeRepository repository.CodeRepository,
 	mailClient mail.MailClient,
 	config *config.Config,
 ) service.UserService {
 	return &userServiceImpl{
-		userRepository,
+		uof,
 		codeRepository,
 		mailClient,
 		config,
@@ -27,144 +29,201 @@ func NewUserService(
 }
 
 type userServiceImpl struct {
-	repository.UserRepository
+	uof.UnitOfWork
 	repository.CodeRepository
 	mail.MailClient
 	*config.Config
 }
 
-func (u *userServiceImpl) Register(email, password, name string) (*model.User, *model.Code, error) {
+func (u *userServiceImpl) Register(ctx context.Context, email, password, name string) (*model.User, *model.Code, error) {
 
-	hash, _ := hashPassword(password)
+	user := &model.User{}
+	code := &model.Code{}
 
-	existsUser, err := u.UserRepository.GetByEmail(email)
-	if existsUser.Id != 0 && existsUser.IsActive {
-		return nil, nil, errors.New("пользователь уже зарегистрирован")
-	}
+	err := u.UnitOfWork.Do(ctx, func(ctx context.Context, store uof.UnitOfWorkStore) error {
+		hash, _ := hashPassword(password)
 
-	user, err := u.UserRepository.Create(email, hash, name)
+		existsUser, err := store.UserRepository().GetByEmail(email)
+		if existsUser.Id != 0 && existsUser.IsActive {
+			return errors.New("пользователь уже зарегистрирован")
+		}
+
+		user, err = store.UserRepository().Create(email, hash, name)
+		if err != nil {
+			return err
+		}
+		code = model.NewCode(user.Id, 6, 64, model.ConfirmEmailCode)
+		code.UserId = user.Id
+
+		_, err = u.CodeRepository.Create(code)
+		if err != nil {
+			return err
+		}
+		err = u.MailClient.Send(
+			[]string{email},
+			"Подтвердите ваш e-mail",
+			getConfirmEmailMessage(code, u.Config.BaseUrl),
+		)
+		return err
+	})
+
+	return user, code, err
+}
+
+func (u *userServiceImpl) Login(ctx context.Context, email, password string) (*model.User, error) {
+
+	resultUser := &model.User{}
+
+	err := u.UnitOfWork.Do(ctx, func(ctx context.Context, store uof.UnitOfWorkStore) error {
+		user, err := store.UserRepository().GetByEmail(email)
+		if err != nil {
+			return err
+		}
+
+		if !checkPasswordHash(password, user.Password) {
+			return errors.New("wrong password")
+		}
+
+		if !user.IsActive {
+			return errors.New("не подтверждена почта")
+		}
+
+		resultUser = user
+		return nil
+	})
+
+	return resultUser, err
+}
+
+func (u *userServiceImpl) GetById(ctx context.Context, id int64) (*model.User, error) {
+	resultUser := &model.User{}
+
+	err := u.UnitOfWork.Do(ctx, func(ctx context.Context, store uof.UnitOfWorkStore) error {
+		user, err := store.UserRepository().GetById(id)
+		resultUser = user
+		return err
+	})
+
+	return resultUser, err
+}
+
+func (u *userServiceImpl) GetByEmail(ctx context.Context, email string) (*model.User, error) {
+
+	resultUser := &model.User{}
+	err := u.UnitOfWork.Do(ctx, func(ctx context.Context, store uof.UnitOfWorkStore) error {
+		user, err := store.UserRepository().GetByEmail(email)
+		resultUser = user
+		return err
+	})
+	return resultUser, err
+}
+
+func (u *userServiceImpl) Confirm(ctx context.Context, code *model.Code) (*model.User, bool, error) {
+
+	resultUser := &model.User{}
+	resultCode := &model.Code{}
+
+	err := u.UnitOfWork.Do(ctx, func(ctx context.Context, store uof.UnitOfWorkStore) error {
+		dbCode, isCorrect := u.CheckCodeWithType(ctx, code, model.ConfirmEmailCode)
+		if !isCorrect {
+			return errors.New("incorrect code")
+		}
+
+		if err := u.CodeRepository.DeleteByUUID(dbCode.UUID); err != nil {
+			return err
+		}
+
+		user, err := store.UserRepository().GetById(dbCode.UserId)
+		if err != nil {
+			return err
+		}
+
+		user.IsActive = true
+		user, err = store.UserRepository().Update(user)
+		resultUser = user
+		resultCode = dbCode
+		return err
+	})
 	if err != nil {
-		return nil, nil, err
-	}
-	confirmCode := model.NewCode(user.Id, 6, 64, model.ConfirmEmailCode)
-	confirmCode.UserId = user.Id
-
-	if _, err = u.CodeRepository.Create(confirmCode); err != nil {
-		return nil, nil, err
+		return resultUser, false, err
 	}
 
-	if err = u.MailClient.Send(
-		[]string{email},
-		"Подтвердите ваш e-mail",
-		getConfirmEmailMessage(confirmCode, u.Config.BaseUrl),
-	); err != nil {
-		return nil, nil, err
-	}
+	autoLogin := code.Code == resultCode.Code && code.SecretKey == resultCode.SecretKey
 
-	return user, confirmCode, err
+	return resultUser, autoLogin, err
 }
 
-func (u *userServiceImpl) Login(email, password string) (*model.User, error) {
-	user, err := u.UserRepository.GetByEmail(email)
+func (u *userServiceImpl) Restore(ctx context.Context, email string) (*model.Code, error) {
 
-	if err != nil {
-		return user, err
-	}
+	resultCode := &model.Code{}
 
-	if !checkPasswordHash(password, user.Password) {
-		return nil, errors.New("wrong password")
-	}
+	err := u.UnitOfWork.Do(ctx, func(ctx context.Context, store uof.UnitOfWorkStore) error {
+		user, err := store.UserRepository().GetByEmail(email)
+		if err != nil {
+			return err
+		}
+		if !user.IsActive {
+			return errors.New("user is not active")
+		}
 
-	if !user.IsActive {
-		return nil, errors.New("не подтверждена почта")
-	}
+		code := model.NewCode(user.Id, 6, 64, model.ResetPasswordCode)
+		_, err = u.CodeRepository.Create(code)
+		if err != nil {
+			return err
+		}
 
-	return user, err
+		if err = u.MailClient.Send(
+			[]string{user.Email},
+			"Восстановление пароля",
+			getRestorePasswordMessage(code, u.Config.BaseUrl),
+		); err != nil {
+			return err
+		}
+
+		resultCode = code
+		return nil
+	})
+
+	return resultCode, err
 }
 
-func (u *userServiceImpl) GetById(id int64) (*model.User, error) {
+func (u *userServiceImpl) Reset(
+	ctx context.Context,
+	code *model.Code,
+	password *model.ResetPassword,
+) (*model.User, error) {
 
-	user, err := u.UserRepository.GetById(id)
+	resultUser := &model.User{}
 
-	return user, err
-}
+	err := u.UnitOfWork.Do(ctx, func(ctx context.Context, store uof.UnitOfWorkStore) error {
+		dbCode, isCorrect := u.CheckCodeWithType(ctx, code, model.ResetPasswordCode)
 
-func (u *userServiceImpl) GetByEmail(email string) (*model.User, error) {
-	user, err := u.UserRepository.GetByEmail(email)
-	return user, err
-}
+		if !isCorrect {
+			return errors.New("incorrect code")
+		}
 
-func (u *userServiceImpl) Confirm(code *model.Code) (*model.User, bool, error) {
-	confirmCode, isCorrect := u.CheckCodeWithType(code, model.ConfirmEmailCode)
-	if !isCorrect {
-		return nil, false, errors.New("incorrect code")
-	}
+		hash, _ := hashPassword(password.Password)
+		if err := store.UserRepository().UpdatePassword(dbCode.UserId, hash); err != nil {
+			return err
+		}
 
-	if err := u.CodeRepository.DeleteByUUID(confirmCode.UUID); err != nil {
-		return nil, false, err
-	}
+		if err := u.CodeRepository.DeleteByUUID(dbCode.UUID); err != nil {
+			return err
+		}
 
-	user, err := u.UserRepository.GetById(confirmCode.UserId)
-	if err != nil {
-		return nil, false, err
-	}
+		user, err := store.UserRepository().GetById(dbCode.UserId)
+		if err != nil {
+			return err
+		}
+		resultUser = user
+		return nil
+	})
 
-	user.IsActive = true
-	user, err = u.Update(user)
-
-	autoLogin := code.Code == confirmCode.Code && code.SecretKey == confirmCode.SecretKey
-
-	return user, autoLogin, err
-}
-
-func (u *userServiceImpl) Restore(email string) (*model.Code, error) {
-
-	user, err := u.UserRepository.GetByEmail(email)
-	if err != nil {
-		return &model.Code{}, err
-	}
-	if !user.IsActive {
-		return &model.Code{}, errors.New("user is not active")
-	}
-
-	code := model.NewCode(user.Id, 6, 64, model.ResetPasswordCode)
-	_, err = u.CodeRepository.Create(code)
-	if err != nil {
-		return code, err
-	}
-
-	if err = u.MailClient.Send(
-		[]string{user.Email},
-		"Восстановление пароля",
-		getRestorePasswordMessage(code, u.Config.BaseUrl),
-	); err != nil {
-		return nil, err
-	}
-
-	return code, nil
-}
-
-func (u *userServiceImpl) Reset(code *model.Code, password *model.ResetPassword) (*model.User, error) {
-	dbCode, isCorrect := u.CheckCodeWithType(code, model.ResetPasswordCode)
-
-	if !isCorrect {
-		return nil, errors.New("incorrect code")
-	}
-
-	hash, _ := hashPassword(password.Password)
-	if err := u.UserRepository.UpdatePassword(dbCode.UserId, hash); err != nil {
-		return nil, err
-	}
-
-	if err := u.CodeRepository.DeleteByUUID(dbCode.UUID); err != nil {
-		return nil, err
-	}
-
-	return u.UserRepository.GetById(dbCode.UserId)
+	return resultUser, err
 
 }
 
-func (u *userServiceImpl) CheckCode(code *model.Code) (*model.Code, bool) {
+func (u *userServiceImpl) CheckCode(ctx context.Context, code *model.Code) (*model.Code, bool) {
 	DBCode, err := u.CodeRepository.Get(code.UUID)
 	if err != nil {
 		return nil, false
@@ -178,8 +237,12 @@ func (u *userServiceImpl) CheckCode(code *model.Code) (*model.Code, bool) {
 	return DBCode, true
 }
 
-func (u *userServiceImpl) CheckCodeWithType(code *model.Code, codeType int) (*model.Code, bool) {
-	DBCode, isCorrect := u.CheckCode(code)
+func (u *userServiceImpl) CheckCodeWithType(
+	ctx context.Context,
+	code *model.Code,
+	codeType int,
+) (*model.Code, bool) {
+	DBCode, isCorrect := u.CheckCode(ctx, code)
 	if !isCorrect {
 		return DBCode, isCorrect
 	}
