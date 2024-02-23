@@ -43,12 +43,30 @@ func (_m *WishlistRepository) Create(wishlist *model.Wishlist) (*model.Wishlist,
 	return r0, r1
 }
 
+// Delete provides a mock function with given fields: uuid
+func (_m *WishlistRepository) Delete(uuid string) error {
+	ret := _m.Called(uuid)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Delete")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(uuid)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // GetByUUID provides a mock function with given fields: uuid
 func (_m *WishlistRepository) GetByUUID(uuid string) (*model.Wishlist, error) {
 	ret := _m.Called(uuid)
 
 	if len(ret) == 0 {
-		panic("no return value specified for Get")
+		panic("no return value specified for GetByUUID")
 	}
 
 	var r0 *model.Wishlist
