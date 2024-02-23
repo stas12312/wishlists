@@ -34,6 +34,8 @@ services:
       - ${UI_PORT}:3000
     env_file:
       - .env
+    environment:
+      - REACT_APP_API_URL=${BASE_URL}
 volumes:
   postgres_data:
   redis_data:

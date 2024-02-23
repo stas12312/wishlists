@@ -1,4 +1,6 @@
 postgres
+redis-data
+tmp
 .idea
 
 *.env
