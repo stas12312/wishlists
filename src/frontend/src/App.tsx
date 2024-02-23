@@ -5,7 +5,7 @@ import Profile from "./pages/Profile";
 import Navigation from "./components/Navigation";
 
 import * as React from 'react';
-import {Route, Routes} from "react-router-dom";
+import {Route, Routes, useLocation} from "react-router-dom";
 import {useContext, useEffect} from "react";
 import {Context} from "./index";
 import {observer} from "mobx-react";
@@ -14,15 +14,25 @@ import Container from "@mui/material/Container";
 import Welcome from "./pages/Welcome";
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
-import SuccessConfirm from "./pages/SuccessConfirm";
 
 function App() {
 
     const {store} = useContext(Context);
+    const { search, pathname } = useLocation();
+
+    const parameters = new URLSearchParams(search);
 
     useEffect(() => {
         if (localStorage.getItem('access_token') !== null) {
             store.checkAuth();
+        } else if (pathname === '/auth/confirm' && parameters.size) {
+            const uuid: string = parameters && parameters.get('uuid') as string;
+            const key: string = parameters.get('key') as string;
+            store.confirm(uuid, key, null, true).then((err) => {
+                if (err) {
+                    alert(err);
+                }
+            })
         }
     }, [])
 
@@ -51,12 +61,6 @@ function App() {
                            element={
                                <Profile
                                    name={'name'}
-                                   isAuth={store.isAuth}/>}
-                           errorElement={<ErrorBoundary/>}/>
-                    <Route path="/auth/confirm/*"
-                           element={
-                               <SuccessConfirm
-                                   name={'confirm'}
                                    isAuth={store.isAuth}/>}
                            errorElement={<ErrorBoundary/>}/>
                 </Routes>

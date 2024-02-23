@@ -15,6 +15,10 @@ export default class AuthService {
         return $api.post<AuthResponse>('/api/auth/confirm', {uuid, code, secret_key})
     }
 
+    static  async confirm_by_url(uuid: string, key: string): Promise<AxiosResponse<AuthResponse>> {
+        return $api.post<AuthResponse>('/api/auth/confirm', {uuid, key})
+    }
+
     static  async logout(): Promise<AxiosResponse<AuthResponse>> {
         return $api.post('/api/auth/logout')
     }

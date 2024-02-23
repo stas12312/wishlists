@@ -7,6 +7,7 @@ import {AxiosResponse} from "axios";
 import WishlistService from "../services/WishlistService";
 import {IWish} from "../models/IWish";
 import {WishlistResponse} from "../models/response/WishlistResponse";
+import {AuthResponse} from "../models/response/AuthResponse";
 
 export default class Store {
     user = {} as IUser;
@@ -43,18 +44,21 @@ export default class Store {
             const response = await AuthService.registration(name, email, password);
             console.log(response);
             return response;
-            // localStorage.setItem('access_token', response.data.access_token);
-            // localStorage.setItem('refresh_token', response.data.refresh_token);
-            // this.setAuth(true);
         } catch (error: any) {
             console.log(error.response?.data?.message);
             return error.response?.data;
         }
     }
 
-    async confirm(uuid: string, code: string, secret_key: string) {
+    async confirm(uuid: string, secret_key: string, code: string | null, by_url?: boolean) {
         try {
-            const response = await AuthService.confirm(uuid, code, secret_key);
+            let response: AxiosResponse<AuthResponse>;
+            if (by_url) {
+                response = await AuthService.confirm_by_url(uuid, secret_key);
+            } else {
+                response = await AuthService.confirm(uuid, <string>code, secret_key);
+            }
+
             console.log(response);
             localStorage.setItem('access_token', response.data.access_token);
             localStorage.setItem('refresh_token', response.data.refresh_token);
