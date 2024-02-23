@@ -1,12 +1,17 @@
 package impl
 
 import (
+	"context"
 	"errors"
 	"github.com/stretchr/testify/mock"
 	"main/config"
+	"main/db"
+	mocks3 "main/db/mocks"
 	mocks2 "main/mail/mocks"
 	"main/model"
 	"main/repository/mocks"
+	"main/uof"
+	"main/uof/impl"
 	"reflect"
 	"strings"
 	"testing"
@@ -22,11 +27,22 @@ func TestNewUserService(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			userRepository := mocks.NewUserRepository(t)
+
+			unitOfWork := impl.NewUnitOfWorkPostgres(
+				mocks3.DB{},
+				func(connection db.Connection) uof.UnitOfWorkStore {
+					return impl.NewUofStore(
+						mocks.NewUserRepository(t),
+						mocks.NewWishlistRepository(t),
+						mocks.NewWishRepository(t),
+					)
+				},
+			)
+
 			mailClient := mocks2.NewClient(t)
 			confirmCodeRepository := mocks.NewCodeRepository(t)
 			newConfig := &config.Config{}
-			NewUserService(userRepository, confirmCodeRepository, mailClient, newConfig)
+			NewUserService(unitOfWork, confirmCodeRepository, mailClient, newConfig)
 
 		})
 	}
@@ -132,11 +148,22 @@ func Test_userServiceImpl_GetByEmail(t *testing.T) {
 				Once().
 				Return(&model.User{Id: 1, Email: tt.args.email, Name: "name"}, nil)
 
+			unitOfWork := impl.NewUnitOfWorkPostgres(
+				mocks3.DB{},
+				func(connection db.Connection) uof.UnitOfWorkStore {
+					return impl.NewUofStore(
+						userRepository,
+						mocks.NewWishlistRepository(t),
+						mocks.NewWishRepository(t),
+					)
+				},
+			)
+
 			u := &userServiceImpl{
-				UserRepository: userRepository,
+				UnitOfWork:     unitOfWork,
 				CodeRepository: codeRepository,
 			}
-			got, err := u.GetByEmail(tt.args.email)
+			got, err := u.GetByEmail(context.Background(), tt.args.email)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetByEmail() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -180,11 +207,22 @@ func Test_userServiceImpl_GetById(t *testing.T) {
 				Once().
 				Return(&model.User{Id: tt.args.id, Name: "name"}, nil)
 
+			unitOfWork := impl.NewUnitOfWorkPostgres(
+				mocks3.DB{},
+				func(connection db.Connection) uof.UnitOfWorkStore {
+					return impl.NewUofStore(
+						userRepository,
+						mocks.NewWishlistRepository(t),
+						mocks.NewWishRepository(t),
+					)
+				},
+			)
+
 			u := &userServiceImpl{
-				UserRepository: userRepository,
+				UnitOfWork:     unitOfWork,
 				CodeRepository: codeRepository,
 			}
-			got, err := u.GetById(tt.args.id)
+			got, err := u.GetById(context.Background(), tt.args.id)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetById() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -242,6 +280,7 @@ func Test_userServiceImpl_Login(t *testing.T) {
 				IsActive: false,
 			},
 			wantErr: true,
+			want:    &model.User{},
 		},
 		{
 			name: "User not exist",
@@ -250,7 +289,7 @@ func Test_userServiceImpl_Login(t *testing.T) {
 				password: "123",
 			},
 			user:            nil,
-			want:            nil,
+			want:            &model.User{},
 			wantErr:         true,
 			repositoryError: errors.New("error"),
 		},
@@ -265,7 +304,7 @@ func Test_userServiceImpl_Login(t *testing.T) {
 				Email:    "email@email.ru",
 				Password: "$2a$10$UxuSs7PkUlfEX68FbyMdPuc.B7r54KIwKva0mRIPacr2vTVLMHYrm",
 			},
-			want:    nil,
+			want:    &model.User{},
 			wantErr: true,
 		},
 	}
@@ -278,10 +317,20 @@ func Test_userServiceImpl_Login(t *testing.T) {
 				Once().
 				Return(tt.user, tt.repositoryError)
 
+			unitOfWork := impl.NewUnitOfWorkPostgres(
+				mocks3.DB{},
+				func(connection db.Connection) uof.UnitOfWorkStore {
+					return impl.NewUofStore(
+						userRepository,
+						mocks.NewWishlistRepository(t),
+						mocks.NewWishRepository(t),
+					)
+				},
+			)
 			u := &userServiceImpl{
-				UserRepository: userRepository,
+				UnitOfWork: unitOfWork,
 			}
-			got, err := u.Login(tt.args.email, tt.args.password)
+			got, err := u.Login(context.Background(), tt.args.email, tt.args.password)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Login() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -350,7 +399,7 @@ func Test_userServiceImpl_Register(t *testing.T) {
 				password: "password",
 				name:     "name",
 			},
-			wantUser:   nil,
+			wantUser:   &model.User{},
 			codeExists: false,
 			mockBehaviour: func(userRepository *mocks.UserRepository, confirmCodeRepository *mocks.CodeRepository) {
 				userRepository.
@@ -368,7 +417,7 @@ func Test_userServiceImpl_Register(t *testing.T) {
 				password: "password",
 				name:     "name",
 			},
-			wantUser:   nil,
+			wantUser:   &model.User{},
 			codeExists: false,
 			wantErr:    true,
 			sendEmail:  false,
@@ -390,7 +439,7 @@ func Test_userServiceImpl_Register(t *testing.T) {
 				password: "password",
 				name:     "name",
 			},
-			wantUser:   nil,
+			wantUser:   &model.User{},
 			codeExists: false,
 			wantErr:    true,
 			sendEmail:  false,
@@ -417,7 +466,7 @@ func Test_userServiceImpl_Register(t *testing.T) {
 				password: "password",
 				name:     "name",
 			},
-			wantUser:   nil,
+			wantUser:   &model.User{},
 			codeExists: false,
 			wantErr:    true,
 			sendEmail:  true,
@@ -459,13 +508,24 @@ func Test_userServiceImpl_Register(t *testing.T) {
 
 			tt.mockBehaviour(userRepository, codeRepository)
 
+			unitOfWork := impl.NewUnitOfWorkPostgres(
+				mocks3.DB{},
+				func(connection db.Connection) uof.UnitOfWorkStore {
+					return impl.NewUofStore(
+						userRepository,
+						mocks.NewWishlistRepository(t),
+						mocks.NewWishRepository(t),
+					)
+				},
+			)
+
 			u := &userServiceImpl{
-				UserRepository: userRepository,
+				UnitOfWork:     unitOfWork,
 				CodeRepository: codeRepository,
 				MailClient:     mailClient,
 				Config:         appConfig,
 			}
-			gotUser, gotCode, err := u.Register(tt.args.email, tt.args.password, tt.args.name)
+			gotUser, gotCode, err := u.Register(context.Background(), tt.args.email, tt.args.password, tt.args.name)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Register() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -575,7 +635,7 @@ func Test_userServiceImpl_Confirm(t *testing.T) {
 			args: args{
 				&model.Code{UUID: "uuid", Code: "123", Key: "wrong_key", SecretKey: "wrong_key"},
 			},
-			want:      nil,
+			want:      &model.User{},
 			wantErr:   true,
 			AutoLogin: false,
 			mockBehaviour: func(
@@ -604,12 +664,23 @@ func Test_userServiceImpl_Confirm(t *testing.T) {
 
 			tt.mockBehaviour(userRepository, codeRepository)
 
+			unitOfWork := impl.NewUnitOfWorkPostgres(
+				mocks3.DB{},
+				func(connection db.Connection) uof.UnitOfWorkStore {
+					return impl.NewUofStore(
+						userRepository,
+						mocks.NewWishlistRepository(t),
+						mocks.NewWishRepository(t),
+					)
+				},
+			)
+
 			u := &userServiceImpl{
-				UserRepository: userRepository,
+				UnitOfWork:     unitOfWork,
 				CodeRepository: codeRepository,
 				MailClient:     mailClient,
 			}
-			got, got1, err := u.Confirm(tt.args.code)
+			got, got1, err := u.Confirm(context.Background(), tt.args.code)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Confirm() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -785,14 +856,25 @@ func Test_userServiceImpl_CheckCodeWithType(t *testing.T) {
 			userRepository := mocks.NewUserRepository(t)
 			codeRepository := mocks.NewCodeRepository(t)
 
+			unitOfWork := impl.NewUnitOfWorkPostgres(
+				mocks3.DB{},
+				func(connection db.Connection) uof.UnitOfWorkStore {
+					return impl.NewUofStore(
+						userRepository,
+						mocks.NewWishlistRepository(t),
+						mocks.NewWishRepository(t),
+					)
+				},
+			)
+
 			u := &userServiceImpl{
-				UserRepository: userRepository,
+				UnitOfWork:     unitOfWork,
 				CodeRepository: codeRepository,
 			}
 
 			tt.mockBehavior(codeRepository)
 
-			got, got1 := u.CheckCodeWithType(tt.args.code, tt.args.codeType)
+			got, got1 := u.CheckCodeWithType(context.Background(), tt.args.code, tt.args.codeType)
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("CheckCodeWithType() got = %v, want %v", got, tt.want)
 			}
@@ -863,15 +945,26 @@ func Test_userServiceImpl_Restore(t *testing.T) {
 			codeRepository := mocks.NewCodeRepository(t)
 			mailClient := mocks2.NewClient(t)
 
+			unitOfWork := impl.NewUnitOfWorkPostgres(
+				mocks3.DB{},
+				func(connection db.Connection) uof.UnitOfWorkStore {
+					return impl.NewUofStore(
+						userRepository,
+						mocks.NewWishlistRepository(t),
+						mocks.NewWishRepository(t),
+					)
+				},
+			)
+
 			u := &userServiceImpl{
-				UserRepository: userRepository,
+				UnitOfWork:     unitOfWork,
 				CodeRepository: codeRepository,
 				MailClient:     mailClient,
 				Config:         &config.Config{BaseUrl: "https://test.ru"},
 			}
 
 			tt.mockBehavior(codeRepository, userRepository, mailClient)
-			got, err := u.Restore(tt.args.email)
+			got, err := u.Restore(context.Background(), tt.args.email)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Restore() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -940,13 +1033,24 @@ func Test_userServiceImpl_Reset(t *testing.T) {
 			userRepository := mocks.NewUserRepository(t)
 			codeRepository := mocks.NewCodeRepository(t)
 
+			unitOfWork := impl.NewUnitOfWorkPostgres(
+				mocks3.DB{},
+				func(connection db.Connection) uof.UnitOfWorkStore {
+					return impl.NewUofStore(
+						userRepository,
+						mocks.NewWishlistRepository(t),
+						mocks.NewWishRepository(t),
+					)
+				},
+			)
+
 			u := &userServiceImpl{
-				UserRepository: userRepository,
+				UnitOfWork:     unitOfWork,
 				CodeRepository: codeRepository,
 			}
 
 			tt.mockBehavior(codeRepository, userRepository, &tt)
-			got, err := u.Reset(tt.args.code, tt.args.password)
+			got, err := u.Reset(context.Background(), tt.args.code, tt.args.password)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Reset() error = %v, wantErr %v", err, tt.wantErr)
 				return

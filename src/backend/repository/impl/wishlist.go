@@ -1,19 +1,19 @@
 package impl
 
 import (
-	"github.com/jmoiron/sqlx"
+	"main/db"
 	"main/model"
 )
 
-func NewWishlistRepository(db *sqlx.DB) *WishlistImpl {
-	return &WishlistImpl{db}
+func NewWishlistRepository(connection db.Connection) *WishlistRepositoryPostgres {
+	return &WishlistRepositoryPostgres{connection}
 }
 
-type WishlistImpl struct {
-	*sqlx.DB
+type WishlistRepositoryPostgres struct {
+	db.Connection
 }
 
-func (r *WishlistImpl) Create(wishlist *model.Wishlist) (*model.Wishlist, error) {
+func (r *WishlistRepositoryPostgres) Create(wishlist *model.Wishlist) (*model.Wishlist, error) {
 	q := `
 		INSERT INTO wishlists (name, date,description, user_id) 
 		VALUES ($1, $2, $3, $4)
@@ -25,7 +25,7 @@ func (r *WishlistImpl) Create(wishlist *model.Wishlist) (*model.Wishlist, error)
 	return createdWishlist, err
 }
 
-func (r *WishlistImpl) ListByUserId(userId int64) ([]model.Wishlist, error) {
+func (r *WishlistRepositoryPostgres) ListByUserId(userId int64) ([]model.Wishlist, error) {
 	q := `
 		SELECT 
 		    *,
@@ -45,7 +45,7 @@ func (r *WishlistImpl) ListByUserId(userId int64) ([]model.Wishlist, error) {
 	return wishlists, err
 }
 
-func (r *WishlistImpl) GetByUUID(UUID string) (*model.Wishlist, error) {
+func (r *WishlistRepositoryPostgres) GetByUUID(UUID string) (*model.Wishlist, error) {
 	q := `
 	SELECT 
 	    *,
@@ -63,7 +63,7 @@ func (r *WishlistImpl) GetByUUID(UUID string) (*model.Wishlist, error) {
 	return wishlist, err
 }
 
-func (r *WishlistImpl) Update(wishlist *model.Wishlist) (*model.Wishlist, error) {
+func (r *WishlistRepositoryPostgres) Update(wishlist *model.Wishlist) (*model.Wishlist, error) {
 	q := `
 	UPDATE wishlists SET
 		name = $2,

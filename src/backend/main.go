@@ -13,10 +13,12 @@ import (
 	"main/config"
 	"main/controller"
 	database "main/db"
+	"main/db/sqlx_db"
 	"main/mail/impl"
 	"main/middleware"
 	repository "main/repository/impl"
 	service "main/service/impl"
+	impl2 "main/uof/impl"
 	"time"
 )
 
@@ -55,10 +57,12 @@ func main() {
 
 	log.Info(redisClient.Info(context.Background(), "server").Result())
 
-	userRepository := repository.NewUserRepositoryImpl(db)
-	confirmCoreRepository := repository.NewConfirmCodeRedis(redisClient, 60*time.Minute)
+	postgresDB := sqlx_db.NewSqlDB(db)
+	uof := impl2.NewUnitOfWorkPostgres(postgresDB, impl2.StoreFactory)
+
+	codeRepository := repository.NewConfirmCodeRedis(redisClient, 60*time.Minute)
 	mailClient := impl.NewSMPTClient(&appConfig.SMTP)
-	userService := service.NewUserService(userRepository, confirmCoreRepository, mailClient, appConfig)
+	userService := service.NewUserService(uof, codeRepository, mailClient, appConfig)
 	userController := controller.NewUserController(&userService, appConfig)
 
 	wishlistRepository := repository.NewWishlistRepository(db)

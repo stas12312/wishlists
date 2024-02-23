@@ -1,20 +1,19 @@
 package impl
 
 import (
-	"github.com/jmoiron/sqlx"
+	"main/db"
 	"main/model"
-	"main/repository"
 )
 
-func NewUserRepositoryImpl(DB *sqlx.DB) repository.UserRepository {
-	return &userRepositoryImpl{DB: DB}
+func NewUserRepositoryImpl(connection db.Connection) *UserRepositoryPostgres {
+	return &UserRepositoryPostgres{connection}
 }
 
-type userRepositoryImpl struct {
-	*sqlx.DB
+type UserRepositoryPostgres struct {
+	db.Connection
 }
 
-func (r *userRepositoryImpl) GetByEmail(email string) (*model.User, error) {
+func (r *UserRepositoryPostgres) GetByEmail(email string) (*model.User, error) {
 	query := `
 SELECT *
 FROM users
@@ -28,7 +27,7 @@ WHERE
 	return user, err
 }
 
-func (r *userRepositoryImpl) GetById(id int64) (*model.User, error) {
+func (r *UserRepositoryPostgres) GetById(id int64) (*model.User, error) {
 	query := `
 SELECT *
 FROM users
@@ -41,7 +40,7 @@ WHERE
 	return user, err
 }
 
-func (r *userRepositoryImpl) Create(email string, hash string, name string) (*model.User, error) {
+func (r *UserRepositoryPostgres) Create(email string, hash string, name string) (*model.User, error) {
 
 	query := `
 INSERT INTO users (email, password, name, is_active) 
@@ -60,7 +59,7 @@ RETURNING *
 	return user, err
 }
 
-func (r *userRepositoryImpl) Update(user *model.User) (*model.User, error) {
+func (r *UserRepositoryPostgres) Update(user *model.User) (*model.User, error) {
 
 	query := `
 	UPDATE users
@@ -80,7 +79,7 @@ func (r *userRepositoryImpl) Update(user *model.User) (*model.User, error) {
 
 }
 
-func (r *userRepositoryImpl) UpdatePassword(userId int64, hashPassword string) error {
+func (r *UserRepositoryPostgres) UpdatePassword(userId int64, hashPassword string) error {
 	query := `
 	UPDATE users
 	SET
