@@ -35,5 +35,9 @@ export default class WishlistService {
             date: params.date
         })
     }
+
+    static  async delete(uuid: string): Promise<AxiosResponse<WishlistResponse>> {
+        return $api.delete<WishlistResponse>('/api/wishlists/' + uuid)
+    }
 }
 
