@@ -20,6 +20,8 @@ import error = Simulate.error;
 import Typography from "@mui/material/Typography";
 import {Alert} from "@mui/lab";
 import {Modal as BaseModal} from "@mui/material";
+import PasswordRestore from "./pages/signIn/PasswordRestore";
+import PasswordReset from "./pages/signIn/PasswordReset";
 
 const errorStyle = {
     position: 'absolute' as 'absolute',
@@ -96,6 +98,12 @@ function App() {
                                <Profile
                                    name={'name'}
                                    isAuth={store.isAuth}/>}
+                           errorElement={<ErrorBoundary/>}/>
+                    <Route path="/auth/restore"
+                           element={<PasswordRestore/>}
+                           errorElement={<ErrorBoundary/>}/>
+                    <Route path="/auth/reset-password"
+                           element={<PasswordReset/>}
                            errorElement={<ErrorBoundary/>}/>
                 </Routes>
                 <BaseModal
