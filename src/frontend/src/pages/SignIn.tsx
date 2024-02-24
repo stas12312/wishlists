@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import {Context} from "../index";
 import {observer} from "mobx-react-lite";
-import {Navigate} from "react-router-dom";
+import {Navigate, useLocation} from "react-router-dom";
 import SignButton from "../components/SignButton";
 
 function Copyright(props: any) {
@@ -30,8 +30,9 @@ function Copyright(props: any) {
 }
 
 function SignIn() {
+    const {state} = useLocation();
 
-    const [email, setEmail] = useState<string>('');
+    const [email, setEmail] = useState<string>(state.email || '');
     const [password, setPassword] = useState<string>('');
     const {store} = useContext(Context);
 
@@ -64,6 +65,7 @@ function SignIn() {
                         <TextField
                             onChange={e => setEmail(e.target.value)}
                             value={email}
+                            defaultValue={email || ''}
                             margin="normal"
                             required
                             fullWidth
@@ -75,6 +77,12 @@ function SignIn() {
                         <TextField
                             onChange={e => setPassword(e.target.value)}
                             value={password}
+                            inputProps={{
+                                autocomplete: 'new-password',
+                                form: {
+                                    autoComplete: 'off',
+                                },
+                            }}
                             margin="normal"
                             required
                             fullWidth
