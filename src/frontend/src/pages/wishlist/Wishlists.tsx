@@ -9,13 +9,12 @@ import {
     Card,
     CardHeader,
     CardContent,
-    IconButton
+    IconButton, Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button
 } from "@mui/material";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import WishlistService from "../../services/WishlistService";
 import WishlistEditDialog from "./WishlistEditDialog";
 import dayjs, {Dayjs, extend} from "dayjs";
-import {Context} from "../../index";
 
 interface IWishLists extends IWish {
     onItemsChange: Function
@@ -32,6 +31,7 @@ function ActionList(props: IWishLists) {
     } = props;
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [openEditDialog, setOpenEditDialog] = useState(false);
+    const [openWarningDialog, setOpenWarningDialog] = useState(false);
     const open = Boolean(anchorEl);
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -42,15 +42,27 @@ function ActionList(props: IWishLists) {
     };
 
     const handleDelete = () => {
-        setAnchorEl(null);
-    };
+        setOpenWarningDialog(true);
+    }
 
-    const handleOpenEditDialog = async () => {
+    const handleOpenEditDialog = () => {
         setOpenEditDialog(true);
     }
 
     const handleCloseEditDialog = async () => {
         setOpenEditDialog(false);
+    }
+
+    const handleSubmitDelete =  useCallback(
+        () => {
+            WishlistService.delete(uuid).then(() => {
+                onItemsChange();
+                setOpenWarningDialog(false);
+            });
+        }, [onItemsChange]);
+
+    const handleCloseWarning = async () => {
+        setOpenWarningDialog(false);
     }
 
     const handleUpdateEditDialog = useCallback(
@@ -107,9 +119,22 @@ function ActionList(props: IWishLists) {
                                     wishlistDescription={description}
                                     wishlistDate={date}
                 />
-                <MenuItem onClick={handleClose}>
+                <MenuItem onClick={handleDelete}>
                     Удалить
                 </MenuItem>
+                <Dialog
+                    open={openWarningDialog}
+                    onClose={handleCloseWarning}
+                >
+                    <DialogTitle>Вы уверены что хотите удалить список желаний?</DialogTitle>
+                    <DialogContent>
+                        Восстановить его будет невозможно
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseWarning}>Отмена</Button>
+                        <Button type="submit" onClick={handleSubmitDelete}>Удалить</Button>
+                    </DialogActions>
+                </Dialog>
             </Menu>
         </>
     )

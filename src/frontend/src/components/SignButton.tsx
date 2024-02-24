@@ -52,7 +52,8 @@ export default function SignButton(props: any) {
         if (request?.message) {
             setError(request.message);
             setOpen(true);
-        } else {
+        }
+        if (isSignUp) {
             setUserInfo({
                 uuid: request.data.uuid,
                 secret_key: request.data.secret_key
