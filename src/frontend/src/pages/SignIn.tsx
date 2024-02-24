@@ -32,7 +32,7 @@ function Copyright(props: any) {
 function SignIn() {
     const {state} = useLocation();
 
-    const [email, setEmail] = useState<string>(state.email || '');
+    const [email, setEmail] = useState<string>(state?.email || '');
     const [password, setPassword] = useState<string>('');
     const {store} = useContext(Context);
 
