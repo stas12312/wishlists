@@ -91,12 +91,28 @@ export default class Store {
     async getUserInfo() {
         try {
             const userResponse = await UserService.fetchUsers();
-            const wishlistsResponse = await WishlistService.list();
             console.log(userResponse);
             this.setUser(userResponse.data);
         } catch (e: any) {
             console.log(e.response?.data);
 
+        }
+    }
+
+    async checkRestore(email: string) {
+        try {
+            const restore = await AuthService.restore(email);
+            const restoreData = restore.data;
+            const checkCode = await AuthService.check_code({
+                uuid: restoreData.uuid,
+                code: restoreData.code as string,
+                secret_key: restoreData.secret_key as string
+            });
+            if (checkCode.data.data) {
+                return restoreData;
+            }
+        } catch (e: any) {
+            console.log(e.response?.data);
         }
     }
 }
