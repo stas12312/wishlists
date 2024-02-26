@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import {useContext} from "react";
 import {Context} from "../index";
-import {Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Modal as BaseModal} from "@mui/material";
+import {Dialog, DialogActions, DialogContent, DialogTitle, Modal as BaseModal} from "@mui/material";
 import {Alert} from "@mui/lab";
 import TextField from "@mui/material/TextField";
 
@@ -19,6 +19,7 @@ const style = {
 };
 
 interface IRegResponse {
+    details: string;
     message?: string;
     data: {
         uuid: string;
@@ -32,7 +33,8 @@ export default function SignButton(props: any) {
         buttonTitle,
         name,
         email,
-        password
+        password,
+        handleError
     } = props;
 
     const {store} = useContext(Context);
@@ -51,7 +53,8 @@ export default function SignButton(props: any) {
 
         if (request?.message) {
             setError(request.message);
-            setOpen(true);
+            handleError(request.message)
+            return;
         }
         if (isSignUp) {
             setUserInfo({

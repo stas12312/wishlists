@@ -48,7 +48,6 @@ function PasswordRestore() {
                     <TextField
                         onChange={e => setEmail(e.target.value)}
                         value={email}
-                        defaultValue={email || ''}
                         margin="normal"
                         required
                         fullWidth
