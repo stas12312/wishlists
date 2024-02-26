@@ -14,6 +14,7 @@ import (
 	"main/controller"
 	database "main/db"
 	"main/db/sqlx_db"
+	apperror "main/error"
 	"main/mail/impl"
 	"main/middleware"
 	repository "main/repository/impl"
@@ -24,8 +25,9 @@ import (
 
 func main() {
 	app := fiber.New(fiber.Config{
-		JSONEncoder: json.Marshal,
-		JSONDecoder: json.Unmarshal,
+		JSONEncoder:  json.Marshal,
+		JSONDecoder:  json.Unmarshal,
+		ErrorHandler: apperror.AppErrorHandler,
 	})
 
 	app.Use(middleware.NewTimer())
