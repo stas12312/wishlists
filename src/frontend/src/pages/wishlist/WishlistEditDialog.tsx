@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {observer} from "mobx-react-lite";
 import {
     Dialog,
@@ -11,7 +11,6 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import {DatePicker} from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from 'dayjs';
-import WishlistService from "../../services/WishlistService";
 
 
 function WishlistEditDialog(props: any) {
@@ -80,6 +79,7 @@ function WishlistEditDialog(props: any) {
                 />
                 <DatePicker
                     onChange={(value) => setDate(value)}
+                    minDate={dayjs()}
                     label="Дата события"
                     value={date}
                     slotProps={{

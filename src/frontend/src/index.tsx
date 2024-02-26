@@ -37,9 +37,9 @@ const themeOptions: ThemeOptions = {
             main: '#9c569c',
         },
         text: {
-            primary: '#56569c',
+            primary: '#4c4ca9',
             secondary: '#6d6faa',
-            disabled: '#504e93'
+            disabled: 'rgba(80,78,147,0.35)'
         },
     },
     shape: {

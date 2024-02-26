@@ -15,6 +15,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import WishlistService from "../../services/WishlistService";
 import WishlistEditDialog from "./WishlistEditDialog";
 import {Dayjs} from "dayjs";
+import WishlistFooter from "./WishlistFooter";
 
 interface IWishLists extends IWish {
     onItemsChange: Function
@@ -153,7 +154,7 @@ function Wishes(props: IWishLists) {
               justifyContent="center"
               mt={10}
               xs={3}>
-            <Card sx={{maxWidth: 345, borderRadius: '16px'}}>
+            <Card sx={{borderRadius: '16px'}}>
                 <CardHeader
                     action={
                         <ActionList uuid={uuid}
@@ -165,8 +166,7 @@ function Wishes(props: IWishLists) {
                         />
                     }
                     title={
-                        <Typography variant="h6"
-                                    color="text.secondary"
+                        <Typography variant="subtitle1"
                                     sx={{fontWeight: 700}}>
                             {name}
                         </Typography>
@@ -174,6 +174,7 @@ function Wishes(props: IWishLists) {
                 />
                 <CardContent>
                     {/* TODO: Заменить на контентную часть карточки вишлиста*/}
+                    {Boolean(date) && <WishlistFooter date={date}/>}
                 </CardContent>
             </Card>
         </Grid>

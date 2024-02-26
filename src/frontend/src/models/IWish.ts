@@ -5,7 +5,7 @@ export interface IWish {
     name: string;
     uuid: string;
     created_at?: Dayjs;
-    date?: Dayjs;
+    date: string;
     user_id: number;
     is_active?: boolean;
 }
