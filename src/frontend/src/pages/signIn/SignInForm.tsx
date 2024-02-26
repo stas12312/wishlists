@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import Avatar from '@mui/material/Avatar';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -11,9 +11,9 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import {observer} from "mobx-react-lite";
-import {Navigate, useLocation} from "react-router-dom";
+import {useLocation} from "react-router-dom";
 import SignButton from "../../components/SignButton";
-import {ReactJSXElement} from "@emotion/react/types/jsx-namespace";
+import {FormHelperText} from "@mui/material";
 
 function Copyright(props: any) {
 
@@ -29,11 +29,16 @@ function Copyright(props: any) {
     );
 }
 
-function SignInForm(remindPassword: any) {
+function SignInForm() {
     const {state} = useLocation();
 
     const [email, setEmail] = useState<string>(state?.email || '');
     const [password, setPassword] = useState<string>('');
+    const [error, setError] = useState('');
+
+    const handleError = (errorDetails: string) => {
+        setError(errorDetails);
+    };
 
     return (
         <Container component="main" maxWidth="xs" sx={{
@@ -61,7 +66,6 @@ function SignInForm(remindPassword: any) {
                     <TextField
                         onChange={e => setEmail(e.target.value)}
                         value={email}
-                        defaultValue={email || ''}
                         margin="normal"
                         required
                         fullWidth
@@ -74,7 +78,7 @@ function SignInForm(remindPassword: any) {
                         onChange={e => setPassword(e.target.value)}
                         value={password}
                         inputProps={{
-                            autocomplete: 'new-password',
+                            autoComplete: 'new-password',
                             form: {
                                 autoComplete: 'off',
                             },
@@ -87,6 +91,9 @@ function SignInForm(remindPassword: any) {
                         type="password"
                         id="password"
                     />
+                    {Boolean(error) && <FormHelperText id="my-helper-text" error>
+                        {error}
+                    </FormHelperText>}
                     <FormControlLabel
                         control={<Checkbox value="remember" color="primary"/>}
                         label="Запомнить меня"
@@ -94,15 +101,16 @@ function SignInForm(remindPassword: any) {
                     <SignButton isSignUp={false}
                                 buttonTitle="Войти"
                                 email={email}
-                                password={password}/>
+                                password={password}
+                                handleError={handleError}/>
                     <Grid container>
                         <Grid item xs>
-                            <Link href="/auth/restore" variant="body2">
+                            <Link href={"/auth/restore"} variant="body2">
                                 Забыли пароль?
                             </Link>
                         </Grid>
                         <Grid item>
-                            <Link href="/auth/register" variant="body2">
+                            <Link href={"/auth/register"} variant="body2">
                                 {"Нет аккаунта? Зарегистрируйтесь"}
                             </Link>
                         </Grid>

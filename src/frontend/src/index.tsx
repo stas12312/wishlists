@@ -28,7 +28,7 @@ const themeOptions: ThemeOptions = {
             default: '#c9cce2',
         },
         error: {
-            main: '#9c5656',
+            main: '#e74444',
         },
         success: {
             main: '#569c79',

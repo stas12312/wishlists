@@ -1,4 +1,4 @@
-import React, {Component, useCallback, useContext, useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {observer} from "mobx-react-lite";
 import Typography from '@mui/material/Typography';
 import {IWish} from "../../models/IWish";
@@ -9,12 +9,12 @@ import {
     Card,
     CardHeader,
     CardContent,
-    IconButton, Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button
+    IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button
 } from "@mui/material";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import WishlistService from "../../services/WishlistService";
 import WishlistEditDialog from "./WishlistEditDialog";
-import dayjs, {Dayjs, extend} from "dayjs";
+import {Dayjs} from "dayjs";
 
 interface IWishLists extends IWish {
     onItemsChange: Function
@@ -26,7 +26,6 @@ function ActionList(props: IWishLists) {
         name,
         description,
         date,
-        user_id,
         onItemsChange
     } = props;
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -143,12 +142,10 @@ function ActionList(props: IWishLists) {
 function Wishes(props: IWishLists) {
     const {
         description,
-        is_active,
         name,
         uuid,
         user_id,
         date,
-        created_at,
         onItemsChange
     } = props;
     return (

@@ -1,12 +1,11 @@
 import React, {useContext, useState} from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import {FormHelperText} from "@mui/material";
 
 // Стили и шрифты
 import '@fontsource/roboto/300.css';
@@ -29,16 +28,21 @@ function Copyright(props: any) {
     );
 }
 
-function SignUp(props: any) {
+function SignUp() {
 
     const [name, setName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+    const [error, setError] = useState('');
     const {store} = useContext(Context);
 
     if (store.isAuth) {
         return (<Navigate replace to={"/wishlists"}/>)
     } else {
+        const handleError = (errorMessage: string) => {
+            setError(errorMessage);
+        };
+
         return (
             <Container component="main" maxWidth="xs" sx={{
                 marginTop: 8,
@@ -94,15 +98,15 @@ function SignUp(props: any) {
                             type="password"
                             id="password"
                         />
-                        <FormControlLabel
-                            control={<Checkbox value="remember" color="primary"/>}
-                            label="Запомнить меня"
-                        />
+                        {Boolean(error) && <FormHelperText id="my-helper-text" error>
+                            {error}
+                        </FormHelperText>}
                         <SignButton isSignUp={true}
                                     buttonTitle="Регистрация"
                                     name={name}
                                     email={email}
-                                    password={password}/>
+                                    password={password}
+                                    handleError={handleError}/>
                     </Box>
                 </Box>
                 <Copyright sx={{mt: 8, mb: 4}}/>
