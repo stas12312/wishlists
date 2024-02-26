@@ -31,22 +31,28 @@ func (c CodeRedis) Create(code *model.Code) (*model.Code, error) {
 
 func (c CodeRedis) Get(uuid string) (*model.Code, error) {
 
+	code := &model.Code{}
+
 	result := c.redisClient.HGetAll(context.Background(), uuid)
 	if result.Err() != nil {
-		return nil, result.Err()
+		return code, result.Err()
 	}
 	if len(result.Val()) == 0 {
-		return nil, errors.New("code not found")
+		return code, errors.New("code not found")
 	}
 
-	confirmCode := &model.Code{}
-	err := result.Scan(confirmCode)
-	confirmCode.UUID = uuid
+	err := result.Scan(code)
+	code.UUID = uuid
 
-	return confirmCode, err
+	return code, err
 }
 
 func (c CodeRedis) DeleteByUUID(uuid string) error {
 	result := c.redisClient.Del(context.Background(), uuid)
+	return result.Err()
+}
+
+func (c CodeRedis) Update(code *model.Code) error {
+	result := c.redisClient.HSet(context.Background(), code.UUID, code)
 	return result.Err()
 }

@@ -15,5 +15,5 @@ type UserService interface {
 	Confirm(ctx context.Context, code *model.Code) (*model.User, bool, error)
 	Restore(ctx context.Context, email string) (*model.Code, error)
 	Reset(ctx context.Context, code *model.Code, password *model.ResetPassword) (*model.User, error)
-	CheckCode(ctx context.Context, code *model.Code) (*model.Code, bool)
+	CheckCode(ctx context.Context, code *model.Code, withAttempt bool) (*model.Code, bool)
 }

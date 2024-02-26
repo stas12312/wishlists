@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"main/config"
+	apperror "main/error"
 	"main/mail"
 	"main/model"
 	"main/repository"
@@ -45,15 +46,17 @@ func (u *userServiceImpl) Register(ctx context.Context, email, password, name st
 
 		existsUser, err := store.UserRepository().GetByEmail(email)
 		if existsUser.Id != 0 && existsUser.IsActive {
-			return errors.New("пользователь уже зарегистрирован")
+			return apperror.NewError(
+				apperror.UserAlreadyExists,
+				"Пользователь с указанным email уже зарегистрирован",
+			)
 		}
 
 		user, err = store.UserRepository().Create(email, hash, name)
 		if err != nil {
 			return err
 		}
-		code = model.NewCode(user.Id, 6, 64, model.ConfirmEmailCode)
-		code.UserId = user.Id
+		code = model.NewCode(user.Id, 6, 64, model.ConfirmEmailCode, 3)
 
 		_, err = u.CodeRepository.Create(code)
 		if err != nil {
@@ -77,15 +80,15 @@ func (u *userServiceImpl) Login(ctx context.Context, email, password string) (*m
 	err := u.UnitOfWork.Do(ctx, func(ctx context.Context, store uof.UnitOfWorkStore) error {
 		user, err := store.UserRepository().GetByEmail(email)
 		if err != nil {
-			return err
+			return apperror.NewError(apperror.WrongPassword, "Некорректный email или пароль")
 		}
 
 		if !checkPasswordHash(password, user.Password) {
-			return errors.New("wrong password")
+			return apperror.NewError(apperror.WrongPassword, "Некорректный email или пароль")
 		}
 
 		if !user.IsActive {
-			return errors.New("не подтверждена почта")
+			return apperror.NewError(apperror.NotConfirmEmail, "Не подтвержден email")
 		}
 
 		resultUser = user
@@ -124,9 +127,20 @@ func (u *userServiceImpl) Confirm(ctx context.Context, code *model.Code) (*model
 	resultCode := &model.Code{}
 
 	err := u.UnitOfWork.Do(ctx, func(ctx context.Context, store uof.UnitOfWorkStore) error {
-		dbCode, isCorrect := u.CheckCodeWithType(ctx, code, model.ConfirmEmailCode)
+		dbCode, isCorrect := u.CheckCodeWithType(ctx, code, model.ConfirmEmailCode, true)
+
+		if dbCode.UUID == "" {
+			return apperror.NewError(
+				apperror.WrongCode,
+				"Код устарел",
+			)
+		}
+
 		if !isCorrect {
-			return errors.New("incorrect code")
+			return apperror.NewError(
+				apperror.WrongCode,
+				fmt.Sprintf("Некорректный код. Осталось попыток: %d", dbCode.AttemptsCount),
+			)
 		}
 
 		if err := u.CodeRepository.DeleteByUUID(dbCode.UUID); err != nil {
@@ -166,7 +180,7 @@ func (u *userServiceImpl) Restore(ctx context.Context, email string) (*model.Cod
 			return errors.New("user is not active")
 		}
 
-		code := model.NewCode(user.Id, 6, 64, model.ResetPasswordCode)
+		code := model.NewCode(user.Id, 6, 64, model.ResetPasswordCode, 3)
 		_, err = u.CodeRepository.Create(code)
 		if err != nil {
 			return err
@@ -196,7 +210,10 @@ func (u *userServiceImpl) Reset(
 	resultUser := &model.User{}
 
 	err := u.UnitOfWork.Do(ctx, func(ctx context.Context, store uof.UnitOfWorkStore) error {
-		dbCode, isCorrect := u.CheckCodeWithType(ctx, code, model.ResetPasswordCode)
+		dbCode, isCorrect := u.CheckCodeWithType(ctx, code, model.ResetPasswordCode, false)
+		if err := u.CodeRepository.DeleteByUUID(dbCode.UUID); err != nil {
+			return err
+		}
 
 		if !isCorrect {
 			return errors.New("incorrect code")
@@ -204,10 +221,6 @@ func (u *userServiceImpl) Reset(
 
 		hash, _ := hashPassword(password.Password)
 		if err := store.UserRepository().UpdatePassword(dbCode.UserId, hash); err != nil {
-			return err
-		}
-
-		if err := u.CodeRepository.DeleteByUUID(dbCode.UUID); err != nil {
 			return err
 		}
 
@@ -223,33 +236,51 @@ func (u *userServiceImpl) Reset(
 
 }
 
-func (u *userServiceImpl) CheckCode(ctx context.Context, code *model.Code) (*model.Code, bool) {
+func (u *userServiceImpl) CheckCode(
+	ctx context.Context,
+	code *model.Code,
+	checkAttempt bool,
+) (*model.Code, bool) {
 	DBCode, err := u.CodeRepository.Get(code.UUID)
 	if err != nil {
-		return nil, false
+		return DBCode, false
 	}
 	if DBCode.UUID == "" {
-		return nil, false
+		return DBCode, false
 	}
-	if !((DBCode.Code == code.Code && DBCode.SecretKey == code.SecretKey) || DBCode.Key == code.Key) {
-		return nil, false
+
+	equalsByCode := DBCode.Code == code.Code && DBCode.SecretKey == code.SecretKey
+	equalsByKey := DBCode.Key == code.Key
+	hasAttempt := DBCode.AttemptsCount > 0 && checkAttempt
+	codeIsCorrect := equalsByKey || equalsByCode && hasAttempt
+
+	if hasAttempt && !codeIsCorrect {
+		DBCode.AttemptsCount -= 1
+
+		if DBCode.AttemptsCount == 0 {
+			err = u.CodeRepository.DeleteByUUID(DBCode.UUID)
+		} else {
+			err = u.CodeRepository.Update(DBCode)
+		}
+		if err != nil {
+			return DBCode, false
+		}
 	}
-	return DBCode, true
+
+	return DBCode, codeIsCorrect
 }
 
 func (u *userServiceImpl) CheckCodeWithType(
 	ctx context.Context,
 	code *model.Code,
 	codeType int,
+	withAttempt bool,
 ) (*model.Code, bool) {
-	DBCode, isCorrect := u.CheckCode(ctx, code)
-	if !isCorrect {
-		return DBCode, isCorrect
-	}
+	DBCode, isCorrect := u.CheckCode(ctx, code, withAttempt)
 	if DBCode.CodeType != codeType {
 		return DBCode, false
 	}
-	return DBCode, true
+	return DBCode, isCorrect
 }
 
 func checkPasswordHash(password, hash string) bool {

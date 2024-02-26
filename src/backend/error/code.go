@@ -2,4 +2,9 @@ package error
 
 const (
 	UserAlreadyExists = 100
+	WrongPassword     = 101
+	NotConfirmEmail   = 102
+
+	WrongCode      = 110
+	CodeIsNotFound = 111
 )

@@ -14,9 +14,9 @@ type UserService struct {
 	mock.Mock
 }
 
-// CheckCode provides a mock function with given fields: ctx, code
-func (_m *UserService) CheckCode(ctx context.Context, code *model.Code) (*model.Code, bool) {
-	ret := _m.Called(ctx, code)
+// CheckCode provides a mock function with given fields: ctx, code, withAttempt
+func (_m *UserService) CheckCode(ctx context.Context, code *model.Code, withAttempt bool) (*model.Code, bool) {
+	ret := _m.Called(ctx, code, withAttempt)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CheckCode")
@@ -24,19 +24,19 @@ func (_m *UserService) CheckCode(ctx context.Context, code *model.Code) (*model.
 
 	var r0 *model.Code
 	var r1 bool
-	if rf, ok := ret.Get(0).(func(context.Context, *model.Code) (*model.Code, bool)); ok {
-		return rf(ctx, code)
+	if rf, ok := ret.Get(0).(func(context.Context, *model.Code, bool) (*model.Code, bool)); ok {
+		return rf(ctx, code, withAttempt)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *model.Code) *model.Code); ok {
-		r0 = rf(ctx, code)
+	if rf, ok := ret.Get(0).(func(context.Context, *model.Code, bool) *model.Code); ok {
+		r0 = rf(ctx, code, withAttempt)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*model.Code)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *model.Code) bool); ok {
-		r1 = rf(ctx, code)
+	if rf, ok := ret.Get(1).(func(context.Context, *model.Code, bool) bool); ok {
+		r1 = rf(ctx, code, withAttempt)
 	} else {
 		r1 = ret.Get(1).(bool)
 	}
