@@ -147,18 +147,13 @@ func (c *UserController) Confirm(ctx *fiber.Ctx) error {
 			JSON(model.ErrorResponse{Message: "Некорректные данные", Details: err.Error()})
 	}
 
-	user, autoLogin, err := c.UserService.Confirm(ctx.UserContext(), code)
+	user, err := c.UserService.Confirm(ctx.UserContext(), code)
 	if err != nil {
 		return err
 	}
 
-	if autoLogin {
-		tokenPair := makeTokenPair(user.Id, user.Email, &c.Config.JWT)
-		return ctx.JSON(tokenPair)
-	}
-
-	return ctx.Status(fiber.StatusOK).JSON(user)
-
+	tokenPair := makeTokenPair(user.Id, user.Email, &c.Config.JWT)
+	return ctx.JSON(tokenPair)
 }
 
 func (c *UserController) Restore(ctx *fiber.Ctx) error {

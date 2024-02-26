@@ -121,10 +121,9 @@ func (u *userServiceImpl) GetByEmail(ctx context.Context, email string) (*model.
 	return resultUser, err
 }
 
-func (u *userServiceImpl) Confirm(ctx context.Context, code *model.Code) (*model.User, bool, error) {
+func (u *userServiceImpl) Confirm(ctx context.Context, code *model.Code) (*model.User, error) {
 
 	resultUser := &model.User{}
-	resultCode := &model.Code{}
 
 	err := u.UnitOfWork.Do(ctx, func(ctx context.Context, store uof.UnitOfWorkStore) error {
 		dbCode, isCorrect := u.CheckCodeWithType(ctx, code, model.ConfirmEmailCode, true)
@@ -155,16 +154,10 @@ func (u *userServiceImpl) Confirm(ctx context.Context, code *model.Code) (*model
 		user.IsActive = true
 		user, err = store.UserRepository().Update(user)
 		resultUser = user
-		resultCode = dbCode
 		return err
 	})
-	if err != nil {
-		return resultUser, false, err
-	}
 
-	autoLogin := code.Code == resultCode.Code && code.SecretKey == resultCode.SecretKey
-
-	return resultUser, autoLogin, err
+	return resultUser, err
 }
 
 func (u *userServiceImpl) Restore(ctx context.Context, email string) (*model.Code, error) {

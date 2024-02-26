@@ -45,7 +45,7 @@ func (_m *UserService) CheckCode(ctx context.Context, code *model.Code, withAtte
 }
 
 // Confirm provides a mock function with given fields: ctx, code
-func (_m *UserService) Confirm(ctx context.Context, code *model.Code) (*model.User, bool, error) {
+func (_m *UserService) Confirm(ctx context.Context, code *model.Code) (*model.User, error) {
 	ret := _m.Called(ctx, code)
 
 	if len(ret) == 0 {
@@ -53,9 +53,8 @@ func (_m *UserService) Confirm(ctx context.Context, code *model.Code) (*model.Us
 	}
 
 	var r0 *model.User
-	var r1 bool
-	var r2 error
-	if rf, ok := ret.Get(0).(func(context.Context, *model.Code) (*model.User, bool, error)); ok {
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, *model.Code) (*model.User, error)); ok {
 		return rf(ctx, code)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, *model.Code) *model.User); ok {
@@ -66,19 +65,13 @@ func (_m *UserService) Confirm(ctx context.Context, code *model.Code) (*model.Us
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *model.Code) bool); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *model.Code) error); ok {
 		r1 = rf(ctx, code)
 	} else {
-		r1 = ret.Get(1).(bool)
+		r1 = ret.Error(1)
 	}
 
-	if rf, ok := ret.Get(2).(func(context.Context, *model.Code) error); ok {
-		r2 = rf(ctx, code)
-	} else {
-		r2 = ret.Error(2)
-	}
-
-	return r0, r1, r2
+	return r0, r1
 }
 
 // GetByEmail provides a mock function with given fields: ctx, email

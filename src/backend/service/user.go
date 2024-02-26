@@ -12,7 +12,7 @@ type UserService interface {
 	Login(ctx context.Context, email, password string) (*model.User, error)
 	GetById(ctx context.Context, id int64) (*model.User, error)
 	GetByEmail(ctx context.Context, email string) (*model.User, error)
-	Confirm(ctx context.Context, code *model.Code) (*model.User, bool, error)
+	Confirm(ctx context.Context, code *model.Code) (*model.User, error)
 	Restore(ctx context.Context, email string) (*model.Code, error)
 	Reset(ctx context.Context, code *model.Code, password *model.ResetPassword) (*model.User, error)
 	CheckCode(ctx context.Context, code *model.Code, withAttempt bool) (*model.Code, bool)
