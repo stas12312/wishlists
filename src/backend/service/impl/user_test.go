@@ -550,7 +550,6 @@ func Test_userServiceImpl_Confirm(t *testing.T) {
 		mockBehaviour func(userRepository *mocks.UserRepository, codeRepository *mocks.CodeRepository)
 		args          args
 		want          *model.User
-		AutoLogin     bool
 		wantErr       bool
 	}{
 		{
@@ -558,8 +557,7 @@ func Test_userServiceImpl_Confirm(t *testing.T) {
 			args: args{
 				&model.Code{UUID: "uuid", Code: "123", SecretKey: "key"},
 			},
-			want:      &model.User{Id: 1, IsActive: true},
-			AutoLogin: true,
+			want: &model.User{Id: 1, IsActive: true},
 			mockBehaviour: func(
 				userRepository *mocks.UserRepository,
 				confirmCodeRepository *mocks.CodeRepository,
@@ -597,8 +595,7 @@ func Test_userServiceImpl_Confirm(t *testing.T) {
 			args: args{
 				&model.Code{UUID: "uuid", Code: "123", Key: "urlkey", SecretKey: "wrong_key"},
 			},
-			want:      &model.User{Id: 1, IsActive: true},
-			AutoLogin: false,
+			want: &model.User{Id: 1, IsActive: true},
 			mockBehaviour: func(
 				userRepository *mocks.UserRepository,
 				confirmCodeRepository *mocks.CodeRepository,
@@ -637,9 +634,8 @@ func Test_userServiceImpl_Confirm(t *testing.T) {
 			args: args{
 				&model.Code{UUID: "uuid", Code: "123", Key: "wrong_key", SecretKey: "wrong_key"},
 			},
-			want:      &model.User{},
-			wantErr:   true,
-			AutoLogin: false,
+			want:    &model.User{},
+			wantErr: true,
 			mockBehaviour: func(
 				userRepository *mocks.UserRepository,
 				codeRepository *mocks.CodeRepository,
@@ -692,16 +688,13 @@ func Test_userServiceImpl_Confirm(t *testing.T) {
 				CodeRepository: codeRepository,
 				MailClient:     mailClient,
 			}
-			got, got1, err := u.Confirm(context.Background(), tt.args.code)
+			got, err := u.Confirm(context.Background(), tt.args.code)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Confirm() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Confirm() got = %v, want %v", got, tt.want)
-			}
-			if got1 != tt.AutoLogin {
-				t.Errorf("Confirm() got1 = %v, want %v", got1, tt.AutoLogin)
 			}
 		})
 	}
