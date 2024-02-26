@@ -5,6 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"main/config"
+	apperror "main/error"
 	"main/middleware"
 	"main/model"
 	"main/service"
@@ -63,8 +64,7 @@ func (c *UserController) Register(ctx *fiber.Ctx) error {
 
 	_, confirmCode, err := c.UserService.Register(ctx.UserContext(), register.Email, register.Password, register.Name)
 	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).
-			JSON(model.ErrorResponse{Message: "Ошибка при регистрации", Details: err.Error()})
+		return err
 	}
 
 	// Данные доступны для тестового окружения
@@ -149,8 +149,7 @@ func (c *UserController) Confirm(ctx *fiber.Ctx) error {
 
 	user, autoLogin, err := c.UserService.Confirm(ctx.UserContext(), code)
 	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).
-			JSON(model.ErrorResponse{Message: "Не удалось подтвердить email", Details: err.Error()})
+		return err
 	}
 
 	if autoLogin {
@@ -216,15 +215,29 @@ func (c *UserController) Reset(ctx *fiber.Ctx) error {
 
 func (c *UserController) CheckCode(ctx *fiber.Ctx) error {
 
+	type ResponseResult struct {
+		IsValid       bool `json:"is_valid"`
+		AttemptsCount int  `json:"attempts_count"`
+	}
+
 	code := &model.Code{}
 	if err := ctx.BodyParser(code); err != nil {
 		return ctx.Status(fiber.StatusUnprocessableEntity).
 			JSON(model.ErrorResponse{Message: "Некорректные данные", Details: err.Error()})
 	}
 
-	_, isCorrect := c.UserService.CheckCode(ctx.UserContext(), code)
+	resultCode, isCorrect := c.UserService.CheckCode(ctx.UserContext(), code, true)
+	if resultCode.UUID == "" {
+		return apperror.NewError(apperror.CodeIsNotFound, "Код устарел")
+	}
+	if !isCorrect {
+		return apperror.NewError(
+			apperror.WrongCode,
+			fmt.Sprintf("Некорректный код. Осталось попыток: %d", resultCode.AttemptsCount),
+		)
+	}
 
-	return ctx.JSON(model.Response{Data: isCorrect})
+	return ctx.JSON(model.Response{Data: true})
 
 }
 

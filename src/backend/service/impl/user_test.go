@@ -568,11 +568,12 @@ func Test_userServiceImpl_Confirm(t *testing.T) {
 					On("Get", "uuid").
 					Once().
 					Return(&model.Code{
-						UUID:      "uuid",
-						Code:      "123",
-						SecretKey: "key",
-						UserId:    1,
-						CodeType:  model.ConfirmEmailCode,
+						UUID:          "uuid",
+						Code:          "123",
+						SecretKey:     "key",
+						UserId:        1,
+						CodeType:      model.ConfirmEmailCode,
+						AttemptsCount: 3,
 					}, nil)
 
 				confirmCodeRepository.
@@ -606,12 +607,13 @@ func Test_userServiceImpl_Confirm(t *testing.T) {
 					On("Get", "uuid").
 					Once().
 					Return(&model.Code{
-						UUID:      "uuid",
-						Code:      "123",
-						SecretKey: "key",
-						Key:       "urlkey",
-						UserId:    1,
-						CodeType:  model.ConfirmEmailCode,
+						UUID:          "uuid",
+						Code:          "123",
+						SecretKey:     "key",
+						Key:           "urlkey",
+						UserId:        1,
+						CodeType:      model.ConfirmEmailCode,
+						AttemptsCount: 3,
 					}, nil)
 
 				confirmCodeRepository.
@@ -642,16 +644,26 @@ func Test_userServiceImpl_Confirm(t *testing.T) {
 				userRepository *mocks.UserRepository,
 				codeRepository *mocks.CodeRepository,
 			) {
+				code := &model.Code{
+					UUID:          "uuid",
+					Code:          "123",
+					SecretKey:     "key",
+					Key:           "urlkey",
+					UserId:        1,
+					AttemptsCount: 3,
+				}
 				codeRepository.
 					On("Get", "uuid").
 					Once().
-					Return(&model.Code{
-						UUID:      "uuid",
-						Code:      "123",
-						SecretKey: "key",
-						Key:       "urlkey",
-						UserId:    1,
-					}, nil)
+					Return(code, nil)
+
+				newCode := code
+				newCode.AttemptsCount = 2
+
+				codeRepository.
+					On("Update", newCode).
+					Once().
+					Return(nil)
 			},
 		},
 	}
@@ -781,7 +793,6 @@ func Test_userServiceImpl_CheckCodeWithType(t *testing.T) {
 					Code:      "code",
 					Key:       "key",
 					SecretKey: "secret_key",
-					UserId:    1,
 				},
 				codeType: model.ConfirmEmailCode,
 			},
@@ -791,23 +802,25 @@ func Test_userServiceImpl_CheckCodeWithType(t *testing.T) {
 					Once().
 					Return(
 						&model.Code{
-							UUID:      "uuid",
-							Code:      "code",
-							Key:       "key",
-							SecretKey: "secret_key",
-							UserId:    1,
-							CodeType:  model.ConfirmEmailCode,
+							UUID:          "uuid",
+							Code:          "code",
+							Key:           "key",
+							SecretKey:     "secret_key",
+							UserId:        1,
+							CodeType:      model.ConfirmEmailCode,
+							AttemptsCount: 3,
 						},
 						nil,
 					)
 			},
 			want: &model.Code{
-				UUID:      "uuid",
-				Code:      "code",
-				Key:       "key",
-				SecretKey: "secret_key",
-				UserId:    1,
-				CodeType:  model.ConfirmEmailCode,
+				UUID:          "uuid",
+				Code:          "code",
+				Key:           "key",
+				SecretKey:     "secret_key",
+				UserId:        1,
+				CodeType:      model.ConfirmEmailCode,
+				AttemptsCount: 3,
 			},
 			want1: true,
 		},
@@ -829,23 +842,25 @@ func Test_userServiceImpl_CheckCodeWithType(t *testing.T) {
 					Once().
 					Return(
 						&model.Code{
-							UUID:      "uuid",
-							Code:      "code",
-							Key:       "key",
-							SecretKey: "secret_key",
-							UserId:    1,
-							CodeType:  model.ConfirmEmailCode,
+							UUID:          "uuid",
+							Code:          "code",
+							Key:           "key",
+							SecretKey:     "secret_key",
+							UserId:        1,
+							CodeType:      model.ConfirmEmailCode,
+							AttemptsCount: 3,
 						},
 						nil,
 					)
 			},
 			want: &model.Code{
-				UUID:      "uuid",
-				Code:      "code",
-				Key:       "key",
-				SecretKey: "secret_key",
-				UserId:    1,
-				CodeType:  model.ConfirmEmailCode,
+				UUID:          "uuid",
+				Code:          "code",
+				Key:           "key",
+				SecretKey:     "secret_key",
+				UserId:        1,
+				CodeType:      model.ConfirmEmailCode,
+				AttemptsCount: 3,
 			},
 			want1: false,
 		},
@@ -874,7 +889,7 @@ func Test_userServiceImpl_CheckCodeWithType(t *testing.T) {
 
 			tt.mockBehavior(codeRepository)
 
-			got, got1 := u.CheckCodeWithType(context.Background(), tt.args.code, tt.args.codeType)
+			got, got1 := u.CheckCodeWithType(context.Background(), tt.args.code, tt.args.codeType, true)
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("CheckCodeWithType() got = %v, want %v", got, tt.want)
 			}
@@ -1003,10 +1018,11 @@ func Test_userServiceImpl_Reset(t *testing.T) {
 					On("Get", tt.args.code.UUID).
 					Once().
 					Return(&model.Code{
-						UUID:     tt.args.code.UUID,
-						Key:      "key",
-						UserId:   1,
-						CodeType: model.ResetPasswordCode,
+						UUID:          tt.args.code.UUID,
+						Key:           "key",
+						UserId:        1,
+						CodeType:      model.ResetPasswordCode,
+						AttemptsCount: 3,
 					}, nil)
 
 				userMock.
@@ -1057,6 +1073,161 @@ func Test_userServiceImpl_Reset(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Reset() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_userServiceImpl_CheckCode(t *testing.T) {
+	type args struct {
+		code         *model.Code
+		checkAttempt bool
+	}
+	tests := []struct {
+		name          string
+		args          args
+		mockBehaviour func(codeMock *mocks.CodeRepository)
+		want          *model.Code
+		want1         bool
+	}{
+		{
+			name: "ОК",
+			args: args{
+				code: &model.Code{
+					UUID:      "uuid",
+					Code:      "code",
+					SecretKey: "secret_key",
+				},
+				checkAttempt: true,
+			},
+
+			mockBehaviour: func(codeMock *mocks.CodeRepository) {
+				codeMock.
+					On("Get", "uuid").
+					Once().
+					Return(&model.Code{
+						UUID:          "uuid",
+						Code:          "code",
+						SecretKey:     "secret_key",
+						UserId:        1,
+						AttemptsCount: 1,
+					},
+						nil)
+			},
+
+			want:  &model.Code{UUID: "uuid", Code: "code", SecretKey: "secret_key", UserId: 1, AttemptsCount: 1},
+			want1: true,
+		},
+		{
+			name: "Wrong code",
+			args: args{
+				code: &model.Code{
+					UUID:      "uuid",
+					Code:      "wrong_code",
+					SecretKey: "secret_key",
+				},
+				checkAttempt: true,
+			},
+			mockBehaviour: func(codeMock *mocks.CodeRepository) {
+				code1 := model.Code{
+					UUID:          "uuid",
+					Code:          "code",
+					SecretKey:     "secret_key",
+					Key:           "key",
+					UserId:        1,
+					AttemptsCount: 2,
+				}
+				codeMock.
+					On("Get", "uuid").
+					Once().
+					Return(&code1, nil)
+
+				code2 := code1
+				code2.AttemptsCount = 1
+
+				codeMock.
+					On("Update", &code2).
+					Once().
+					Return(nil)
+			},
+			want: &model.Code{
+				UUID:          "uuid",
+				Code:          "code",
+				SecretKey:     "secret_key",
+				Key:           "key",
+				UserId:        1,
+				AttemptsCount: 1,
+			},
+			want1: false,
+		},
+		{
+			name: "Delete code",
+			args: args{
+				code: &model.Code{
+					UUID:      "uuid",
+					Code:      "wrong_code",
+					SecretKey: "secret_key",
+				},
+				checkAttempt: true,
+			},
+			mockBehaviour: func(codeMock *mocks.CodeRepository) {
+				code := &model.Code{
+					UUID:          "uuid",
+					Code:          "code",
+					SecretKey:     "secret_key",
+					Key:           "key",
+					UserId:        1,
+					AttemptsCount: 1,
+				}
+				codeMock.
+					On("Get", "uuid").
+					Once().
+					Return(code, nil)
+
+				codeMock.
+					On("DeleteByUUID", "uuid").
+					Once().
+					Return(nil)
+			},
+			want: &model.Code{
+				UUID:          "uuid",
+				Code:          "code",
+				SecretKey:     "secret_key",
+				Key:           "key",
+				UserId:        1,
+				AttemptsCount: 0,
+			},
+			want1: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			codeRepository := mocks.NewCodeRepository(t)
+
+			tt.mockBehaviour(codeRepository)
+
+			unitOfWork := impl.NewUnitOfWorkPostgres(
+				mocks3.DB{},
+				func(connection db.Connection) uof.UnitOfWorkStore {
+					return impl.NewUofStore(
+						mocks.NewUserRepository(t),
+						mocks.NewWishlistRepository(t),
+						mocks.NewWishRepository(t),
+					)
+				},
+			)
+			u := &userServiceImpl{
+				UnitOfWork:     unitOfWork,
+				CodeRepository: codeRepository,
+			}
+
+			got, got1 := u.CheckCode(context.Background(), tt.args.code, tt.args.checkAttempt)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("CheckCode() got = %v, want %v", got, tt.want)
+			}
+			if got1 != tt.want1 {
+				t.Errorf("CheckCode() got1 = %v, want %v", got1, tt.want1)
 			}
 		})
 	}

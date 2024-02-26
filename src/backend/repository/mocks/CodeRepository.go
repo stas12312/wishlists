@@ -91,6 +91,24 @@ func (_m *CodeRepository) Get(uuid string) (*model.Code, error) {
 	return r0, r1
 }
 
+// Update provides a mock function with given fields: code
+func (_m *CodeRepository) Update(code *model.Code) error {
+	ret := _m.Called(code)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Update")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*model.Code) error); ok {
+		r0 = rf(code)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // NewCodeRepository creates a new instance of CodeRepository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewCodeRepository(t interface {
