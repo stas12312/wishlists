@@ -9,10 +9,16 @@ import relativeTime from "dayjs/plugin/relativeTime";
 
 function WishlistFooter(props: {date: string}) {
     dayjs.extend(relativeTime);
+    const dateToString: string = dayjs(props.date).format('DD.MM.YYYY');
 
-    const getNoun = (number: number, two: string, several: string) => {
+    const getNoun = (number: number, one: string, two: string, several: string) => {
         let n = Math.abs(number);
         n %= 10;
+
+        if (n === 1 && number !== 11 && number !== 111) {
+            return one;
+        }
+
         if (n >= 5 && n <= 20 || n === 0) {
             return several;
         }
@@ -22,13 +28,25 @@ function WishlistFooter(props: {date: string}) {
         return several;
     }
 
-    const dateToString: string = dayjs(props.date).format('DD.MM.YYYY');
-    const daysLeft: number = dayjs(props.date).diff(dayjs(), 'day');
-    const goalDateText: string = daysLeft === 0 ? 'Сегодня' :
-        daysLeft === 1 ? 'Завтра' :
-            daysLeft === 2 ? 'Послезавтра' :
-                daysLeft > 2 ? `Через ${daysLeft} ${getNoun(daysLeft, 'дня', 'дней')}` :
-                    'Прошло';
+    const getDaysLeft = () => {
+        const daysLeft: number = dayjs(props.date).diff(dayjs(), 'day');
+
+        if (daysLeft === 0) {
+            return 'Сегодня';
+        }
+
+        if (daysLeft === 1) {
+            return 'Завтра';
+        }
+
+        if (daysLeft === 2) {
+            return 'Послезавтра';
+        }
+
+        if (daysLeft > 2) {
+            return `Через ${daysLeft} ${getNoun(daysLeft, 'день', 'дня', 'дней')}`;
+        }
+    }
 
     return (
         <Grid container spacing={1}>
@@ -42,7 +60,7 @@ function WishlistFooter(props: {date: string}) {
             <Grid item xs>
                 <Chip color="warning"
                       size="small"
-                      label={goalDateText}/>
+                      label={getDaysLeft()}/>
             </Grid>
         </Grid>
     );
