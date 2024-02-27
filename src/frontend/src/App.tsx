@@ -6,7 +6,7 @@ import Navigation from "./components/Navigation";
 
 import * as React from 'react';
 import {redirect, Route, Routes, useLocation, useNavigate} from "react-router-dom";
-import {useContext, useEffect} from "react";
+import {useContext, useEffect, useRef} from "react";
 import {Context} from "./index";
 import {observer} from "mobx-react";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -14,9 +14,6 @@ import Container from "@mui/material/Container";
 import Welcome from "./pages/Welcome";
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
-import {response} from "express";
-import {Simulate} from "react-dom/test-utils";
-import error = Simulate.error;
 import Typography from "@mui/material/Typography";
 import {Alert} from "@mui/lab";
 import {Modal as BaseModal} from "@mui/material";
@@ -43,9 +40,12 @@ function App() {
     const parameters = new URLSearchParams(search);
     const [open, setOpen] = React.useState(false);
     const [error, setError] = React.useState('');
+    const urlUnconfirmed = useRef(true);
+    const shouldCheckAuth = useRef(true);
 
     useEffect(() => {
-        if (pathname === '/auth/confirm' && parameters.size) {
+        if (pathname === '/auth/confirm' && parameters.size && urlUnconfirmed.current) {
+            urlUnconfirmed.current = false;
             const uuid: string = parameters && parameters.get('uuid') as string;
             const key: string = parameters.get('key') as string;
             store.confirm(uuid, key, null, true).then((response) => {
@@ -53,12 +53,20 @@ function App() {
                     setOpen(true);
                     setError(response.message);
                 } else {
-                    navigate('/auth/login', { state: { email: response?.email }});
+                    localStorage.setItem('access_token', response.access_token);
+                    localStorage.setItem('refresh_token', response.refresh_token);
+                    store.setAuth(true);
+                    navigate('/wishlists');
                 }
             });
         }
 
-        if (localStorage.getItem('access_token') !== null && pathname !== '/auth/confirm') {
+        if (
+            localStorage.getItem('access_token') !== null &&
+            pathname !== '/auth/confirm' &&
+            shouldCheckAuth.current
+        ) {
+            shouldCheckAuth.current = false;
             store.checkAuth();
         }
     }, [])

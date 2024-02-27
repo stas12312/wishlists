@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {observer} from "mobx-react-lite";
 import Grid from "@mui/material/Grid";
 import Typography from '@mui/material/Typography';
@@ -17,14 +17,17 @@ function Profile(props: any) {
     const {store} = useContext(Context);
     const [open, setOpen] = useState(false);
     const [lists, setLists] = useState<IWish[]>([]);
+    const shouldGetUserInfo = useRef(true);
 
     useEffect(() => {
-        store.getUserInfo().then(() => {
-            WishlistService.list().then((response) => {
-                setLists(response.data.data)
-            });
-
-        });
+        if (shouldGetUserInfo.current) {
+            shouldGetUserInfo.current = false;
+            const getList: Function = async () => {
+                const listResponse = await WishlistService.list();
+                setLists(listResponse.data.data);
+            }
+            getList();
+        }
     }, [])
 
     const submitWindow = async (event: React.MouseEvent<HTMLButtonElement>, name: string, description: string, date: Dayjs | null) => {
