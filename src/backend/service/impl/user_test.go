@@ -987,7 +987,7 @@ func Test_userServiceImpl_Restore(t *testing.T) {
 func Test_userServiceImpl_Reset(t *testing.T) {
 	type args struct {
 		code     *model.Code
-		password *model.ResetPassword
+		password string
 	}
 
 	type test struct {
@@ -1003,7 +1003,7 @@ func Test_userServiceImpl_Reset(t *testing.T) {
 			name: "OK",
 			args: args{
 				code:     &model.Code{UUID: "uuid", Key: "key"},
-				password: &model.ResetPassword{Password: "newPassword"},
+				password: "newPassword",
 			},
 
 			mockBehavior: func(codeMock *mocks.CodeRepository, userMock *mocks.UserRepository, tt *test) {

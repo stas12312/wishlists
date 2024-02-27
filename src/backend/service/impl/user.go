@@ -197,7 +197,7 @@ func (u *userServiceImpl) Restore(ctx context.Context, email string) (*model.Cod
 func (u *userServiceImpl) Reset(
 	ctx context.Context,
 	code *model.Code,
-	password *model.ResetPassword,
+	password string,
 ) (*model.User, error) {
 
 	resultUser := &model.User{}
@@ -212,7 +212,7 @@ func (u *userServiceImpl) Reset(
 			return errors.New("incorrect code")
 		}
 
-		hash, _ := hashPassword(password.Password)
+		hash, _ := hashPassword(password)
 		if err := store.UserRepository().UpdatePassword(dbCode.UserId, hash); err != nil {
 			return err
 		}
