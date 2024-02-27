@@ -204,7 +204,7 @@ func (_m *UserService) Register(ctx context.Context, email string, password stri
 }
 
 // Reset provides a mock function with given fields: ctx, code, password
-func (_m *UserService) Reset(ctx context.Context, code *model.Code, password *model.ResetPassword) (*model.User, error) {
+func (_m *UserService) Reset(ctx context.Context, code *model.Code, password string) (*model.User, error) {
 	ret := _m.Called(ctx, code, password)
 
 	if len(ret) == 0 {
@@ -213,10 +213,10 @@ func (_m *UserService) Reset(ctx context.Context, code *model.Code, password *mo
 
 	var r0 *model.User
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *model.Code, *model.ResetPassword) (*model.User, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *model.Code, string) (*model.User, error)); ok {
 		return rf(ctx, code, password)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *model.Code, *model.ResetPassword) *model.User); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *model.Code, string) *model.User); ok {
 		r0 = rf(ctx, code, password)
 	} else {
 		if ret.Get(0) != nil {
@@ -224,7 +224,7 @@ func (_m *UserService) Reset(ctx context.Context, code *model.Code, password *mo
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *model.Code, *model.ResetPassword) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *model.Code, string) error); ok {
 		r1 = rf(ctx, code, password)
 	} else {
 		r1 = ret.Error(1)

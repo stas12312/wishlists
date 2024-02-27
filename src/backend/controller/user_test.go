@@ -78,3 +78,64 @@ func TestUserController_Auth(t *testing.T) {
 		})
 	}
 }
+
+func TestUserController_Reset(t *testing.T) {
+	tests := []struct {
+		name          string
+		mocksBehavior func(mock *mocks.UserService)
+		wantErr       bool
+		body          []byte
+		responseCode  int
+	}{
+		{
+			name: "OK",
+			mocksBehavior: func(userMock *mocks.UserService) {
+				userMock.
+					On(
+						"Reset",
+						mock.Anything,
+						&model.Code{UUID: "uuid", Code: "code", SecretKey: "secret_key"},
+						"password",
+					).
+					Once().
+					Return(&model.User{Id: 1, Email: "user@email.ru"}, nil)
+			},
+			body:         []byte(`{"uuid": "uuid", "code": "code", "secret_key": "secret_key", "password": "password"}`),
+			responseCode: 200,
+		},
+		{
+			name:          "Bad password",
+			mocksBehavior: func(userMock *mocks.UserService) {},
+			body:          []byte(`{"uuid": "uuid", "code": "code", "secret_key": "secret_key", "password": "12345"}`),
+			responseCode:  400,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			req := httptest.NewRequest("POST", "/auth/reset-password", bytes.NewReader(tt.body))
+			req.Header.Set("Content-Type", "application/json")
+			userService := mocks.NewUserService(t)
+			tt.mocksBehavior(userService)
+
+			app := fiber.New()
+
+			c := &UserController{
+				UserService: userService,
+				Config:      &config.Config{},
+			}
+
+			c.Route(app)
+
+			res, err := app.Test(req)
+			if tt.wantErr && err != nil {
+				t.Errorf("error %s", err.Error())
+				return
+			}
+			if res.StatusCode != tt.responseCode {
+				t.Errorf("%d != %d", res.StatusCode, tt.responseCode)
+
+			}
+		})
+	}
+}

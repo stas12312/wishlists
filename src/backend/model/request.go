@@ -15,8 +15,9 @@ type ErrorResponse struct {
 }
 
 type ErrorField struct {
-	Name string `json:"name"`
-	Tag  string `json:"tag"`
+	Name    string `json:"name"`
+	Tag     string `json:"tag"`
+	Message string `json:"message"`
 }
 
 type ValidateErrorResponse struct {

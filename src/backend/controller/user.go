@@ -46,7 +46,7 @@ func (c *UserController) Me(ctx *fiber.Ctx) error {
 func (c *UserController) Register(ctx *fiber.Ctx) error {
 	type RegisterModel struct {
 		Email    string `json:"email" validate:"required"`
-		Password string `json:"password" validate:"required,min=8,max=50"`
+		Password string `json:"password" validate:"required,min=8,max=50,password-symbols"`
 		Name     string `json:"name"`
 	}
 
@@ -185,8 +185,12 @@ func (c *UserController) Restore(ctx *fiber.Ctx) error {
 
 func (c *UserController) Reset(ctx *fiber.Ctx) error {
 
+	type ResetPassword struct {
+		Password string `json:"password" validate:"required,min=8,max=50,password-symbols"`
+	}
+
 	code := &model.Code{}
-	password := &model.ResetPassword{}
+	password := &ResetPassword{}
 
 	if err := ctx.BodyParser(code); err != nil {
 		return ctx.Status(fiber.StatusUnprocessableEntity).
@@ -197,7 +201,12 @@ func (c *UserController) Reset(ctx *fiber.Ctx) error {
 			JSON(model.ErrorResponse{Message: "Некорректные данные", Details: err.Error()})
 	}
 
-	user, err := c.UserService.Reset(ctx.UserContext(), code, password)
+	if errs := NewValidator().Validate(password); len(errs) > 0 {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ValidateErrorResponse{Message: "Некорректно заполнены поля", Fields: errs})
+	}
+
+	user, err := c.UserService.Reset(ctx.UserContext(), code, password.Password)
 	if err != nil {
 		return ctx.Status(fiber.StatusUnprocessableEntity).
 			JSON(model.ErrorResponse{Message: "Недействительный код"})
