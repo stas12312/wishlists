@@ -54,6 +54,8 @@ func msgForTag(tag string, param string) string {
 		return "Поля является обязательным"
 	case "min":
 		return fmt.Sprintf("Минимальное длинна строки %s", param)
+	case "oneof":
+		return fmt.Sprintf("Допустимое значения: %s", param)
 	default:
 		return tag
 	}

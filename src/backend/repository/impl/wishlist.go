@@ -15,13 +15,15 @@ type WishlistRepositoryPostgres struct {
 
 func (r *WishlistRepositoryPostgres) Create(wishlist *model.Wishlist) (*model.Wishlist, error) {
 	q := `
-		INSERT INTO wishlists (name, date,description, user_id) 
-		VALUES ($1, $2, $3, $4)
+		INSERT INTO wishlists (name, date,description, user_id, visible) 
+		VALUES ($1, $2, $3, $4, $5)
 		RETURNING *
 `
 	createdWishlist := &model.Wishlist{}
 
-	err := r.Get(createdWishlist, q, wishlist.Name, wishlist.Date, wishlist.Description, wishlist.UserId)
+	err := r.Get(createdWishlist, q,
+		wishlist.Name, wishlist.Date, wishlist.Description, wishlist.UserId, wishlist.Visible,
+	)
 	return createdWishlist, err
 }
 
@@ -68,14 +70,15 @@ func (r *WishlistRepositoryPostgres) Update(wishlist *model.Wishlist) (*model.Wi
 	UPDATE wishlists SET
 		name = $2,
 		description = $3,
-		date = $4
+		date = $4,
+		visible = $5
 	WHERE wishlist_uuid = $1
 	RETURNING *
 `
 	updatedWishlist := &model.Wishlist{}
 
 	err := r.Get(
-		updatedWishlist, q, wishlist.Uuid, wishlist.Name, wishlist.Description, wishlist.Date,
+		updatedWishlist, q, wishlist.Uuid, wishlist.Name, wishlist.Description, wishlist.Date, wishlist.Visible,
 	)
 
 	return updatedWishlist, err

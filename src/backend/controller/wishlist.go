@@ -25,6 +25,12 @@ func (c *WishlistController) Create(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).
 			JSON(model.ErrorResponse{Message: "Некорректные данные", Details: err.Error()})
 	}
+
+	if errs := NewValidator().Validate(wishlist); len(errs) > 0 {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ValidateErrorResponse{Message: "Некорректно заполнены поля", Fields: errs})
+	}
+
 	userId := GetUserIdFromCtx(ctx)
 	wishlist.UserId = userId
 
