@@ -39,5 +39,5 @@ func (c *ImageController) UploadImageHandler(ctx *fiber.Ctx) error {
 }
 
 func (c *ImageController) Route(router fiber.Router) {
-	router.Post("/images/upload", middleware.Protected(), c.UploadImageHandler)
+	router.Post("/images/upload", middleware.Protected(true), c.UploadImageHandler)
 }

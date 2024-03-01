@@ -259,6 +259,20 @@ func TestWishlistImpl_GetForUserByUUID(t *testing.T) {
 					Return(&model.Wishlist{Name: "2", UserId: 1}, nil)
 			},
 		},
+		{
+			name: "Public wishlist",
+			args: args{
+				userId: 2,
+				uuid:   "0",
+			},
+			want: &model.Wishlist{Name: "2", UserId: 1, Visible: model.Public},
+			mocksBehaviour: func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository) {
+				wlMock.
+					On("GetByUUID", "0").
+					Once().
+					Return(&model.Wishlist{Name: "2", UserId: 1, Visible: model.Public}, nil)
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -363,7 +377,7 @@ func TestWishlistImpl_ListWishesForWishlist(t *testing.T) {
 			},
 		},
 		{
-			name: "User isn't wishlist owner",
+			name: "User isn't private wishlist owner",
 			args: args{
 				userId:       2,
 				wishlistUuid: "0",
@@ -373,8 +387,28 @@ func TestWishlistImpl_ListWishesForWishlist(t *testing.T) {
 				wlMock.
 					On("GetByUUID", "0").
 					Once().
-					Return(&model.Wishlist{UserId: 1}, nil)
+					Return(&model.Wishlist{UserId: 1, Visible: model.Private}, nil)
 			},
+			want: &[]model.Wish{},
+		},
+		{
+			name: "Get public wishlist",
+			args: args{
+				userId:       0,
+				wishlistUuid: "0",
+			},
+			mocksBehaviour: func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository) {
+				wlMock.
+					On("GetByUUID", "0").
+					Once().
+					Return(&model.Wishlist{UserId: 1, Visible: model.Public}, nil)
+
+				wMock.
+					On("ListForWishlist", "0").
+					Once().
+					Return(&[]model.Wish{{UserId: 1}, {UserId: 1}}, nil)
+			},
+			want: &[]model.Wish{{UserId: 1}, {UserId: 1}},
 		},
 	}
 	for _, tt := range tests {

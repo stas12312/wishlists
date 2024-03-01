@@ -2,6 +2,7 @@ package impl
 
 import (
 	"errors"
+	apperror "main/error"
 	"main/model"
 	"main/repository"
 	"main/service"
@@ -31,8 +32,12 @@ func (s *WishlistImpl) ListForUser(userId int64) ([]model.Wishlist, error) {
 func (s *WishlistImpl) GetForUserByUUID(userId int64, uuid string) (*model.Wishlist, error) {
 	wishlist, err := s.WishlistRepository.GetByUUID(uuid)
 
+	if wishlist.Visible == model.Public {
+		return wishlist, nil
+	}
+
 	if wishlist.UserId != userId || err != nil {
-		return nil, errors.New("user can't get access to the wishlist")
+		return nil, apperror.NewError(apperror.NotFound, "Вишлист не найден")
 	}
 
 	return wishlist, nil
@@ -73,11 +78,19 @@ func (s *WishlistImpl) AddWish(userId int64, wish *model.Wish) (*model.Wish, err
 }
 
 func (s *WishlistImpl) ListWishesForWishlist(userId int64, wishlistUuid string) (*[]model.Wish, error) {
-	if !s.UserCanEditWishlist(userId, wishlistUuid) {
-		return nil, errors.New("user can't get access to the wishlist")
+
+	wishes := &[]model.Wish{}
+
+	wishlist, err := s.WishlistRepository.GetByUUID(wishlistUuid)
+	if err != nil {
+		return wishes, err
 	}
 
-	wishes, err := s.WishRepository.ListForWishlist(wishlistUuid)
+	if !s.UserCanViewWishlist(userId, wishlist) {
+		return wishes, apperror.NewError(apperror.NotFound, "Вишлист не найден")
+	}
+
+	wishes, err = s.WishRepository.ListForWishlist(wishlistUuid)
 	return wishes, err
 
 }
@@ -85,6 +98,15 @@ func (s *WishlistImpl) ListWishesForWishlist(userId int64, wishlistUuid string) 
 func (s *WishlistImpl) UserCanEditWishlist(userId int64, wishlistUuid string) bool {
 	wishlist, err := s.GetByUUID(wishlistUuid)
 	return wishlist.UserId == userId && err == nil
+}
+
+func (s *WishlistImpl) UserCanViewWishlist(userId int64, wishlist *model.Wishlist) bool {
+	if wishlist.Visible == model.Public {
+		return true
+	}
+
+	return wishlist.UserId == userId
+
 }
 
 func (s *WishlistImpl) DeleteWish(userId int64, wishUuid string) error {

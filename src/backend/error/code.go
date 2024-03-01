@@ -7,4 +7,6 @@ const (
 
 	WrongCode      = 110
 	CodeIsNotFound = 111
+
+	NotFound = 120
 )
