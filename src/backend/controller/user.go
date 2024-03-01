@@ -31,7 +31,7 @@ func (c *UserController) Route(router fiber.Router) {
 	auth.Post("/reset-password", c.Reset)
 	auth.Post("/check-code", c.CheckCode)
 	user := router.Group("/user")
-	user.Use(middleware.Protected())
+	user.Use(middleware.Protected(true))
 	user.Get("/me", c.Me)
 }
 
@@ -265,9 +265,8 @@ func makeToken(id int64, email, key string, expireTime time.Duration) string {
 }
 
 func GetUserIdFromCtx(ctx *fiber.Ctx) int64 {
-	token := ctx.Locals("user").(*jwt.Token)
-
-	claims := token.Claims.(jwt.MapClaims)
-
-	return int64(claims["id"].(float64))
+	if val, ok := ctx.Locals("userId").(int64); ok {
+		return val
+	}
+	return 0
 }

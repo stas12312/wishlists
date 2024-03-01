@@ -121,8 +121,7 @@ func (c *WishlistController) ListWishesForWishlistHandler(ctx *fiber.Ctx) error 
 
 	wishers, err := c.ListWishesForWishlist(userId, wishlistUuid)
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).
-			JSON(model.ErrorResponse{Details: err.Error()})
+		return err
 	}
 
 	return ctx.JSON(model.Response{Data: wishers})
@@ -177,17 +176,16 @@ func (c *WishlistController) DeleteWishlist(ctx *fiber.Ctx) error {
 func (c *WishlistController) Route(router fiber.Router) {
 
 	wishlistGroup := router.Group("/wishlists")
-	wishlistGroup.Use(middleware.Protected())
 
-	wishlistGroup.Post("/", c.Create)
-	wishlistGroup.Get("/", c.GetUserWishlists)
-	wishlistGroup.Get("/:uuid", c.GetWishlist)
-	wishlistGroup.Post("/:uuid", c.Update)
-	wishlistGroup.Get("/:uuid/wishes", c.ListWishesForWishlistHandler)
-	wishlistGroup.Delete("/:uuid", c.DeleteWishlist)
+	wishlistGroup.Post("/", middleware.Protected(true), c.Create)
+	wishlistGroup.Get("/", middleware.Protected(true), c.GetUserWishlists)
+	wishlistGroup.Get("/:uuid", middleware.Protected(false), c.GetWishlist)
+	wishlistGroup.Post("/:uuid", middleware.Protected(true), c.Update)
+	wishlistGroup.Get("/:uuid/wishes", middleware.Protected(false), c.ListWishesForWishlistHandler)
+	wishlistGroup.Delete("/:uuid", middleware.Protected(true), c.DeleteWishlist)
 
 	wishGroup := router.Group("/wishes")
-	wishGroup.Use(middleware.Protected())
+	wishGroup.Use(middleware.Protected(true))
 	wishGroup.Post("/", c.CreateWishHandler)
 	wishGroup.Delete("/:uuid", c.DeleteWishHandler)
 }
