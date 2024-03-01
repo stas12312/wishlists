@@ -22,11 +22,13 @@ function Profile(props: any) {
     useEffect(() => {
         if (shouldGetUserInfo.current) {
             shouldGetUserInfo.current = false;
-            const getList: Function = async () => {
-                const listResponse = await WishlistService.list();
-                setLists(listResponse.data.data);
-            }
-            getList();
+            store.getUserInfo().then(() => {
+                const getList: Function = async () => {
+                    const listResponse = await WishlistService.list();
+                    setLists(listResponse.data.data);
+                }
+                getList();
+            });
         }
     }, [])
 
