@@ -247,6 +247,10 @@ func (u *userServiceImpl) CheckCode(
 	hasAttempt := DBCode.AttemptsCount > 0 && checkAttempt
 	codeIsCorrect := equalsByKey || equalsByCode && hasAttempt
 
+	if !checkAttempt {
+		return DBCode, codeIsCorrect
+	}
+
 	if hasAttempt && !codeIsCorrect {
 		DBCode.AttemptsCount -= 1
 
