@@ -1192,6 +1192,34 @@ func Test_userServiceImpl_CheckCode(t *testing.T) {
 			},
 			want1: false,
 		},
+		{
+			name: "Check code without check attempt",
+			args: args{
+				code: &model.Code{
+					UUID:      "uuid",
+					Code:      "code",
+					SecretKey: "secret_key",
+				},
+				checkAttempt: false,
+			},
+
+			mockBehaviour: func(codeMock *mocks.CodeRepository) {
+				codeMock.
+					On("Get", "uuid").
+					Once().
+					Return(&model.Code{
+						UUID:          "uuid",
+						Code:          "code",
+						SecretKey:     "secret_key",
+						UserId:        1,
+						AttemptsCount: 1,
+					},
+						nil)
+			},
+
+			want:  &model.Code{UUID: "uuid", Code: "code", SecretKey: "secret_key", UserId: 1, AttemptsCount: 1},
+			want1: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
