@@ -15,7 +15,7 @@ function WishlistFooter(props: {date: string}) {
         let n = Math.abs(number);
         n %= 10;
 
-        if (n === 1 && number !== 11 && number !== 111) {
+        if (n === 1 && number % 100 !== 11) {
             return one;
         }
 
@@ -46,6 +46,8 @@ function WishlistFooter(props: {date: string}) {
         if (daysLeft > 2) {
             return `Через ${daysLeft} ${getNoun(daysLeft, 'день', 'дня', 'дней')}`;
         }
+
+        return 'Прошло';
     }
 
     return (
