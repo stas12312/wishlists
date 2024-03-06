@@ -2,6 +2,7 @@ package impl
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
@@ -9,6 +10,7 @@ import (
 	apperror "main/error"
 	"main/mail"
 	"main/model"
+	"main/oauth"
 	"main/repository"
 	"main/service"
 	"main/uof"
@@ -20,12 +22,14 @@ func NewUserService(
 	codeRepository repository.CodeRepository,
 	mailClient mail.MailClient,
 	config *config.Config,
+	manager *oauth.Manager,
 ) service.UserService {
 	return &userServiceImpl{
 		uof,
 		codeRepository,
 		mailClient,
 		config,
+		manager,
 	}
 }
 
@@ -34,6 +38,7 @@ type userServiceImpl struct {
 	repository.CodeRepository
 	mail.MailClient
 	*config.Config
+	*oauth.Manager
 }
 
 func (u *userServiceImpl) Register(ctx context.Context, email, password, name string) (*model.User, *model.Code, error) {
@@ -52,7 +57,7 @@ func (u *userServiceImpl) Register(ctx context.Context, email, password, name st
 			)
 		}
 
-		user, err = store.UserRepository().Create(email, hash, name)
+		user, err = store.UserRepository().Create(email, hash, name, false)
 		if err != nil {
 			return err
 		}
@@ -278,6 +283,75 @@ func (u *userServiceImpl) CheckCodeWithType(
 		return DBCode, false
 	}
 	return DBCode, isCorrect
+}
+
+func (u *userServiceImpl) OAuthAuth(
+	ctx context.Context,
+	userId int64,
+	provider string,
+	token string,
+) (*model.User, error) {
+
+	client := u.GetClientByProvider(provider)
+	var user *model.User
+
+	err := u.UnitOfWork.Do(ctx, func(ctx context.Context, store uof.UnitOfWorkStore) error {
+		userFromOAuth, err := client.GetUserInfo(token)
+		if err != nil {
+			return apperror.NewError(apperror.OAuthError, "Не удалось авторизоваться через OAuth")
+		}
+		existsOAuthUser, err := store.OAuthRepository().Get(provider, userFromOAuth.Id)
+		if err != nil && !errors.Is(err, sql.ErrNoRows) {
+			return apperror.NewError(apperror.DatabaseError, "Ошибка при получении OAuth пользователя")
+		}
+
+		if existsOAuthUser.UserId != 0 && userId != 0 {
+			existsOAuthUser.UserId = userId
+			err = store.OAuthRepository().Update(existsOAuthUser)
+			if err != nil {
+				return apperror.NewError(apperror.DatabaseError, "Ошибка при смене пользователя")
+			}
+			user, err = store.UserRepository().GetById(existsOAuthUser.UserId)
+			if err != nil {
+				return apperror.NewError(apperror.DatabaseError, "Ошибка при смене пользователя")
+			}
+			return nil
+		} else if existsOAuthUser.UserId != 0 {
+			user, err = store.UserRepository().GetById(existsOAuthUser.UserId)
+			if err != nil {
+				return apperror.NewError(apperror.DatabaseError, "Ошибка при получении пользователя")
+			}
+			return nil
+		}
+
+		oAuthUser := &model.OAuthUser{
+			Provider:    provider,
+			OAuthUserId: userFromOAuth.Id,
+		}
+
+		existsUser, err := store.UserRepository().GetByEmail(userFromOAuth.Email)
+		if err != nil && !errors.Is(err, sql.ErrNoRows) {
+			return apperror.NewError(apperror.DatabaseError, "Ошибка при получении пользователя")
+		}
+		if existsUser.Id != 0 {
+			oAuthUser.UserId = existsUser.Id
+		} else {
+			user, err = store.UserRepository().Create(userFromOAuth.Email, "", userFromOAuth.Name, true)
+			if err != nil {
+				return apperror.NewError(apperror.OAuthError, "Ошибка при авторизации через OAuth")
+			}
+			oAuthUser.UserId = user.Id
+		}
+		return store.OAuthRepository().Create(oAuthUser)
+
+	})
+
+	return user, err
+
+}
+
+func (u *userServiceImpl) ListOAuthProviders(ctx context.Context) []oauth.Provider {
+	return u.Manager.GetProviders()
 }
 
 func checkPasswordHash(password, hash string) bool {

@@ -30,6 +30,8 @@ func (c *UserController) Route(router fiber.Router) {
 	auth.Post("/restore", c.Restore)
 	auth.Post("/reset-password", c.Reset)
 	auth.Post("/check-code", c.CheckCode)
+	auth.Post("/oauth/", middleware.Protected(false), c.OAuth)
+	auth.Get("/oauth/providers", c.ListOAuthProviders)
 	user := router.Group("/user")
 	user.Use(middleware.Protected(true))
 	user.Get("/me", c.Me)
@@ -92,8 +94,7 @@ func (c *UserController) Auth(ctx *fiber.Ctx) error {
 
 	user, err := c.Login(ctx.UserContext(), auth.Email, auth.Password)
 	if err != nil {
-		return ctx.Status(fiber.StatusNotFound).
-			JSON(model.ErrorResponse{Message: "Некорректный email или пароль", Details: err.Error()})
+		return err
 	}
 	tokenPair := makeTokenPair(user.Id, user.Email, &c.JWT)
 	return ctx.JSON(tokenPair)
@@ -243,6 +244,37 @@ func (c *UserController) CheckCode(ctx *fiber.Ctx) error {
 
 	return ctx.JSON(model.Response{Data: true})
 
+}
+
+func (c *UserController) OAuth(ctx *fiber.Ctx) error {
+
+	type OAuthRequest struct {
+		Type  string `json:"type"`
+		Token string `json:"token"`
+	}
+
+	request := &OAuthRequest{}
+
+	if err := ctx.BodyParser(request); err != nil {
+		return ctx.Status(fiber.StatusUnprocessableEntity).
+			JSON(model.ErrorResponse{Message: "Некорректные данные", Details: err.Error()})
+	}
+
+	user, err := c.UserService.OAuthAuth(ctx.UserContext(), GetUserIdFromCtx(ctx), request.Type, request.Token)
+	if err != nil {
+		return err
+	}
+
+	tokenPair := makeTokenPair(user.Id, user.Email, &c.JWT)
+	return ctx.JSON(tokenPair)
+
+}
+
+func (c *UserController) ListOAuthProviders(ctx *fiber.Ctx) error {
+
+	providers := c.UserService.ListOAuthProviders(ctx.UserContext())
+
+	return ctx.JSON(model.Response{Data: providers})
 }
 
 func makeTokenPair(id int64, email string, jwtConfig *config.JWTConfig) model.TokenPariResponse {

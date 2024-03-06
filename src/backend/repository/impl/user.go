@@ -40,22 +40,23 @@ WHERE
 	return user, err
 }
 
-func (r *UserRepositoryPostgres) Create(email string, hash string, name string) (*model.User, error) {
+func (r *UserRepositoryPostgres) Create(email string, hash string, name string, isActive bool) (*model.User, error) {
 
 	query := `
 INSERT INTO users (email, password, name, is_active) 
-VALUES ($1, $2, $3, FALSE)
+VALUES ($1, $2, $3, $4)
 ON CONFLICT (email)
     DO UPDATE 
 	SET 
 	    email = $1,
 		password = $2,
-		name = $3
+		name = $3,
+		is_active = $4
 RETURNING *
 `
 	user := &model.User{}
 
-	err := r.Get(user, query, email, hash, name)
+	err := r.Get(user, query, email, hash, name, isActive)
 	return user, err
 }
 
