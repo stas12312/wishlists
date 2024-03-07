@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
@@ -17,6 +16,8 @@ import (
 	apperror "main/error"
 	"main/mail/impl"
 	"main/middleware"
+	"main/oauth"
+	"main/oauth/yandex"
 	repository "main/repository/impl"
 	service "main/service/impl"
 	impl2 "main/uof/impl"
@@ -57,14 +58,16 @@ func main() {
 		Addr: appConfig.Redis.Address,
 	})
 
-	log.Info(redisClient.Info(context.Background(), "server").Result())
+	yandexOauthClient := yandex.NewYandexFromEnv()
+	oAuthManager := oauth.NewManager(yandexOauthClient)
+	log.Info(oAuthManager.GetProviders())
 
 	postgresDB := sqlx_db.NewSqlDB(db)
 	uof := impl2.NewUnitOfWorkPostgres(postgresDB, impl2.StoreFactory)
 
 	codeRepository := repository.NewConfirmCodeRedis(redisClient, 60*time.Minute)
 	mailClient := impl.NewSMPTClient(&appConfig.SMTP)
-	userService := service.NewUserService(uof, codeRepository, mailClient, appConfig)
+	userService := service.NewUserService(uof, codeRepository, mailClient, appConfig, oAuthManager)
 	userController := controller.NewUserController(&userService, appConfig)
 
 	wishlistRepository := repository.NewWishlistRepository(db)

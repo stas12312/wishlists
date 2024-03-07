@@ -40,7 +40,7 @@ func TestUserController_Auth(t *testing.T) {
 					Return(&model.User{}, errors.New("errors"))
 			},
 			body:         []byte(`{"email": "user@email.ru", "password": "password"}`),
-			responseCode: 404,
+			responseCode: 500,
 		},
 		{
 			name:          "Wrong request",

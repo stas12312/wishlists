@@ -9,6 +9,8 @@ import (
 	mocks3 "main/db/mocks"
 	mocks2 "main/mail/mocks"
 	"main/model"
+	"main/oauth"
+	mocks4 "main/oauth/mocks"
 	"main/repository/mocks"
 	"main/uof"
 	"main/uof/impl"
@@ -35,6 +37,7 @@ func TestNewUserService(t *testing.T) {
 						mocks.NewUserRepository(t),
 						mocks.NewWishlistRepository(t),
 						mocks.NewWishRepository(t),
+						mocks.NewOAuthUserRepository(t),
 					)
 				},
 			)
@@ -42,7 +45,7 @@ func TestNewUserService(t *testing.T) {
 			mailClient := mocks2.NewClient(t)
 			confirmCodeRepository := mocks.NewCodeRepository(t)
 			newConfig := &config.Config{}
-			NewUserService(unitOfWork, confirmCodeRepository, mailClient, newConfig)
+			NewUserService(unitOfWork, confirmCodeRepository, mailClient, newConfig, &oauth.Manager{})
 
 		})
 	}
@@ -155,6 +158,7 @@ func Test_userServiceImpl_GetByEmail(t *testing.T) {
 						userRepository,
 						mocks.NewWishlistRepository(t),
 						mocks.NewWishRepository(t),
+						mocks.NewOAuthUserRepository(t),
 					)
 				},
 			)
@@ -214,6 +218,7 @@ func Test_userServiceImpl_GetById(t *testing.T) {
 						userRepository,
 						mocks.NewWishlistRepository(t),
 						mocks.NewWishRepository(t),
+						mocks.NewOAuthUserRepository(t),
 					)
 				},
 			)
@@ -324,6 +329,7 @@ func Test_userServiceImpl_Login(t *testing.T) {
 						userRepository,
 						mocks.NewWishlistRepository(t),
 						mocks.NewWishRepository(t),
+						mocks.NewOAuthUserRepository(t),
 					)
 				},
 			)
@@ -381,7 +387,13 @@ func Test_userServiceImpl_Register(t *testing.T) {
 					Once().
 					Return(&model.User{}, nil)
 
-				userRepository.On("Create", "email", mock.AnythingOfType("string"), "name").
+				userRepository.On(
+					"Create",
+					"email",
+					mock.AnythingOfType("string"),
+					"name",
+					false,
+				).
 					Once().
 					Return(&model.User{Name: "name", Email: "email", Id: 1}, nil)
 
@@ -427,7 +439,12 @@ func Test_userServiceImpl_Register(t *testing.T) {
 					Once().
 					Return(&model.User{}, nil)
 
-				userRepository.On("Create", "email", mock.AnythingOfType("string"), "name").
+				userRepository.On("Create",
+					"email",
+					mock.AnythingOfType("string"),
+					"name",
+					false,
+				).
 					Once().
 					Return(&model.User{}, errors.New("error"))
 			},
@@ -449,7 +466,13 @@ func Test_userServiceImpl_Register(t *testing.T) {
 					Once().
 					Return(&model.User{}, nil)
 
-				userRepository.On("Create", "email", mock.AnythingOfType("string"), "name").
+				userRepository.On(
+					"Create",
+					"email",
+					mock.AnythingOfType("string"),
+					"name",
+					false,
+				).
 					Once().
 					Return(&model.User{}, nil)
 
@@ -476,7 +499,13 @@ func Test_userServiceImpl_Register(t *testing.T) {
 					Once().
 					Return(&model.User{}, nil)
 
-				userRepository.On("Create", "email", mock.AnythingOfType("string"), "name").
+				userRepository.On(
+					"Create",
+					"email",
+					mock.AnythingOfType("string"),
+					"name",
+					false,
+				).
 					Once().
 					Return(&model.User{}, nil)
 
@@ -515,6 +544,7 @@ func Test_userServiceImpl_Register(t *testing.T) {
 						userRepository,
 						mocks.NewWishlistRepository(t),
 						mocks.NewWishRepository(t),
+						mocks.NewOAuthUserRepository(t),
 					)
 				},
 			)
@@ -679,6 +709,7 @@ func Test_userServiceImpl_Confirm(t *testing.T) {
 						userRepository,
 						mocks.NewWishlistRepository(t),
 						mocks.NewWishRepository(t),
+						mocks.NewOAuthUserRepository(t),
 					)
 				},
 			)
@@ -871,6 +902,7 @@ func Test_userServiceImpl_CheckCodeWithType(t *testing.T) {
 						userRepository,
 						mocks.NewWishlistRepository(t),
 						mocks.NewWishRepository(t),
+						mocks.NewOAuthUserRepository(t),
 					)
 				},
 			)
@@ -960,6 +992,7 @@ func Test_userServiceImpl_Restore(t *testing.T) {
 						userRepository,
 						mocks.NewWishlistRepository(t),
 						mocks.NewWishRepository(t),
+						mocks.NewOAuthUserRepository(t),
 					)
 				},
 			)
@@ -1049,6 +1082,7 @@ func Test_userServiceImpl_Reset(t *testing.T) {
 						userRepository,
 						mocks.NewWishlistRepository(t),
 						mocks.NewWishRepository(t),
+						mocks.NewOAuthUserRepository(t),
 					)
 				},
 			)
@@ -1235,6 +1269,7 @@ func Test_userServiceImpl_CheckCode(t *testing.T) {
 						mocks.NewUserRepository(t),
 						mocks.NewWishlistRepository(t),
 						mocks.NewWishRepository(t),
+						mocks.NewOAuthUserRepository(t),
 					)
 				},
 			)
@@ -1249,6 +1284,116 @@ func Test_userServiceImpl_CheckCode(t *testing.T) {
 			}
 			if got1 != tt.want1 {
 				t.Errorf("CheckCode() got1 = %v, want %v", got1, tt.want1)
+			}
+		})
+	}
+}
+
+func Test_userServiceImpl_OAuthAuth(t *testing.T) {
+	type args struct {
+		ctx      context.Context
+		userId   int64
+		provider string
+		token    string
+	}
+	tests := []struct {
+		name          string
+		mockBehaviour func(
+			userMock *mocks.UserRepository,
+			oauthMock *mocks.OAuthUserRepository,
+			clientMock *mocks4.Client,
+		)
+		args    args
+		want    *model.User
+		wantErr bool
+	}{
+		{
+			name: "OK",
+			mockBehaviour: func(
+				userMock *mocks.UserRepository,
+				oauthMock *mocks.OAuthUserRepository,
+				clientMock *mocks4.Client,
+			) {
+
+				clientMock.
+					On("GetProvider").
+					Once().
+					Return("provider")
+
+				clientMock.
+					On("GetUserInfo", "token").
+					Once().
+					Return(&oauth.User{Id: "1", Email: "email", Name: "Name"}, nil)
+
+				oauthMock.
+					On("Get", "provider", "1").
+					Once().
+					Return(&model.OAuthUser{}, nil)
+
+				userMock.
+					On("GetByEmail", "email").
+					Once().
+					Return(&model.User{}, nil)
+
+				userMock.
+					On("Create", "email", "", "Name", true).
+					Once().
+					Return(
+						&model.User{Id: int64(1000), Email: "email", Name: "Name", Password: "", IsActive: true},
+						nil,
+					)
+
+				oauthMock.
+					On("Create", &model.OAuthUser{Provider: "provider", OAuthUserId: "1", UserId: 1000}).
+					Once().
+					Return(nil)
+
+			},
+			want: &model.User{Id: int64(1000), Email: "email", Name: "Name", Password: "", IsActive: true},
+			args: args{
+				context.Background(),
+				int64(0),
+				"provider",
+				"token",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			userRepository := mocks.NewUserRepository(t)
+			oAuthRepository := mocks.NewOAuthUserRepository(t)
+			oAuthClient := mocks4.NewClient(t)
+
+			tt.mockBehaviour(userRepository, oAuthRepository, oAuthClient)
+
+			manager := oauth.NewManager(oAuthClient)
+			unitOfWork := impl.NewUnitOfWorkPostgres(
+				mocks3.DB{},
+				func(connection db.Connection) uof.UnitOfWorkStore {
+					return impl.NewUofStore(
+						userRepository,
+						mocks.NewWishlistRepository(t),
+						mocks.NewWishRepository(t),
+						oAuthRepository,
+					)
+				},
+			)
+			codeRepository := mocks.NewCodeRepository(t)
+
+			u := &userServiceImpl{
+				UnitOfWork:     unitOfWork,
+				CodeRepository: codeRepository,
+				Manager:        manager,
+			}
+
+			got, err := u.OAuthAuth(tt.args.ctx, tt.args.userId, tt.args.provider, tt.args.token)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("OAuthAuth() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("OAuthAuth() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
