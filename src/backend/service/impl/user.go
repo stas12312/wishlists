@@ -244,14 +244,13 @@ func (u *userServiceImpl) CheckCode(
 
 	equalsByCode := DBCode.Code == code.Code && DBCode.SecretKey == code.SecretKey
 	equalsByKey := DBCode.Key == code.Key
-	hasAttempt := DBCode.AttemptsCount > 0 && checkAttempt
-	codeIsCorrect := equalsByKey || equalsByCode && hasAttempt
+	codeIsCorrect := equalsByKey || equalsByCode
 
 	if !checkAttempt {
 		return DBCode, codeIsCorrect
 	}
 
-	if hasAttempt && !codeIsCorrect {
+	if checkAttempt && !codeIsCorrect {
 		DBCode.AttemptsCount -= 1
 
 		if DBCode.AttemptsCount == 0 {
