@@ -5,7 +5,7 @@ import Profile from "./pages/Profile";
 import Navigation from "./components/Navigation";
 
 import * as React from 'react';
-import {redirect, Route, Routes, useLocation, useNavigate} from "react-router-dom";
+import {Route, Routes, useLocation, useNavigate} from "react-router-dom";
 import {useContext, useEffect, useRef} from "react";
 import {Context} from "./index";
 import {observer} from "mobx-react";
@@ -80,6 +80,10 @@ function App() {
         navigate('/auth/register');
     };
 
+    const handleReset = () => {
+
+    }
+
     return (
         <Container maxWidth="xl"
                    sx={store.isAuth ? {
@@ -88,7 +92,8 @@ function App() {
                        minWidth: 'auto'
                    }}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <Navigation isAuth={store.isAuth}/>
+                <Navigation isAuth={store.isAuth}
+                            onClick={handleReset}/>
                 <Routes>
                     <Route
                         path="/"
@@ -99,7 +104,7 @@ function App() {
                            element={<SignIn/>}
                            errorElement={<ErrorBoundary/>}/>
                     <Route path="/auth/register"
-                           element={<SignUp/>}
+                           element={<SignUp />}
                            errorElement={<ErrorBoundary/>}/>
                     <Route path="/wishlists"
                            element={

@@ -35,6 +35,9 @@ function Navigation(props: any) {
                         color="inherit"
                         variant="outlined"
                         component={RouterLink}
+                        onClick={() => {
+                            store.setResetPage(true);
+                        }}
                         to="/auth/register">
                         Регистрация
                     </Button>}

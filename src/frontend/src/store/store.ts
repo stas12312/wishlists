@@ -1,18 +1,16 @@
 import {IUser} from "../models/IUser";
 import {makeAutoObservable} from "mobx";
 import AuthService from "../services/AuthService";
-import {jwtDecode} from "jwt-decode";
 import UserService from "../services/UserService";
 import {AxiosResponse} from "axios";
-import WishlistService from "../services/WishlistService";
 import {IWish} from "../models/IWish";
-import {WishlistResponse} from "../models/response/WishlistResponse";
 import {AuthResponse} from "../models/response/AuthResponse";
 
 export default class Store {
     user = {} as IUser;
     isAuth = false;
     wishlist = [] as IWish[];
+    reset = true;
 
     constructor() {
         makeAutoObservable(this);
@@ -24,6 +22,10 @@ export default class Store {
 
     setUser(user: IUser) {
         this.user = user;
+    }
+
+    setResetPage(reset: boolean) {
+        this.reset = reset;
     }
 
     async login(email: string, password: string) {
@@ -50,13 +52,13 @@ export default class Store {
         }
     }
 
-    async confirm(uuid: string, secret_key: string, code: string | null, by_url?: boolean) {
+    async confirm(uuid: string, key: string, code: string | null, by_url?: boolean) {
         try {
             let response: AxiosResponse<AuthResponse>;
             if (by_url) {
-                response = await AuthService.confirm_by_url(uuid, secret_key);
+                response = await AuthService.confirm_by_url(uuid, key);
             } else {
-                response = await AuthService.confirm(uuid, <string>code, secret_key);
+                response = await AuthService.confirm(uuid, <string>code, key);
             }
             return response.data;
         } catch (error: any) {
