@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {observer} from "mobx-react-lite";
 import {
     Dialog,
@@ -9,7 +9,7 @@ import {
     Button, IconButton
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
-import {DatePicker} from "@mui/x-date-pickers";
+import {DatePicker} from '@mui/x-date-pickers/DatePicker';
 import dayjs, { Dayjs } from 'dayjs';
 
 
@@ -27,7 +27,19 @@ function WishlistEditDialog(props: any) {
 
     const [name, setName] = useState(wishlistName || '');
     const [description, setDescription] = useState(wishlistDescription || '');
-    const [date, setDate] = React.useState<Dayjs | null>(dayjs(wishlistDate || null));
+    const [date, setDate] = React.useState<Dayjs | null>(wishlistDate ? dayjs(wishlistDate) : null);
+    const [cleared, setCleared] = React.useState<boolean>(false);
+
+    useEffect(() => {
+        if (cleared) {
+            const timeout = setTimeout(() => {
+                setCleared(false);
+            }, 1500);
+
+            return () => clearTimeout(timeout);
+        }
+        return () => {};
+    }, [cleared]);
 
     const handleSubmitChanges = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
@@ -38,10 +50,15 @@ function WishlistEditDialog(props: any) {
         }
     }
 
+    const handleClose = () => {
+        setDate(null);
+        onClose();
+    }
+
     return (
         <Dialog
             open={open}
-            onClose={onClose}
+            onClose={handleClose}
             PaperProps={{
                 component: 'form'
             }}
@@ -49,7 +66,7 @@ function WishlistEditDialog(props: any) {
             <DialogTitle>{dialogTitle}</DialogTitle>
             <IconButton
                 aria-label="close"
-                onClick={onClose}
+                onClick={handleClose}
                 sx={{
                     position: 'absolute',
                     right: 8,
@@ -79,13 +96,11 @@ function WishlistEditDialog(props: any) {
                 />
                 <DatePicker
                     onChange={(value) => setDate(value)}
-                    minDate={dayjs()}
+                    disablePast
                     label="Дата события"
                     value={date}
                     slotProps={{
-                        actionBar: {
-                            actions: ['clear'],
-                        },
+                        field: { clearable: true, onClear: () => setCleared(true) }
                     }}
                     sx={{
                         marginTop: 1
