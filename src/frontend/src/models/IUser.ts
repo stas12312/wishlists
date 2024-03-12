@@ -3,3 +3,13 @@ export interface IUser {
     id: number;
     name: string;
 }
+
+export interface IRegResponse {
+    details: string;
+    message?: string;
+    data: {
+        uuid: string;
+        secret_key: string;
+        key: string;
+    }
+}
