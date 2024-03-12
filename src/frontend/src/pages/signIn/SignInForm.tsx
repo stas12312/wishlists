@@ -77,7 +77,11 @@ function SignInForm() {
                         type="password"
                         id="password"
                     />
-                    {Boolean(error) && <FormHelperText id="my-helper-text" error>
+                    {Boolean(error) && <FormHelperText error sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        fontSize: 18
+                    }}>
                         {error}
                     </FormHelperText>}
                     <FormControlLabel
