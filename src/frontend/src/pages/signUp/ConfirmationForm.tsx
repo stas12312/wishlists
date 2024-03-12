@@ -29,7 +29,11 @@ export default function ConfirmationForm(props: { handleConfirmation: Function, 
                 variant="standard"
                 onChange={e => setCode(e.target.value)}
             />
-            {Boolean(props.error) && <FormHelperText id="my-helper-text" error>
+            {Boolean(props.error) && <FormHelperText error sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                fontSize: 18
+            }}>
                 {props.error}
             </FormHelperText>}
             <Button variant="contained"
