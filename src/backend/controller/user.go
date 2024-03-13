@@ -35,6 +35,7 @@ func (c *UserController) Route(router fiber.Router) {
 	user := router.Group("/user")
 	user.Use(middleware.Protected(true))
 	user.Get("/me", c.Me)
+	user.Post("/change-password", middleware.Protected(true), c.ChangePassword)
 }
 
 func (c *UserController) Me(ctx *fiber.Ctx) error {
@@ -275,6 +276,34 @@ func (c *UserController) ListOAuthProviders(ctx *fiber.Ctx) error {
 	providers := c.UserService.ListOAuthProviders(ctx.UserContext())
 
 	return ctx.JSON(model.Response{Data: providers})
+}
+
+func (c *UserController) ChangePassword(ctx *fiber.Ctx) error {
+
+	type ChangePasswordRequest struct {
+		OldPassword string `json:"old_password"`
+		NewPassword string `json:"new_password" validate:"required,min=8,max=50,password-symbols"`
+	}
+
+	request := &ChangePasswordRequest{}
+
+	if err := ctx.BodyParser(request); err != nil {
+		return apperror.NewError(apperror.ValidateError, "Некоректные данные")
+	}
+
+	if errs := NewValidator().Validate(request); len(errs) > 0 {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ValidateErrorResponse{Message: "Некорректно заполнены поля", Fields: errs})
+	}
+
+	userId := GetUserIdFromCtx(ctx)
+	err := c.UserService.ChangePassword(ctx.UserContext(), userId, request.OldPassword, request.NewPassword)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(model.Response{Data: "ok"})
+
 }
 
 func makeTokenPair(id int64, email string, jwtConfig *config.JWTConfig) model.TokenPariResponse {
