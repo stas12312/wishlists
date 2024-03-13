@@ -16,6 +16,24 @@ type UserService struct {
 	mock.Mock
 }
 
+// ChangePassword provides a mock function with given fields: ctx, userId, oldPassword, newPassword
+func (_m *UserService) ChangePassword(ctx context.Context, userId int64, oldPassword string, newPassword string) error {
+	ret := _m.Called(ctx, userId, oldPassword, newPassword)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ChangePassword")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64, string, string) error); ok {
+		r0 = rf(ctx, userId, oldPassword, newPassword)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // CheckCode provides a mock function with given fields: ctx, code, withAttempt
 func (_m *UserService) CheckCode(ctx context.Context, code *model.Code, withAttempt bool) (*model.Code, bool) {
 	ret := _m.Called(ctx, code, withAttempt)

@@ -7,6 +7,7 @@ import (
 	"main/config"
 	"main/db"
 	mocks3 "main/db/mocks"
+	apperror "main/error"
 	mocks2 "main/mail/mocks"
 	"main/model"
 	"main/oauth"
@@ -1395,6 +1396,91 @@ func Test_userServiceImpl_OAuthAuth(t *testing.T) {
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("OAuthAuth() got = %v, want %v", got, tt.want)
 			}
+		})
+	}
+}
+
+func Test_userServiceImpl_ChangePassword(t *testing.T) {
+	type args struct {
+		oldPassword string
+		newPassword string
+	}
+	tests := []struct {
+		name          string
+		args          args
+		mockBehaviour func(userMock *mocks.UserRepository)
+		wantErr       bool
+		wantCode      int
+	}{
+		{
+			name: "OK",
+			args: args{
+				"old-password",
+				"new-password",
+			},
+			mockBehaviour: func(userMock *mocks.UserRepository) {
+
+				password, _ := hashPassword("old-password")
+				userMock.
+					On("GetById", int64(1)).
+					Once().
+					Return(&model.User{Id: 1, Password: password}, nil)
+
+				userMock.
+					On("Update", mock.Anything).
+					Once().
+					Return(&model.User{}, nil)
+			},
+		},
+		{
+			name: "Wrong password",
+			args: args{
+				"wrong-old-password",
+				"new-password",
+			},
+			mockBehaviour: func(userMock *mocks.UserRepository) {
+				password, _ := hashPassword("old-password")
+				userMock.
+					On("GetById", int64(1)).
+					Once().
+					Return(&model.User{Id: 1, Password: password}, nil)
+			},
+			wantErr:  true,
+			wantCode: apperror.WrongPassword,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			userRepository := mocks.NewUserRepository(t)
+			tt.mockBehaviour(userRepository)
+
+			unitOfWork := impl.NewUnitOfWorkPostgres(
+				mocks3.DB{},
+				func(connection db.Connection) uof.UnitOfWorkStore {
+					return impl.NewUofStore(
+						userRepository,
+						mocks.NewWishlistRepository(t),
+						mocks.NewWishRepository(t),
+						mocks.NewOAuthUserRepository(t),
+					)
+				},
+			)
+			codeRepository := mocks.NewCodeRepository(t)
+
+			u := &userServiceImpl{
+				UnitOfWork:     unitOfWork,
+				CodeRepository: codeRepository,
+			}
+			err := u.ChangePassword(context.Background(), 1, tt.args.oldPassword, tt.args.newPassword)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ChangePassword() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			var appError *apperror.Error
+			if err != nil && errors.As(err, &appError) && appError.Code != tt.wantCode {
+				t.Errorf("Wrong code %v != %v", appError.Code, tt.wantCode)
+			}
+
 		})
 	}
 }

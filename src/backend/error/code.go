@@ -11,4 +11,6 @@ const (
 
 	NotFound      = 120
 	DatabaseError = 121
+
+	ValidateError = 130
 )

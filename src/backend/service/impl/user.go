@@ -353,6 +353,26 @@ func (u *userServiceImpl) ListOAuthProviders(ctx context.Context) []oauth.Provid
 	return u.Manager.GetProviders()
 }
 
+func (u *userServiceImpl) ChangePassword(ctx context.Context, userId int64, oldPassword, newPassword string) error {
+
+	return u.UnitOfWork.Do(ctx, func(ctx context.Context, store uof.UnitOfWorkStore) error {
+
+		user, err := store.UserRepository().GetById(userId)
+		if err != nil {
+			return apperror.NewError(apperror.DatabaseError, "Ошибка при получении пользователя")
+		}
+
+		if user.Password != "" && !checkPasswordHash(oldPassword, user.Password) {
+			return apperror.NewError(apperror.WrongPassword, "Неверный пароль")
+		}
+
+		user.Password, _ = hashPassword(newPassword)
+		user, err = store.UserRepository().Update(user)
+		return err
+	})
+
+}
+
 func checkPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil

@@ -19,4 +19,5 @@ type UserService interface {
 	Restore(ctx context.Context, email string) (*model.Code, error)
 	Reset(ctx context.Context, code *model.Code, password string) (*model.User, error)
 	CheckCode(ctx context.Context, code *model.Code, withAttempt bool) (*model.Code, bool)
+	ChangePassword(ctx context.Context, userId int64, oldPassword, newPassword string) error
 }
