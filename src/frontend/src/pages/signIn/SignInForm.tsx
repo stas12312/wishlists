@@ -63,12 +63,7 @@ function SignInForm() {
                     <TextField
                         onChange={e => setPassword(e.target.value)}
                         value={password}
-                        inputProps={{
-                            autoComplete: 'new-password',
-                            form: {
-                                autoComplete: 'off',
-                            },
-                        }}
+                        autoComplete="new-password"
                         margin="normal"
                         required
                         fullWidth
@@ -89,6 +84,7 @@ function SignInForm() {
                         label="Запомнить меня"
                     />
                     <SignButton isSignUp={false}
+                                type="submit"
                                 buttonTitle="Войти"
                                 email={email}
                                 password={password}
