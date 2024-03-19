@@ -12,7 +12,7 @@ import {Context} from "../index";
 import {observer} from "mobx-react-lite";
 import {Navigate, useNavigate} from "react-router-dom";
 import SignButton from "../components/SignButton";
-import ConfirmationForm from "./signUp/ConfirmationForm";
+import ConfirmationForm from "../components/ConfirmationForm";
 import {IRegResponse} from "../models/IUser";
 
 function SignUp() {
@@ -31,16 +31,17 @@ function SignUp() {
         key: ''
     });
     const {store} = useContext(Context);
+    let timeInterval: NodeJS.Timer;
 
     useEffect(() => {
-        if (store.reset) {
-            setConfirmation(false);
+        return () => {
+            clearInterval(timeInterval);
         }
     }, [store.reset])
 
     useEffect(() => {
         if (stub) {
-            setInterval(() => {
+            timeInterval = setInterval(() => {
                 setCounter((counter) => counter - 1000)
             }, 1000);
         }
@@ -62,6 +63,7 @@ function SignUp() {
                 localStorage.setItem('refresh_token', request.refresh_token);
                 setStub(true);
                 setTimeout(() => {
+                    clearInterval(timeInterval);
                     store.setAuth(true);
                     navigate('/wishlists');
                 }, counter);

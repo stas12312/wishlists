@@ -16,7 +16,9 @@ export default function ConfirmationForm(props: { handleConfirmation: Function, 
         <Box component="form"
              onSubmit={handleConfirmation}
              noValidate sx={{mt: 1}}>
-            <Typography component="h1" variant="h5">
+            <Typography component="h1"
+                        variant="h5"
+                        align="center">
                 Введите код подтверждения
             </Typography>
             <TextField

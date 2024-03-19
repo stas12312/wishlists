@@ -8,7 +8,8 @@ import {observer} from "mobx-react-lite";
 import {useLocation, useNavigate} from "react-router-dom";
 import Button from "@mui/material/Button";
 import {Context} from "../../index";
-import {AuthRestore} from "../../models/response/AuthResponse";
+import ConfirmationForm from "../../components/ConfirmationForm";
+import AuthService from "../../services/AuthService";
 
 function PasswordRestore() {
     const {state} = useLocation();
@@ -16,12 +17,31 @@ function PasswordRestore() {
     const navigate = useNavigate();
 
     const [email, setEmail] = useState<string>(state?.email || '');
+    const [confirmation, setConfirmation] = React.useState(false);
+    const [resetInfo, setResetInfo] = React.useState({
+        uuid: '',
+        code: '',
+        secret_key: ''
+    });
+
+    const handleConfirmation = async () => {
+        const checkRestore = await store.checkReset(resetInfo);
+        if (checkRestore) {
+            navigate('/auth/reset-password', {state: checkRestore});
+        }
+    }
 
     const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        const checkRestore = await store.checkRestore(email) as AuthRestore;
-        if (checkRestore) {
-            navigate('/auth/reset-password', {state: checkRestore});
+        const restoreData = await AuthService.restore(email);
+        if (restoreData) {
+            setResetInfo({
+                uuid: restoreData.data.uuid,
+                code: restoreData.data.code,
+                secret_key: restoreData.data.secret_key
+            });
+            setConfirmation(true);
+            store.setResetPage(false);
         }
     }
 
@@ -34,7 +54,7 @@ function PasswordRestore() {
             minWidth: 300
         }}>
             <CssBaseline/>
-            <Box
+            {Boolean(!confirmation) && store.reset && <Box
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -42,7 +62,12 @@ function PasswordRestore() {
                 }}
             >
                 <Typography component="h1" variant="h5">
-                    Войти
+                    Восстановление пароля
+                </Typography>
+                <Typography variant="body1"
+                            align="center"
+                            sx={{mt: 1}}>
+                    Введите email, на который будет выслано письмо для восстановления пароля
                 </Typography>
                 <Box component="form" noValidate sx={{mt: 1}}>
                     <TextField
@@ -61,10 +86,13 @@ function PasswordRestore() {
                             fullWidth
                             sx={{mt: 3, mb: 2, bgcolor: '#d37089'}}
                             onClick={handleClick}>
-                        Войти
+                        Восстановить
                     </Button>
                 </Box>
-            </Box>
+            </Box>}
+
+            {Boolean(confirmation) && !store.reset &&
+                <ConfirmationForm handleConfirmation={handleConfirmation}/>}
         </Container>
     );
 }
