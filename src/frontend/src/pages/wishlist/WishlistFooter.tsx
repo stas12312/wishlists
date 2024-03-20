@@ -5,28 +5,12 @@ import Typography from '@mui/material/Typography';
 import dayjs from "dayjs";
 import {Chip} from "@mui/material";
 import relativeTime from "dayjs/plugin/relativeTime";
+import {getNoun} from "../../helpers/Functions";
 
 
 function WishlistFooter(props: {date: string}) {
     dayjs.extend(relativeTime);
     const dateToString: string = dayjs(props.date).format('DD.MM.YYYY');
-
-    const getNoun = (number: number, one: string, two: string, several: string) => {
-        let n = Math.abs(number);
-        n %= 10;
-
-        if (n === 1 && number % 100 !== 11) {
-            return one;
-        }
-
-        if (n >= 5 && n <= 20 || n === 0) {
-            return several;
-        }
-        if (n >= 2 && n <= 4) {
-            return two;
-        }
-        return several;
-    }
 
     const getDaysLeft = () => {
         const daysLeft: number = dayjs(props.date).diff(dayjs(), 'day');
