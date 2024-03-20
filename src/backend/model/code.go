@@ -23,6 +23,11 @@ type Code struct {
 	AttemptsCount int    `redis:"attempt_count" json:"-"`
 }
 
+type ShortCode struct {
+	UUID string `json:"uuid"`
+	Key  string `redis:"key" json:"key"`
+}
+
 func NewCode(
 	userId int64,
 	codeLength int,
