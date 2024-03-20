@@ -13,17 +13,25 @@ import Container from '@mui/material/Container';
 import {observer} from "mobx-react-lite";
 import {useLocation} from "react-router-dom";
 import SignButton from "../../components/SignButton";
-import {FormHelperText} from "@mui/material";
+import {FormHelperText, IconButton, InputAdornment} from "@mui/material";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import {Visibility, VisibilityOff} from "@mui/icons-material";
 
 function SignInForm() {
     const {state} = useLocation();
 
     const [email, setEmail] = useState<string>(state?.email || '');
     const [password, setPassword] = useState<string>('');
+    const [showPassword, setShowPassword] = React.useState(false);
     const [error, setError] = useState('');
 
     const handleError = (errorDetails: string) => {
         setError(errorDetails);
+    };
+
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
     };
 
     return (
@@ -60,17 +68,35 @@ function SignInForm() {
                         name="email"
                         autoFocus
                     />
-                    <TextField
-                        onChange={e => setPassword(e.target.value)}
+                    <OutlinedInput
+                        sx={{mb: 2}}
+                        onChange={e => {
+                            setPassword(e.target.value);
+                            if (error) {
+                                setError('');
+                            }
+                        }}
+                        type={showPassword ? 'text' : 'password'}
                         value={password}
                         autoComplete="new-password"
-                        margin="normal"
+                        endAdornment={
+                            <InputAdornment position="end">
+                                <IconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={handleClickShowPassword}
+                                    onMouseDown={handleMouseDownPassword}
+                                    edge="end"
+                                >
+                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                            </InputAdornment>
+                        }
                         required
                         fullWidth
-                        name="password"
-                        label="Пароль"
-                        type="password"
-                        id="password"
+                        id="newPassword"
+                        label="Новый пароль"
+                        name="newPassword"
+                        autoFocus
                     />
                     {Boolean(error) && <FormHelperText error sx={{
                         display: 'flex',
