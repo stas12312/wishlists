@@ -101,10 +101,8 @@ export default class Store {
         }
     }
 
-    async checkRestore(email: string) {
+    async checkReset(restoreData: {uuid: string, code: string, secret_key: string}) {
         try {
-            const restore = await AuthService.restore(email);
-            const restoreData = restore.data;
             const checkCode = await AuthService.check_code({
                 uuid: restoreData.uuid,
                 code: restoreData.code as string,
