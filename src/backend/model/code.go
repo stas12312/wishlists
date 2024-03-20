@@ -24,8 +24,8 @@ type Code struct {
 }
 
 type ShortCode struct {
-	UUID string `json:"uuid"`
-	Key  string `redis:"key" json:"key"`
+	UUID      string `json:"uuid"`
+	SecretKey string `redis:"secret_key" json:"secret_key"`
 }
 
 func NewCode(
