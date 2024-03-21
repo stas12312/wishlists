@@ -173,7 +173,12 @@ function Wishes(props: IWishLists) {
                     }
                     title={
                         <Typography variant="subtitle1"
-                                    sx={{fontWeight: 700}}>
+                                    sx={{fontWeight: 700,
+                                        overflow: 'hidden',
+                                        display: '-webkit-box',
+                                        textOverflow: 'ellipsis',
+                                        WebkitLineClamp: '1',
+                                        WebkitBoxOrient: 'vertical'}}>
                             {name}
                         </Typography>
                     }
