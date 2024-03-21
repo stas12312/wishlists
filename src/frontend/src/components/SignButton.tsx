@@ -35,19 +35,15 @@ export default function SignButton(props: any) {
 
     const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        if (name) {
-            const request: IRegResponse = isSignUp ? await store.registration(name, email, password) : await store.login(email, password);
+        const request: IRegResponse = isSignUp ? await store.registration(name, email, password) : await store.login(email, password);
 
-            if (request?.message) {
-                setError(request.message);
-                handleError(request.message)
-                return;
-            }
-            if (isSignUp) {
-                handleSubmit(request);
-            }
-        } else {
-            handleError('Некорректо заполнены поля');
+        if (request?.message) {
+            setError(request.message);
+            handleError(request.message)
+            return;
+        }
+        if (isSignUp) {
+            handleSubmit(request);
         }
     };
 

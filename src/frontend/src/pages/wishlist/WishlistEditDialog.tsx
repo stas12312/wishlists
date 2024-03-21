@@ -6,11 +6,16 @@ import {
     DialogContent,
     DialogActions,
     TextField,
-    Button, IconButton
+    Button,
+    IconButton,
+    InputLabel
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
 import dayjs, { Dayjs } from 'dayjs';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from '@mui/material/FormControl';
 
 
 function WishlistEditDialog(props: any) {
@@ -22,6 +27,7 @@ function WishlistEditDialog(props: any) {
         wishlistName,
         wishlistDescription,
         wishlistDate,
+        wishlistVisible,
         onUpdate
     } = props;
 
@@ -29,6 +35,7 @@ function WishlistEditDialog(props: any) {
     const [description, setDescription] = useState(wishlistDescription || '');
     const [date, setDate] = React.useState<Dayjs | null>(wishlistDate ? dayjs(wishlistDate) : null);
     const [cleared, setCleared] = React.useState<boolean>(false);
+    const [visible, setVisible] = React.useState(0);
 
     useEffect(() => {
         if (cleared) {
@@ -41,12 +48,17 @@ function WishlistEditDialog(props: any) {
         return () => {};
     }, [cleared]);
 
+    const handleChange = (event: SelectChangeEvent) => {
+        const visibleItem = Number(event.target.value);
+        setVisible(visibleItem);
+    };
+
     const handleSubmitChanges = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
         if (onSubmit) {
-            onSubmit(event, name, description, date);
+            onSubmit(event, name, description, date, visible);
         } else if (onUpdate) {
-            onUpdate(event, name, description, date)
+            onUpdate(event, name, description, date, visible)
         }
     }
 
@@ -103,9 +115,26 @@ function WishlistEditDialog(props: any) {
                         field: { clearable: true, onClear: () => setCleared(true) }
                     }}
                     sx={{
-                        marginTop: 1
+                        marginTop: 1,
+                        marginBottom: 2
                     }}
                     format="DD.MM.YYYY"/>
+                <FormControl size="small" sx={{
+                    display: 'flex',
+                    width: '250px'
+                }}>
+                    <InputLabel htmlFor="uncontrolled-native">
+                        Доступен
+                    </InputLabel>
+                    <Select
+                        label='Доступен'
+                        defaultValue={wishlistVisible || '0'}
+                        onChange={handleChange}
+                    >
+                        <MenuItem value={'0'}>Только мне</MenuItem>
+                        <MenuItem value={'1'}>Всем у кого есть ссылка</MenuItem>
+                    </Select>
+                </FormControl>
             </DialogContent>
             <DialogActions>
                 <Button type="submit" onClick={handleSubmitChanges}>Сохранить</Button>
