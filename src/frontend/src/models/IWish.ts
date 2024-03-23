@@ -8,5 +8,6 @@ export interface IWish {
     date: string;
     visible: number;
     user_id: number;
+    wishes_count?: number;
     is_active?: boolean;
 }

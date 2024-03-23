@@ -16,6 +16,7 @@ import WishlistService from "../../services/WishlistService";
 import WishlistEditDialog from "./WishlistEditDialog";
 import {Dayjs} from "dayjs";
 import WishlistFooter from "./WishlistFooter";
+import {getNoun} from "../../helpers/Functions";
 
 interface IWishLists extends IWish {
     onItemsChange: Function
@@ -152,8 +153,10 @@ function Wishes(props: IWishLists) {
         user_id,
         date,
         visible,
+        wishes_count,
         onItemsChange
     } = props;
+
     return (
         <Grid item
               justifyContent="center"
@@ -172,6 +175,7 @@ function Wishes(props: IWishLists) {
                         />
                     }
                     title={
+                    <div>
                         <Typography variant="subtitle1"
                                     sx={{fontWeight: 700,
                                         overflow: 'hidden',
@@ -181,6 +185,13 @@ function Wishes(props: IWishLists) {
                                         WebkitBoxOrient: 'vertical'}}>
                             {name}
                         </Typography>
+                        <Typography variant="subtitle2"
+                                    color="text.secondary">
+                            {wishes_count ?
+                                getNoun(wishes_count, 'подарок', 'подарка', 'подарков') :
+                                'Нет подарков'}
+                        </Typography>
+                    </div>
                     }
                 />
                 <CardContent>
@@ -220,6 +231,7 @@ function Wishlists(props: IWishList) {
                                 created_at={wishlist.created_at}
                                 key={wishlist.uuid}
                                 visible={wishlist.visible}
+                                wishes_count={wishlist.wishes_count}
                                 onItemsChange={onItemsChange}/>
 
                     )
