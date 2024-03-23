@@ -12,7 +12,7 @@ import {IWish} from "../models/IWish";
 import WishlistService from "../services/WishlistService";
 import {Dayjs} from "dayjs";
 
-function Profile(props: any) {
+function Profile() {
 
     const {store} = useContext(Context);
     const [open, setOpen] = useState(false);
@@ -32,9 +32,9 @@ function Profile(props: any) {
         }
     }, [])
 
-    const submitWindow = async (event: React.MouseEvent<HTMLButtonElement>, name: string, description: string, date: Dayjs | null) => {
+    const submitWindow = async (event: React.MouseEvent<HTMLButtonElement>, name: string, description: string, date: Dayjs | null, visible: number) => {
         event.preventDefault();
-        await WishlistService.create({name, description, date});
+        await WishlistService.create({name, description, date, visible});
         const newList = await WishlistService.list();
         setLists(newList.data.data);
         setOpen(false);

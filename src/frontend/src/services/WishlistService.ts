@@ -2,12 +2,12 @@ import $api from "../http";
 import {AxiosResponse} from "axios";
 import {WishlistResponse} from "../models/response/WishlistResponse";
 import {Dayjs} from "dayjs";
-import {IWish} from "../models/IWish";
 
 interface IWishlistServise {
     name: string;
     description: string;
     date: Dayjs | null;
+    visible: number;
     uuid?: string;
 }
 
@@ -16,7 +16,8 @@ export default class WishlistService {
         return $api.post<WishlistResponse>('/api/wishlists/', {
             name: params.name,
             description: params.description,
-            date: params.date
+            date: params.date,
+            visible: params.visible
         })
     }
 
@@ -32,7 +33,8 @@ export default class WishlistService {
         return $api.post<WishlistResponse>('/api/wishlists/' + params.uuid, {
             name: params.name,
             description: params.description,
-            date: params.date
+            date: params.date,
+            visible: params.visible
         })
     }
 

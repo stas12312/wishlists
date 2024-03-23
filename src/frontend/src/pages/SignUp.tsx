@@ -122,7 +122,7 @@ function SignUp() {
                             id="email"
                             label="Почта"
                             name="email"
-                            autoComplete="email"
+                            autoComplete="new-email"
                         />
                         <TextField
                             onChange={e => setPassword(e.target.value)}
@@ -130,6 +130,7 @@ function SignUp() {
                             margin="normal"
                             required
                             fullWidth
+                            autoComplete="new-password"
                             name="password"
                             label="Пароль"
                             type="password"

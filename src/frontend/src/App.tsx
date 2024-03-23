@@ -108,9 +108,7 @@ function App() {
                            errorElement={<ErrorBoundary/>}/>
                     <Route path="/wishlists"
                            element={
-                               <Profile
-                                   name={'name'}
-                                   isAuth={store.isAuth}/>}
+                               <Profile/>}
                            errorElement={<ErrorBoundary/>}/>
                     <Route path="/auth/restore"
                            element={<PasswordRestore/>}

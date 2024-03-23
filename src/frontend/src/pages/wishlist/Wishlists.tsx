@@ -28,6 +28,7 @@ function ActionList(props: IWishLists) {
         name,
         description,
         date,
+        visible,
         onItemsChange
     } = props;
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -70,13 +71,15 @@ function ActionList(props: IWishLists) {
         (event: React.MouseEvent<HTMLButtonElement>,
          name: string,
          description: string,
-         date: Dayjs
+         date: Dayjs,
+         visibleItem: number
         ) => {
             event.preventDefault();
             WishlistService.update({
                 name,
                 description,
                 date,
+                visible: visibleItem,
                 uuid
             }).then(() => {
                 onItemsChange()
@@ -119,6 +122,7 @@ function ActionList(props: IWishLists) {
                                     wishlistUuid={uuid}
                                     wishlistDescription={description}
                                     wishlistDate={date}
+                                    wishlistVisible={visible}
                 />
                 <MenuItem onClick={handleDelete}>
                     Удалить
@@ -148,6 +152,7 @@ function Wishes(props: IWishLists) {
         uuid,
         user_id,
         date,
+        visible,
         wishes_count,
         onItemsChange
     } = props;
@@ -165,13 +170,19 @@ function Wishes(props: IWishLists) {
                                     description={description}
                                     date={date}
                                     user_id={user_id}
+                                    visible={visible}
                                     onItemsChange={onItemsChange}
                         />
                     }
                     title={
                     <div>
                         <Typography variant="subtitle1"
-                                    sx={{fontWeight: 700}}>
+                                    sx={{fontWeight: 700,
+                                        overflow: 'hidden',
+                                        display: '-webkit-box',
+                                        textOverflow: 'ellipsis',
+                                        WebkitLineClamp: '1',
+                                        WebkitBoxOrient: 'vertical'}}>
                             {name}
                         </Typography>
                         <Typography variant="subtitle2"
@@ -219,6 +230,7 @@ function Wishlists(props: IWishList) {
                                 date={wishlist.date}
                                 created_at={wishlist.created_at}
                                 key={wishlist.uuid}
+                                visible={wishlist.visible}
                                 wishes_count={wishlist.wishes_count}
                                 onItemsChange={onItemsChange}/>
 
