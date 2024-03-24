@@ -4,7 +4,7 @@ import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import {FormHelperText} from "@mui/material";
+import {FormHelperText, IconButton, InputAdornment, InputLabel} from "@mui/material";
 
 // Стили и шрифты
 import '@fontsource/roboto/300.css';
@@ -14,9 +14,13 @@ import {Navigate, useNavigate} from "react-router-dom";
 import SignButton from "../components/SignButton";
 import ConfirmationForm from "../components/ConfirmationForm";
 import {IRegResponse} from "../models/IUser";
+import FormControl from "@mui/material/FormControl";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import {Visibility, VisibilityOff} from "@mui/icons-material";
 
 function SignUp() {
 
+    const [showPassword, setShowPassword] = React.useState(false);
     const navigate = useNavigate();
     const [name, setName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
@@ -69,6 +73,11 @@ function SignUp() {
             }
         }
 
+        const handleClickShowPassword = () => setShowPassword((show) => !show);
+        const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+            event.preventDefault();
+        };
+
         return (
             <Container component="main" maxWidth="xs" sx={{
                 marginTop: 8,
@@ -112,18 +121,34 @@ function SignUp() {
                             name="email"
                             autoComplete="new-email"
                         />
-                        <TextField
-                            onChange={e => setPassword(e.target.value)}
-                            value={password}
-                            margin="normal"
-                            required
-                            fullWidth
-                            autoComplete="new-password"
-                            name="password"
-                            label="Пароль"
-                            type="password"
-                            id="password"
-                        />
+                        <FormControl fullWidth variant="outlined"
+                                     sx={{mt: 1}}>
+                            <InputLabel required htmlFor="password">Пароль</InputLabel>
+                            <OutlinedInput
+                                onChange={e => setPassword(e.target.value)}
+                                type={showPassword ? 'text' : 'password'}
+                                value={password}
+                                autoComplete="new-password"
+                                endAdornment={
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            onClick={handleClickShowPassword}
+                                            onMouseDown={handleMouseDownPassword}
+                                            edge="end"
+                                        >
+                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                }
+                                required
+                                fullWidth
+                                label="Пароль"
+                                id="password"
+                                name="password"
+                                autoFocus
+                            />
+                        </FormControl>
                         {Boolean(error) && <FormHelperText error sx={{
                             display: 'flex',
                             justifyContent: 'center',

@@ -9,8 +9,9 @@ import {useLocation, useNavigate} from "react-router-dom";
 import Button from "@mui/material/Button";
 import {Context} from "../../index";
 import AuthService from "../../services/AuthService";
-import {FormHelperText, IconButton, InputAdornment} from "@mui/material";
+import {FormHelperText, IconButton, InputAdornment, InputLabel} from "@mui/material";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
+import FormControl from "@mui/material/FormControl";
 
 function PasswordReset() {
     const {state} = useLocation();
@@ -114,61 +115,67 @@ function PasswordReset() {
                         Сброс пароля
                     </Typography>
                     <Box component="form" noValidate sx={{mt: 1}}>
-                        <OutlinedInput
-                            sx={{mb: 2}}
-                            onChange={e => {
-                                setPassword(e.target.value);
-                                if (error) {
-                                    setError('');
+                        <FormControl required fullWidth variant="outlined">
+                            <InputLabel htmlFor="newPassword">Пароль</InputLabel>
+                            <OutlinedInput
+                                sx={{mb: 2}}
+                                onChange={e => {
+                                    setPassword(e.target.value);
+                                    if (error) {
+                                        setError('');
+                                    }
+                                }}
+                                type={showPassword ? 'text' : 'password'}
+                                value={password}
+                                endAdornment={
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            onClick={handleClickShowPassword}
+                                            onMouseDown={handleMouseDownPassword}
+                                            edge="end"
+                                        >
+                                            {showPassword ? <VisibilityOff/> : <Visibility/>}
+                                        </IconButton>
+                                    </InputAdornment>
                                 }
-                            }}
-                            type={showPassword ? 'text' : 'password'}
-                            value={password}
-                            endAdornment={
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        aria-label="toggle password visibility"
-                                        onClick={handleClickShowPassword}
-                                        onMouseDown={handleMouseDownPassword}
-                                        edge="end"
-                                    >
-                                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                                    </IconButton>
-                                </InputAdornment>
-                            }
-                            required
-                            fullWidth
-                            id="newPassword"
-                            label="Новый пароль"
-                            name="newPassword"
-                            autoFocus
-                        />
-                        <OutlinedInput
-                            onChange={e => {
-                                setConfirmPassword(e.target.value)
-                                if (error) {
-                                    setError('');
+                                required
+                                fullWidth
+                                id="newPassword"
+                                label="Новый пароль"
+                                name="newPassword"
+                                autoFocus
+                            />
+                        </FormControl>
+                        <FormControl required fullWidth variant="outlined">
+                            <InputLabel htmlFor="confirmNewPassword">Повторите пароль</InputLabel>
+                            <OutlinedInput
+                                onChange={e => {
+                                    setConfirmPassword(e.target.value)
+                                    if (error) {
+                                        setError('');
+                                    }
+                                }}
+                                type={showConfirmPassword ? 'text' : 'password'}
+                                value={confirmPassword}
+                                endAdornment={
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            onClick={handleClickShowConfirmPassword}
+                                            onMouseDown={handleMouseDownPassword}
+                                            edge="end"
+                                        >
+                                            {showConfirmPassword ? <VisibilityOff/> : <Visibility/>}
+                                        </IconButton>
+                                    </InputAdornment>
                                 }
-                            }}
-                            type={showConfirmPassword ? 'text' : 'password'}
-                            value={confirmPassword}
-                            endAdornment={
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        onClick={handleClickShowConfirmPassword}
-                                        onMouseDown={handleMouseDownPassword}
-                                        edge="end"
-                                    >
-                                        {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                                    </IconButton>
-                                </InputAdornment>
-                            }
-                            required
-                            fullWidth
-                            id="confirmNewPassword"
-                            label="Повторите пароль"
-                            name="confirmNewPassword"
-                        />
+                                required
+                                fullWidth
+                                id="confirmNewPassword"
+                                label="Повторите пароль"
+                                name="confirmNewPassword"
+                            />
+                        </FormControl>
                         {Boolean(error) && <FormHelperText error sx={{
                             display: 'flex',
                             justifyContent: 'center',
