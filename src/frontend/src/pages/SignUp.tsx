@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
@@ -28,24 +28,9 @@ function SignUp() {
     const [counter, setCounter] = React.useState(5000);
     const [userInfo, setUserInfo] = React.useState({
         uuid: '',
-        key: ''
+        secret_key: ''
     });
     const {store} = useContext(Context);
-    let timeInterval: NodeJS.Timer;
-
-    useEffect(() => {
-        return () => {
-            clearInterval(timeInterval);
-        }
-    }, [store.reset])
-
-    useEffect(() => {
-        if (stub) {
-            timeInterval = setInterval(() => {
-                setCounter((counter) => counter - 1000)
-            }, 1000);
-        }
-    }, [stub]);
 
     if (store.isAuth) {
         return (<Navigate replace to={"/wishlists"}/>)
@@ -55,15 +40,18 @@ function SignUp() {
         };
 
         const handleConfirmation = async (code: string) => {
-            const request = await store.confirm(userInfo.uuid, userInfo.key, code);
+            const request = await store.confirm(userInfo.uuid, userInfo.secret_key, code);
             if (request?.message) {
                 setConfirmError(request.message);
             } else {
+                setStub(true);
                 localStorage.setItem('access_token', request.access_token);
                 localStorage.setItem('refresh_token', request.refresh_token);
-                setStub(true);
+                let timerId = setInterval(() => {
+                    setCounter((counter) => counter - 1000)
+                }, 1000);
                 setTimeout(() => {
-                    clearInterval(timeInterval);
+                    clearInterval(timerId);
                     store.setAuth(true);
                     navigate('/wishlists');
                 }, counter);
@@ -74,7 +62,7 @@ function SignUp() {
             if (request) {
                 setUserInfo({
                     uuid: request.data.uuid,
-                    key: request.data.key
+                    secret_key: request.data.secret_key
                 });
                 setConfirmation(true);
                 store.setResetPage(false);
@@ -90,7 +78,7 @@ function SignUp() {
                 minWidth: stub ? 700 : 300
             }}>
                 <CssBaseline/>
-                {(Boolean(!confirmation) && store.reset && !Boolean(stub)) && <Box
+                {(Boolean(!confirmation) || store.reset) && <Box
                     sx={{
                         display: 'flex',
                         flexDirection: 'column',
@@ -158,7 +146,7 @@ function SignUp() {
                 <ConfirmationForm handleConfirmation={handleConfirmation}
                                   error={confirmError}/>}
 
-                {Boolean(stub) && <Box
+                {(Boolean(stub) && !store.reset) && <Box
                     sx={{
                         display: 'flex',
                         flexDirection: 'column',

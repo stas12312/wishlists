@@ -20,28 +20,31 @@ function PasswordRestore() {
     const [confirmation, setConfirmation] = React.useState(false);
     const [resetInfo, setResetInfo] = React.useState({
         uuid: '',
-        code: '',
         secret_key: ''
     });
+    const [error, setError] = useState('');
 
-    const handleConfirmation = async () => {
-        const checkRestore = await store.checkReset(resetInfo);
-        if (checkRestore) {
+    const handleConfirmation = async (code: string) => {
+        const checkRestore = await store.checkReset({...resetInfo, code});
+        if (checkRestore && !checkRestore.message) {
             navigate('/auth/reset-password', {state: checkRestore});
+        } else {
+            setError(checkRestore.message);
         }
     }
 
     const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        const restoreData = await AuthService.restore(email);
-        if (restoreData) {
-            setResetInfo({
-                uuid: restoreData.data.uuid,
-                code: restoreData.data.code,
-                secret_key: restoreData.data.secret_key
-            });
-            setConfirmation(true);
-            store.setResetPage(false);
+        if (email) {
+            const restoreData = await AuthService.restore(email);
+            if (restoreData) {
+                setResetInfo({
+                    uuid: restoreData.data.uuid,
+                    secret_key: restoreData.data.secret_key
+                });
+                setConfirmation(true);
+                store.setResetPage(false);
+            }
         }
     }
 
@@ -92,7 +95,8 @@ function PasswordRestore() {
             </Box>}
 
             {Boolean(confirmation) && !store.reset &&
-                <ConfirmationForm handleConfirmation={handleConfirmation}/>}
+                <ConfirmationForm handleConfirmation={handleConfirmation}
+                                  error={error}/>}
         </Container>
     );
 }

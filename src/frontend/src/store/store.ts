@@ -112,7 +112,7 @@ export default class Store {
                 return restoreData;
             }
         } catch (e: any) {
-            console.log(e.response?.data);
+            return e.response?.data;
         }
     }
 }
