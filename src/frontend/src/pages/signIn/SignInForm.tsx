@@ -13,9 +13,10 @@ import Container from '@mui/material/Container';
 import {observer} from "mobx-react-lite";
 import {useLocation} from "react-router-dom";
 import SignButton from "../../components/SignButton";
-import {FormHelperText, IconButton, InputAdornment} from "@mui/material";
+import {FormHelperText, IconButton, InputAdornment, InputLabel} from "@mui/material";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
+import FormControl from "@mui/material/FormControl";
 
 function SignInForm() {
     const {state} = useLocation();
@@ -68,36 +69,39 @@ function SignInForm() {
                         name="email"
                         autoFocus
                     />
-                    <OutlinedInput
-                        sx={{mb: 2}}
-                        onChange={e => {
-                            setPassword(e.target.value);
-                            if (error) {
-                                setError('');
+                    <FormControl fullWidth variant="outlined">
+                        <InputLabel htmlFor="password">Пароль</InputLabel>
+                        <OutlinedInput
+                            sx={{mb: 2}}
+                            onChange={e => {
+                                setPassword(e.target.value);
+                                if (error) {
+                                    setError('');
+                                }
+                            }}
+                            type={showPassword ? 'text' : 'password'}
+                            value={password}
+                            autoComplete="new-password"
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={handleClickShowPassword}
+                                        onMouseDown={handleMouseDownPassword}
+                                        edge="end"
+                                    >
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
                             }
-                        }}
-                        type={showPassword ? 'text' : 'password'}
-                        value={password}
-                        autoComplete="new-password"
-                        endAdornment={
-                            <InputAdornment position="end">
-                                <IconButton
-                                    aria-label="toggle password visibility"
-                                    onClick={handleClickShowPassword}
-                                    onMouseDown={handleMouseDownPassword}
-                                    edge="end"
-                                >
-                                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                                </IconButton>
-                            </InputAdornment>
-                        }
-                        required
-                        fullWidth
-                        id="newPassword"
-                        label="Новый пароль"
-                        name="newPassword"
-                        autoFocus
-                    />
+                            required
+                            fullWidth
+                            label="Пароль"
+                            id="password"
+                            name="password"
+                            autoFocus
+                        />
+                    </FormControl>
                     {Boolean(error) && <FormHelperText error sx={{
                         display: 'flex',
                         justifyContent: 'center',
