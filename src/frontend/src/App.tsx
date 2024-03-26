@@ -17,8 +17,12 @@ import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import Typography from "@mui/material/Typography";
 import {Alert} from "@mui/lab";
 import {Modal as BaseModal} from "@mui/material";
-import PasswordRestore from "./pages/signIn/PasswordRestore";
-import PasswordReset from "./pages/signIn/PasswordReset";
+import PasswordRestore from "./pages/SignIn/PasswordRestore";
+import PasswordReset from "./pages/SignIn/PasswordReset";
+import EmptyWishesCard from "./pages/WishesCard/WishesCard";
+import CreateWish from "./pages/WishesCard/CreateWish";
+import Sidebar from "./components/Sidebar";
+import Grid from "@mui/material/Grid";
 
 const errorStyle = {
     position: 'absolute' as 'absolute',
@@ -94,44 +98,54 @@ function App() {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <Navigation isAuth={store.isAuth}
                             onClick={handleReset}/>
-                <Routes>
-                    <Route
-                        path="/"
-                        element={<Welcome/>}
-                        errorElement={<ErrorBoundary/>}
-                    />
-                    <Route path="/auth/login"
-                           element={<SignIn/>}
-                           errorElement={<ErrorBoundary/>}/>
-                    <Route path="/auth/register"
-                           element={<SignUp />}
-                           errorElement={<ErrorBoundary/>}/>
-                    <Route path="/wishlists"
-                           element={
-                               <Profile/>}
-                           errorElement={<ErrorBoundary/>}/>
-                    <Route path="/auth/restore"
-                           element={<PasswordRestore/>}
-                           errorElement={<ErrorBoundary/>}/>
-                    <Route path="/auth/reset-password"
-                           element={<PasswordReset/>}
-                           errorElement={<ErrorBoundary/>}/>
-                </Routes>
-                <BaseModal
-                    open={open}
-                    onClose={handleClose}
-                    aria-labelledby="modal-modal-title"
-                    aria-describedby="modal-modal-description"
-                >
-                    <Alert severity="error" sx={errorStyle}>
-                        <Typography id="modal-modal-title" variant="h6" component="h2">
-                            Ошибка!
-                        </Typography>
-                        <Typography id="modal-modal-description" sx={{mt: 2}}>
-                            {error}
-                        </Typography>
-                    </Alert>
-                </BaseModal>
+                {Boolean(store.isAuth) && <Grid container spacing={2}
+                      columns={16}
+                      rowSpacing={1}
+                      columnSpacing={{xs: 1, sm: 2, md: 3}}>
+                    <Sidebar />
+                    <Routes>
+                        <Route
+                            path="/"
+                            element={<Welcome/>}
+                            errorElement={<ErrorBoundary/>}
+                        />
+                        <Route path="/auth/login"
+                               element={<SignIn/>}
+                               errorElement={<ErrorBoundary/>}/>
+                        <Route path="/auth/register"
+                               element={<SignUp />}
+                               errorElement={<ErrorBoundary/>}/>
+                        <Route path="/wishlists"
+                               element={
+                                   <Profile/>}
+                               errorElement={<ErrorBoundary/>}/>
+                        <Route path="/auth/restore"
+                               element={<PasswordRestore/>}
+                               errorElement={<ErrorBoundary/>}/>
+                        <Route path="/auth/reset-password"
+                               element={<PasswordReset/>}
+                               errorElement={<ErrorBoundary/>}/>
+                        <Route path="/wishlists/:uuid"
+                               element={<EmptyWishesCard/>}/>
+                        <Route path="/wishlists/:uuid/wishes"
+                               element={<CreateWish/>}/>
+                    </Routes>
+                    <BaseModal
+                        open={open}
+                        onClose={handleClose}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                    >
+                        <Alert severity="error" sx={errorStyle}>
+                            <Typography id="modal-modal-title" variant="h6" component="h2">
+                                Ошибка!
+                            </Typography>
+                            <Typography id="modal-modal-description" sx={{mt: 2}}>
+                                {error}
+                            </Typography>
+                        </Alert>
+                    </BaseModal>
+                </Grid>}
             </LocalizationProvider>
         </Container>
     );

@@ -1,16 +1,16 @@
 import React, {createContext} from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
 import App from './App';
 import {BrowserRouter} from "react-router-dom";
 import Store from "./store/store";
 import {createTheme, ThemeProvider, ThemeOptions} from "@mui/material/styles";
 
-interface  State {
+interface State {
     store: Store
 }
+
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+    document.getElementById('root') as HTMLElement
 );
 
 const store = new Store();
@@ -25,7 +25,7 @@ const themeOptions: ThemeOptions = {
             main: '#56799c',
         },
         background: {
-            default: '#c9cce2',
+            default: '#c9cce2'
         },
         error: {
             main: '#e74444',
@@ -40,10 +40,13 @@ const themeOptions: ThemeOptions = {
             primary: '#4c4ca9',
             secondary: '#6d6faa',
             disabled: 'rgba(80,78,147,0.35)'
-        },
+        }
     },
     shape: {
         borderRadius: 20
+    },
+    typography: {
+        fontFamily: ['Comfortaa', 'Roboto', 'Amatic SC',].join(',')
     }
 };
 
@@ -54,15 +57,15 @@ export const Context = createContext<State>({
 });
 
 root.render(
-  <React.StrictMode>
-      <Context.Provider value={{
-          store
-      }}>
-          <BrowserRouter>
-              <ThemeProvider theme={themeDefault}>
-                  <App />
-              </ThemeProvider>
-          </BrowserRouter>
-      </Context.Provider>
-  </React.StrictMode>
+    <React.StrictMode>
+        <Context.Provider value={{
+            store
+        }}>
+            <BrowserRouter>
+                <ThemeProvider theme={themeDefault}>
+                    <App/>
+                </ThemeProvider>
+            </BrowserRouter>
+        </Context.Provider>
+    </React.StrictMode>
 );

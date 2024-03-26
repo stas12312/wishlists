@@ -16,6 +16,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from '@mui/material/FormControl';
+import {unmountComponentAtNode} from "react-dom";
 
 
 function WishlistEditDialog(props: any) {
@@ -31,11 +32,19 @@ function WishlistEditDialog(props: any) {
         onUpdate
     } = props;
 
-    const [name, setName] = useState(wishlistName || '');
-    const [description, setDescription] = useState(wishlistDescription || '');
+    const [name, setName] = React.useState(wishlistName);
+    const [description, setDescription] = React.useState(wishlistDescription || '');
     const [date, setDate] = React.useState<Dayjs | null>(wishlistDate ? dayjs(wishlistDate) : null);
     const [cleared, setCleared] = React.useState<boolean>(false);
     const [visible, setVisible] = React.useState(0);
+
+    useEffect(() => {
+        setName(wishlistName);
+        setDescription(wishlistDescription);
+        setDate(wishlistDate);
+        setVisible(wishlistVisible);
+    }, [wishlistName,wishlistDescription,wishlistDate,wishlistVisible]);
+
 
     useEffect(() => {
         if (cleared) {

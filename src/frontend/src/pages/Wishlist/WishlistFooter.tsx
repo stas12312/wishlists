@@ -8,7 +8,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import {getNoun} from "../../helpers/Functions";
 
 
-function WishlistFooter(props: {date: string}) {
+function WishlistFooter(props: { date: string }) {
     dayjs.extend(relativeTime);
     const dateToString: string = dayjs(props.date).format('DD.MM.YYYY');
 

@@ -1,5 +1,6 @@
 import $api from "../http";
 import {AxiosResponse} from "axios";
+import {WishCardResponse} from "../models/response/WishCardResponse";
 import {WishlistResponse} from "../models/response/WishlistResponse";
 import {Dayjs} from "dayjs";
 
@@ -25,8 +26,12 @@ export default class WishlistService {
         return $api.get('/api/wishlists/' )
     }
 
-    static  async get(uuid: string): Promise<AxiosResponse<WishlistResponse>> {
+    static  async get(uuid: string): Promise<AxiosResponse<WishCardResponse>> {
         return $api.get('/api/wishlists/' + uuid)
+    }
+
+    static  async get_wishes(uuid: string): Promise<AxiosResponse<WishlistResponse>> {
+        return $api.get(`/api/wishlists/${uuid}/wishes/`);
     }
 
     static  async update(params: IWishlistServise): Promise<AxiosResponse<WishlistResponse>> {

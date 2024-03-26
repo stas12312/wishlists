@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {IconButton} from '@mui/material';
+import {IconButton, useTheme} from '@mui/material';
 import {Menu as MenuIcon} from '@mui/icons-material';
 import {AppBar, Toolbar, Button} from "@mui/material";
 import {Link as RouterLink} from 'react-router-dom';
@@ -9,22 +9,12 @@ import {Context} from "../index";
 
 function Navigation(props: any) {
     const {store} = useContext(Context);
-
+    const theme = useTheme();
     return (
-        <AppBar position="static" sx={{boxShadow: 0}}>
-            <Toolbar sx={{display: 'flex', justifyContent: 'space-between', boxShadow: 0}}>
-                <IconButton
-                    size="large"
-                    edge="start"
-                    aria-label="menu"
-                    sx={{mr: 2}}
-                >
-                    <MenuIcon/>
-                </IconButton>
-
+        <AppBar position="static" sx={{boxShadow: 0, bgcolor: theme.palette.background.default}}>
+            <Toolbar sx={{display: 'flex', justifyContent: 'flex-end', boxShadow: 0}}>
                 <div>
                     {!props.isAuth && <Button
-                        color="inherit"
                         sx={{mr: 1, justifyContent: 'flex-end'}}
                         component={RouterLink}
                         to="/auth/login">
@@ -32,7 +22,6 @@ function Navigation(props: any) {
                     </Button>}
 
                     {!props.isAuth && <Button
-                        color="inherit"
                         variant="outlined"
                         component={RouterLink}
                         onClick={() => {
@@ -43,14 +32,12 @@ function Navigation(props: any) {
                     </Button>}
 
                     {props.isAuth && <Button
-                        color="inherit"
                         component={RouterLink}
                         to="/wishlists">
                         Профиль
                     </Button>}
 
                     {props.isAuth && <Button
-                        color="inherit"
                         variant="outlined"
                         onClick={async () => {
                             await store.logout();

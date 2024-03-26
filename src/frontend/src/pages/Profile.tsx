@@ -3,11 +3,11 @@ import {observer} from "mobx-react-lite";
 import Grid from "@mui/material/Grid";
 import Typography from '@mui/material/Typography';
 import {Context} from "../index";
-import Wishlists from "./wishlist/Wishlists";
+import Wishlists from "./Wishlist/Wishlists";
 import {Button} from "@mui/material";
 import {Navigate} from "react-router-dom";
-import WishlistEditDialog from "./wishlist/WishlistEditDialog";
-import EmptyWishlist from "./wishlist/EmptyWishlist";
+import WishlistEditDialog from "./Wishlist/WishlistEditDialog";
+import EmptyWishlist from "./Wishlist/EmptyWishlist";
 import {IWish} from "../models/IWish";
 import WishlistService from "../services/WishlistService";
 import {Dayjs} from "dayjs";
@@ -59,51 +59,33 @@ function Profile() {
 
     if (store.isAuth) {
         return (
-            <Grid container spacing={2}
-                  columns={16}
-                  rowSpacing={1}
-                  columnSpacing={{xs: 1, sm: 2, md: 3}}>
-                <Grid item
-                      justifyContent="center"
-                      mt={10}
-                      xs={4}>
-                    <Typography component="h5"
-                                variant="h5"
-                                color="text.secondary"
-                                sx={{fontWeight: 700}}>
-                        {store.user['name']}
-                    </Typography>
-                </Grid>
+            <>
                 <Grid item
                       mt={10}
                       xs={12}>
                     <Grid container alignItems="baseline" direction="row">
                         <Grid item
-                              xs={4}>
+                              display="flex"
+                              flexDirection="row">
                             <Typography component="h1"
                                         variant="h3"
                                         color="text.secondary"
-                                        sx={{fontWeight: 900}}>
+                                        sx={{fontWeight: 900, fontFamily: 'Amatic SC'}}>
                                 Мои вишлисты
                             </Typography>
-                        </Grid>
-                        <Grid item
-                              xs={8}>
-                            <React.Fragment>
-                                <Button
-                                    color="inherit"
-                                    variant="outlined"
-                                    onClick={handleClickOpen}
-                                    sx={{borderColor: '#6d6faa'}}>
-                                    <Typography color="text.secondary">
-                                        Создать
-                                    </Typography>
-                                </Button>
-                                <WishlistEditDialog open={open}
-                                                    onClose={handleClose}
-                                                    onSubmit={submitWindow}
-                                                    dialogTitle="Создать вишлист"/>
-                            </React.Fragment>
+                            <Button
+                                color="inherit"
+                                variant="outlined"
+                                onClick={handleClickOpen}
+                                sx={{borderColor: '#6d6faa', ml: 2}}>
+                                <Typography color="text.secondary">
+                                    Создать
+                                </Typography>
+                            </Button>
+                            <WishlistEditDialog open={open}
+                                                onClose={handleClose}
+                                                onSubmit={submitWindow}
+                                                dialogTitle="Создать вишлист"/>
                         </Grid>
                     </Grid>
                     <Grid container>
@@ -113,7 +95,7 @@ function Profile() {
                         </Grid>
                     </Grid>
                 </Grid>
-            </Grid>
+            </>
         );
 
     } else {

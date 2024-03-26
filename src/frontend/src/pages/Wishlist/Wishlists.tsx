@@ -1,15 +1,16 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {observer} from "mobx-react-lite";
 import Typography from '@mui/material/Typography';
 import {IWish} from "../../models/IWish";
 import Grid from "@mui/material/Grid";
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import CardActionArea from '@mui/material/CardActionArea';
 import {
     Card,
     CardHeader,
     CardContent,
-    IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button
+    IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button, useTheme
 } from "@mui/material";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import WishlistService from "../../services/WishlistService";
@@ -17,6 +18,9 @@ import WishlistEditDialog from "./WishlistEditDialog";
 import {Dayjs} from "dayjs";
 import WishlistFooter from "./WishlistFooter";
 import {getNoun} from "../../helpers/Functions";
+import {Link} from 'react-router-dom';
+import EmptyWishlist from "./EmptyWishlist";
+import CssBaseline from "@mui/material/CssBaseline";
 
 interface IWishLists extends IWish {
     onItemsChange: Function
@@ -37,17 +41,21 @@ function ActionList(props: IWishLists) {
     const open = Boolean(anchorEl);
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.stopPropagation();
+        event.preventDefault();
         setAnchorEl(event.currentTarget);
     };
     const handleClose = () => {
         setAnchorEl(null);
     };
 
-    const handleDelete = () => {
+    const handleDelete = (event: { stopPropagation: () => void; }) => {
+        event.stopPropagation();
         setOpenWarningDialog(true);
     }
 
-    const handleOpenEditDialog = () => {
+    const handleOpenEditDialog = (event: { stopPropagation: () => void; }) => {
+        event.stopPropagation();
         setOpenEditDialog(true);
     }
 
@@ -55,7 +63,7 @@ function ActionList(props: IWishLists) {
         setOpenEditDialog(false);
     }
 
-    const handleSubmitDelete =  useCallback(
+    const handleSubmitDelete = useCallback(
         () => {
             WishlistService.delete(uuid).then(() => {
                 onItemsChange();
@@ -94,13 +102,22 @@ function ActionList(props: IWishLists) {
                         aria-controls={open ? 'basic-menu' : undefined}
                         aria-haspopup="true"
                         aria-expanded={open ? 'true' : undefined}
-                        onClick={handleClick}>
+                        onClick={handleClick}
+                        onMouseDown={(e) => {
+                            e.stopPropagation();
+                        }}>
                 <MoreVertIcon/>
             </IconButton>
             <Menu id="basic-menu"
                   anchorEl={anchorEl}
                   open={open}
                   onClose={handleClose}
+                  onClick={(e) => {
+                      e.stopPropagation();
+                  }}
+                  onMouseDown={(e) => {
+                      e.stopPropagation();
+                  }}
                   MenuListProps={{
                       'aria-labelledby': 'basic-button',
                   }}
@@ -157,47 +174,67 @@ function Wishes(props: IWishLists) {
         onItemsChange
     } = props;
 
+    const [shadow, setShadow] = useState(1);
+    const theme = useTheme();
+
     return (
         <Grid item
               justifyContent="center"
               mt={10}
               xs={3}>
-            <Card sx={{borderRadius: '16px'}}>
-                <CardHeader
-                    action={
-                        <ActionList uuid={uuid}
-                                    name={name}
-                                    description={description}
-                                    date={date}
-                                    user_id={user_id}
-                                    visible={visible}
-                                    onItemsChange={onItemsChange}
-                        />
-                    }
-                    title={
-                    <div>
-                        <Typography variant="subtitle1"
-                                    sx={{fontWeight: 700,
-                                        overflow: 'hidden',
-                                        display: '-webkit-box',
-                                        textOverflow: 'ellipsis',
-                                        WebkitLineClamp: '1',
-                                        WebkitBoxOrient: 'vertical'}}>
-                            {name}
-                        </Typography>
-                        <Typography variant="subtitle2"
-                                    color="text.secondary">
-                            {wishes_count ?
-                                getNoun(wishes_count, 'подарок', 'подарка', 'подарков') :
-                                'Нет подарков'}
-                        </Typography>
-                    </div>
-                    }
-                />
-                <CardContent>
-                    {/* TODO: Заменить на контентную часть карточки вишлиста*/}
-                    {Boolean(date) && <WishlistFooter date={date}/>}
-                </CardContent>
+            <Card sx={{
+                borderRadius: '16px',
+                borderColor: 'background.paper',
+                height: '100%',
+                boxShadow: shadow ? 'none' : `0 0 10px ${shadow} ${theme.palette.text.secondary}`
+            }}
+                  onMouseOver={() => {
+                      setShadow(0);
+                  }}
+                  onMouseOut={() => {
+                      setShadow(1);
+                  }}>
+                <CardActionArea component={Link}
+                                to={`/wishlists/${uuid}`}>
+                    <CardHeader
+                        action={
+                            <ActionList uuid={uuid}
+                                        name={name}
+                                        description={description}
+                                        date={date}
+                                        user_id={user_id}
+                                        visible={visible}
+                                        onItemsChange={onItemsChange}
+                            />
+                        }
+                        title={
+                            <div>
+                                <Typography variant="subtitle1"
+                                            sx={{
+                                                fontWeight: 700,
+                                                overflow: 'hidden',
+                                                display: '-webkit-box',
+                                                textOverflow: 'ellipsis',
+                                                WebkitLineClamp: '1',
+                                                WebkitBoxOrient: 'vertical'
+                                            }}>
+                                    {name}
+                                </Typography>
+                                <Typography variant="subtitle2"
+                                            color="text.secondary">
+                                    {wishes_count ?
+                                        getNoun(wishes_count, 'подарок', 'подарка', 'подарков') :
+                                        'Нет подарков'}
+                                </Typography>
+                            </div>
+                        }
+                    />
+                    <CardContent>
+                        {/* TODO: Заменить на контентную часть карточки вишлиста*/}
+                        {Boolean(!wishes_count) && <EmptyWishlist/>}
+                        {Boolean(date) && <WishlistFooter date={date}/>}
+                    </CardContent>
+                </CardActionArea>
             </Card>
         </Grid>
     )
@@ -216,6 +253,7 @@ function Wishlists(props: IWishList) {
 
     return (
         <>
+            <CssBaseline enableColorScheme/>
             <Grid container spacing={2}
                   columns={16}
                   rowSpacing={1}
@@ -233,7 +271,6 @@ function Wishlists(props: IWishList) {
                                 visible={wishlist.visible}
                                 wishes_count={wishlist.wishes_count}
                                 onItemsChange={onItemsChange}/>
-
                     )
                 })}
             </Grid>
