@@ -60,7 +60,7 @@ export default function SignButton(props: any) {
             <Button variant="contained"
                     type="submit"
                     fullWidth
-                    sx={{mt: 3, mb: 2, bgcolor: '#d37089'}}
+                    sx={{mt: 3, mb: 2}}
                     onClick={handleClick}>
                 {buttonTitle}
             </Button>

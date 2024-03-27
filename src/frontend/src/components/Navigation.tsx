@@ -6,14 +6,25 @@ import {Link as RouterLink} from 'react-router-dom';
 import {observer} from "mobx-react-lite";
 import {useContext} from "react";
 import {Context} from "../index";
+import Box from "@mui/material/Box";
 
 function Navigation(props: any) {
     const {store} = useContext(Context);
     const theme = useTheme();
     return (
-        <AppBar position="static" sx={{boxShadow: 0, bgcolor: theme.palette.background.default}}>
-            <Toolbar sx={{display: 'flex', justifyContent: 'flex-end', boxShadow: 0}}>
-                <div>
+        <AppBar position="static" sx={{boxShadow: 0, bgcolor: theme.palette.background.default, mt: 1}}>
+            <Toolbar sx={{display: 'flex', justifyContent: 'space-between', boxShadow: 0}}>
+                <Button component={RouterLink}
+                        sx={{borderRadius: '50%'}}
+                        to="/">
+                    <Box
+                        component="img"
+                        alt="gift"
+                        src={`http://localhost:3000/img/constellation.png`}
+                        height={48}
+                    />
+                </Button>
+                <Box>
                     {!props.isAuth && <Button
                         sx={{mr: 1, justifyContent: 'flex-end'}}
                         component={RouterLink}
@@ -46,8 +57,7 @@ function Navigation(props: any) {
                         to="/auth/login">
                         Выйти
                     </Button>}
-                </div>
-
+                </Box>
             </Toolbar>
         </AppBar>
     );

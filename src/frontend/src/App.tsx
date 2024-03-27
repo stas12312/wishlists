@@ -23,6 +23,7 @@ import EmptyWishesCard from "./pages/WishesCard/WishesCard";
 import CreateWish from "./pages/WishesCard/CreateWish";
 import Sidebar from "./components/Sidebar";
 import Grid from "@mui/material/Grid";
+import CssBaseline from "@mui/material/CssBaseline";
 
 const errorStyle = {
     position: 'absolute' as 'absolute',
@@ -95,14 +96,16 @@ function App() {
                    } : {
                        minWidth: 'auto'
                    }}>
+            <CssBaseline/>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <Navigation isAuth={store.isAuth}
-                            onClick={handleReset}/>
-                {Boolean(store.isAuth) && <Grid container spacing={2}
+                <Grid container spacing={2}
+                      maxWidth="xl"
                       columns={16}
                       rowSpacing={1}
-                      columnSpacing={{xs: 1, sm: 2, md: 3}}>
-                    <Sidebar />
+                      columnSpacing={{xs: 1, sm: 2, md: 3, minWidth: store.isAuth ? 1760 : 'auto'}}>
+                    <Navigation isAuth={store.isAuth}
+                                onClick={handleReset}/>
+                    {Boolean(store.isAuth) && <Sidebar />}
                     <Routes>
                         <Route
                             path="/"
@@ -145,7 +148,7 @@ function App() {
                             </Typography>
                         </Alert>
                     </BaseModal>
-                </Grid>}
+                </Grid>
             </LocalizationProvider>
         </Container>
     );

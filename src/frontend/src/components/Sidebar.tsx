@@ -12,7 +12,7 @@ import ListItemText from '@mui/material/ListItemText';
 import SettingsIcon from '@mui/icons-material/Settings';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import {useTheme} from "@mui/material";
-import {Link as RouterLink} from 'react-router-dom';
+import {Link as RouterLink, useLocation} from 'react-router-dom';
 
 function ItemText(props: {
     title: string;
@@ -29,12 +29,13 @@ function ItemText(props: {
 
 function Sidebar(props: any) {
     const {store} = useContext(Context);
-    const [selectedIndex, setSelectedIndex] = React.useState(1);
+    const { search, pathname } = useLocation();
+    const [selectedKey, setSelectedKey] = React.useState(pathname);
     const theme = useTheme();
     const handleListItemClick = (
-        index: number,
+        key: string,
     ) => {
-        setSelectedIndex(index);
+        setSelectedKey(key);
     };
     return (
         <>
@@ -52,23 +53,23 @@ function Sidebar(props: any) {
                     </ListItem>
                     <ListItemButton component={RouterLink}
                                     to="/wishlists"
-                                    onClick={(event) => handleListItemClick(0)}>
+                                    onClick={(event) => handleListItemClick('/wishlists')}>
                         <ListItemIcon>
-                            <AutoAwesomeIcon color={selectedIndex === 0 ? 'primary' : 'disabled'}/>
+                            <AutoAwesomeIcon color={selectedKey === pathname ? 'primary' : 'disabled'}/>
                         </ListItemIcon>
                         <ListItemText color="text.secondary"
                                       sx={{fontWeight: 700}}
                                       primary={<ItemText title="Моя страница"
-                                                         color={selectedIndex === 0 ? 'text.primary' : 'text.secondary'}/>}/>
+                                                         color={selectedKey === '/wishlists' ? 'text.primary' : 'text.secondary'}/>}/>
                     </ListItemButton>
-                    <ListItemButton onClick={(event) => handleListItemClick(1)}>
+                    <ListItemButton onClick={(event) => handleListItemClick('/settings')}>
                         <ListItemIcon>
-                            <SettingsIcon color={selectedIndex === 1 ? 'primary' : 'disabled'}/>
+                            <SettingsIcon color={selectedKey === '/settings' ? 'primary' : 'disabled'}/>
                         </ListItemIcon>
                         <ListItemText color="text.secondary"
                                       sx={{fontWeight: 700}}
                                       primary={<ItemText title="Настройки"
-                                                         color={selectedIndex === 1 ? 'text.primary' : 'text.secondary'}/>}/>
+                                                         color={selectedKey === '/settings' ? 'text.primary' : 'text.secondary'}/>}/>
                     </ListItemButton>
                 </List>
             </Grid>

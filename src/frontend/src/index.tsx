@@ -35,6 +35,7 @@ const themeOptions: ThemeOptions = {
         },
         info: {
             main: '#9c569c',
+            light: '#6d6faa'
         },
         text: {
             primary: '#4c4ca9',

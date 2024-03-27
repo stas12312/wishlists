@@ -51,10 +51,7 @@ function SignInForm() {
                     alignItems: 'center'
                 }}
             >
-                <Avatar sx={{m: 1, bgcolor: '#d37089'}}>
-                    <LockOutlinedIcon/>
-                </Avatar>
-                <Typography component="h1" variant="h5">
+                <Typography component="h1" variant="h5" mt={1}>
                     Войти
                 </Typography>
                 <Box component="form" noValidate sx={{mt: 1}}>
@@ -69,7 +66,7 @@ function SignInForm() {
                         name="email"
                         autoFocus
                     />
-                    <FormControl fullWidth variant="outlined">
+                    <FormControl sx={{mt: 2}} fullWidth variant="outlined">
                         <InputLabel htmlFor="password">Пароль</InputLabel>
                         <OutlinedInput
                             sx={{mb: 2}}
@@ -121,12 +118,12 @@ function SignInForm() {
                                 handleError={handleError}/>
                     <Grid container>
                         <Grid item xs>
-                            <Link href={"/auth/restore"} variant="body2">
+                            <Link href={"/auth/restore"} fontSize={12}>
                                 Забыли пароль?
                             </Link>
                         </Grid>
                         <Grid item>
-                            <Link href={"/auth/register"} variant="body2">
+                            <Link href={"/auth/register"} fontSize={12}>
                                 {"Нет аккаунта? Зарегистрируйтесь"}
                             </Link>
                         </Grid>
