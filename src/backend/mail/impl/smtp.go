@@ -2,6 +2,7 @@ package impl
 
 import (
 	"fmt"
+	"github.com/gofiber/fiber/v2/log"
 	"main/config"
 	"net/mail"
 	"net/smtp"
@@ -29,7 +30,14 @@ type SMTPClient struct {
 
 func (c SMTPClient) Send(toList []string, subject, body string) error {
 
-	address := mail.Address{Name: c.Name, Address: c.From}
-	message := fmt.Sprintf("From: %s\r\nSubject:%s\r\n%s", address.String(), subject, body)
-	return smtp.SendMail(c.Host, c.Auth, c.From, toList, []byte(message))
+	go func() {
+		log.Info(fmt.Sprintf("Send email to %s", toList[0]))
+		address := mail.Address{Name: c.Name, Address: c.From}
+		message := fmt.Sprintf("From: %s\r\nSubject:%s\r\n%s", address.String(), subject, body)
+		if err := smtp.SendMail(c.Host, c.Auth, c.From, toList, []byte(message)); err != nil {
+			log.Error(err.Error())
+		}
+		log.Info(fmt.Sprintf("Email was sended"))
+	}()
+	return nil
 }
