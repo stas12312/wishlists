@@ -71,7 +71,7 @@ func (c *UserController) Register(ctx *fiber.Ctx) error {
 	}
 
 	// Данные доступны для тестового окружения
-	if c.Config.Environment != "test" || ctx.Get("Return-Code") != "true" {
+	if !c.Config.IsTest() || ctx.Get("Return-Code") != "true" {
 		return ctx.JSON(model.ShortCode{UUID: confirmCode.UUID, SecretKey: confirmCode.SecretKey})
 	}
 
@@ -176,7 +176,7 @@ func (c *UserController) Restore(ctx *fiber.Ctx) error {
 	}
 
 	// Данные доступны для тестового окружения
-	if c.Config.Environment != "test" || ctx.Get("Return-Code") != "true" {
+	if !c.Config.IsTest() || ctx.Get("Return-Code") != "true" {
 		return ctx.JSON(model.ShortCode{UUID: code.UUID, SecretKey: code.SecretKey})
 	}
 

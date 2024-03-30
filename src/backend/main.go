@@ -5,6 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/pprof"
 	"github.com/google/uuid"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
@@ -31,28 +32,11 @@ func main() {
 		ErrorHandler: apperror.AppErrorHandler,
 	})
 
-	app.Use(middleware.NewTimer())
-
 	appConfig := config.NewConfig()
 
-	app.Use(cors.New(
-		cors.Config{
-			AllowCredentials: true,
-			AllowOriginsFunc: func(origin string) bool {
-				return appConfig.Environment == "test"
-			},
-		},
-	))
+	setupMiddlewares(app, appConfig)
 
-	db, err := sqlx.Connect("pgx", appConfig.Postgres.Url)
-	if err != nil {
-		log.Info(appConfig.Postgres.Url)
-		log.Fatal(err)
-	}
-
-	if err := database.ExecMigrate(appConfig); err != nil {
-		log.Info(err)
-	}
+	db, _ := initDb(appConfig)
 
 	redisClient := redis.NewClient(&redis.Options{
 		Addr: appConfig.Redis.Address,
@@ -60,7 +44,6 @@ func main() {
 
 	yandexOauthClient := yandex.NewYandexFromEnv()
 	oAuthManager := oauth.NewManager(yandexOauthClient)
-	log.Info(oAuthManager.GetProviders())
 
 	postgresDB := sqlx_db.NewSqlDB(db)
 	uof := impl2.NewUnitOfWorkPostgres(postgresDB, impl2.StoreFactory)
@@ -86,4 +69,34 @@ func main() {
 	imageController.Route(api)
 
 	log.Fatal(app.Listen(":8080"))
+}
+
+func setupMiddlewares(app *fiber.App, config *config.Config) {
+	app.Use(middleware.NewTimer())
+
+	app.Use(cors.New(
+		cors.Config{
+			AllowCredentials: true,
+			AllowOriginsFunc: func(origin string) bool {
+				return config.IsTest()
+			},
+		},
+	))
+
+	if config.IsTest() {
+		app.Use(pprof.New())
+	}
+}
+
+func initDb(config *config.Config) (*sqlx.DB, error) {
+	db, err := sqlx.Connect("pgx", config.Postgres.Url)
+	if err != nil {
+		log.Info(config.Postgres.Url)
+		log.Fatal(err)
+	}
+
+	if err = database.ExecMigrate(config); err != nil {
+		log.Info(err)
+	}
+	return db, err
 }
