@@ -88,6 +88,10 @@ type Config struct {
 	BaseUrl     string
 }
 
+func (c Config) IsTest() bool {
+	return c.Environment == "test"
+}
+
 func NewConfig() *Config {
 
 	accessExpireTime, _ := strconv.ParseInt(os.Getenv("JWT_ACCESS_SECRET_KEY_EXPIRE"), 10, 64)
