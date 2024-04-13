@@ -7,6 +7,7 @@ import Navigation from "./components/Navigation";
 import * as React from 'react';
 import {Route, Routes, useLocation, useNavigate} from "react-router-dom";
 import {useContext, useEffect, useRef} from "react";
+import { jwtDecode } from 'jwt-decode'
 import {Context} from "./index";
 import {observer} from "mobx-react";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -71,8 +72,14 @@ function App() {
             pathname !== '/auth/confirm' &&
             shouldCheckAuth.current
         ) {
-            shouldCheckAuth.current = false;
-            store.checkAuth();
+            const token: string = localStorage.getItem('access_token') as string;
+            const exp = jwtDecode(token).exp;
+            if (exp && Date.now() >= (exp * 1000)) {
+                shouldCheckAuth.current = false;
+                store.checkAuth();
+            } else {
+                store.setAuth(true);
+            }
         }
     }, [])
 

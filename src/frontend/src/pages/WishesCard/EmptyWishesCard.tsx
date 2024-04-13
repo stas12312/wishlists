@@ -10,17 +10,14 @@ function EmptyWishesCard(props: any) {
     return (
         <>
             <CssBaseline/>
-            <Grid container spacing={2}
-                  columns={16}>
-                <Grid item
-                      mt={10}
-                      xs={12}>
-                    <Typography component="h1"
-                                variant="h3"
-                                sx={{fontWeight: 900}}>
-                        Пока что желаний нет
-                    </Typography>
-                </Grid>
+            <Grid item
+                  mt={10}
+                  xs={12}>
+                <Typography component="h1"
+                            variant="h3"
+                            sx={{fontWeight: 900}}>
+                    Пока что желаний нет
+                </Typography>
             </Grid>
         </>
 

@@ -82,7 +82,6 @@ export default class Store {
         try {
             const refreshToken: any = localStorage.getItem('refresh_token');
             const response = await AuthService.refresh(refreshToken);
-            console.log(response);
             localStorage.setItem('access_token', response.data.access_token);
             this.setAuth(true);
         } catch (e: any) {
