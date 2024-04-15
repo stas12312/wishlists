@@ -30,7 +30,7 @@ function Welcome() {
                   rowSpacing={1}
                   columnSpacing={{xs: 1, sm: 2, md: 3}}>
                 <Grid item
-                      mt={10}
+                      mt={2}
                       xs={8}>
                     <Typography id="modal-modal-title"
                                 variant="h1"
@@ -58,7 +58,7 @@ function Welcome() {
                     </Button>
                 </Grid>
                 <Grid item
-                      mt={10}
+                      mt={2}
                       xs={8}>
                     <Box
                         component="img"

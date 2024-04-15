@@ -73,7 +73,7 @@ function WishesCard() {
         <>
             <CssBaseline/>
             <Grid item
-                  mt={10}
+                  mt={2}
                   xs={12}>
                 <Button component={RouterLink} to="/wishlists">К списку вишлистов</Button>
                 <Box display="flex" flexDirection="row" alignItems="center" justifyContent="space-between">

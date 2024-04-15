@@ -180,7 +180,7 @@ function Wishes(props: IWishLists) {
     return (
         <Grid item
               justifyContent="center"
-              mt={10}
+              mt={2}
               xs={3}>
             <Card sx={{
                 borderRadius: '16px',

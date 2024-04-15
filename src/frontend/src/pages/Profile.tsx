@@ -61,7 +61,7 @@ function Profile() {
         return (
             <>
                 <Grid item
-                      mt={10}
+                      mt={2}
                       xs={12}>
                     <Grid container alignItems="baseline" direction="row">
                         <Grid item

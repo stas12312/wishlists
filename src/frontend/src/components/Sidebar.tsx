@@ -42,9 +42,9 @@ function Sidebar(props: any) {
             <CssBaseline/>
             <Grid item
                   justifyContent="center"
-                  mt={10}
+                  mt={2}
                   xs={4}>
-                <List component="nav">
+                <List sx={{ justifyContent: 'left'}} component="nav">
                     <ListItem disablePadding>
                         <ListItemText sx={{fontWeight: 700}}
                                       primary={<ItemText title={store.user.name}
@@ -55,7 +55,7 @@ function Sidebar(props: any) {
                                     to="/wishlists"
                                     onClick={(event) => handleListItemClick('/wishlists')}>
                         <ListItemIcon>
-                            <AutoAwesomeIcon color={selectedKey === pathname ? 'primary' : 'disabled'}/>
+                            <AutoAwesomeIcon color={selectedKey === '/wishlists' ? 'primary' : 'disabled'}/>
                         </ListItemIcon>
                         <ListItemText color="text.secondary"
                                       sx={{fontWeight: 700}}

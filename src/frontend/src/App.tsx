@@ -98,9 +98,7 @@ function App() {
 
     return (
         <Container maxWidth="xl"
-                   sx={store.isAuth ? {
-                       minWidth: 1760
-                   } : {
+                   sx={{
                        minWidth: 'auto'
                    }}>
             <CssBaseline/>
@@ -109,7 +107,7 @@ function App() {
                       maxWidth="xl"
                       columns={16}
                       rowSpacing={1}
-                      columnSpacing={{xs: 1, sm: 2, md: 3, minWidth: store.isAuth ? 1760 : 'auto'}}>
+                      columnSpacing={{xs: 1, sm: 2, md: 3, minWidth: 'auto'}}>
                     <Navigation isAuth={store.isAuth}
                                 onClick={handleReset}/>
                     {Boolean(store.isAuth) && <Sidebar />}
