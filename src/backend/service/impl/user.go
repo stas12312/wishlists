@@ -171,11 +171,8 @@ func (u *userServiceImpl) Restore(ctx context.Context, email string) (*model.Cod
 
 	err := u.UnitOfWork.Do(ctx, func(ctx context.Context, store uof.UnitOfWorkStore) error {
 		user, err := store.UserRepository().GetByEmail(email)
-		if err != nil {
-			return err
-		}
-		if !user.IsActive {
-			return errors.New("user is not active")
+		if err != nil || !user.IsActive {
+			return apperror.NewError(apperror.NotFound, "Пользователь не найден")
 		}
 
 		code := model.NewCode(user.Id, 6, 64, model.ResetPasswordCode, 3)

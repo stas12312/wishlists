@@ -171,8 +171,7 @@ func (c *UserController) Restore(ctx *fiber.Ctx) error {
 
 	code, err := c.UserService.Restore(ctx.UserContext(), request.Email)
 	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).
-			JSON(model.ErrorResponse{Message: "Ошибка", Details: err.Error()})
+		return err
 	}
 
 	// Данные доступны для тестового окружения
