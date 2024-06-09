@@ -99,7 +99,8 @@ function App() {
     return (
         <Container maxWidth="xl"
                    sx={{
-                       minWidth: 'auto'
+                       minWidth: 'auto',
+                       marginTop: '50px'
                    }}>
             <CssBaseline/>
             <LocalizationProvider dateAdapter={AdapterDayjs}>

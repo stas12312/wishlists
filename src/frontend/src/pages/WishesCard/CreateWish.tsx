@@ -4,15 +4,53 @@ import Grid from "@mui/material/Grid";
 import Typography from '@mui/material/Typography';
 import CssBaseline from "@mui/material/CssBaseline";
 import { Link as RouterLink, useParams } from "react-router-dom";
-import { Box, Button, InputLabel, TextField } from "@mui/material";
+import { Box, Button, InputLabel, Paper, styled, TextField } from "@mui/material";
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import ImageUploader from '../../components/ImageUploader';
+
+const VisuallyHiddenInput = styled('input')({
+    clip: 'rect(0 0 0 0)',
+    clipPath: 'inset(50%)',
+    height: 1,
+    overflow: 'hidden',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    whiteSpace: 'nowrap',
+    width: 1,
+  });
 
 function CreateWish(props: any) {
+const {
+    onSubmit,
+    onUpdate,
+    description,
+    date,
+    visible,
+    name
+} = props;
+
     const { uuid } = useParams();
 
     const [url, setUrl] = useState('');
     const [wishName, setWishName] = useState('');
-    const [wishImg, setWishImg] = useState('');
+    const [comment, setComment] = useState('');
     const [wishPrice, setWishPrice] = useState('');
+    const [wishCurrency, setWishCurrency] = useState('rub');
+
+    const currencyChange = (event: SelectChangeEvent) => {
+        setWishCurrency(event.target.value);
+    };
+
+    const handleSubmitChanges = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+        if (onSubmit) {
+            onSubmit(event, name, description, date, visible);
+        } else if (onUpdate) {
+            onUpdate(event, name, description, date, visible)
+        }
+    };
 
     return (
         <>
@@ -46,29 +84,7 @@ function CreateWish(props: any) {
                 <Grid container item spacing={5}>
                     <Grid item
                         xs={5}>
-                        <InputLabel htmlFor="wishImg">
-                            Изображение подарка
-                        </InputLabel>
-                        <Box component="section" sx={{ 
-                            p: 2, 
-                            border: '1px dashed grey', 
-                            borderRadius: 16 
-                        }}>
-                            This Box renders as an HTML section element.
-                        </Box>
-                        <InputLabel htmlFor="wishImg">
-                            Ссылка на изображение
-                        </InputLabel>
-                        <TextField
-                            onChange={e => setWishImg(e.target.value)}
-                            value={wishImg}
-                            margin="dense"
-                            fullWidth
-                            id="wishImg"
-                            placeholder='Ссылка'
-                            name="wishImg"
-                            autoComplete="new-wishImg"
-                        />
+                        <ImageUploader />
                     </Grid>
                     <Grid item
                         xs={7}>
@@ -98,23 +114,22 @@ function CreateWish(props: any) {
                                     value={wishPrice}
                                     margin="dense"
                                     id="wishPrice"
-                                    placeholder='Ссылка на подарок'
                                     name="wishPrice"
                                     autoComplete="new-wishPrice"
                                 />
                             </Grid>
                             <Grid item>
-                                <TextField
+                                <Select
                                     sx={{ mt: 4 }}
-                                    select
-                                    onChange={e => setWishPrice(e.target.value)}
-                                    value={wishPrice}
-                                    margin="dense"
-                                    id="wishPrice"
-                                    placeholder='Ссылка на подарок'
-                                    name="wishPrice"
-                                    autoComplete="new-wishPrice"
-                                />
+                                    id="currency"
+                                    value={wishCurrency}
+                                    onChange={currencyChange}
+                                    autoWidth
+                                    defaultValue={'rub'}>
+                                    <MenuItem value={'rub'}>₽, RUB</MenuItem>
+                                    <MenuItem value={'usd'}>$, USD</MenuItem>
+                                    <MenuItem value={'kzt'}>₸, KZT</MenuItem>
+                                </Select>
                             </Grid>
                         </Grid>
 
@@ -122,23 +137,24 @@ function CreateWish(props: any) {
                             Комментарий к подарку
                         </InputLabel>
                         <TextField
-                            onChange={e => setUrl(e.target.value)}
                             multiline
                             inputProps={{
                                 maxLength: 300
                             }}
                             rows={4}
                             maxRows={6}
-                            value={url}
+                            value={comment}
                             margin="dense"
                             fullWidth
                             id="url"
                             placeholder='Уточните детали к подарку'
                             name="url"
                             autoComplete="new-url"
+                            onChange={e => setComment(e.target.value)}
                         />
                     </Grid>
                 </Grid>
+                <Button type="submit" onClick={handleSubmitChanges}>Сохранить</Button>
             </Grid>
         </>
     );

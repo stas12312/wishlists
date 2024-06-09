@@ -63,6 +63,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@types/express": "^4.17.21"
+    "@types/express": "^4.17.21",
+    "tailwindcss": "^3.4.4"
   }
 }
