@@ -3,6 +3,8 @@ import { Button, IconButton, InputLabel, Paper, styled, TextField } from '@mui/m
 import { LoadingButton } from '@mui/lab';
 import { ClearIcon } from '@mui/x-date-pickers';
 import CameraEnhanceOutlinedIcon from '@mui/icons-material/CameraEnhanceOutlined';
+import axios from 'axios';
+import ImageService from '../services/ImageService';
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -52,17 +54,36 @@ const ImageUploader = () => {
         setIsDragging(false);
     };
 
+    const handleUploadButton = () => {
+        
+    }
+
     const handleDrop = async (event: React.DragEvent) => {
         //TODO:Проработать загрузку изображения через DnD, генерацию ссылки для поля ввода
         event.preventDefault();
-        const file: any = event.dataTransfer.files[0] as File;
+        const file: File = event.dataTransfer.files[0] as File;
+        uploadNewImage(file)
+    };
+
+    const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file: any = event.target.files ? event.target.files[0] as File : null;
+        if (file) {
+            uploadNewImage(file);
+        }
+      };
+
+      const uploadNewImage = async (file: any) => {
         const allowedExtensions = ['jpeg', 'jpg', 'png', 'svg'];
         const isImage = allowedExtensions.includes(file.name.split('.').pop().toLowerCase());
+        
+        const formData = new FormData();
+        formData.append('file', file);
+    
+
         if (isImage) {
             try {
-                const response = await fetch(file);
-                const blob = await response.blob();
-                const objectUrl = URL.createObjectURL(blob);
+                const response = await ImageService.uploadImage(formData);
+                const objectUrl = response.data.image_url;
                 setImage(objectUrl);
             } catch (error) {
                 console.error(error);
@@ -72,15 +93,15 @@ const ImageUploader = () => {
         } else {
             alert('Неверный тип файла. Пожалуйста, выберите изображение.');
         }
-    };
-
+      }
+      
     return (
         <div>
             <InputLabel htmlFor="wishImg" sx={{ mb: 1 }}>
                 Изображение подарка
             </InputLabel>
             <div className='flex'>
-                <Paper
+                <Button
                     sx={{
                         mb: 2,
                         height: '120px',
@@ -93,15 +114,18 @@ const ImageUploader = () => {
                         display: 'flex', flexDirection: 'column', gap: 1,
                         justifyContent: 'center',
                         alignItems: 'center',
-                        cursor: isDragging ? 'pointer' : 'default'
+                        cursor: isDragging ? 'pointer' : 'default',
+                        padding: 0
                     }}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}>
+                    onDrop={handleDrop}
+                    onClick={handleUploadButton}>
                     <CameraEnhanceOutlinedIcon fontSize='large' sx={{ position: 'absolute' }} />
+                    <input type="file" accept=".jpeg,.jpg,.png,.webp" onChange={onFileChange} className='w-full h-full' style={{ opacity: 0, position: 'absolute' }}/>
                     {image &&
                         <img src={image} alt="Загруженное изображение" width="120px" />}
-                </Paper>
+                </Button>
                 <div className='pl-4 w-full'>
                     <InputLabel htmlFor="wishImg">
                         Ссылка на изображение

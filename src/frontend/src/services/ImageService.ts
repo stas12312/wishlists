@@ -4,8 +4,12 @@ import {IUser} from "../models/IUser";
 
 export default class ImageService {
     //TODO: Доработать подключения сервиса загрузки изображений
-    static uploadImage(): Promise<AxiosResponse<IUser>> {
-        return $api.post<IUser>('/api/images/uploade', {})
+    static uploadImage(formData: FormData): Promise<AxiosResponse<any>> {
+        return $api.post<any>('/api/images/upload', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
     }
 }
 
