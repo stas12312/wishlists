@@ -21,6 +21,7 @@ import {getNoun} from "../../helpers/Functions";
 import {Link} from 'react-router-dom';
 import EmptyWishlist from "./EmptyWishlist";
 import CssBaseline from "@mui/material/CssBaseline";
+import WishlistPreview from './WishlistPreview';
 
 interface IWishLists extends IWish {
     onItemsChange: Function
@@ -232,6 +233,7 @@ function Wishes(props: IWishLists) {
                     <CardContent>
                         {/* TODO: Заменить на контентную часть карточки вишлиста*/}
                         {Boolean(!wishes_count) && <EmptyWishlist/>}
+                        {Boolean(wishes_count) && <WishlistPreview/>}
                         {Boolean(date) && <WishlistFooter date={date}/>}
                     </CardContent>
                 </CardActionArea>

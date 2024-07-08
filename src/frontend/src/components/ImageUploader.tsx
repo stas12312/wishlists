@@ -18,12 +18,11 @@ const VisuallyHiddenInput = styled('input')({
     width: 1,
 });
 
-const ImageUploader = () => {
+const ImageUploader = (props: {onGetImgUrl: Function}) => {
     const [imageUrl, setImageUrl] = useState('');
     const [image, setImage] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
-    const [imageFile, setImageFile] = useState(null);
 
     const handleImageUpload = async (value: string) => {
         setImageUrl(value);
@@ -33,6 +32,7 @@ const ImageUploader = () => {
             const blob = await response.blob();
             const objectUrl = URL.createObjectURL(blob);
             setImage(objectUrl);
+            props.onGetImgUrl(objectUrl);
         } catch (error) {
             console.error(error);
         } finally {
@@ -42,7 +42,8 @@ const ImageUploader = () => {
 
     const handleImageDelete = async () => {
         setImageUrl('');
-        setImage(null)
+        setImage(null);
+        props.onGetImgUrl('');
     }
 
     const handleDragOver = (event: React.DragEvent) => {
@@ -54,15 +55,11 @@ const ImageUploader = () => {
         setIsDragging(false);
     };
 
-    const handleUploadButton = () => {
-        
-    }
-
     const handleDrop = async (event: React.DragEvent) => {
         //TODO:Проработать загрузку изображения через DnD, генерацию ссылки для поля ввода
         event.preventDefault();
         const file: File = event.dataTransfer.files[0] as File;
-        uploadNewImage(file)
+        uploadNewImage(file);
     };
 
     const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,6 +82,7 @@ const ImageUploader = () => {
                 const response = await ImageService.uploadImage(formData);
                 const objectUrl = response.data.image_url;
                 setImage(objectUrl);
+                props.onGetImgUrl(objectUrl);
             } catch (error) {
                 console.error(error);
             }
@@ -119,17 +117,13 @@ const ImageUploader = () => {
                     }}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                    onClick={handleUploadButton}>
+                    onDrop={handleDrop}>
                     <CameraEnhanceOutlinedIcon fontSize='large' sx={{ position: 'absolute' }} />
                     <input type="file" accept=".jpeg,.jpg,.png,.webp" onChange={onFileChange} className='w-full h-full' style={{ opacity: 0, position: 'absolute' }}/>
                     {image &&
                         <img src={image} alt="Загруженное изображение" width="120px" />}
                 </Button>
                 <div className='pl-4 w-full'>
-                    <InputLabel htmlFor="wishImg">
-                        Ссылка на изображение
-                    </InputLabel>
                     <TextField
                         label="Вставьте ссылку на изображение"
                         value={imageUrl}
@@ -140,10 +134,7 @@ const ImageUploader = () => {
                         name="wishImg"
                         onChange={(event) => handleImageUpload(event.target.value)}
                         InputProps={{
-                            endAdornment: imageUrl && <IconButton onClick={() => {
-                                setImageUrl('');
-                                setImage(null);
-                            }}>
+                            endAdornment: imageUrl && <IconButton onClick={handleImageDelete}>
                                 <ClearIcon />
                             </IconButton>
                         }}

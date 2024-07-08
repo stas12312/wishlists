@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { observer } from "mobx-react-lite";
 import Grid from "@mui/material/Grid";
 import Typography from '@mui/material/Typography';
 import CssBaseline from "@mui/material/CssBaseline";
-import { Link as RouterLink, useParams } from "react-router-dom";
+import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 import { Box, Button, InputLabel, Paper, styled, TextField } from "@mui/material";
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import ImageUploader from '../../components/ImageUploader';
+import WishCardService from '../../services/WishCardService';
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -32,9 +33,11 @@ const {
 } = props;
 
     const { uuid } = useParams();
+    const navigate = useNavigate();
 
     const [url, setUrl] = useState('');
     const [wishName, setWishName] = useState('');
+    const [imgUrl, setImgUrl] = useState('');
     const [comment, setComment] = useState('');
     const [wishPrice, setWishPrice] = useState('');
     const [wishCurrency, setWishCurrency] = useState('rub');
@@ -43,15 +46,16 @@ const {
         setWishCurrency(event.target.value);
     };
 
-    const handleSubmitChanges = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleSubmitChanges = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        if (onSubmit) {
-            onSubmit(event, name, description, date, visible);
-        } else if (onUpdate) {
-            onUpdate(event, name, description, date, visible)
-        }
+        await WishCardService.create({name: wishName, wishlist_uuid: uuid as string, image: imgUrl, comment: comment, cost: Number(wishPrice)});
+        navigate(`/wishlists/${uuid}`);
     };
 
+    const getImgUrl = (url: string) => {
+        setImgUrl(url);
+    }
+        
     return (
         <>
             <CssBaseline />
@@ -84,7 +88,7 @@ const {
                 <Grid container item spacing={5}>
                     <Grid item
                         xs={5}>
-                        <ImageUploader />
+                        <ImageUploader onGetImgUrl={getImgUrl}/>
                     </Grid>
                     <Grid item
                         xs={7}>
@@ -142,7 +146,6 @@ const {
                                 maxLength: 300
                             }}
                             rows={4}
-                            maxRows={6}
                             value={comment}
                             margin="dense"
                             fullWidth
@@ -154,7 +157,10 @@ const {
                         />
                     </Grid>
                 </Grid>
-                <Button type="submit" onClick={handleSubmitChanges}>Сохранить</Button>
+                <Button type="submit" 
+                        variant="contained" 
+                        onClick={handleSubmitChanges}
+                        >Сохранить</Button>
             </Grid>
         </>
     );

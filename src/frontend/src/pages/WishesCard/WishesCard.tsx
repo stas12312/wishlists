@@ -13,6 +13,7 @@ import EmptyWishesCard from "./EmptyWishesCard";
 import WishlistEditDialog from "../Wishlist/WishlistEditDialog";
 import Box from "@mui/material/Box";
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import WishesCardList from './WishesCardList';
 
 function WishesCard() {
     const {uuid} = useParams();
@@ -69,6 +70,7 @@ function WishesCard() {
             });
             setOpenEditDialog(false);
         }, []);
+
     return (
         <>
             <CssBaseline/>
@@ -115,6 +117,7 @@ function WishesCard() {
                                     wishlistVisible={visible}
                 />
                 {Boolean(emptyView) && <EmptyWishesCard/>}
+                {!Boolean(emptyView) && <WishesCardList/>}
             </Grid>
         </>
     );
