@@ -173,6 +173,20 @@ func (c *WishlistController) DeleteWishlist(ctx *fiber.Ctx) error {
 
 }
 
+func (c *WishlistController) GetWish(ctx *fiber.Ctx) error {
+	wishUuid := ctx.Params("uuid")
+	userId := GetUserIdFromCtx(ctx)
+
+	wish, err := c.WishlistService.GetWish(userId, wishUuid)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Не удалось найти желание", Details: err.Error()})
+	}
+
+	return ctx.JSON(wish)
+
+}
+
 func (c *WishlistController) Route(router fiber.Router) {
 
 	wishlistGroup := router.Group("/wishlists")
@@ -185,7 +199,8 @@ func (c *WishlistController) Route(router fiber.Router) {
 	wishlistGroup.Delete("/:uuid", middleware.Protected(true), c.DeleteWishlist)
 
 	wishGroup := router.Group("/wishes")
-	wishGroup.Use(middleware.Protected(true))
-	wishGroup.Post("/", c.CreateWishHandler)
-	wishGroup.Delete("/:uuid", c.DeleteWishHandler)
+	wishGroup.Post("/", middleware.Protected(true), c.CreateWishHandler)
+	wishGroup.Delete("/:uuid", middleware.Protected(true), c.DeleteWishHandler)
+	wishGroup.Post("/:uuid", middleware.Protected(true), c.UpdateWishHandler)
+	wishGroup.Get("/:uuid", middleware.Protected(false), c.GetWish)
 }

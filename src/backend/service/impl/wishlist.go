@@ -86,7 +86,7 @@ func (s *WishlistImpl) ListWishesForWishlist(userId int64, wishlistUuid string) 
 		return wishes, err
 	}
 
-	if !s.UserCanViewWishlist(userId, wishlist) {
+	if !s.UserCanViewWishlistByModel(userId, wishlist) {
 		return wishes, apperror.NewError(apperror.NotFound, "Вишлист не найден")
 	}
 
@@ -100,13 +100,21 @@ func (s *WishlistImpl) UserCanEditWishlist(userId int64, wishlistUuid string) bo
 	return wishlist.UserId == userId && err == nil
 }
 
-func (s *WishlistImpl) UserCanViewWishlist(userId int64, wishlist *model.Wishlist) bool {
+func (s *WishlistImpl) UserCanViewWishlistByModel(userId int64, wishlist *model.Wishlist) bool {
 	if wishlist.Visible == model.Public {
 		return true
 	}
 
 	return wishlist.UserId == userId
 
+}
+
+func (s *WishlistImpl) UserCanViewWishlistByUuid(userId int64, wishlistUuid string) bool {
+	wishlist, err := s.GetByUUID(wishlistUuid)
+	if err != nil {
+		return false
+	}
+	return s.UserCanViewWishlistByModel(userId, wishlist)
 }
 
 func (s *WishlistImpl) DeleteWish(userId int64, wishUuid string) error {
@@ -126,4 +134,14 @@ func (s *WishlistImpl) UpdateWish(userId int64, wish *model.Wish) (*model.Wish, 
 	}
 
 	return s.WishRepository.Update(wish)
+}
+
+func (s *WishlistImpl) GetWish(userId int64, wishUuid string) (*model.Wish, error) {
+
+	existWish, err := s.WishRepository.Get(wishUuid)
+	if !s.UserCanViewWishlistByUuid(userId, existWish.WishlistUuid) || err != nil {
+		return nil, errors.New("user can't view wish")
+	}
+	return existWish, nil
+
 }
