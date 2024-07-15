@@ -14,4 +14,5 @@ type WishlistService interface {
 	ListWishesForWishlist(userId int64, wishlistUuid string) (*[]model.Wish, error)
 	DeleteWish(userId int64, wishUuid string) error
 	UpdateWish(userId int64, wish *model.Wish) (*model.Wish, error)
+	GetWish(userId int64, wishUuid string) (*model.Wish, error)
 }
