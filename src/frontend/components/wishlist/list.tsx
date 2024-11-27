@@ -21,6 +21,7 @@ export function Wishlists() {
       setItems(res);
       setIsLoading(false);
     }
+
     fetchWishlists();
   }, []);
 
@@ -40,8 +41,8 @@ export function Wishlists() {
       components.push(<div key={i}>{<WishlistsSkeletonItem />}</div>);
     }
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <h1 className="text-2xl">Мои вишлисты</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <h1 className="text-2xl col-span-full">Мои вишлисты</h1>
         <Divider className="my-4 col-span-full" />
         <Skeleton className="rounded-lg col-span-full">
           <Button fullWidth></Button>
@@ -57,11 +58,13 @@ export function Wishlists() {
   }
 
   const components = items.map((wishlist: IWishlist) => (
-    <WishlistItem key={wishlist.uuid} wishlist={wishlist} onDelete={onDelete} />
+    <span key={wishlist.uuid}>
+      <WishlistItem wishlist={wishlist} onDelete={onDelete} />
+    </span>
   ));
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-      <h1 className="text-2xl">Мои вишлисты</h1>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <h1 className="text-2xl col-span-full">Мои вишлисты</h1>
       <Divider className="my-4 col-span-full" />
       <div className="col-span-full">
         <Button
