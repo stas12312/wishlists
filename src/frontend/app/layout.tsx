@@ -35,7 +35,7 @@ export default async function RootLayout({
   const isLogin = cookieStore.has("access_token");
   return (
     <html suppressHydrationWarning lang="en">
-      <head />
+      <head title="Мои желания" />
       <body
         className={clsx(
           "h-screen bg-background font-sans antialiased",
@@ -47,7 +47,7 @@ export default async function RootLayout({
             children
           ) : (
             <div className="grid grid-cols-12 gap-4">
-              <div className="col-span-2 py-10 flex-col">
+              <div className="col-span-full md:col-span-3 lg:col-span-2 py-10 flex-col">
                 <div className="mx-auto text-center">
                   <UserItem />
                 </div>
@@ -55,7 +55,7 @@ export default async function RootLayout({
                   <Menu />
                 </div>
               </div>
-              <div className="col-span-10 py-10 px-2">
+              <div className="col-span-full md:col-span-9 lg:col-span-10 py-10 px-2">
                 <main>{children}</main>
                 <footer className="w-full flex items-center justify-center py-3"></footer>
               </div>
