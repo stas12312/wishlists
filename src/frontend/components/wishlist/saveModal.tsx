@@ -24,7 +24,7 @@ export default function WishlistSaveModal({
         {(onClose) => (
           <>
             <ModalHeader className="flex flex-col gap-1 text-center">
-              Добавление вишлиста
+              {wishlist ? "Редактирование вишлиста" : "Добавление вишлиста"}
             </ModalHeader>
             <ModalBody>
               <WishlistCreateForm

@@ -18,7 +18,6 @@ axiosInstance.interceptors.request.use(async (config) => {
 axiosInstance.interceptors.response.use(async (response) => {
     return response;
   }, async (error) => {
-    console.log(error.response.status, error.response.data)
     if (error.response.code == 403) {
       console.log("Ошибка авторизации")
     }
@@ -73,7 +72,6 @@ export async function register(name: string, password: string, email: string): P
 }
 
 export async function confirmEmail(uuid: string, code?: string, secret_key?: string, key?:string): Promise<ITokens | IError> {
-  console.log(uuid, code, secret_key)
   const response = await axiosInstance.post(
     "/auth/confirm",
     {

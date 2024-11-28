@@ -37,7 +37,10 @@ export default function SignIn() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto my-10 max-w-md ">
+    <form
+      onSubmit={handleSubmit}
+      className="mx-auto my-10 max-w-md flex flex-col gap-2"
+    >
       <h2 className={"text-center"}>Войти</h2>
 
       <div>
@@ -47,7 +50,7 @@ export default function SignIn() {
           value={formData.email}
           onChange={handleChange}
           name="email"
-          className={"my-2"}
+          className="text-2xl"
           required
         />
       </div>
@@ -59,7 +62,6 @@ export default function SignIn() {
           value={formData.password}
           onChange={handleChange}
           name="password"
-          className={"my-2"}
           endContent={
             <button
               className="focus:outline-none"
@@ -80,7 +82,6 @@ export default function SignIn() {
         <Button
           fullWidth
           type="submit"
-          className={"my-2"}
           spinnerPlacement="end"
           isLoading={isLogining}
         >

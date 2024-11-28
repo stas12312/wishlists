@@ -16,5 +16,11 @@ module.exports = {
     },
   },
   darkMode: "class",
-  plugins: [nextui()],
+  plugins: [nextui({
+    layout: {
+      fontSize: {
+        small: "16px"
+      }
+    }
+  })],
 }

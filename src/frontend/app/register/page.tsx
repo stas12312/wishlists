@@ -67,7 +67,6 @@ export default function SignIn() {
         formData.email
       );
 
-      console.log(errorMessages);
       if ("message" in confirmEmailData) {
         setErrorMessages({
           ...errorMessages,

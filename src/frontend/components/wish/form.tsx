@@ -37,7 +37,6 @@ export default function WishForm(props: {
     details: "",
     message: "",
   });
-  console.log(formData);
 
   const [isCreating, setIsCreating] = useState(false);
 
@@ -45,7 +44,6 @@ export default function WishForm(props: {
     e.preventDefault();
     setIsCreating(true);
     let newWish: IWish | IError;
-    console.log(formData);
     if (existsWish?.uuid) {
       newWish = await updateWish(formData as IWish);
     } else {
@@ -83,7 +81,6 @@ export default function WishForm(props: {
       } else if (preparedValue !== "") {
         valueForSave = Number(preparedValue);
       }
-      console.log(valueForSave);
       setFormData({ ...formData, [name]: valueForSave });
     } else {
       setFormData({ ...formData, [name]: value });
@@ -153,7 +150,5 @@ export default function WishForm(props: {
 }
 
 function isNumeric(value: string) {
-  console.log("Проверка");
-  console.log(value);
   return /^\d+$/.test(value);
 }

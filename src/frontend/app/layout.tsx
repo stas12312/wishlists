@@ -35,7 +35,12 @@ export default async function RootLayout({
   const isLogin = cookieStore.has("access_token");
   return (
     <html suppressHydrationWarning lang="en">
-      <head title="Мои желания" />
+      <head title="Мои желания">
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1, maximum-scale=5"
+        />
+      </head>
       <body
         className={clsx(
           "h-screen bg-background font-sans antialiased",

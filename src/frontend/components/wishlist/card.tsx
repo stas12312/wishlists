@@ -44,15 +44,15 @@ export function WishlistItem({
       <CardHeader className="flex-col items-start">
         <div className="flex flex-row justify-between w-full">
           <div className="text-tiny font-bold my-auto flex flex-col text-left overflow-hidden truncate">
-            <p className="uppercase flex flex-row gap-1 text">
-              <span>
+            <span className="flex flex-row gap-1">
+              <p className="uppercase text-large">{cardWishlist.name}</p>
+              <span className="text-small">
                 <VisibleStatus visible={cardWishlist.visible} />
               </span>
-              {cardWishlist.name}
-            </p>
-            <small className="text-default-500 text-left">
+            </span>
+            <p className="text-default-500 text-left">
               {cardWishlist.description}
-            </small>
+            </p>
           </div>
           <div>
             <WishlistItemMenu
@@ -116,7 +116,6 @@ export function WishlistItemMenu({
     onOpenChange();
     onUpdate(updadedWishlist);
   }
-  console.log(wishlist);
 
   return (
     <span>

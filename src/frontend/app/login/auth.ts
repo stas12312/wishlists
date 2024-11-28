@@ -24,7 +24,6 @@ export async function getUser(email: string, password: string): Promise<User>{
   cookie.set("refresh_token", authData.refresh_token) 
 
   const decoded = jwtDecode<User>(authData.access_token)
-  console.log(decoded)
   return {
     email: decoded['email'],
     id: decoded['id']

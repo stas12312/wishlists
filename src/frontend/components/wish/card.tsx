@@ -44,7 +44,7 @@ export function WishItemMenu({
 
   return (
     <span>
-      <Dropdown backdrop="opaque">
+      <Dropdown>
         <DropdownTrigger>
           <Button isIconOnly variant="light" radius="lg" as="div">
             <BsThreeDotsVertical />
@@ -86,7 +86,7 @@ export function WishItem({
 
   return (
     <Card
-      className="flex-col h-[300px] hover:scale-105 w-full"
+      className="flex-col h-[300px] md:hover:scale-105 w-full"
       isPressable={item.link !== null && item.link != ""}
       onPress={(e) => {
         window.open(item.link);
@@ -95,8 +95,8 @@ export function WishItem({
       <CardHeader className="flex-col items-start">
         <div className="flex flex-row justify-between w-full">
           <p className="text-tiny font-bold my-auto flex flex-col text-left overflow-hidden text-ellipsis truncate">
-            <span className="uppercase">{item.name}</span>
-            <small className="text-default-500">{item.comment}</small>
+            <span className="uppercase text-xl">{item.name}</span>
+            <span className="text-default-500">{item.comment}</span>
           </p>
           <span>
             <WishItemMenu wish={item} onDelete={onDelete} onUpdate={setItem} />
