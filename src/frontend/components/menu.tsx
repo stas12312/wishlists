@@ -8,7 +8,7 @@ export default function Menu() {
   const router = useRouter();
 
   return (
-    <Listbox className="text-center" disabledKeys={["settings", "friends"]}>
+    <Listbox className="text-center" disabledKeys={["friends"]}>
       <ListboxSection showDivider>
         <ListboxItem
           key="main"
@@ -18,7 +18,14 @@ export default function Menu() {
         >
           Мои вишлисты
         </ListboxItem>
-        <ListboxItem key="settings">Настройки</ListboxItem>
+        <ListboxItem
+          key="settings"
+          onPress={(e) => {
+            router.push("/settings");
+          }}
+        >
+          Настройки
+        </ListboxItem>
         <ListboxItem key="friends">Друзья</ListboxItem>
       </ListboxSection>
       <ListboxSection>
@@ -31,26 +38,5 @@ export default function Menu() {
         </ListboxItem>
       </ListboxSection>
     </Listbox>
-    // <Navbar className="flex flex-col">
-    //   <NavbarContent className="gap-4 fiex flex-col">
-    //     <UserItem />
-    //     <NavbarItem isActive>
-    //       <Link color="foreground" href="/">
-    //         Мои желания
-    //       </Link>
-    //     </NavbarItem>
-    //     <NavbarItem>
-    //       <Link href="#" color="foreground" aria-current="page">
-    //         Настройки
-    //       </Link>
-    //     </NavbarItem>
-    //     <Divider />
-    //     <NavbarItem>
-    //       <Link color="danger" href="/logout">
-    //         Выход
-    //       </Link>
-    //     </NavbarItem>
-    //   </NavbarContent>
-    // </Navbar>
   );
 }
