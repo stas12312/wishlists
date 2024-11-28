@@ -27,7 +27,7 @@ export default function WishSaveModal({
         {() => (
           <>
             <ModalHeader className="flex flex-col gap-1 text-center">
-              Редактирование вишлиста
+              {wish ? "Редактирование желания" : "Добавление желания"}
             </ModalHeader>
             <ModalBody>
               <WishForm

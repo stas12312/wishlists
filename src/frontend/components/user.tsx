@@ -12,7 +12,6 @@ export default function UserItem() {
       const user = await getUser();
       setUser(user);
     }
-    console.log("Получение пользователя");
     fetchUser();
   }, []);
 

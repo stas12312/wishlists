@@ -35,7 +35,6 @@ export async function setTokens(tokens: ITokens) {
 }
 
 async function refreshToken() {
-    console.log("Обновление токена")
     const cookie = await cookies()
     const headers = { 'Authorization': `Bearer ${cookie.get("access_token")?.value}`,
         'Accept': 'application/json',
@@ -53,7 +52,6 @@ async function refreshToken() {
         throw "Некорректный ответ"
     }
 
-    console.log(response.status)
     const data = await response.json()
 
  

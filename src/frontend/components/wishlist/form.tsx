@@ -59,7 +59,6 @@ export function WishlistCreateForm({
   ) => {
     let { name, value } = e.target;
     if (name == "visible") {
-      console.log(value);
       setFormData({ ...formData, [name]: Number(value) });
     } else {
       setFormData({ ...formData, [name]: value });
