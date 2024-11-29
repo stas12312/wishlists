@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { getUser } from "./auth";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
+import { Divider } from "@nextui-org/divider";
 export default function SignIn() {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -39,7 +40,7 @@ export default function SignIn() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mx-auto my-10 max-w-md flex flex-col gap-2"
+      className="mx-auto my-10 max-w-md flex flex-col gap-2 bg-content1 p-4 rounded-xl box-border shadow-medium"
     >
       <h2 className={"text-center"}>Войти</h2>
 
@@ -77,6 +78,11 @@ export default function SignIn() {
             </button>
           }
         />
+        <small>
+          <Link className="text-sm" href="/restore-password">
+            Забыли пароль?
+          </Link>
+        </small>
       </div>
       <div>
         <Button
@@ -88,11 +94,10 @@ export default function SignIn() {
           Войти
         </Button>
       </div>
-      <div className="text-center">
-        <Link className="my-2" href="/register">
-          Регистрация
-        </Link>
-      </div>
+      <Divider className="my-2" />
+      <p className="text-center">
+        <Link href="/register">Регистрация</Link>
+      </p>
     </form>
   );
 }

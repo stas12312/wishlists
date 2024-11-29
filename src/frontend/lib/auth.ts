@@ -3,6 +3,7 @@ import { jwtDecode } from "jwt-decode"
 import {cookies} from "next/headers"
 import { redirect } from "next/navigation"
 import {ITokens} from "./models";
+import { refreshTokens } from "./requests";
 
 export async function refreshTokenIfNeed(){
     const cookie = await cookies()
@@ -36,25 +37,17 @@ export async function setTokens(tokens: ITokens) {
 
 async function refreshToken() {
     const cookie = await cookies()
-    const headers = { 'Authorization': `Bearer ${cookie.get("access_token")?.value}`,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-     };
+    const refreshToken = cookie.get("refresh_token")?.value
 
-    const response = await fetch("https://test.mywishlists.ru/api/auth/refresh",{
-        headers: headers,
-        method: "post",
-        body: JSON.stringify({"refresh_token": cookie.get("refresh_token")?.value},
-        )
+    if (!refreshToken) {
+        throw "Токен не найден"
     }
-    )
-    if (!response.ok) {
+    const response = await refreshTokens(refreshToken)
+    if ("message" in response) {
         throw "Некорректный ответ"
     }
 
-    const data = await response.json()
-
  
-    cookie.set("access_token", data.access_token)
-    cookie.set("refresh_token", data.refresh_token)
+    cookie.set("access_token", response.access_token)
+    cookie.set("refresh_token", response.refresh_token)
 }

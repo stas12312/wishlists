@@ -131,11 +131,55 @@ export async function deleteWishlist(wishlistUUID: string) {
 
 export async function authRequest(email: string, password: string): Promise<ITokens>{
   const response = await axiosInstance.post(
-      "https://test.mywishlists.ru/api/auth/login",
+      "/auth/login",
       {
           email: email,
           password: password,
       }
   )
   return response.data
+}
+
+export async function restorePassword(email: string): Promise<IRegisterData> {
+  const response = await axiosInstance.post("/auth/restore",
+    {
+      "email": email,
+    }
+  )
+  return response.data
+}
+
+export async function checkCode(registerData: IRegisterData, code: string): Promise<object | IError> {
+  const response = await axiosInstance.post("/auth/check-code/",
+    {
+      uuid: registerData.uuid,
+      code: code,
+      secret_key: registerData.secret_key,
+    }
+  )
+  return response.data
+}
+
+export async function resetPassword(registerData: IRegisterData, password: string, code?: string, key?: string): Promise<ITokens | IError> {
+  const response = await axiosInstance.post(
+    "/auth/reset-password/",
+    {
+      ...registerData,
+      code: code,
+      password: password,
+      key: key,
+    }
+  )
+  return response.data
+}
+
+export async function refreshTokens(refreshToken: string): Promise<ITokens | IError> {
+  const response = await axiosInstance.post(
+    "/auth/refresh",
+    {
+      "refresh_token": refreshToken,
+    }
+  )
+  return response.data
+
 }
