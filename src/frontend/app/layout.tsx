@@ -4,7 +4,7 @@ import { Metadata, Viewport } from "next";
 import { Providers } from "./providers";
 
 import Menu from "@/components/menu";
-import UserItem from "@/components/user";
+import { UserItem } from "@/components/user";
 import { fontSans } from "@/config/fonts";
 import { siteConfig } from "@/config/site";
 import { cookies } from "next/headers";

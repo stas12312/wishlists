@@ -1,18 +1,13 @@
 "use client";
-import { IUser } from "@/lib/models";
-import { getUser } from "@/lib/requests";
+import userStore from "@/store/userStore";
 import { User } from "@nextui-org/user";
-import { useEffect, useState } from "react";
+import { observer } from "mobx-react-lite";
+import { useEffect } from "react";
 
-export default function UserItem() {
-  const [user, setUser] = useState<IUser>({} as IUser);
-
+export const UserItem = observer(() => {
+  const user = userStore.user;
   useEffect(() => {
-    async function fetchUser() {
-      const user = await getUser();
-      setUser(user);
-    }
-    fetchUser();
+    userStore.fetchMe();
   }, []);
 
   return (
@@ -25,9 +20,7 @@ export default function UserItem() {
             name: user.name?.length ? user.name[0] : "",
           }}
         />
-      ) : (
-        <span></span>
-      )}
+      ) : null}
     </div>
   );
-}
+});
