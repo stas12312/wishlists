@@ -3,6 +3,7 @@ import { setTokens } from "@/lib/auth";
 import { IRegisterData } from "@/lib/models";
 import { confirmEmail, register } from "@/lib/requests";
 import { Button } from "@nextui-org/button";
+import { Divider } from "@nextui-org/divider";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
 import { useRouter } from "next/navigation";
@@ -109,11 +110,14 @@ export default function SignIn() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto my-10 max-w-md gap-4">
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col mx-auto my-10 max-w-md gap-4 bg-content1 p-4 rounded-xl box-border shadow-medium"
+    >
       <h2 className="text-center">{formTitle}</h2>
 
       {step === 0 ? (
-        <div>
+        <div className="flex flex-col gap-2">
           <div>
             <Input
               fullWidth
@@ -121,7 +125,6 @@ export default function SignIn() {
               value={formData.name}
               onChange={handleChange}
               name="name"
-              className={"my-2"}
               isRequired
             />
           </div>
@@ -132,7 +135,6 @@ export default function SignIn() {
               value={formData.email}
               onChange={handleChange}
               name="email"
-              className={"my-2"}
               isRequired
             />
           </div>
@@ -144,7 +146,6 @@ export default function SignIn() {
               value={formData.password}
               onChange={handleChange}
               name="password"
-              className={"my-2"}
               isInvalid={errorMessages.Password !== ""}
               errorMessage={errorMessages.Password}
               isRequired
@@ -175,10 +176,9 @@ export default function SignIn() {
               Далее
             </Button>
           </div>
+          <Divider className="my-4" />
           <div className="text-center">
-            <Link className="my-2" href="/login">
-              Войти
-            </Link>
+            <Link href="/login">Войти</Link>
           </div>
         </div>
       ) : null}
