@@ -8,8 +8,11 @@ import { useEffect, useState } from "react";
 import { VisibleStatus } from "./visibleIcon";
 import { WishItem } from "./wish/card";
 import WishSaveModal from "./wish/saveModal";
+import userStore from "@/store/userStore";
+import { observable } from "mobx";
+import { observer } from "mobx-react-lite";
 
-function WishlistDetail(proprs: { wishlist: IWishlist }) {
+const WishlistDetail = observer((proprs: { wishlist: IWishlist }) => {
   const wishlist = proprs.wishlist;
   return (
     <div>
@@ -23,11 +26,12 @@ function WishlistDetail(proprs: { wishlist: IWishlist }) {
       <p className={"text-default-500"}>{wishlist.description}</p>
     </div>
   );
-}
+});
 
-export default function Wishes({ wishlistUUID }: { wishlistUUID: string }) {
+const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
   const [items, setItems] = useState<IWish[]>([]);
   const [wishlist, setWishlist] = useState<IWishlist>({} as IWishlist);
+  const isEditable = userStore.user.id == wishlist.user_id;
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -58,7 +62,7 @@ export default function Wishes({ wishlistUUID }: { wishlistUUID: string }) {
 
   const components = items.map((wish: IWish) => (
     <div key={wish.uuid}>
-      <WishItem wish={wish} onDelete={onDeleteWish} />
+      <WishItem wish={wish} isEditable={isEditable} onDelete={onDeleteWish} />
     </div>
   ));
   return (
@@ -67,14 +71,17 @@ export default function Wishes({ wishlistUUID }: { wishlistUUID: string }) {
         <WishlistDetail wishlist={wishlist} />
       </div>
       <Divider className="my-4 col-span-full" />
-      <Button
-        fullWidth
-        onPress={onOpen}
-        className="col-span-full"
-        color="primary"
-      >
-        Добавить
-      </Button>
+      {isEditable ? (
+        <Button
+          fullWidth
+          onPress={onOpen}
+          className="col-span-full"
+          color="primary"
+        >
+          Добавить
+        </Button>
+      ) : null}
+
       <WishSaveModal
         onOpenChange={onOpenChange}
         isOpen={isOpen}
@@ -84,4 +91,6 @@ export default function Wishes({ wishlistUUID }: { wishlistUUID: string }) {
       {components}
     </div>
   );
-}
+});
+
+export default Wishes;

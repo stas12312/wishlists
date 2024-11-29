@@ -1,5 +1,5 @@
 "use client";
-import { IWish } from "@/lib/models";
+import { IWish, IWishlist } from "@/lib/models";
 import { deleteWish } from "@/lib/requests";
 import { Button } from "@nextui-org/button";
 import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/card";
@@ -16,6 +16,7 @@ import { Key, useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { MdCreate, MdDelete } from "react-icons/md";
 import WishSaveModal from "./saveModal";
+import userStore from "@/store/userStore";
 export function WishItemMenu({
   wish,
   onDelete,
@@ -77,13 +78,15 @@ export function WishItemMenu({
 
 export function WishItem({
   wish,
+  isEditable,
   onDelete,
 }: {
   wish: IWish;
+  isEditable: boolean;
   onDelete: { (wish: IWish): void };
 }) {
   const [item, setItem] = useState<IWish>(wish);
-
+  const user = userStore.user;
   return (
     <Card
       className="flex-col h-[300px] md:hover:scale-105 w-full"
@@ -98,9 +101,15 @@ export function WishItem({
             <span className="uppercase text-xl">{item.name}</span>
             <span className="text-default-500">{item.comment}</span>
           </p>
-          <span>
-            <WishItemMenu wish={item} onDelete={onDelete} onUpdate={setItem} />
-          </span>
+          {isEditable ? (
+            <span>
+              <WishItemMenu
+                wish={item}
+                onDelete={onDelete}
+                onUpdate={setItem}
+              />
+            </span>
+          ) : null}
         </div>
       </CardHeader>
       <CardBody>

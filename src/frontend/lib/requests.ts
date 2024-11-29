@@ -45,7 +45,7 @@ export async function getWishes(wishlist_uuid: string): Promise<IWish[]> {
   return response.data.data
 }
 
-export async function getUser(): Promise<IUser> {
+export async function getMe(): Promise<IUser> {
   const response = await axiosInstance.get(
     "/user/me"
   )
