@@ -1,6 +1,7 @@
 "use client";
-import { IWish, IWishlist } from "@/lib/models";
+import { IWish } from "@/lib/models";
 import { deleteWish } from "@/lib/requests";
+import userStore from "@/store/userStore";
 import { Button } from "@nextui-org/button";
 import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/card";
 import { Chip } from "@nextui-org/chip";
@@ -16,7 +17,6 @@ import { Key, useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { MdCreate, MdDelete } from "react-icons/md";
 import WishSaveModal from "./saveModal";
-import userStore from "@/store/userStore";
 export function WishItemMenu({
   wish,
   onDelete,
