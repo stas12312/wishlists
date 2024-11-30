@@ -1,4 +1,5 @@
 "use client";
+import PasswordInput from "@/components/passwordInput";
 import { setTokens } from "@/lib/auth";
 import { IRegisterData } from "@/lib/models";
 import { confirmEmail, register } from "@/lib/requests";
@@ -139,30 +140,12 @@ export default function SignIn() {
             />
           </div>
           <div>
-            <Input
-              fullWidth
+            <PasswordInput
               label="Пароль"
-              type={isVisible ? "text" : "password"}
-              value={formData.password}
-              onChange={handleChange}
               name="password"
-              isInvalid={errorMessages.Password !== ""}
+              value={formData.password}s
+              onChange={handleChange}
               errorMessage={errorMessages.Password}
-              isRequired
-              endContent={
-                <button
-                  className="focus:outline-none"
-                  type="button"
-                  onClick={onChangeVisible}
-                  aria-label="toggle password visibility"
-                >
-                  {isVisible ? (
-                    <IoMdEyeOff className="text-2xl text-default-400 pointer-events-none" />
-                  ) : (
-                    <IoMdEye className="text-2xl text-default-400 pointer-events-none" />
-                  )}
-                </button>
-              }
             />
           </div>
           <span className="text-danger text-tiny">{errorMessages.message}</span>

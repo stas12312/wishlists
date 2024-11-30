@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { getUser } from "./auth";
+import PasswordInput from "@/components/passwordInput";
 export default function SignIn() {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -56,27 +57,11 @@ export default function SignIn() {
         />
       </div>
       <div>
-        <Input
-          fullWidth
+        <PasswordInput
           label="Пароль"
-          type={isVisible ? "text" : "password"}
+          name="password"
           value={formData.password}
           onChange={handleChange}
-          name="password"
-          endContent={
-            <button
-              className="focus:outline-none"
-              type="button"
-              onClick={onChangeVisible}
-              aria-label="toggle password visibility"
-            >
-              {isVisible ? (
-                <IoMdEyeOff className="text-2xl text-default-400 pointer-events-none" />
-              ) : (
-                <IoMdEye className="text-2xl text-default-400 pointer-events-none" />
-              )}
-            </button>
-          }
         />
         <small>
           <Link className="text-sm" href="/auth/reset-password">
