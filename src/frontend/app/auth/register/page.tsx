@@ -12,7 +12,6 @@ import { FormEvent, useEffect, useState } from "react";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 
 export default function SignIn() {
-  const router = useRouter();
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState({
     email: "",
@@ -143,7 +142,7 @@ export default function SignIn() {
             <PasswordInput
               label="Пароль"
               name="password"
-              value={formData.password}s
+              value={formData.password}
               onChange={handleChange}
               errorMessage={errorMessages.Password}
             />
