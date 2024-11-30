@@ -8,6 +8,8 @@ import { UserItem } from "@/components/user";
 import { fontSans } from "@/config/fonts";
 import { siteConfig } from "@/config/site";
 import { cookies } from "next/headers";
+import { Toaster } from "react-hot-toast";
+
 export const metadata: Metadata = {
   title: {
     default: siteConfig.name,
@@ -60,6 +62,12 @@ export default async function RootLayout({
                   <Menu />
                 </div>
               </div>
+              <Toaster
+                position="bottom-right"
+                toastOptions={{
+                  className: "!bg-content1 dark:!text-white !text-base-content",
+                }}
+              />
               <div className="col-span-full md:col-span-9 lg:col-span-10 py-10 px-2">
                 <main>{children}</main>
                 <footer className="w-full flex items-center justify-center py-3"></footer>

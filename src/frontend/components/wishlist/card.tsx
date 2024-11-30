@@ -9,6 +9,7 @@ import {
   Dropdown,
   DropdownItem,
   DropdownMenu,
+  DropdownSection,
   DropdownTrigger,
 } from "@nextui-org/dropdown";
 import { useDisclosure } from "@nextui-org/modal";
@@ -16,9 +17,11 @@ import { Skeleton } from "@nextui-org/skeleton";
 import { useRouter } from "next/navigation";
 import { Key, useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { MdCreate, MdDelete } from "react-icons/md";
+import { MdCreate, MdDelete, MdLink } from "react-icons/md";
 import { VisibleStatus } from "../visibleIcon";
 import WishlistSaveModal from "./saveModal";
+import toast from "react-hot-toast";
+import { Divider } from "@nextui-org/divider";
 
 export function WishlistItem({
   wishlist,
@@ -110,6 +113,12 @@ export function WishlistItemMenu({
     if (key === "edit") {
       onOpenChange();
     }
+    if (key === "share") {
+      navigator.clipboard.writeText(
+        `${window.location.origin}/wishlists/${wishlist.uuid}`
+      );
+      toast.success("Ссылка скопирована");
+    }
   }
 
   function onUpdateWishlist(updadedWishlist: IWishlist): void {
@@ -126,9 +135,14 @@ export function WishlistItemMenu({
           </Button>
         </DropdownTrigger>
         <DropdownMenu aria-label="Static Actions" onAction={handleOnAction}>
-          <DropdownItem key="edit" startContent={<MdCreate />}>
-            Редактировать
-          </DropdownItem>
+          <DropdownSection showDivider>
+            <DropdownItem key="edit" startContent={<MdCreate />}>
+              Редактировать
+            </DropdownItem>
+            <DropdownItem key="share" startContent={<MdLink />}>
+              Скопировать
+            </DropdownItem>
+          </DropdownSection>
           <DropdownItem
             key="delete"
             className="text-danger"
