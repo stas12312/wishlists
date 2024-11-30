@@ -1,4 +1,5 @@
 "use client";
+import PasswordInput from "@/components/passwordInput";
 import { setTokens } from "@/lib/auth";
 import { IRegisterData, ITokens } from "@/lib/models";
 import { checkCode, resetPassword, restorePassword } from "@/lib/requests";
@@ -104,15 +105,13 @@ const RestorePasswordPage = observer(() => {
           );
         } else if (step == 2) {
           return (
-            <Input
+            <PasswordInput
+              label="Пароль"
               name="new-password"
-              type="password"
-              label="Новый пароль"
-              isInvalid={passwordError != ""}
-              errorMessage={passwordError}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-            ></Input>
+              errorMessage={passwordError}
+            />
           );
         } else {
           return null;
