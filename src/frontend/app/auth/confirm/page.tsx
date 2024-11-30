@@ -3,6 +3,7 @@ import { setTokens } from "@/lib/auth";
 import { confirmEmail } from "@/lib/requests";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+
 export default function ConfirmPage() {
   const searchParams = useSearchParams();
 
@@ -10,13 +11,13 @@ export default function ConfirmPage() {
   const uuid = searchParams.get("uuid") ?? "";
   const [error, setError] = useState("");
 
-  if (!uuid || !key) {
-    return <div>Error</div>;
-  }
-
   useEffect(() => {
     processingConfirm();
   }, []);
+
+  if (!uuid || !key) {
+    return <div>Error</div>;
+  }
 
   async function processingConfirm() {
     const tokens = await confirmEmail(uuid, undefined, undefined, key);

@@ -1,12 +1,12 @@
 "use client";
 import { Button } from "@nextui-org/button";
+import { Divider } from "@nextui-org/divider";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { getUser } from "./auth";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
-import { Divider } from "@nextui-org/divider";
+import { getUser } from "./auth";
 export default function SignIn() {
   const router = useRouter();
   const [formData, setFormData] = useState({

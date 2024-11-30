@@ -7,7 +7,6 @@ import { Divider } from "@nextui-org/divider";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
 import { observer } from "mobx-react-lite";
-import { Span } from "next/dist/trace";
 import { useSearchParams } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 
