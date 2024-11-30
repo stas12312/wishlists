@@ -79,7 +79,7 @@ export default function SignIn() {
           }
         />
         <small>
-          <Link className="text-sm" href="/restore-password">
+          <Link className="text-sm" href="/auth/reset-password">
             Забыли пароль?
           </Link>
         </small>
@@ -96,7 +96,7 @@ export default function SignIn() {
       </div>
       <Divider className="my-2" />
       <p className="text-center">
-        <Link href="/register">Регистрация</Link>
+        <Link href="/auth/register">Регистрация</Link>
       </p>
     </form>
   );

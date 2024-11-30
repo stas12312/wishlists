@@ -7,7 +7,9 @@ import { Divider } from "@nextui-org/divider";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
 import { observer } from "mobx-react-lite";
-import { FormEvent, FormEventHandler, use, useEffect, useState } from "react";
+import { Span } from "next/dist/trace";
+import { useSearchParams } from "next/navigation";
+import { FormEvent, useEffect, useState } from "react";
 
 const RestorePasswordPage = observer(() => {
   const [email, setEmail] = useState("");
@@ -16,17 +18,23 @@ const RestorePasswordPage = observer(() => {
   const [password, setPassword] = useState("");
   const [codeError, setCodeError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const searchParams = useSearchParams();
 
   const [restoreData, setRestoreData] = useState<IRegisterData>({
-    uuid: "",
+    uuid: searchParams.get("uuid") ?? "",
     secret_key: "",
+    key: searchParams.get("key") ?? "",
   });
 
   useEffect(() => {
+    console.log(restoreData);
     if (code.length == 6) {
       processRestore();
     }
-  }, [code]);
+    if (restoreData.key != "") {
+      setStep(2);
+    }
+  }, [code, restoreData.uuid]);
 
   async function handleOnSumbit(e: FormEvent) {
     e.preventDefault();
@@ -36,7 +44,7 @@ const RestorePasswordPage = observer(() => {
   async function processRestore() {
     if (step == 0) {
       const response = await restorePassword(email);
-      setRestoreData(response);
+      setRestoreData({ ...response, key: "" });
       setStep(1);
     } else if (step == 1) {
       const response = await checkCode(restoreData, code);
@@ -67,6 +75,11 @@ const RestorePasswordPage = observer(() => {
             ? "Новый пароль"
             : "Код подтверждения"}
       </p>
+      {email !== "" && step === 1 ? (
+        <span className="text-tiny">
+          На {email} было отправлено письмо с кодом подтверждения
+        </span>
+      ) : null}
       {(() => {
         if (step === 0) {
           return (
@@ -110,7 +123,7 @@ const RestorePasswordPage = observer(() => {
       <Button type="submit">{step !== 2 ? "Далее" : "Сменить пароль"}</Button>
       <Divider className="my-2" />
       <div className="w-full text-center">
-        <Link href="/login" className="w">
+        <Link href="/auth/login" className="w">
           Войти
         </Link>
       </div>

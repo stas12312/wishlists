@@ -34,6 +34,7 @@ export interface IUser {
 export interface IRegisterData {
     uuid: string
     secret_key: string
+    key?: string
 }
 
 export interface ITokens {

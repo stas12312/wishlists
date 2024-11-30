@@ -178,7 +178,7 @@ export default function SignIn() {
           </div>
           <Divider className="my-4" />
           <div className="text-center">
-            <Link href="/login">Войти</Link>
+            <Link href="/auth/login">Войти</Link>
           </div>
         </div>
       ) : null}

@@ -85,8 +85,8 @@ export function Wishlists() {
       {components.length ? (
         components
       ) : (
-        <div className="col-span-12 text-center">
-          <h1 className="text-4xl	">У вас нет списоков</h1>
+        <div className="col-span-full text-center">
+          <h1 className="text-4xl	col-span-full">У вас нет списоков</h1>
         </div>
       )}
     </div>
