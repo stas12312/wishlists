@@ -77,6 +77,7 @@ export async function confirmEmail(uuid: string, code?: string, secret_key?: str
     {
       "uuid": uuid,
       "code": code,
+      "key": key,
       "secret_key": secret_key,
     }
   )
@@ -160,14 +161,13 @@ export async function checkCode(registerData: IRegisterData, code: string): Prom
   return response.data
 }
 
-export async function resetPassword(registerData: IRegisterData, password: string, code?: string, key?: string): Promise<ITokens | IError> {
+export async function resetPassword(registerData: IRegisterData, password: string, code?: string): Promise<ITokens | IError> {
   const response = await axiosInstance.post(
     "/auth/reset-password/",
     {
       ...registerData,
       code: code,
       password: password,
-      key: key,
     }
   )
   return response.data

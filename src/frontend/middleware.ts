@@ -8,7 +8,7 @@ export default async function middleware(request: NextRequest) {
     if (!cookieStore.get("access_token")?.value || !cookieStore.get("refresh_token")?.value) {
       cookieStore.delete("access_token")
       cookieStore.delete("refresh_token")
-      return NextResponse.redirect(new URL('/login', request.url))
+      return NextResponse.redirect(new URL('/auth/login', request.url))
       
     }
     await refreshTokenIfNeed()
@@ -17,5 +17,5 @@ export default async function middleware(request: NextRequest) {
  
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|login|register|wishlists|restore-password).*)',
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|wishlists|auth).*)',]
 }
