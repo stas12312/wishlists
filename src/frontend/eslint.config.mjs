@@ -104,7 +104,8 @@ export default [
       "no-unused-vars": "off",
       "unused-imports/no-unused-vars": "off",
       "unused-imports/no-unused-imports": "warn",
-
+      'linebreak-style': ['error', process.platform === 'win32' ? 'windows' : 'unix'],
+ },
       "@typescript-eslint/no-unused-vars": [
         "warn",
         {
