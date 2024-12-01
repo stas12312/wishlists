@@ -6,5 +6,6 @@ export default async function Page({
   params: Promise<{ uuid: string }>;
 }) {
   const wishlist_uuid = (await params).uuid;
+
   return <Wishes wishlistUUID={wishlist_uuid} />;
 }

@@ -20,19 +20,12 @@ export default function PasswordInput({
   return (
     <Input
       fullWidth
-      label={label}
-      type={isVisible ? "text" : "password"}
-      value={value}
-      onChange={onChange}
-      name={name}
-      isInvalid={errorMessage !== "" && errorMessage !== undefined}
-      errorMessage={errorMessage}
       endContent={
         <button
+          aria-label="toggle password visibility"
           className="focus:outline-none"
           type="button"
           onClick={() => setIsVisible(!isVisible)}
-          aria-label="toggle password visibility"
         >
           {isVisible ? (
             <IoMdEyeOff className="text-2xl text-default-400 pointer-events-none" />
@@ -41,6 +34,13 @@ export default function PasswordInput({
           )}
         </button>
       }
+      errorMessage={errorMessage}
+      isInvalid={errorMessage !== "" && errorMessage !== undefined}
+      label={label}
+      name={name}
+      type={isVisible ? "text" : "password"}
+      value={value}
+      onChange={onChange}
     />
   );
 }

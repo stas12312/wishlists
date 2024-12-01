@@ -1,55 +1,54 @@
 export interface IWishlist {
-    uuid: string
-    name: string
-    description?: string
-    created_at: string
-    date?: string
-    user_id: number
-    is_active: boolean
-    wishes_count: number
-    visible: number
+  uuid: string;
+  name: string;
+  description?: string;
+  created_at: string;
+  date?: string;
+  user_id: number;
+  is_active: boolean;
+  wishes_count: number;
+  visible: number;
 }
 
-
 export interface IWish {
-    uuid?: string
-    name: string
-    comment: string
-    link?: string
-    wishlist_uuid: string
-    image?: string
-    desirability?: number
-    created_at?: string
-    cost?: number
-    is_active?: boolean
-    user_id?: number
+  uuid?: string;
+  name: string;
+  comment: string;
+  link?: string;
+  wishlist_uuid: string;
+  image?: string;
+  desirability?: number;
+  created_at?: string;
+  cost?: number;
+  is_active?: boolean;
+  user_id?: number;
 }
 
 export interface IUser {
-    id: number
-    name: string
-    email: string
+  id: number;
+  name: string;
+  email: string;
 }
 
 export interface IRegisterData {
-    uuid: string
-    secret_key: string
-    key?: string
+  uuid: string;
+  secret_key: string;
+  key?: string;
 }
 
 export interface ITokens {
-    access_token: string
-    refresh_token: string
+  access_token: string;
+  refresh_token: string;
 }
 
 export interface IFieldError {
-    name: string
-    tag: string
-    message: string
+  name: string;
+  tag: string;
+  message: string;
 }
 
 export interface IError {
-    message: string
-    details: string
-    fields?: IFieldError[]
+  message: string;
+  details: string;
+  fields?: IFieldError[];
 }

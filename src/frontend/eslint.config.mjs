@@ -22,9 +22,7 @@ const compat = new FlatCompat({
 });
 
 export default [
-  
   {
-    files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
     ignores: [
       ".now/*",
       "**/*.css",
@@ -47,6 +45,9 @@ export default [
       "!**/react-shim.js",
       "!**/tsup.config.ts",
     ],
+  },
+  {
+    files: ["**/*.{ts,tsx}"],
   },
   ...fixupConfigRules(
     compat.extends(

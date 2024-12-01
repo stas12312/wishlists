@@ -5,8 +5,9 @@ import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { IoMdEye, IoMdEyeOff } from "react-icons/io";
+
 import { getUser } from "./auth";
+
 import PasswordInput from "@/components/passwordInput";
 export default function SignIn() {
   const router = useRouter();
@@ -17,9 +18,6 @@ export default function SignIn() {
   });
 
   const [isLogining, setIsLogining] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-
-  const onChangeVisible = () => setIsVisible(!isVisible);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -32,28 +30,29 @@ export default function SignIn() {
   }
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
   ) => {
     const { name, value } = e.target;
+
     setFormData({ ...formData, [name]: value });
   };
 
   return (
     <form
-      onSubmit={handleSubmit}
       className="mx-auto my-10 max-w-md flex flex-col gap-2 bg-content1 p-4 rounded-xl box-border shadow-medium"
+      onSubmit={handleSubmit}
     >
       <h2 className={"text-center"}>Войти</h2>
 
       <div>
         <Input
           fullWidth
+          required
+          className="text-2xl"
           label="Email"
+          name="email"
           value={formData.email}
           onChange={handleChange}
-          name="email"
-          className="text-2xl"
-          required
         />
       </div>
       <div>
@@ -72,9 +71,9 @@ export default function SignIn() {
       <div>
         <Button
           fullWidth
-          type="submit"
-          spinnerPlacement="end"
           isLoading={isLogining}
+          spinnerPlacement="end"
+          type="submit"
         >
           Войти
         </Button>

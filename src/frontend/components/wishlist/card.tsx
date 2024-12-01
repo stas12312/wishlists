@@ -1,7 +1,5 @@
 "use client";
 
-import { IWishlist } from "@/lib/models";
-import { deleteWishlist } from "@/lib/requests";
 import { Button } from "@nextui-org/button";
 import { Card, CardBody, CardHeader } from "@nextui-org/card";
 import { Chip } from "@nextui-org/chip";
@@ -18,10 +16,14 @@ import { useRouter } from "next/navigation";
 import { Key, useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { MdCreate, MdDelete, MdLink } from "react-icons/md";
-import { VisibleStatus } from "../visibleIcon";
-import WishlistSaveModal from "./saveModal";
 import toast from "react-hot-toast";
-import { Divider } from "@nextui-org/divider";
+
+import { VisibleStatus } from "../visibleIcon";
+
+import WishlistSaveModal from "./saveModal";
+
+import { deleteWishlist } from "@/lib/requests";
+import { IWishlist } from "@/lib/models";
 
 export function WishlistItem({
   wishlist,
@@ -41,8 +43,8 @@ export function WishlistItem({
   return (
     <Card
       isPressable
-      onPress={() => router.push(`/wishlists/${cardWishlist.uuid}`)}
       className="w-full h-32 flex-col"
+      onPress={() => router.push(`/wishlists/${cardWishlist.uuid}`)}
     >
       <CardHeader className="flex-col items-start">
         <div className="flex flex-row justify-between w-full">
@@ -69,7 +71,7 @@ export function WishlistItem({
       <CardBody className="justify-end">
         <div className="flow-root">
           {cardWishlist.date ? (
-            <Chip size="sm" className="text-default-500 float-right">
+            <Chip className="text-default-500 float-right" size="sm">
               {new Date(cardWishlist.date).toLocaleDateString()}
             </Chip>
           ) : null}
@@ -84,10 +86,10 @@ export function WishlistsSkeletonItem() {
     <Card className="space-y-5 p-4 h-32" radius="lg">
       <div className="space-y-3">
         <Skeleton className="w-3/5 rounded-lg">
-          <div className="h-3 w-3/5 rounded-lg bg-default-200"></div>
+          <div className="h-3 w-3/5 rounded-lg bg-default-200" />
         </Skeleton>
         <Skeleton className="w-4/5 rounded-lg">
-          <div className="h-3 w-4/5 rounded-lg bg-default-200"></div>
+          <div className="h-3 w-4/5 rounded-lg bg-default-200" />
         </Skeleton>
       </div>
     </Card>
@@ -103,7 +105,7 @@ export function WishlistItemMenu({
   onDelete: { (wishlist: IWishlist): void };
   onUpdate: { (wishlist: IWishlist): void };
 }) {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isOpen, onOpenChange } = useDisclosure();
 
   async function handleOnAction(key: Key) {
     if (key === "delete") {
@@ -130,7 +132,7 @@ export function WishlistItemMenu({
     <span>
       <Dropdown>
         <DropdownTrigger>
-          <Button isIconOnly variant="light" radius="lg" as="div">
+          <Button isIconOnly as="div" radius="lg" variant="light">
             <BsThreeDotsVertical />
           </Button>
         </DropdownTrigger>
@@ -154,9 +156,9 @@ export function WishlistItemMenu({
         </DropdownMenu>
       </Dropdown>
       <WishlistSaveModal
-        onOpenChange={onOpenChange}
-        wishlist={wishlist}
         isOpen={isOpen}
+        wishlist={wishlist}
+        onOpenChange={onOpenChange}
         onSaveWishlist={onUpdateWishlist}
       />
     </span>

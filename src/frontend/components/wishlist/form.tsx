@@ -1,7 +1,5 @@
 "use client";
 
-import { IWishlist } from "@/lib/models";
-import { createWishList, updateWishlist } from "@/lib/requests";
 import { CalendarDate } from "@internationalized/date";
 import { Button } from "@nextui-org/button";
 import { DatePicker } from "@nextui-org/date-picker";
@@ -11,6 +9,9 @@ import { I18nProvider } from "@react-aria/i18n";
 import { FormEvent, useState } from "react";
 import { MdOutlinePublic, MdOutlinePublicOff } from "react-icons/md";
 import { Avatar } from "@nextui-org/avatar";
+
+import { createWishList, updateWishlist } from "@/lib/requests";
+import { IWishlist } from "@/lib/models";
 
 const visibleItems = [
   { key: "0", label: "Только мне", icon: <MdOutlinePublicOff /> },
@@ -44,6 +45,7 @@ export function WishlistCreateForm({
     setIsCreateing(true);
     e.preventDefault();
     let result: IWishlist;
+
     if (formData.uuid) {
       result = await updateWishlist(formData as IWishlist);
     } else {
@@ -55,9 +57,10 @@ export function WishlistCreateForm({
   const handleChange = (
     e: React.ChangeEvent<
       HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement
-    >
+    >,
   ) => {
     let { name, value } = e.target;
+
     if (name == "visible") {
       setFormData({ ...formData, [name]: Number(value) });
     } else {
@@ -69,8 +72,9 @@ export function WishlistCreateForm({
     const datetime = new Date(
       dateValue.year,
       dateValue.month - 1,
-      dateValue.day
+      dateValue.day,
     );
+
     setFormData({
       ...formData,
       ["date"]: datetime.toISOString(),
@@ -78,24 +82,24 @@ export function WishlistCreateForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+    <form className="flex flex-col space-y-4" onSubmit={handleSubmit}>
       <div>
         <Input
           fullWidth
+          isRequired
           label="Название"
+          name="name"
           value={formData.name}
           onChange={handleChange}
-          name="name"
-          isRequired
         />
       </div>
       <div>
         <Input
           fullWidth
           label="Описание"
+          name="description"
           value={formData.description}
           onChange={handleChange}
-          name="description"
         />
       </div>
       <div>
@@ -111,23 +115,23 @@ export function WishlistCreateForm({
         </I18nProvider>
       </div>
       <Select
+        classNames={{ trigger: "data-[hover=true]:bg-default-200" }}
         label="Кому доступен"
         name="visible"
-        onChange={handleChange}
         selectedKeys={[formData.visible.toString()]}
-        classNames={{ trigger: "data-[hover=true]:bg-default-200" }}
+        onChange={handleChange}
       >
         {visibleItems.map((visible) => (
           <SelectItem
             key={visible.key}
-            startContent={<Avatar icon={visible.icon}></Avatar>}
+            startContent={<Avatar icon={visible.icon} />}
           >
             {visible.label}
           </SelectItem>
         ))}
       </Select>
       <div>
-        <Button type="submit" fullWidth isLoading={isCreating}>
+        <Button fullWidth isLoading={isCreating} type="submit">
           Сохранить
         </Button>
       </div>
@@ -137,9 +141,10 @@ export function WishlistCreateForm({
 
 function dateStringToCalendarDate(dateString: string): CalendarDate {
   const date = new Date(dateString);
+
   return new CalendarDate(
     date.getFullYear(),
     date.getMonth() + 1,
-    date.getDate()
+    date.getDate(),
   );
 }

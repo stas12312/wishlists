@@ -1,19 +1,21 @@
 "use client";
-import { IWish, IWishlist } from "@/lib/models";
-import { getWishes, getWishlist } from "@/lib/requests";
 import { Button } from "@nextui-org/button";
 import { Divider } from "@nextui-org/divider";
 import { useDisclosure } from "@nextui-org/modal";
 import { useEffect, useState } from "react";
+import { observer } from "mobx-react-lite";
+
 import { VisibleStatus } from "./visibleIcon";
 import { WishItem } from "./wish/card";
 import WishSaveModal from "./wish/saveModal";
+
 import userStore from "@/store/userStore";
-import { observable } from "mobx";
-import { observer } from "mobx-react-lite";
+import { getWishes, getWishlist } from "@/lib/requests";
+import { IWish, IWishlist } from "@/lib/models";
 
 const WishlistDetail = observer((proprs: { wishlist: IWishlist }) => {
   const wishlist = proprs.wishlist;
+
   return (
     <div>
       <div className="flex flex-row gap-2">
@@ -41,6 +43,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
         getWishes(wishlistUUID),
         getWishlist(wishlistUUID),
       ]);
+
       setItems(response[0]);
       setWishlist(response[1]);
     }
@@ -51,7 +54,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
     setItems(
       items.filter((value) => {
         return value.uuid !== wish.uuid;
-      })
+      }),
     );
   }
 
@@ -62,9 +65,10 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
 
   const components = items.map((wish: IWish) => (
     <div key={wish.uuid}>
-      <WishItem wish={wish} isEditable={isEditable} onDelete={onDeleteWish} />
+      <WishItem isEditable={isEditable} wish={wish} onDelete={onDeleteWish} />
     </div>
   ));
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-2">
       <div className="col-span-full px-4">
@@ -74,19 +78,19 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
       {isEditable ? (
         <Button
           fullWidth
-          onPress={onOpen}
           className="col-span-full"
           color="primary"
+          onPress={onOpen}
         >
           Добавить
         </Button>
       ) : null}
 
       <WishSaveModal
-        onOpenChange={onOpenChange}
         isOpen={isOpen}
-        onUpdate={onCreateWish}
         wishlistUUID={wishlistUUID}
+        onOpenChange={onOpenChange}
+        onUpdate={onCreateWish}
       />
       {components}
     </div>

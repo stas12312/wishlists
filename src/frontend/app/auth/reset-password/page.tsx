@@ -1,8 +1,4 @@
 "use client";
-import PasswordInput from "@/components/passwordInput";
-import { setTokens } from "@/lib/auth";
-import { IRegisterData, ITokens } from "@/lib/models";
-import { checkCode, resetPassword, restorePassword } from "@/lib/requests";
 import { Button } from "@nextui-org/button";
 import { Divider } from "@nextui-org/divider";
 import { Input } from "@nextui-org/input";
@@ -10,6 +6,11 @@ import { Link } from "@nextui-org/link";
 import { observer } from "mobx-react-lite";
 import { useSearchParams } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
+
+import { checkCode, resetPassword, restorePassword } from "@/lib/requests";
+import { IRegisterData, ITokens } from "@/lib/models";
+import { setTokens } from "@/lib/auth";
+import PasswordInput from "@/components/passwordInput";
 
 const RestorePasswordPage = observer(() => {
   const [email, setEmail] = useState("");
@@ -27,7 +28,6 @@ const RestorePasswordPage = observer(() => {
   });
 
   useEffect(() => {
-    console.log(restoreData);
     if (code.length == 6) {
       processRestore();
     }
@@ -44,19 +44,24 @@ const RestorePasswordPage = observer(() => {
   async function processRestore() {
     if (step == 0) {
       const response = await restorePassword(email);
+
       setRestoreData({ ...response, key: "" });
       setStep(1);
     } else if (step == 1) {
       const response = await checkCode(restoreData, code);
+
       if ("message" in response) {
         setCodeError(response.message);
+
         return;
       }
       setStep(2);
     } else if (step == 2) {
       const response = await resetPassword(restoreData, password, code);
+
       if ("message" in response && response.fields?.length) {
         setPasswordError(response.fields[0].message);
+
         return;
       }
       setTokens(response as ITokens);
@@ -84,33 +89,33 @@ const RestorePasswordPage = observer(() => {
         if (step === 0) {
           return (
             <Input
-              name="email"
               label="Email"
+              name="email"
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
               }}
-            ></Input>
+            />
           );
         } else if (step === 1) {
           return (
             <Input
-              name="code"
-              label="Код подтверждения"
-              isInvalid={codeError != ""}
               errorMessage={codeError}
+              isInvalid={codeError != ""}
+              label="Код подтверждения"
+              name="code"
               value={code}
               onChange={(e) => setCode(e.target.value)}
-            ></Input>
+            />
           );
         } else if (step == 2) {
           return (
             <PasswordInput
+              errorMessage={passwordError}
               label="Пароль"
               name="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              errorMessage={passwordError}
             />
           );
         } else {
@@ -121,7 +126,7 @@ const RestorePasswordPage = observer(() => {
       <Button type="submit">{step !== 2 ? "Далее" : "Сменить пароль"}</Button>
       <Divider className="my-2" />
       <div className="w-full text-center">
-        <Link href="/auth/login" className="w">
+        <Link className="w" href="/auth/login">
           Войти
         </Link>
       </div>

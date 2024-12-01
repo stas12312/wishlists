@@ -1,6 +1,8 @@
-import { IWishlist } from "@/lib/models";
 import { Modal, ModalContent, ModalHeader, ModalBody } from "@nextui-org/modal";
+
 import { WishlistCreateForm } from "./form";
+
+import { IWishlist } from "@/lib/models";
 
 export default function WishlistSaveModal({
   isOpen,
@@ -15,21 +17,21 @@ export default function WishlistSaveModal({
 }) {
   return (
     <Modal
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
-      placement="top-center"
       backdrop="blur"
+      isOpen={isOpen}
+      placement="top-center"
+      onOpenChange={onOpenChange}
     >
       <ModalContent>
-        {(onClose) => (
+        {() => (
           <>
             <ModalHeader className="flex flex-col gap-1 text-center">
               {wishlist ? "Редактирование вишлиста" : "Добавление вишлиста"}
             </ModalHeader>
             <ModalBody>
               <WishlistCreateForm
-                onCreate={onSaveWishlist}
                 wishlist={wishlist}
+                onCreate={onSaveWishlist}
               />
             </ModalBody>
           </>

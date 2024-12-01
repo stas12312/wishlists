@@ -1,7 +1,4 @@
 "use client";
-import { IWish } from "@/lib/models";
-import { deleteWish } from "@/lib/requests";
-import userStore from "@/store/userStore";
 import { Button } from "@nextui-org/button";
 import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/card";
 import { Chip } from "@nextui-org/chip";
@@ -16,7 +13,11 @@ import { useDisclosure } from "@nextui-org/modal";
 import { Key, useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { MdCreate, MdDelete } from "react-icons/md";
+
 import WishSaveModal from "./saveModal";
+
+import { deleteWish } from "@/lib/requests";
+import { IWish } from "@/lib/models";
 export function WishItemMenu({
   wish,
   onDelete,
@@ -26,7 +27,7 @@ export function WishItemMenu({
   onDelete: { (wish: IWish): void };
   onUpdate: { (wish: IWish): void };
 }) {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isOpen, onOpenChange } = useDisclosure();
 
   async function handleOnAction(key: Key) {
     if (key === "delete" && wish.uuid) {
@@ -47,7 +48,7 @@ export function WishItemMenu({
     <span>
       <Dropdown>
         <DropdownTrigger>
-          <Button isIconOnly variant="light" radius="lg" as="div">
+          <Button isIconOnly as="div" radius="lg" variant="light">
             <BsThreeDotsVertical />
           </Button>
         </DropdownTrigger>
@@ -66,11 +67,11 @@ export function WishItemMenu({
         </DropdownMenu>
       </Dropdown>
       <WishSaveModal
+        isOpen={isOpen}
+        wish={wish}
+        wishlistUUID={wish.wishlist_uuid}
         onOpenChange={onOpenChange}
         onUpdate={onWishUpdate}
-        wish={wish}
-        isOpen={isOpen}
-        wishlistUUID={wish.wishlist_uuid}
       />
     </span>
   );
@@ -86,12 +87,12 @@ export function WishItem({
   onDelete: { (wish: IWish): void };
 }) {
   const [item, setItem] = useState<IWish>(wish);
-  const user = userStore.user;
+
   return (
     <Card
       className="flex-col h-[300px] md:hover:scale-105 w-full"
       isPressable={item.link !== null && item.link != ""}
-      onPress={(e) => {
+      onPress={() => {
         window.open(item.link);
       }}
     >
