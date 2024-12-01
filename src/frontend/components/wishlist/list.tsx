@@ -1,15 +1,17 @@
 "use client";
 
-import { IWishlist } from "@/lib/models";
-import { getWishlists } from "@/lib/requests";
 import { Button } from "@nextui-org/button";
 import { Divider } from "@nextui-org/divider";
 import { useDisclosure } from "@nextui-org/modal";
 import { Skeleton } from "@nextui-org/skeleton";
 import { useEffect, useState } from "react";
 import { MdAdd } from "react-icons/md";
+
 import { WishlistItem, WishlistsSkeletonItem } from "./card";
 import WishlistSaveModal from "./saveModal";
+
+import { getWishlists } from "@/lib/requests";
+import { IWishlist } from "@/lib/models";
 
 export function Wishlists() {
   const [items, setItems] = useState<IWishlist[]>([]);
@@ -18,6 +20,7 @@ export function Wishlists() {
   useEffect(() => {
     async function fetchWishlists() {
       const res = await getWishlists();
+
       setItems(res);
       setIsLoading(false);
     }
@@ -31,21 +34,23 @@ export function Wishlists() {
     setItems(
       items.filter((value) => {
         return value.uuid != wishlist.uuid;
-      })
+      }),
     );
   }
 
   if (isLoading) {
     const components = [];
+
     for (let i = 1; i < 10; i++) {
       components.push(<div key={i}>{<WishlistsSkeletonItem />}</div>);
     }
+
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <h1 className="text-2xl col-span-full">Мои вишлисты</h1>
         <Divider className="my-4 col-span-full" />
         <Skeleton className="rounded-lg col-span-full">
-          <Button fullWidth></Button>
+          <Button fullWidth />
         </Skeleton>
         {components}
       </div>
@@ -62,16 +67,17 @@ export function Wishlists() {
       <WishlistItem wishlist={wishlist} onDelete={onDelete} />
     </span>
   ));
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <h1 className="text-2xl col-span-full">Мои вишлисты</h1>
       <Divider className="my-4 col-span-full" />
       <div className="col-span-full">
         <Button
-          onPress={onOpen}
           fullWidth
-          startContent={<MdAdd />}
           color="primary"
+          startContent={<MdAdd />}
+          onPress={onOpen}
         >
           Добавить
         </Button>

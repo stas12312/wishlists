@@ -1,7 +1,8 @@
 "use client";
 
-import { ThemeSwitcher } from "@/components/themeSwitcher";
 import { Divider } from "@nextui-org/divider";
+
+import { ThemeSwitcher } from "@/components/themeSwitcher";
 
 export default function SettingsPage() {
   return (

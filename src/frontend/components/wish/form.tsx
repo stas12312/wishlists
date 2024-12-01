@@ -1,10 +1,11 @@
 "use client";
-import { IError, IWish } from "@/lib/models";
-import { createWish, updateWish } from "@/lib/requests";
 import { Button } from "@nextui-org/button";
 import { Image } from "@nextui-org/image";
 import { Input } from "@nextui-org/input";
 import { FormEvent, useState } from "react";
+
+import { createWish, updateWish } from "@/lib/requests";
+import { IError, IWish } from "@/lib/models";
 
 export default function WishForm(props: {
   onCreate: { (wish: IWish): void };
@@ -44,6 +45,7 @@ export default function WishForm(props: {
     e.preventDefault();
     setIsCreating(true);
     let newWish: IWish | IError;
+
     if (existsWish?.uuid) {
       newWish = await updateWish(formData as IWish);
     } else {
@@ -51,6 +53,7 @@ export default function WishForm(props: {
     }
     if ("details" in newWish) {
       const fields = newWish.fields;
+
       if (fields) {
         fields.forEach((value) => {
           setErrorMessages({ ...errorMessages, [value.name]: value.message });
@@ -68,10 +71,11 @@ export default function WishForm(props: {
   function handlerChange(
     e: React.ChangeEvent<
       HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement
-    >
+    >,
   ) {
     e.preventDefault();
     const { name, value } = e.target;
+
     if (name && name === "cost") {
       const preparedValue = value.replace(/\s/g, "");
       let valueForSave: number | undefined;
@@ -88,18 +92,18 @@ export default function WishForm(props: {
   }
 
   return (
-    <form onSubmit={onSumbitForm} className="flex flex-col space-y-4">
+    <form className="flex flex-col space-y-4" onSubmit={onSumbitForm}>
       <div>
         <Input
-          label="Название"
+          isRequired
           autoComplete="false"
+          errorMessage={errorMessages.Name}
+          isInvalid={errorMessages.Name !== ""}
+          label="Название"
           name="name"
           value={formData.name}
           onChange={handlerChange}
-          isInvalid={errorMessages.Name !== ""}
-          errorMessage={errorMessages.Name}
-          isRequired
-        ></Input>
+        />
       </div>
       <div>
         <Input
@@ -107,7 +111,7 @@ export default function WishForm(props: {
           name="comment"
           value={formData.comment}
           onChange={handlerChange}
-        ></Input>
+        />
       </div>
       <div>
         <Input
@@ -115,7 +119,7 @@ export default function WishForm(props: {
           name="cost"
           value={formData.cost !== 0 ? formData.cost?.toLocaleString() : ""}
           onChange={handlerChange}
-        ></Input>
+        />
       </div>
       <div>
         <Input
@@ -123,7 +127,7 @@ export default function WishForm(props: {
           name="link"
           value={formData.link}
           onChange={handlerChange}
-        ></Input>
+        />
       </div>
       <div className="flex sm:flex-row flex-col gap-3">
         <Input
@@ -131,18 +135,18 @@ export default function WishForm(props: {
           name="image"
           value={formData.image}
           onChange={handlerChange}
-        ></Input>
+        />
         <Image
-          src={formData.image || undefined}
           className="h-[100px] w-[120px] object-cover"
-        ></Image>
+          src={formData.image || undefined}
+        />
       </div>
       {errorMessages.details ? (
         <p className="text-danger text-tiny">{errorMessages.details}</p>
       ) : (
-        <span></span>
+        <span />
       )}
-      <Button type="submit" fullWidth isLoading={isCreating}>
+      <Button fullWidth isLoading={isCreating} type="submit">
         Сохранить
       </Button>
     </form>

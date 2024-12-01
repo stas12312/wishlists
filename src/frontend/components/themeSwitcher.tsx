@@ -17,14 +17,14 @@ export function ThemeSwitcher() {
   return (
     <div>
       <Switch
+        color="success"
+        endContent={<MdDarkMode />}
         isSelected={theme == "dark"}
+        size="lg"
+        startContent={<MdLightMode />}
         onValueChange={(isSelected) => {
           isSelected ? setTheme("dark") : setTheme("light");
         }}
-        size="lg"
-        color="success"
-        startContent={<MdLightMode />}
-        endContent={<MdDarkMode />}
       >
         Темная тема
       </Switch>

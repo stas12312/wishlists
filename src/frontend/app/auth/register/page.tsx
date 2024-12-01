@@ -1,15 +1,14 @@
 "use client";
-import PasswordInput from "@/components/passwordInput";
-import { setTokens } from "@/lib/auth";
-import { IRegisterData } from "@/lib/models";
-import { confirmEmail, register } from "@/lib/requests";
 import { Button } from "@nextui-org/button";
 import { Divider } from "@nextui-org/divider";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
-import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
-import { IoMdEye, IoMdEyeOff } from "react-icons/io";
+
+import { confirmEmail, register } from "@/lib/requests";
+import { IRegisterData } from "@/lib/models";
+import { setTokens } from "@/lib/auth";
+import PasswordInput from "@/components/passwordInput";
 
 export default function SignIn() {
   const [step, setStep] = useState(0);
@@ -22,15 +21,12 @@ export default function SignIn() {
 
   const [acceptCode, setAcceptCode] = useState("");
   const [formTitle, setFormTitle] = useState("Регистрация");
+
   async function handleChangeAcceptCode(
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ) {
     setAcceptCode(e.target.value);
   }
-
-  const [isVisible, setIsVisible] = useState(false);
-
-  const onChangeVisible = () => setIsVisible(!isVisible);
 
   const [errorMessages, setErrorMessages] = useState({
     Email: "",
@@ -65,7 +61,7 @@ export default function SignIn() {
       const confirmEmailData = await register(
         formData.name,
         formData.password,
-        formData.email
+        formData.email,
       );
 
       if ("message" in confirmEmailData) {
@@ -90,7 +86,7 @@ export default function SignIn() {
         confirmData.uuid,
         acceptCode,
         confirmData.secret_key,
-        undefined
+        undefined,
       );
 
       if ("message" in result) {
@@ -103,16 +99,17 @@ export default function SignIn() {
   }
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
   ) => {
     const { name, value } = e.target;
+
     setFormData({ ...formData, [name]: value });
   };
 
   return (
     <form
-      onSubmit={handleSubmit}
       className="flex flex-col mx-auto my-10 max-w-md gap-4 bg-content1 p-4 rounded-xl box-border shadow-medium"
+      onSubmit={handleSubmit}
     >
       <h2 className="text-center">{formTitle}</h2>
 
@@ -121,39 +118,39 @@ export default function SignIn() {
           <div>
             <Input
               fullWidth
+              isRequired
               label="Имя"
+              name="name"
               value={formData.name}
               onChange={handleChange}
-              name="name"
-              isRequired
             />
           </div>
           <div>
             <Input
               fullWidth
+              isRequired
               label="Email"
+              name="email"
               value={formData.email}
               onChange={handleChange}
-              name="email"
-              isRequired
             />
           </div>
           <div>
             <PasswordInput
+              errorMessage={errorMessages.Password}
               label="Пароль"
               name="password"
               value={formData.password}
               onChange={handleChange}
-              errorMessage={errorMessages.Password}
             />
           </div>
           <span className="text-danger text-tiny">{errorMessages.message}</span>
           <div>
             <Button
               fullWidth
-              type="submit"
               isLoading={isLoading}
               spinnerPlacement="end"
+              type="submit"
             >
               Далее
             </Button>
@@ -173,14 +170,14 @@ export default function SignIn() {
           <div>
             <Input
               fullWidth
+              className={"my-2"}
+              errorMessage={errorMessages.Code}
+              isInvalid={errorMessages.Code !== ""}
               label="Код подтверждения"
+              name="code"
               type="text"
               value={acceptCode}
               onChange={handleChangeAcceptCode}
-              name="code"
-              className={"my-2"}
-              isInvalid={errorMessages.Code !== ""}
-              errorMessage={errorMessages.Code}
             />
           </div>
           <span className="text-danger text-tiny">{errorMessages.message}</span>

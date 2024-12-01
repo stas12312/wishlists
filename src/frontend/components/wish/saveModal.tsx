@@ -1,5 +1,7 @@
 import { Modal, ModalContent, ModalHeader, ModalBody } from "@nextui-org/modal";
+
 import WishForm from "./form";
+
 import { IWish } from "@/lib/models";
 
 export default function WishSaveModal({
@@ -17,11 +19,11 @@ export default function WishSaveModal({
 }) {
   return (
     <Modal
-      size="3xl"
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
-      placement="top-center"
       backdrop="blur"
+      isOpen={isOpen}
+      placement="top-center"
+      size="3xl"
+      onOpenChange={onOpenChange}
     >
       <ModalContent>
         {() => (
@@ -31,9 +33,9 @@ export default function WishSaveModal({
             </ModalHeader>
             <ModalBody>
               <WishForm
-                onCreate={onUpdate}
-                wishlistUUID={wishlistUUID}
                 wish={wish}
+                wishlistUUID={wishlistUUID}
+                onCreate={onUpdate}
               />
             </ModalBody>
           </>

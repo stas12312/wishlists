@@ -1,8 +1,9 @@
 "use client";
 
-import { logout } from "@/lib/auth";
 import { Listbox, ListboxItem, ListboxSection } from "@nextui-org/listbox";
 import { useRouter } from "next/navigation";
+
+import { logout } from "@/lib/auth";
 
 export default function Menu() {
   const router = useRouter();
@@ -12,7 +13,7 @@ export default function Menu() {
       <ListboxSection showDivider>
         <ListboxItem
           key="main"
-          onPress={(e) => {
+          onPress={() => {
             router.push("/");
           }}
         >
@@ -20,7 +21,7 @@ export default function Menu() {
         </ListboxItem>
         <ListboxItem
           key="settings"
-          onPress={(e) => {
+          onPress={() => {
             router.push("/settings");
           }}
         >

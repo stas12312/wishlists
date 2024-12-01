@@ -1,8 +1,9 @@
 "use client";
-import { setTokens } from "@/lib/auth";
-import { confirmEmail } from "@/lib/requests";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+
+import { setTokens } from "@/lib/auth";
+import { confirmEmail } from "@/lib/requests";
 
 export default function ConfirmPage() {
   const searchParams = useSearchParams();
@@ -21,8 +22,10 @@ export default function ConfirmPage() {
 
   async function processingConfirm() {
     const tokens = await confirmEmail(uuid, undefined, undefined, key);
+
     if ("message" in tokens) {
       setError(tokens.message);
+
       return;
     }
     await setTokens(tokens);
