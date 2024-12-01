@@ -18,19 +18,22 @@ export default function SignIn() {
   });
 
   const [isLogining, setIsLogining] = useState(false);
-
+  const [errorMessage, setErrorMessage] = useState("");
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    setErrorMessage("");
     setIsLogining(true);
-    getUser(formData.email, formData.password).then((user) => {
-      if (user.email) {
-        router.push("/");
-      }
-    });
+    const result = await getUser(formData.email, formData.password);
+    if ("message" in result) {
+      setErrorMessage(result.message);
+    } else {
+      router.push("/");
+    }
+    setIsLogining(false);
   }
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
   ) => {
     const { name, value } = e.target;
 
@@ -68,6 +71,7 @@ export default function SignIn() {
           </Link>
         </small>
       </div>
+      <span className="text-danger text-sm text-center">{errorMessage}</span>
       <div>
         <Button
           fullWidth

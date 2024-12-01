@@ -3,6 +3,8 @@ import { jwtDecode } from "jwt-decode";
 import { cookies } from "next/headers";
 
 import { authRequest } from "@/lib/requests";
+import { IEnhancer } from "mobx";
+import { IError } from "@/lib/models";
 
 interface IToken {
   access_token: string;
@@ -14,8 +16,13 @@ interface User {
   id: number;
 }
 
-export async function getUser(email: string, password: string): Promise<User> {
+export async function getUser(email: string, password: string): Promise<User | IError> {
   const authData = await auth(email, password);
+
+  if ("message" in authData) {
+    return authData
+  }
+
   const cookie = await cookies();
 
   cookie.set("access_token", authData.access_token);
@@ -29,6 +36,6 @@ export async function getUser(email: string, password: string): Promise<User> {
   };
 }
 
-async function auth(email: string, password: string): Promise<IToken> {
+async function auth(email: string, password: string): Promise<IToken | IError> {
   return await authRequest(email, password);
 }
