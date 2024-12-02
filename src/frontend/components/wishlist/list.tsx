@@ -34,7 +34,7 @@ export function Wishlists() {
     setItems(
       items.filter((value) => {
         return value.uuid != wishlist.uuid;
-      }),
+      })
     );
   }
 
