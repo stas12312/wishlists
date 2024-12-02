@@ -1,11 +1,11 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 import { setTokens } from "@/lib/auth";
 import { confirmEmail } from "@/lib/requests";
 
-export default function ConfirmPage() {
+function Confirm() {
   const searchParams = useSearchParams();
 
   const key = searchParams.get("key") ?? "";
@@ -32,4 +32,12 @@ export default function ConfirmPage() {
   }
 
   return <div>{error ?? "Подтверждение email"}</div>;
+}
+
+export default function ConfirmPage() {
+  return (
+    <Suspense>
+      <Confirm />
+    </Suspense>
+  );
 }
