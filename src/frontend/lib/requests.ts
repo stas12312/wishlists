@@ -187,3 +187,11 @@ export async function refreshTokens(
 
   return response.data;
 }
+
+export async function uploadFile(file : File): Promise<string> {
+  const form = new FormData();
+  form.append("file", file)
+  const response = await axiosInstance.post("/images/upload", form)
+  console.log(response.data)
+  return response.data.image_url ?? ""
+}

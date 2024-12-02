@@ -8,15 +8,21 @@ export default async function middleware(request: NextRequest) {
   const cookieStore = await cookies();
 
   if (
-    !cookieStore.get("access_token")?.value ||
+    (
+      !cookieStore.get("access_token")?.value ||
     !cookieStore.get("refresh_token")?.value
+  )
+    && request.url.indexOf("wishlists") == -1
   ) {
     cookieStore.delete("access_token");
     cookieStore.delete("refresh_token");
 
     return NextResponse.redirect(new URL("/auth/login", request.url));
   }
-  await refreshTokenIfNeed();
+  if (cookieStore.get("refresh_token")?.value) {
+    await refreshTokenIfNeed();
+
+  }
 
   return NextResponse.next();
 }
@@ -24,6 +30,6 @@ export default async function middleware(request: NextRequest) {
 // See "Matching Paths" below to learn more
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|wishlists|auth).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|auth).*)",
   ],
 };

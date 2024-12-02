@@ -6,6 +6,7 @@ import { FormEvent, useState } from "react";
 
 import { createWish, updateWish } from "@/lib/requests";
 import { IError, IWish } from "@/lib/models";
+import UploadButton from "../uploadButton";
 
 export default function WishForm(props: {
   onCreate: { (wish: IWish): void };
@@ -41,6 +42,10 @@ export default function WishForm(props: {
 
   const [isCreating, setIsCreating] = useState(false);
 
+  function onUploadImage(url: string) {
+    setFormData({ ...formData, image: url });
+  }
+
   async function onSumbitForm(e: FormEvent) {
     e.preventDefault();
     setIsCreating(true);
@@ -71,7 +76,7 @@ export default function WishForm(props: {
   function handlerChange(
     e: React.ChangeEvent<
       HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement
-    >,
+    >
   ) {
     e.preventDefault();
     const { name, value } = e.target;
@@ -136,9 +141,10 @@ export default function WishForm(props: {
           value={formData.image}
           onChange={handlerChange}
         />
-        <Image
+        <UploadButton
+          onUpload={onUploadImage}
+          previewUrl={formData.image}
           className="h-[100px] w-[120px] object-cover"
-          src={formData.image || undefined}
         />
       </div>
       {errorMessages.details ? (
@@ -146,6 +152,7 @@ export default function WishForm(props: {
       ) : (
         <span />
       )}
+
       <Button fullWidth isLoading={isCreating} type="submit">
         Сохранить
       </Button>
