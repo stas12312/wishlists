@@ -10,11 +10,9 @@ export async function refreshTokenIfNeed() {
   const cookie = await cookies();
 
   const accessToken: string | undefined = cookie.get("access_token")?.value;
-
   if (accessToken) {
     const tokenData = jwtDecode(accessToken);
     const exporedTime = tokenData.exp;
-
     if (exporedTime && exporedTime * 1000 < Date.now()) {
       await refreshToken();
     }
