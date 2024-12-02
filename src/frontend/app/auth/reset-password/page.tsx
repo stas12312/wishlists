@@ -5,14 +5,14 @@ import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
 import { observer } from "mobx-react-lite";
 import { useSearchParams } from "next/navigation";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, Suspense, useEffect, useState } from "react";
 
 import { checkCode, resetPassword, restorePassword } from "@/lib/requests";
 import { IRegisterData, ITokens } from "@/lib/models";
 import { setTokens } from "@/lib/auth";
 import PasswordInput from "@/components/passwordInput";
 
-const RestorePasswordPage = observer(() => {
+const RestorePassword = observer(() => {
   const [email, setEmail] = useState("");
   const [step, setStep] = useState(0);
   const [code, setCode] = useState("");
@@ -134,4 +134,10 @@ const RestorePasswordPage = observer(() => {
   );
 });
 
-export default RestorePasswordPage;
+export default function RestorePasswordPage() {
+  return (
+    <Suspense>
+      <RestorePassword />
+    </Suspense>
+  );
+}
