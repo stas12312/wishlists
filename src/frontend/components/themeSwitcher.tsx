@@ -15,19 +15,23 @@ export function ThemeSwitcher() {
   if (!mounted) return null;
 
   return (
-    <div>
-      <Switch
+    <div
+      className="text-2xl cursor-pointer hover:opacity-90 my-auto hover:bg-default-200 p-2 rounded-xl"
+      onClick={(e) => {
+        theme === "dark" ? setTheme("light") : setTheme("dark");
+      }}
+    >
+      {theme == "dark" ? <MdLightMode /> : <MdDarkMode />}
+      {/* <Switch
         color="success"
-        endContent={<MdDarkMode />}
+        endContent={}
         isSelected={theme == "dark"}
-        size="lg"
-        startContent={<MdLightMode />}
+        size="md"
+        startContent={}
         onValueChange={(isSelected) => {
           isSelected ? setTheme("dark") : setTheme("light");
         }}
-      >
-        Темная тема
-      </Switch>
+      ></Switch> */}
     </div>
   );
 }
