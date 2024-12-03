@@ -12,6 +12,7 @@ import WishlistSaveModal from "./saveModal";
 
 import { getWishlists } from "@/lib/requests";
 import { IWishlist } from "@/lib/models";
+import toast from "react-hot-toast";
 
 export function Wishlists() {
   const [items, setItems] = useState<IWishlist[]>([]);
@@ -36,6 +37,7 @@ export function Wishlists() {
         return value.uuid != wishlist.uuid;
       })
     );
+    toast.success("Вишлист удален");
   }
 
   if (isLoading) {
@@ -46,7 +48,7 @@ export function Wishlists() {
     }
 
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <h1 className="text-2xl col-span-full text-center lg:text-left">
           Мои вишлисты
         </h1>
@@ -71,7 +73,7 @@ export function Wishlists() {
   ));
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
       <h1 className="text-2xl col-span-full text-center lg:text-left">
         Мои вишлисты
       </h1>
