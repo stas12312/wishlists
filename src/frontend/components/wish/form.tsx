@@ -145,6 +145,7 @@ export default function WishForm(props: {
           onUpload={onUploadImage}
           previewUrl={formData.image}
           className="h-[100px] w-[120px] object-cover"
+          accept={["jpg", "jpeg", "png", "webp"]}
         />
       </div>
       {errorMessages.details ? (

@@ -6,15 +6,26 @@ const UploadButton = ({
   onUpload,
   previewUrl,
   className,
+  accept,
 }: {
   onUpload: { (url: string): void };
   previewUrl: string | undefined;
   className: string;
+  accept: string[];
 }) => {
   const [isOver, setIsOver] = useState(false);
+
+  function isValidFile(file: File): boolean {
+    const parts = file.name.split(".");
+    const ext = parts[parts.length - 1];
+    return accept.indexOf(ext) !== -1;
+  }
+
   async function handleFile(file: File) {
     const response = await uploadFile(file);
-    console.log(response);
+    if (!isValidFile(file)) {
+      return;
+    }
     onUpload(response);
   }
 
@@ -34,23 +45,14 @@ const UploadButton = ({
   function onDragEnter(e: React.DragEvent<HTMLLabelElement>) {
     e.preventDefault();
     e.stopPropagation();
-    console.log(e);
-
     setIsOver(true);
   }
 
   function onDragLeave(e: React.DragEvent<HTMLLabelElement>) {
     e.preventDefault();
     e.stopPropagation();
-    console.log(e);
 
     setIsOver(false);
-  }
-  function onDragOver(e: React.DragEvent<HTMLLabelElement>) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    setIsOver(true);
   }
 
   const id = useId();
@@ -59,7 +61,7 @@ const UploadButton = ({
       onDrop={onDrop}
       onDragEnter={onDragEnter}
       onDragLeave={onDragLeave}
-      onDragOver={onDragOver}
+      onDragOver={onDragEnter}
       htmlFor={id}
       className={
         className +
@@ -88,10 +90,14 @@ const UploadButton = ({
         id={id}
         onChange={handleFileChange}
         className="hidden"
+        accept={accept
+          .map((value) => {
+            return `.${value}`;
+          })
+          .join(",")}
       />
     </label>
   );
 };
 
 export default UploadButton;
-
