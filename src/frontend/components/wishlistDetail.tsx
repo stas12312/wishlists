@@ -12,6 +12,7 @@ import WishSaveModal from "./wish/saveModal";
 import userStore from "@/store/userStore";
 import { getWishes, getWishlist } from "@/lib/requests";
 import { IWish, IWishlist } from "@/lib/models";
+import toast from "react-hot-toast";
 
 const WishlistDetail = observer((proprs: { wishlist: IWishlist }) => {
   const wishlist = proprs.wishlist;
@@ -56,6 +57,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
         return value.uuid !== wish.uuid;
       })
     );
+    toast.success("Желание удалено");
   }
 
   async function onCreateWish(wish: IWish) {
@@ -70,7 +72,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
   ));
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
       <div className="col-span-full">
         <WishlistDetail wishlist={wishlist} />
       </div>
