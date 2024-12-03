@@ -9,7 +9,7 @@ export default function Menu() {
   const router = useRouter();
 
   return (
-    <Listbox className="text-center" disabledKeys={["friends"]}>
+    <Listbox className="text-center" disabledKeys={["friends", "settings"]}>
       <ListboxSection showDivider>
         <ListboxItem
           key="main"

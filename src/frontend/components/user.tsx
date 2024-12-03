@@ -13,7 +13,7 @@ export const UserItem = observer(() => {
   }, []);
 
   return (
-    <div>
+    <>
       {user ? (
         <User
           avatarProps={{
@@ -23,6 +23,6 @@ export const UserItem = observer(() => {
           name={user.name}
         />
       ) : null}
-    </div>
+    </>
   );
 });
