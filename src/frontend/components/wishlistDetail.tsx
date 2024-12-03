@@ -17,8 +17,8 @@ const WishlistDetail = observer((proprs: { wishlist: IWishlist }) => {
   const wishlist = proprs.wishlist;
 
   return (
-    <div>
-      <div className="flex flex-row gap-2">
+    <div className="text-center lg:text-left">
+      <div className="flex flex-row gap-2 justify-center lg:justify-start">
         <span className={"text-2xl"}>{wishlist.name}</span>
         <span>
           <VisibleStatus visible={wishlist.visible} />
@@ -70,8 +70,8 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
   ));
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 px-4">
-      <div className="col-span-full px-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="col-span-full">
         <WishlistDetail wishlist={wishlist} />
       </div>
       <Divider className="my-4 col-span-full" />

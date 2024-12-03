@@ -90,7 +90,7 @@ export function WishItem({
 
   return (
     <Card
-      className="flex-col h-[300px] md:hover:scale-105 w-full"
+      className="flex-col h-[300px] md:hover:scale-[1.03] w-full"
       isPressable={item.link !== null && item.link != ""}
       onPress={() => {
         window.open(item.link);
