@@ -47,7 +47,9 @@ export function Wishlists() {
 
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <h1 className="text-2xl col-span-full">Мои вишлисты</h1>
+        <h1 className="text-2xl col-span-full text-center lg:text-left">
+          Мои вишлисты
+        </h1>
         <Divider className="my-4 col-span-full" />
         <Skeleton className="rounded-lg col-span-full">
           <Button fullWidth />
@@ -70,7 +72,9 @@ export function Wishlists() {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <h1 className="text-2xl col-span-full">Мои вишлисты</h1>
+      <h1 className="text-2xl col-span-full text-center lg:text-left">
+        Мои вишлисты
+      </h1>
       <Divider className="my-4 col-span-full" />
       <div className="col-span-full">
         <Button
