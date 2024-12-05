@@ -7,13 +7,6 @@ RUN npm install
 
 COPY . .
 
-
-
-ARG version
-ARG build_time
-ENV VERSION = $version
-ENV BUILD_TIME=build_time
-
 RUN npm run build
 
 FROM node:20-alpine3.19 as release
@@ -22,6 +15,12 @@ WORKDIR /app
 COPY --from=base /app/node_modules ./node_modules
 COPY --from=base /app/package.json ./package.json
 COPY --from=base /app/.next ./.next
+
+ARG version
+ARG build_time
+
+ENV VERSION $version
+ENV BUILD_TIME $build_time
 
 EXPOSE 3000
 
