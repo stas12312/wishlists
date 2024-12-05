@@ -2,9 +2,18 @@ FROM node:20 AS base
 WORKDIR /app
 COPY package.json ./
 
+
 RUN npm install
 
 COPY . .
+
+
+
+ARG version
+ARG build_time
+ENV VERSION = $version
+ENV BUILD_TIME=build_time
+
 RUN npm run build
 
 FROM node:20-alpine3.19 as release

@@ -17,6 +17,7 @@ const axiosInstance = axios.create({});
 axiosInstance.interceptors.request.use(async (config) => {
   const cookieStore = await cookies();
 
+
   config.headers.Authorization = `Bearer ${cookieStore.get("access_token")?.value}`;
 
   return config;
@@ -27,8 +28,8 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async (error) => {
-    if (error.response.code == 403) {
-    } else if (![400, 500].includes(error.status)) {
+    if (error.response.status == 403) {
+    } else if (![400, 500].includes(error.response.status)) {
       return Promise.reject(error);
     }
 
