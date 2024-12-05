@@ -1,16 +1,11 @@
 import "@/styles/globals.css";
 import clsx from "clsx";
-import { Metadata, Viewport } from "next";
-import { cookies } from "next/headers";
-import { Toaster } from "react-hot-toast";
+import {Metadata, Viewport} from "next";
+import {Toaster} from "react-hot-toast";
 
-import { Providers } from "./providers";
-
-import Menu from "@/components/menu";
-import { UserItem } from "@/components/user";
-import { fontSans } from "@/config/fonts";
-import { siteConfig } from "@/config/site";
-import Login from "@/components/login";
+import {Providers} from "./providers";
+import {fontSans} from "@/config/fonts";
+import {siteConfig} from "@/config/site";
 
 export const metadata: Metadata = {
   title: {

@@ -3,7 +3,6 @@ name: Deploy on test
 on:
   push:
     branches: [ main ]
-jobs:
 
   build:
     runs-on: ubuntu-latest
@@ -17,4 +16,4 @@ jobs:
           script: |
             cd ${{ secrets.TEST_PROJECT_PATH }}
             git pull
-            docker-compose build && docker-compose up -d
+            docker-compose build --build-arg build_time="$(date +"%m.%d.%Y %H:%M")" --build-arg version="${{ github.run_number }}"-dev  && docker-compose up -d

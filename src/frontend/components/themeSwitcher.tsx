@@ -22,16 +22,6 @@ export function ThemeSwitcher() {
       }}
     >
       {theme == "dark" ? <MdLightMode /> : <MdDarkMode />}
-      {/* <Switch
-        color="success"
-        endContent={}
-        isSelected={theme == "dark"}
-        size="md"
-        startContent={}
-        onValueChange={(isSelected) => {
-          isSelected ? setTheme("dark") : setTheme("light");
-        }}
-      ></Switch> */}
     </div>
   );
 }
