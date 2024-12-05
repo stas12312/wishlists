@@ -2,6 +2,7 @@ import Login from "@/components/login";
 import Menu from "@/components/menu";
 import { ThemeSwitcher } from "@/components/themeSwitcher";
 import { UserItem } from "@/components/user";
+import Version from "@/components/version";
 import { cookies } from "next/headers";
 
 export default async function Layout({
@@ -30,8 +31,13 @@ export default async function Layout({
               </div>
             </div>
             <div className="col-span-full md:col-span-3 lg:col-span-2 flex-col">
-              <div>
+              <div className="sticky top-10">
                 <Menu />
+                <span className="hidden md:block">
+                  <footer className="p-2">
+                    <Version />
+                  </footer>
+                </span>
               </div>
             </div>
           </>
@@ -41,20 +47,12 @@ export default async function Layout({
         >
           <main>{children}</main>
         </div>
+        <span className={` ${isLogin ? "md:hidden" : null} col-span-full`}>
+          <footer>
+            <Version />
+          </footer>
+        </span>
       </div>
-      <footer className="sticky top-[100vh] p-2 grid grid-cols-12">
-        <div className="text-default-500 text-tiny text-center col-span-full md:col-span-3 lg:col-span-2 cursor-default">
-          <a
-            href="https://github.com/stas12312/wishlists"
-            target="_blank"
-            className="cursor-default hover:text-default-900"
-          >
-            <span>{`v${process.env.VERSION ?? process.env.npm_package_version}`}</span>
-            <br />
-            <span>{process.env.BUILD_TIME} </span>
-          </a>
-        </div>
-      </footer>
     </div>
   );
 }
