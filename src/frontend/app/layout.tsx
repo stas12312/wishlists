@@ -1,11 +1,11 @@
 import "@/styles/globals.css";
 import clsx from "clsx";
-import {Metadata, Viewport} from "next";
-import {Toaster} from "react-hot-toast";
+import { Metadata, Viewport } from "next";
+import { Toaster } from "react-hot-toast";
 
-import {Providers} from "./providers";
-import {fontSans} from "@/config/fonts";
-import {siteConfig} from "@/config/site";
+import { Providers } from "./providers";
+import { fontSans } from "@/config/fonts";
+import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
   title: {
@@ -33,6 +33,7 @@ export default async function RootLayout({
   return (
     <html suppressHydrationWarning lang="en">
       <head title="Мои желания">
+        <link rel="shortcut icon" href="/favicon.png" />
         <meta
           content="width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1, maximum-scale=5"
           name="viewport"

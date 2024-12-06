@@ -43,7 +43,7 @@ export function WishlistItem({
   return (
     <Card
       isPressable
-      className="w-full h-32 flex-col"
+      className="w-full h-32 flex-col md:hover:scale-[1.03]"
       onPress={() => router.push(`/wishlists/${cardWishlist.uuid}`)}
     >
       <CardHeader className="flex-col items-start">
