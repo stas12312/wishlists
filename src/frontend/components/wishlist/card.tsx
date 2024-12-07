@@ -96,15 +96,17 @@ export function WishlistsSkeletonItem() {
   );
 }
 
-export function WishlistItemMenu({
+export const WishlistItemMenu = ({
   wishlist,
   onDelete,
   onUpdate,
+  className,
 }: {
   wishlist: IWishlist;
   onDelete: { (wishlist: IWishlist): void };
   onUpdate: { (wishlist: IWishlist): void };
-}) {
+  className: string;
+}) => {
   const { isOpen, onOpenChange } = useDisclosure();
 
   async function handleOnAction(key: Key) {
@@ -133,7 +135,7 @@ export function WishlistItemMenu({
       <Dropdown>
         <DropdownTrigger>
           <Button isIconOnly as="div" radius="lg" variant="light">
-            <BsThreeDotsVertical />
+            <BsThreeDotsVertical className={className ?? ""} />
           </Button>
         </DropdownTrigger>
         <DropdownMenu aria-label="Static Actions" onAction={handleOnAction}>
@@ -163,4 +165,8 @@ export function WishlistItemMenu({
       />
     </span>
   );
-}
+};
+
+WishlistItemMenu.defaultProps = {
+  className: "",
+};
