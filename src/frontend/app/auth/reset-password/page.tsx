@@ -11,6 +11,7 @@ import { checkCode, resetPassword, restorePassword } from "@/lib/requests";
 import { IRegisterData, ITokens } from "@/lib/models";
 import { setTokens } from "@/lib/auth";
 import PasswordInput from "@/components/passwordInput";
+import CodeInput from "@/components/codeInput";
 
 const RestorePassword = observer(() => {
   const [email, setEmail] = useState("");
@@ -20,6 +21,7 @@ const RestorePassword = observer(() => {
   const [codeError, setCodeError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const searchParams = useSearchParams();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [restoreData, setRestoreData] = useState<IRegisterData>({
     uuid: searchParams.get("uuid") ?? "",
@@ -42,6 +44,7 @@ const RestorePassword = observer(() => {
   }
 
   async function processRestore() {
+    setIsLoading(true);
     if (step == 0) {
       const response = await restorePassword(email);
 
@@ -52,7 +55,8 @@ const RestorePassword = observer(() => {
 
       if ("message" in response) {
         setCodeError(response.message);
-
+        setIsLoading(false);
+        setCode("");
         return;
       }
       setStep(2);
@@ -61,11 +65,12 @@ const RestorePassword = observer(() => {
 
       if ("message" in response && response.fields?.length) {
         setPasswordError(response.fields[0].message);
-
+        setIsLoading(false);
         return;
       }
       setTokens(response as ITokens);
     }
+    setIsLoading(false);
   }
 
   return (
@@ -99,14 +104,15 @@ const RestorePassword = observer(() => {
           );
         } else if (step === 1) {
           return (
-            <Input
-              errorMessage={codeError}
-              isInvalid={codeError != ""}
-              label="Код подтверждения"
-              name="code"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-            />
+            <>
+              <CodeInput
+                digitsCount={6}
+                value={code}
+                onValueChange={setCode}
+                disabled={isLoading}
+              />
+              <span className="text-danger text-tiny">{codeError}</span>
+            </>
           );
         } else if (step == 2) {
           return (
@@ -123,7 +129,9 @@ const RestorePassword = observer(() => {
         }
       })()}
 
-      <Button type="submit">{step !== 2 ? "Далее" : "Сменить пароль"}</Button>
+      <Button type="submit" isLoading={isLoading}>
+        {step !== 2 ? "Далее" : "Сменить пароль"}
+      </Button>
       <Divider className="my-2" />
       <div className="w-full text-center">
         <Link className="w" href="/auth/login">

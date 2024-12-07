@@ -5,10 +5,11 @@ import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
 import { FormEvent, useEffect, useState } from "react";
 
-import { confirmEmail, register } from "@/lib/requests";
-import { IRegisterData } from "@/lib/models";
-import { setTokens } from "@/lib/auth";
+import CodeInput from "@/components/codeInput";
 import PasswordInput from "@/components/passwordInput";
+import { setTokens } from "@/lib/auth";
+import { IRegisterData } from "@/lib/models";
+import { confirmEmail, register } from "@/lib/requests";
 
 export default function SignIn() {
   const [step, setStep] = useState(0);
@@ -21,13 +22,6 @@ export default function SignIn() {
 
   const [acceptCode, setAcceptCode] = useState("");
   const [formTitle, setFormTitle] = useState("Регистрация");
-
-  async function handleChangeAcceptCode(
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) {
-    setAcceptCode(e.target.value);
-  }
-
   const [errorMessages, setErrorMessages] = useState({
     Email: "",
     Password: "",
@@ -61,7 +55,7 @@ export default function SignIn() {
       const confirmEmailData = await register(
         formData.name,
         formData.password,
-        formData.email,
+        formData.email
       );
 
       if ("message" in confirmEmailData) {
@@ -86,9 +80,9 @@ export default function SignIn() {
         confirmData.uuid,
         acceptCode,
         confirmData.secret_key,
-        undefined,
+        undefined
       );
-
+      setAcceptCode("");
       if ("message" in result) {
         setErrorMessages({ ...errorMessages, Code: result.message });
       } else {
@@ -99,7 +93,7 @@ export default function SignIn() {
   }
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
   ) => {
     const { name, value } = e.target;
 
@@ -168,18 +162,14 @@ export default function SignIn() {
             На {formData.email} было отправлено письмо с кодом подтверждения
           </p>
           <div>
-            <Input
-              fullWidth
-              className={"my-2"}
-              errorMessage={errorMessages.Code}
-              isInvalid={errorMessages.Code !== ""}
-              label="Код подтверждения"
-              name="code"
-              type="text"
+            <CodeInput
+              digitsCount={6}
               value={acceptCode}
-              onChange={handleChangeAcceptCode}
+              onValueChange={setAcceptCode}
+              disabled={isLoading}
             />
           </div>
+          <span className="text-danger text-tiny">{errorMessages.Code}</span>
           <span className="text-danger text-tiny">{errorMessages.message}</span>
           <Button
             fullWidth

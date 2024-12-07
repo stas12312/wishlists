@@ -32,7 +32,6 @@ axiosInstance.interceptors.response.use(
     } else if (![400, 500].includes(error.response.status)) {
       return Promise.reject(error);
     }
-
     return error.response;
   },
 );
