@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDate } from "@internationalized/date";
+import { CalendarDate, DateValue } from "@internationalized/date";
 import { Button } from "@nextui-org/button";
 import { DatePicker } from "@nextui-org/date-picker";
 import { Input } from "@nextui-org/input";
@@ -57,7 +57,7 @@ export function WishlistCreateForm({
   const handleChange = (
     e: React.ChangeEvent<
       HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement
-    >,
+    >
   ) => {
     let { name, value } = e.target;
 
@@ -72,7 +72,7 @@ export function WishlistCreateForm({
     const datetime = new Date(
       dateValue.year,
       dateValue.month - 1,
-      dateValue.day,
+      dateValue.day
     );
 
     setFormData({
@@ -107,9 +107,8 @@ export function WishlistCreateForm({
           <DatePicker
             label="Дата"
             name="date"
-            value={
-              formData.date ? dateStringToCalendarDate(formData.date) : null
-            }
+            /* @ts-ignore */
+            value={dateStringToCalendarDate(formData.date)}
             onChange={setData}
           />
         </I18nProvider>
@@ -145,6 +144,6 @@ function dateStringToCalendarDate(dateString: string): CalendarDate {
   return new CalendarDate(
     date.getFullYear(),
     date.getMonth() + 1,
-    date.getDate(),
+    date.getDate()
   );
 }
