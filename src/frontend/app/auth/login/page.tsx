@@ -3,19 +3,30 @@ import { Button } from "@nextui-org/button";
 import { Divider } from "@nextui-org/divider";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
+import { Image } from "@nextui-org/image";
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
+import { IOAuthProvider } from "@/lib/models";
 import { getUser } from "./auth";
 
 import PasswordInput from "@/components/passwordInput";
+import { getOAuthProviders } from "@/lib/requests";
 export default function SignIn() {
   const router = useRouter();
+  const [providers, setProviders] = useState<IOAuthProvider[]>([]);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
   });
+
+  useEffect(() => {
+    async function fetchProviders() {
+      setProviders(await getOAuthProviders());
+    }
+    fetchProviders();
+  }, []);
 
   const [isLogining, setIsLogining] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -46,7 +57,6 @@ export default function SignIn() {
       onSubmit={handleSubmit}
     >
       <h2 className={"text-center"}>Войти</h2>
-
       <div>
         <Input
           fullWidth
@@ -82,10 +92,24 @@ export default function SignIn() {
           Войти
         </Button>
       </div>
-      <Divider className="my-2" />
       <p className="text-center">
         <Link href="/auth/register">Регистрация</Link>
       </p>
+      <span className="grid grid-cols-4">
+        <Divider className="my-auto" />
+        <span className="text-center col-span-2">Или войти с помощью</span>
+        <Divider className="my-auto" />
+      </span>
+
+      <div className="flex justify-center">
+        {providers.map((provider) => {
+          return (
+            <a key={provider.name} href={provider.url} className="h-10">
+              <Image src={provider.logo} height={32}></Image>
+            </a>
+          );
+        })}
+      </div>
     </form>
   );
 }
