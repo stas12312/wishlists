@@ -52,3 +52,9 @@ export interface IError {
   details: string;
   fields?: IFieldError[];
 }
+
+export interface IOAuthProvider {
+  name: string;
+  url: string;
+  logo: string;
+}

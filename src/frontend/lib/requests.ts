@@ -9,6 +9,7 @@ import {
   IRegisterData,
   ITokens,
   IError,
+  IOAuthProvider,
 } from "./models";
 
 axios.defaults.baseURL = `${process.env.BASE_URL}/api`;
@@ -194,4 +195,18 @@ export async function uploadFile(file : File): Promise<string> {
   const response = await axiosInstance.post("/images/upload", form)
   console.log(response.data)
   return response.data.image_url ?? ""
+}
+
+export async function getOAuthProviders(): Promise<IOAuthProvider[]> {
+  const response = await axiosInstance.get("/auth/oauth/providers")
+  return response.data.data
+}
+
+export async function OAuth(type: string, token: string): Promise<ITokens | IError> {
+  const response = await axiosInstance.post("/auth/oauth", {
+    type: type,
+    token: token,
+  })
+
+  return response.data
 }
