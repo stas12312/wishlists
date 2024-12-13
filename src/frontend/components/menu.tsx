@@ -33,7 +33,7 @@ export default function Menu() {
         <ListboxItem
           key="logout"
           className="text-danger"
-          onClick={() => logout()}
+          onPress={() => logout()}
         >
           Выход
         </ListboxItem>
