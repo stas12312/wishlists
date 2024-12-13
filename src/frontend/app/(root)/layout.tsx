@@ -13,7 +13,7 @@ export default async function Layout({
   const cookieStore = await cookies();
   const isLogin = cookieStore.has("access_token");
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen justify-between flex-col flex">
       <div className="grid grid-cols-12 gap-1 pb-4">
         {!isLogin ? (
           <div className="flex col-span-full">
@@ -47,12 +47,12 @@ export default async function Layout({
         >
           <main>{children}</main>
         </div>
-        <span className={` ${isLogin ? "md:hidden" : null} col-span-full`}>
-          <footer>
-            <Version />
-          </footer>
-        </span>
       </div>
+      <span className={`"mt-auto" ${isLogin ? "md:hidden" : ""}`}>
+        <footer>
+          <Version />
+        </footer>
+      </span>
     </div>
   );
 }

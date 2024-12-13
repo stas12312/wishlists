@@ -111,6 +111,7 @@ export function WishlistCreateForm({
             value={
               formData.date ? dateStringToCalendarDate(formData.date) : null
             }
+            /* @ts-ignore */
             onChange={setData}
           />
         </I18nProvider>
