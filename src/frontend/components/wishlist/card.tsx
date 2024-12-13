@@ -61,6 +61,7 @@ export function WishlistItem({
           </div>
           <div>
             <WishlistItemMenu
+              isEditable={true}
               wishlist={cardWishlist}
               onDelete={onDelete}
               onUpdate={onUpdate}
@@ -101,11 +102,13 @@ export const WishlistItemMenu = ({
   onDelete,
   onUpdate,
   className,
+  isEditable,
 }: {
   wishlist: IWishlist;
   onDelete: { (wishlist: IWishlist): void };
   onUpdate: { (wishlist: IWishlist): void };
   className: string;
+  isEditable: boolean;
 }) => {
   const { isOpen, onOpenChange } = useDisclosure();
 
@@ -139,22 +142,31 @@ export const WishlistItemMenu = ({
           </Button>
         </DropdownTrigger>
         <DropdownMenu aria-label="Static Actions" onAction={handleOnAction}>
-          <DropdownSection showDivider>
-            <DropdownItem key="edit" startContent={<MdCreate />}>
-              Редактировать
-            </DropdownItem>
+          {isEditable ? (
+            <>
+              <DropdownSection showDivider>
+                <DropdownItem key="edit" startContent={<MdCreate />}>
+                  Редактировать
+                </DropdownItem>
+
+                <DropdownItem key="share" startContent={<MdLink />}>
+                  Скопировать
+                </DropdownItem>
+              </DropdownSection>
+              <DropdownItem
+                key="delete"
+                className="text-danger"
+                color="danger"
+                startContent={<MdDelete />}
+              >
+                Удалить
+              </DropdownItem>
+            </>
+          ) : (
             <DropdownItem key="share" startContent={<MdLink />}>
               Скопировать
             </DropdownItem>
-          </DropdownSection>
-          <DropdownItem
-            key="delete"
-            className="text-danger"
-            color="danger"
-            startContent={<MdDelete />}
-          >
-            Удалить
-          </DropdownItem>
+          )}
         </DropdownMenu>
       </Dropdown>
       <WishlistSaveModal

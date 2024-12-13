@@ -26,10 +26,12 @@ const WishlistDetail = observer(
     wishlist,
     onUpdate,
     onDelete,
+    isEditable,
   }: {
     wishlist: IWishlist;
     onUpdate: { (wishlist: IWishlist): void };
     onDelete: { (wishlist: IWishlist): void };
+    isEditable: boolean;
   }) => {
     return (
       <div className="text-center lg:text-left flex gap-4">
@@ -45,6 +47,7 @@ const WishlistDetail = observer(
         </span>
         <span className="my-auto">
           <WishlistItemMenu
+            isEditable={isEditable}
             wishlist={wishlist}
             onUpdate={onUpdate}
             onDelete={onDelete}
@@ -111,6 +114,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
       <div className="col-span-full">
         <WishlistDetail
+          isEditable={isEditable}
           wishlist={wishlist}
           onUpdate={onUpdateWishlist}
           onDelete={onDeleteWishlist}
