@@ -16,8 +16,10 @@ import { MdCreate, MdDelete } from "react-icons/md";
 
 import WishSaveModal from "./saveModal";
 
-import { deleteWish } from "@/lib/requests";
 import { IWish } from "@/lib/models";
+import { deleteWish } from "@/lib/requests";
+import ConfirmationModal from "../confirmation";
+
 export function WishItemMenu({
   wish,
   onDelete,
@@ -28,15 +30,23 @@ export function WishItemMenu({
   onUpdate: { (wish: IWish): void };
 }) {
   const { isOpen, onOpenChange } = useDisclosure();
+  const [isConfirm, setIsConfirm] = useState(false);
 
   async function handleOnAction(key: Key) {
     if (key === "delete" && wish.uuid) {
-      await deleteWish(wish.uuid);
-      onDelete(wish);
+      setIsConfirm(true);
+      // await deleteWish(wish.uuid);
+      // onDelete(wish);
     }
     if (key === "edit") {
       onOpenChange();
     }
+  }
+
+  async function onDeleteWish() {
+    await deleteWish(wish.uuid ?? "");
+    onDelete(wish);
+    setIsConfirm(false);
   }
 
   async function onWishUpdate(wish: IWish) {
@@ -72,6 +82,14 @@ export function WishItemMenu({
         wishlistUUID={wish.wishlist_uuid}
         onOpenChange={onOpenChange}
         onUpdate={onWishUpdate}
+      />
+      <ConfirmationModal
+        onConfirm={onDeleteWish}
+        isOpen={isConfirm}
+        message="Вы действительно хотите удалить желание?"
+        onDecline={() => {
+          setIsConfirm(false);
+        }}
       />
     </span>
   );

@@ -24,6 +24,7 @@ import WishlistSaveModal from "./saveModal";
 
 import { deleteWishlist } from "@/lib/requests";
 import { IWishlist } from "@/lib/models";
+import ConfirmationModal from "../confirmation";
 
 export function WishlistItem({
   wishlist,
@@ -111,11 +112,11 @@ export const WishlistItemMenu = ({
   isEditable: boolean;
 }) => {
   const { isOpen, onOpenChange } = useDisclosure();
+  const [isConfirm, setIsConfirm] = useState(false);
 
   async function handleOnAction(key: Key) {
     if (key === "delete") {
-      await deleteWishlist(wishlist.uuid);
-      onDelete(wishlist);
+      setIsConfirm(true);
     }
     if (key === "edit") {
       onOpenChange();
@@ -126,6 +127,12 @@ export const WishlistItemMenu = ({
       );
       toast.success("Ссылка скопирована");
     }
+  }
+
+  async function deleteWishlistByAction() {
+    await deleteWishlist(wishlist.uuid);
+    onDelete(wishlist);
+    setIsConfirm(false);
   }
 
   function onUpdateWishlist(updadedWishlist: IWishlist): void {
@@ -174,6 +181,14 @@ export const WishlistItemMenu = ({
         wishlist={wishlist}
         onOpenChange={onOpenChange}
         onSaveWishlist={onUpdateWishlist}
+      />
+      <ConfirmationModal
+        onConfirm={deleteWishlistByAction}
+        isOpen={isConfirm}
+        message="Вы действительно хотите удалить вишлист?"
+        onDecline={() => {
+          setIsConfirm(false);
+        }}
       />
     </span>
   );
