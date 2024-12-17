@@ -20,6 +20,7 @@ import userStore from "@/store/userStore";
 import toast from "react-hot-toast";
 import { WishlistItemMenu } from "./wishlist/card";
 import { useRouter } from "next/navigation";
+import AddCardButton from "./AddCardButton";
 
 const WishlistDetail = observer(
   ({
@@ -121,16 +122,6 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
         />
       </div>
       <Divider className="my-4 col-span-full" />
-      {isEditable ? (
-        <Button
-          fullWidth
-          className="col-span-full"
-          color="primary"
-          onPress={onOpen}
-        >
-          Добавить
-        </Button>
-      ) : null}
 
       <WishSaveModal
         isOpen={isOpen}
@@ -138,6 +129,9 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
         onOpenChange={onOpenChange}
         onUpdate={onCreateWish}
       />
+      {isEditable ? (
+        <AddCardButton onPress={onOpen} className="md:h-[300px]" />
+      ) : null}
       {components}
     </div>
   );
