@@ -13,6 +13,7 @@ import WishlistSaveModal from "./saveModal";
 import { getWishlists } from "@/lib/requests";
 import { IWishlist } from "@/lib/models";
 import toast from "react-hot-toast";
+import AddCardButton from "../AddCardButton";
 
 export function Wishlists() {
   const [items, setItems] = useState<IWishlist[]>([]);
@@ -79,26 +80,23 @@ export function Wishlists() {
       </h1>
       <Divider className="my-4 col-span-full" />
       <div className="col-span-full">
-        <Button
-          fullWidth
-          color="primary"
-          startContent={<MdAdd />}
-          onPress={onOpen}
-        >
-          Добавить
-        </Button>
         <WishlistSaveModal
           isOpen={isOpen}
           onOpenChange={onOpenChange}
           onSaveWishlist={OnCreateWishlist}
         />
       </div>
-
       {components.length ? (
-        components
+        <>
+          <AddCardButton onPress={onOpen} />
+          {components}
+        </>
       ) : (
         <div className="col-span-full text-center">
-          <h1 className="text-4xl	col-span-full">У вас нет списоков</h1>
+          <h1 className="text-4xl	col-span-full">У вас нет списков</h1>
+          <Button color="primary" variant="light" onPress={onOpen}>
+            Добавить
+          </Button>
         </div>
       )}
     </div>
