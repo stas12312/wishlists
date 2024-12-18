@@ -46,8 +46,9 @@ func (c *WishlistController) Create(ctx *fiber.Ctx) error {
 
 func (c *WishlistController) GetUserWishlists(ctx *fiber.Ctx) error {
 	userId := GetUserIdFromCtx(ctx)
+	filter := model.WishlistFilter{IsActive: ctx.QueryBool("is_active", true)}
 
-	wishlists, err := c.ListForUser(userId)
+	wishlists, err := c.ListForUser(userId, filter)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).
 			JSON(model.ErrorResponse{Message: "Ошибка при получении списка", Details: err.Error()})

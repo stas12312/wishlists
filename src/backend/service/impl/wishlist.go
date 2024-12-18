@@ -24,9 +24,9 @@ func (s *WishlistImpl) Create(wishlist *model.Wishlist) (*model.Wishlist, error)
 	return s.WishlistRepository.Create(wishlist)
 }
 
-func (s *WishlistImpl) ListForUser(userId int64) ([]model.Wishlist, error) {
+func (s *WishlistImpl) ListForUser(userId int64, filter model.WishlistFilter) ([]model.Wishlist, error) {
 
-	return s.WishlistRepository.ListByUserId(userId)
+	return s.WishlistRepository.ListByUserId(userId, filter)
 }
 
 func (s *WishlistImpl) GetForUserByUUID(userId int64, uuid string) (*model.Wishlist, error) {

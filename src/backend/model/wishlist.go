@@ -18,3 +18,7 @@ type Wishlist struct {
 	WishesCount NullInt32       `json:"wishes_count" db:"wishes_count"`
 	Visible     WishlistVisible `json:"visible" db:"visible" validate:"oneof=0 1"`
 }
+
+type WishlistFilter struct {
+	IsActive bool
+}
