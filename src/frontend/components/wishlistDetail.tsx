@@ -53,6 +53,7 @@ const WishlistDetail = observer(
             wishlist={wishlist}
             onUpdate={onUpdate}
             onDelete={onDelete}
+            onRestore={() => {}}
           />
         </span>
       </div>
