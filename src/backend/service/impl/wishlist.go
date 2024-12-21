@@ -134,6 +134,15 @@ func (s *WishlistImpl) DeleteWish(userId int64, wishUuid string) error {
 	return s.WishRepository.Delete(wishUuid)
 }
 
+func (s *WishlistImpl) RestoreWish(userId int64, wishUuid string) error {
+	existWish, err := s.WishRepository.Get(wishUuid)
+	if existWish.UserId != userId || err != nil {
+		return errors.New("user can't update wish")
+	}
+
+	return s.WishRepository.Restore(wishUuid)
+}
+
 func (s *WishlistImpl) UpdateWish(userId int64, wish *model.Wish) (*model.Wish, error) {
 	existWish, err := s.WishRepository.Get(wish.Uuid)
 	if existWish.UserId != userId || err != nil {
