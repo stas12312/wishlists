@@ -96,3 +96,13 @@ func (r *WishRepositoryPostgres) Delete(wishUuid string) error {
 	_, err := r.Connection.Exec(query, wishUuid)
 	return err
 }
+
+func (r *WishRepositoryPostgres) Restore(wishUuid string) error {
+	q := `
+		UPDATE wishes SET
+			is_active = TRUE
+		WHERE wish_uuid = $1
+`
+	_, err := r.Exec(q, wishUuid)
+	return err
+}

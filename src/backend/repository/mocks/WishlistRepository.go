@@ -105,6 +105,20 @@ func (_m *WishlistRepository) ListByUserId(userId int64, filter model.WishlistFi
 	return r0, r1
 }
 
+// Restore provides a mock function with given fields: uuid
+func (_m *WishlistRepository) Restore(uuid string) error {
+	ret := _m.Called(uuid)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(uuid)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Update provides a mock function with given fields: wishlist
 func (_m *WishlistRepository) Update(wishlist *model.Wishlist) (*model.Wishlist, error) {
 	ret := _m.Called(wishlist)

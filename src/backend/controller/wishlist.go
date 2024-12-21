@@ -139,6 +139,17 @@ func (c *WishlistController) DeleteWishHandler(ctx *fiber.Ctx) error {
 	return ctx.JSON(model.ResponseWithMessage{Message: "Запись удалена"})
 }
 
+func (c *WishlistController) RestoreWishHandler(ctx *fiber.Ctx) error {
+	wishUuid := ctx.Params("uuid")
+	userId := GetUserIdFromCtx(ctx)
+
+	if err := c.WishlistService.RestoreWish(userId, wishUuid); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Не удалось восстановить запись", Details: err.Error()})
+	}
+	return ctx.JSON(model.ResponseWithMessage{Message: "Запись восстановлена"})
+}
+
 func (c *WishlistController) UpdateWishHandler(ctx *fiber.Ctx) error {
 	userId := GetUserIdFromCtx(ctx)
 	wishUuid := ctx.Params("uuid")
@@ -159,6 +170,18 @@ func (c *WishlistController) UpdateWishHandler(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(updatedWith)
+}
+
+func (c *WishlistController) RestoreWishlistHandler(ctx *fiber.Ctx) error {
+	userId := GetUserIdFromCtx(ctx)
+	wishlistUUID := ctx.Params("uuid")
+
+	if err := c.WishlistService.RestoreWishlist(userId, wishlistUUID); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Ошибка при восстановлении", Details: err.Error()})
+	}
+
+	return ctx.JSON(model.ResponseWithMessage{Message: "Запись восстановлена"})
 }
 
 func (c *WishlistController) DeleteWishlist(ctx *fiber.Ctx) error {
@@ -198,10 +221,12 @@ func (c *WishlistController) Route(router fiber.Router) {
 	wishlistGroup.Post("/:uuid", middleware.Protected(true), c.Update)
 	wishlistGroup.Get("/:uuid/wishes", middleware.Protected(false), c.ListWishesForWishlistHandler)
 	wishlistGroup.Delete("/:uuid", middleware.Protected(true), c.DeleteWishlist)
+	wishlistGroup.Post("/:uuid/restore", middleware.Protected(true), c.RestoreWishlistHandler)
 
 	wishGroup := router.Group("/wishes")
 	wishGroup.Post("/", middleware.Protected(true), c.CreateWishHandler)
 	wishGroup.Delete("/:uuid", middleware.Protected(true), c.DeleteWishHandler)
 	wishGroup.Post("/:uuid", middleware.Protected(true), c.UpdateWishHandler)
 	wishGroup.Get("/:uuid", middleware.Protected(false), c.GetWish)
+	wishGroup.Post("/:uuid/restore", middleware.Protected(true), c.RestoreWishHandler)
 }
