@@ -46,7 +46,15 @@ export function Wishlists() {
         return value.uuid != wishlist.uuid;
       })
     );
-    toast.success("Вишлист удален");
+    toast.success(`Вишлист ${wishlist.is_active ? "архивирован" : "удален"}`);
+  }
+
+  function onRestore(wishlist: IWishlist) {
+    setItems(
+      items.filter((value) => {
+        return value.uuid != wishlist.uuid;
+      })
+    );
   }
 
   function OnCreateWishlist(wishlist: IWishlist) {
@@ -63,7 +71,11 @@ export function Wishlists() {
   } else {
     components = items.map((wishlist: IWishlist) => (
       <span key={wishlist.uuid}>
-        <WishlistItem wishlist={wishlist} onDelete={onDelete} />
+        <WishlistItem
+          wishlist={wishlist}
+          onDelete={onDelete}
+          onRestore={onRestore}
+        />
       </span>
     ));
   }
