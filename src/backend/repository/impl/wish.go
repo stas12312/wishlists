@@ -89,9 +89,22 @@ func (r *WishRepositoryPostgres) ListForWishlist(wishlistUuid string) (*[]model.
 func (r *WishRepositoryPostgres) Delete(wishUuid string) error {
 
 	query := `
-	UPDATE wishes
-		SET is_active = FALSE
-		WHERE wish_uuid = $1
+	-- Окончательное удаление, если вишлист уже в архиве
+	WITH delete_wish AS (
+		DELETE FROM wishes
+		WHERE 
+		    wish_uuid = $1
+			AND is_active IS FALSE
+	),
+	-- Перенос в архив
+	archive_wish AS (
+		UPDATE wishes SET
+			is_active = FALSE
+		WHERE 
+		    wish_uuid = $1
+			AND is_active IS TRUE
+	)
+	SELECT TRUE
 `
 	_, err := r.Connection.Exec(query, wishUuid)
 	return err

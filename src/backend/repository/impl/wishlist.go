@@ -86,9 +86,29 @@ func (r *WishlistRepositoryPostgres) Update(wishlist *model.Wishlist) (*model.Wi
 
 func (r *WishlistRepositoryPostgres) Delete(uuid string) error {
 	q := `
-	UPDATE wishlists SET
-		is_active = FALSE
-	WHERE wishlist_uuid = $1
+	-- Окончательное удаление, если вишлист уже в архиве
+	-- перед удалением вишлиста, удаляем желания
+	WITH delete_wishes AS (
+		DELETE FROM wishes
+		WHERE 
+			wishlist_uuid = $1
+			AND (SELECT is_active FROM wishlists WHERE wishlist_uuid = $1) IS FALSE	
+	),
+	delete_wishlist AS (
+		DELETE FROM wishlists
+		WHERE 
+		    wishlist_uuid = $1
+			AND is_active IS FALSE
+	),
+	-- Перенос в архив
+	archive_wishlist AS (
+		UPDATE wishlists SET
+			is_active = FALSE
+		WHERE 
+		    wishlist_uuid = $1
+			AND is_active IS TRUE
+	)
+	SELECT TRUE
 `
 
 	_, err := r.Exec(q, uuid)
