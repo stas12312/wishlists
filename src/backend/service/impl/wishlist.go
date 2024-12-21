@@ -62,7 +62,14 @@ func (s *WishlistImpl) DeleteWishlist(userId int64, wishlistUuid string) error {
 	}
 
 	return s.WishlistRepository.Delete(wishlistUuid)
+}
 
+func (s *WishlistImpl) RestoreWishlist(userId int64, wishlistUuid string) error {
+	if !s.UserCanViewWishlistByUuid(userId, wishlistUuid) {
+		return errors.New("user can't edit wishlist")
+	}
+
+	return s.WishlistRepository.Restore(wishlistUuid)
 }
 
 func (s *WishlistImpl) AddWish(userId int64, wish *model.Wish) (*model.Wish, error) {

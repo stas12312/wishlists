@@ -94,3 +94,13 @@ func (r *WishlistRepositoryPostgres) Delete(uuid string) error {
 	_, err := r.Exec(q, uuid)
 	return err
 }
+
+func (r *WishlistRepositoryPostgres) Restore(uuid string) error {
+	q := `
+		UPDATE wishlists SET
+			is_active = TRUE
+		WHERE wishlist_uuid = $1
+`
+	_, err := r.Exec(q, uuid)
+	return err
+}

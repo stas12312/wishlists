@@ -10,4 +10,5 @@ type WishlistRepository interface {
 	GetByUUID(uuid string) (*model.Wishlist, error)
 	Update(wishlist *model.Wishlist) (*model.Wishlist, error)
 	Delete(uuid string) error
+	Restore(uuid string) error
 }
