@@ -16,7 +16,7 @@ const WishlistFilter = ({
         defaultSelectedKeys={["active"]}
         size="sm"
         onSelectionChange={(key) => {
-          setFilter({ ...filter, showArchive: key[[]].currentKey == "deleted" });
+          setFilter({ ...filter, showArchive: key.currentKey == "deleted" });
         }}
       >
         <SelectItem key="active">Активные</SelectItem>
@@ -28,4 +28,3 @@ const WishlistFilter = ({
 };
 
 export default WishlistFilter;
-
