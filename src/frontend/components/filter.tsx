@@ -1,0 +1,31 @@
+import { Select, SelectItem } from "@nextui-org/select";
+import { IWishlistFilter } from "./wishlist/list";
+const WishlistFilter = ({
+  filter,
+  setFilter,
+}: {
+  filter: IWishlistFilter;
+  setFilter: { (filter: IWishlistFilter): void };
+}) => {
+  console.log(filter);
+  return (
+    <>
+      <Select
+        className="max-w-xs"
+        label="Статус"
+        defaultSelectedKeys={["active"]}
+        size="sm"
+        onSelectionChange={(key) => {
+          setFilter({ ...filter, showArchive: key[[]].currentKey == "deleted" });
+        }}
+      >
+        <SelectItem key="active">Активные</SelectItem>
+        <SelectItem key="deleted">Архивированные</SelectItem>
+        {/* <SelectItem key="past">Прошедшие</SelectItem> */}
+      </Select>
+    </>
+  );
+};
+
+export default WishlistFilter;
+

@@ -14,16 +14,16 @@ import { useDisclosure } from "@nextui-org/modal";
 import { Skeleton } from "@nextui-org/skeleton";
 import { useRouter } from "next/navigation";
 import { Key, useState } from "react";
-import { BsThreeDotsVertical } from "react-icons/bs";
-import { MdCreate, MdDelete, MdLink } from "react-icons/md";
 import toast from "react-hot-toast";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { MdCreate, MdDelete, MdLink, MdRestoreFromTrash } from "react-icons/md";
 
 import { VisibleStatus } from "../visibleIcon";
 
 import WishlistSaveModal from "./saveModal";
 
-import { deleteWishlist } from "@/lib/requests";
 import { IWishlist } from "@/lib/models";
+import { deleteWishlist } from "@/lib/requests";
 import ConfirmationModal from "../confirmation";
 
 export function WishlistItem({
@@ -43,14 +43,16 @@ export function WishlistItem({
 
   return (
     <Card
-      isPressable
+      isPressable={wishlist.is_active}
       className="w-full h-32 flex-col md:hover:scale-[1.03]"
       onPress={() => router.push(`/wishlists/${cardWishlist.uuid}`)}
     >
       <CardHeader className="flex-col items-start">
         <div className="flex flex-row justify-between w-full">
           <div className="text-tiny font-bold my-auto flex flex-col text-left overflow-hidden truncate">
-            <span className="flex flex-row gap-1">
+            <span
+              className={`flex flex-row gap-1 ${!wishlist.is_active ? "text-default-400" : ""}`}
+            >
               <p className="uppercase text-large">{cardWishlist.name}</p>
               <span className="text-small">
                 <VisibleStatus visible={cardWishlist.visible} />
@@ -152,21 +154,35 @@ export const WishlistItemMenu = ({
           {isEditable ? (
             <>
               <DropdownSection showDivider>
-                <DropdownItem key="edit" startContent={<MdCreate />}>
-                  Редактировать
-                </DropdownItem>
+                {wishlist.is_active ? (
+                  <>
+                    <DropdownItem key="edit" startContent={<MdCreate />}>
+                      Редактировать
+                    </DropdownItem>
 
-                <DropdownItem key="share" startContent={<MdLink />}>
-                  Скопировать
-                </DropdownItem>
+                    <DropdownItem key="share" startContent={<MdLink />}>
+                      Скопировать
+                    </DropdownItem>
+                  </>
+                ) : (
+                  <DropdownItem
+                    key="restore"
+                    color="primary"
+                    className="text-primary"
+                    startContent={<MdRestoreFromTrash />}
+                  >
+                    Восстановить
+                  </DropdownItem>
+                )}
               </DropdownSection>
+
               <DropdownItem
                 key="delete"
                 className="text-danger"
                 color="danger"
                 startContent={<MdDelete />}
               >
-                Удалить
+                {wishlist.is_active ? "Архивировать" : "Удалить"}
               </DropdownItem>
             </>
           ) : (
@@ -185,7 +201,7 @@ export const WishlistItemMenu = ({
       <ConfirmationModal
         onConfirm={deleteWishlistByAction}
         isOpen={isConfirm}
-        message="Вы действительно хотите удалить вишлист?"
+        message={`Вы действительно хотите ${wishlist.is_active ? "архивировать" : "удалить"} вишлист?`}
         onDecline={() => {
           setIsConfirm(false);
         }}

@@ -198,7 +198,7 @@ func (c *WishlistController) DeleteWishlist(ctx *fiber.Ctx) error {
 }
 
 func (c *WishlistController) GetWish(ctx *fiber.Ctx) error {
-	wishUuid := ctx.Params("uuid")
+	wishUuid := ctx.Params("utuid")
 	userId := GetUserIdFromCtx(ctx)
 
 	wish, err := c.WishlistService.GetWish(userId, wishUuid)

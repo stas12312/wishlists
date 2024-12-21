@@ -11,6 +11,7 @@ import {
   IError,
   IOAuthProvider,
 } from "./models";
+import { IWishlistFilter } from "@/components/wishlist/list";
 
 axios.defaults.baseURL = `${process.env.BASE_URL}/api`;
 const axiosInstance = axios.create({});
@@ -37,8 +38,12 @@ axiosInstance.interceptors.response.use(
   },
 );
 
-export async function getWishlists(): Promise<IWishlist[]> {
-  const response = await axiosInstance.get("/wishlists");
+export async function getWishlists(filter?: IWishlistFilter | null): Promise<IWishlist[]> {
+  const response = await axiosInstance.get("/wishlists", {
+    params: {
+      is_active: !filter?.showArchive
+    }
+  });
 
   return response.data.data;
 }
