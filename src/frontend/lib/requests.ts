@@ -215,3 +215,7 @@ export async function OAuth(type: string, token: string): Promise<ITokens | IErr
 
   return response.data
 }
+
+export async function restoreWishlist(wishlistUUID: string) {
+  await axiosInstance.post(`wishlists/${wishlistUUID}/restore`)
+}

@@ -23,15 +23,17 @@ import { VisibleStatus } from "../visibleIcon";
 import WishlistSaveModal from "./saveModal";
 
 import { IWishlist } from "@/lib/models";
-import { deleteWishlist } from "@/lib/requests";
+import { deleteWishlist, restoreWishlist } from "@/lib/requests";
 import ConfirmationModal from "../confirmation";
 
 export function WishlistItem({
   wishlist,
   onDelete,
+  onRestore,
 }: {
   wishlist: IWishlist;
   onDelete: { (wishlist: IWishlist): void };
+  onRestore: { (wishlist: IWishlist): void };
 }) {
   const router = useRouter();
 
@@ -68,6 +70,7 @@ export function WishlistItem({
               wishlist={cardWishlist}
               onDelete={onDelete}
               onUpdate={onUpdate}
+              onRestore={onRestore}
             />
           </div>
         </div>
@@ -104,12 +107,14 @@ export const WishlistItemMenu = ({
   wishlist,
   onDelete,
   onUpdate,
+  onRestore,
   className,
   isEditable,
 }: {
   wishlist: IWishlist;
   onDelete: { (wishlist: IWishlist): void };
   onUpdate: { (wishlist: IWishlist): void };
+  onRestore: { (wishlist: IWishlist): void };
   className: string;
   isEditable: boolean;
 }) => {
@@ -128,6 +133,11 @@ export const WishlistItemMenu = ({
         `${window.location.origin}/wishlists/${wishlist.uuid}`
       );
       toast.success("Ссылка скопирована");
+    }
+    if (key === "restore") {
+      await restoreWishlist(wishlist.uuid);
+      onRestore(wishlist);
+      toast.success("Вишлист восстановлен");
     }
   }
 
