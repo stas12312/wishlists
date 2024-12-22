@@ -40,7 +40,8 @@ func (r *WishlistRepositoryPostgres) ListByUserId(userId int64, filter model.Wis
 		WHERE 
 		    user_id = $1
 			AND is_active = $2
-		ORDER BY created_at
+		ORDER BY 
+		    created_at DESC 
 `
 	wishlists := make([]model.Wishlist, 0)
 	err := r.Select(&wishlists, q, userId, filter.IsActive)
