@@ -3,14 +3,14 @@ import { Button } from "@nextui-org/button";
 import { Divider } from "@nextui-org/divider";
 import { useDisclosure } from "@nextui-org/modal";
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 
 import { MdOutlineFilterAlt } from "react-icons/md";
 import { VisibleStatus } from "./visibleIcon";
 import { WishItem } from "./wish/card";
 import WishSaveModal from "./wish/saveModal";
 
-import { IWish, IWishlist } from "@/lib/models";
+import { IError, IWish, IWishlist } from "@/lib/models";
 import {
   deleteWishlist,
   getWishes,
@@ -22,6 +22,10 @@ import toast from "react-hot-toast";
 import { WishlistItemMenu } from "./wishlist/card";
 import { useRouter } from "next/navigation";
 import AddCardButton from "./AddCardButton";
+import { Spinner } from "@nextui-org/spinner";
+import { parseDate } from "@internationalized/date";
+import { Chip } from "@nextui-org/chip";
+import { Badge } from "@nextui-org/badge";
 
 const WishlistDetail = observer(
   ({
@@ -36,26 +40,34 @@ const WishlistDetail = observer(
     isEditable: boolean;
   }) => {
     return (
-      <div className="text-center lg:text-left flex gap-4">
-        <span>
-          <div className="flex flex-row gap-2 justify-center lg:justify-start">
-            <span className={"text-2xl"}>{wishlist.name}</span>
-            <span>
-              <VisibleStatus visible={wishlist.visible} />
-            </span>
-          </div>
-
-          <p className={"text-default-500"}>{wishlist.description}</p>
-        </span>
-        <span className="my-auto">
-          <WishlistItemMenu
-            isEditable={isEditable}
-            wishlist={wishlist}
-            onUpdate={onUpdate}
-            onDelete={onDelete}
-            onRestore={() => {}}
-          />
-        </span>
+      <div className="flex flex-col">
+        <div className="text-center lg:text-left flex gap-4">
+          <span>
+            <div className="flex flex-row gap-2 justify-center lg:justify-start">
+              <span className={"text-2xl"}>{wishlist.name}</span>
+              <span>
+                <VisibleStatus visible={wishlist.visible} />
+              </span>
+            </div>
+          </span>
+          <span className="my-auto">
+            <WishlistItemMenu
+              isEditable={isEditable}
+              wishlist={wishlist}
+              onUpdate={onUpdate}
+              onDelete={onDelete}
+              onRestore={() => {}}
+            />
+          </span>
+        </div>
+        <div className="text-small text-default-500 flex gap-2">
+          <Chip size="sm">
+            {wishlist.date
+              ? new Date(wishlist.date).toLocaleDateString()
+              : null}
+          </Chip>
+          <span className="my-auto">{wishlist.description}</span>
+        </div>
       </div>
     );
   }
@@ -65,6 +77,8 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
   const router = useRouter();
   const [items, setItems] = useState<IWish[]>([]);
   const [wishlist, setWishlist] = useState<IWishlist>({} as IWishlist);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState({} as IError);
   const isEditable = userStore.user.id == wishlist.user_id;
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -75,9 +89,14 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
         getWishes(wishlistUUID),
         getWishlist(wishlistUUID),
       ]);
-
-      setItems(response[0]);
-      setWishlist(response[1]);
+      console.log(response);
+      if ("message" in response[1]) {
+        setError(response[1]);
+      } else {
+        setItems(response[0]);
+        setWishlist(response[1]);
+        setIsLoading(false);
+      }
     }
     fetchWishlists();
   }, []);
@@ -94,6 +113,22 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
   async function onCreateWish(wish: IWish) {
     onOpenChange();
     items.push(wish);
+  }
+
+  if (error?.message) {
+    return (
+      <div className="flex justify-center">
+        <span className="text-large font-bold">{error.message}</span>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex my-auto justify-center mt-[40vh]">
+        <Spinner></Spinner>
+      </div>
+    );
   }
 
   const components = items.map((wish: IWish) => (
