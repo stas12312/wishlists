@@ -30,8 +30,9 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async (error) => {
+    console.log(error.response.status)
     if (error.response.status == 403) {
-    } else if (![400, 500].includes(error.response.status)) {
+    } else if (![400, 404, 500].includes(error.response.status)) {
       return Promise.reject(error);
     }
     return error.response;
@@ -62,8 +63,12 @@ export async function getMe(): Promise<IUser> {
   return response.data;
 }
 
-export async function getWishlist(uuid: string): Promise<IWishlist> {
+export async function getWishlist(uuid: string): Promise<IWishlist | IError> {
   const response = await axiosInstance.get(`/wishlists/${uuid}`);
+
+  if (response.status != 200) {
+    return response.data as IError
+  }
 
   return response.data.data;
 }
