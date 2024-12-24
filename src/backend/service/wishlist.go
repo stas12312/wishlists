@@ -17,4 +17,7 @@ type WishlistService interface {
 	RestoreWish(userId int64, wishUuid string) error
 	UpdateWish(userId int64, wish *model.Wish) (*model.Wish, error)
 	GetWish(userId int64, wishUuid string) (*model.Wish, error)
+	ReserveWish(userId int64, wishUuid string) error
+	CancelWishReservation(userId int64, wishUuid string) error
+	ReservedList(userId int64) (*[]model.Wish, error)
 }

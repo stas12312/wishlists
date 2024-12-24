@@ -13,4 +13,6 @@ const (
 	DatabaseError = 121
 
 	ValidateError = 130
+
+	WrongRequest = 140
 )

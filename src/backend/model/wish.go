@@ -13,4 +13,6 @@ type Wish struct {
 	Cost         float64    `json:"cost"`
 	IsActive     bool       `json:"is_active" db:"is_active"`
 	UserId       int64      `json:"user_id" db:"user_id"`
+	PresenterId  NullInt64  `json:"-" db:"presenter_id"`
+	IsReserved   bool       `json:"is_reserved" db:"is_reserved"`
 }

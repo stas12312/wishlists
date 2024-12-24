@@ -74,7 +74,11 @@ func (r *WishRepositoryPostgres) Get(wishUuid string) (*model.Wish, error) {
 
 func (r *WishRepositoryPostgres) ListForWishlist(wishlistUuid string) (*[]model.Wish, error) {
 	query := `
-		SELECT wishes.*, wishlists.user_id FROM wishes
+		SELECT 
+		    wishes.*, 
+		    wishlists.user_id, 
+		    wishes.presenter_id IS NOT NULL AS is_reserved
+		FROM wishes
 		JOIN wishlists USING (wishlist_uuid)
 		WHERE 
 		    wishlist_uuid = $1
@@ -118,4 +122,32 @@ func (r *WishRepositoryPostgres) Restore(wishUuid string) error {
 `
 	_, err := r.Exec(q, wishUuid)
 	return err
+}
+
+func (r *WishRepositoryPostgres) SetPresenter(wishUuid string, presenterId model.NullInt64) error {
+	q := `
+		UPDATE wishes SET
+		    presenter_id = $2
+		WHERE wish_uuid = $1
+`
+	_, err := r.Exec(q, wishUuid, presenterId)
+	return err
+}
+
+func (r *WishRepositoryPostgres) ReservedList(userId int64) (*[]model.Wish, error) {
+	q := `
+	SELECT 
+	    wishes.*, 
+		wishlists.user_id,
+		wishes.presenter_id IS NOT NULL AS is_reserved
+	FROM wishes
+	JOIN wishlists USING (wishlist_uuid)
+	WHERE 
+		presenter_id = $1	    
+		AND wishes.is_active IS TRUE
+`
+	wishes := &[]model.Wish{}
+
+	err := r.Connection.Select(wishes, q, userId)
+	return wishes, err
 }
