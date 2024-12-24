@@ -1,6 +1,7 @@
 package impl
 
 import (
+	"database/sql"
 	"errors"
 	apperror "main/error"
 	"main/model"
@@ -31,12 +32,15 @@ func (s *WishlistImpl) ListForUser(userId int64, filter model.WishlistFilter) ([
 
 func (s *WishlistImpl) GetForUserByUUID(userId int64, uuid string) (*model.Wishlist, error) {
 	wishlist, err := s.WishlistRepository.GetByUUID(uuid)
+	if err != nil {
+		return nil, err
+	}
 
 	if wishlist.Visible == model.Public {
 		return wishlist, nil
 	}
 
-	if wishlist.UserId != userId || err != nil {
+	if wishlist.UserId != userId {
 		return nil, apperror.NewError(apperror.NotFound, "Вишлист не найден")
 	}
 
@@ -45,7 +49,7 @@ func (s *WishlistImpl) GetForUserByUUID(userId int64, uuid string) (*model.Wishl
 
 func (s *WishlistImpl) UpdateForUser(userId int64, wishlist *model.Wishlist) (*model.Wishlist, error) {
 	foundedWishlist, err := s.WishlistRepository.GetByUUID(wishlist.Uuid)
-	if foundedWishlist.UserId != userId || err != nil {
+	if err != nil || foundedWishlist.UserId != userId {
 		return nil, errors.New("user can't edit wishlist")
 	}
 
@@ -104,7 +108,7 @@ func (s *WishlistImpl) ListWishesForWishlist(userId int64, wishlistUuid string) 
 
 func (s *WishlistImpl) UserCanEditWishlist(userId int64, wishlistUuid string) bool {
 	wishlist, err := s.GetByUUID(wishlistUuid)
-	return wishlist.UserId == userId && err == nil
+	return err == nil && wishlist.UserId == userId
 }
 
 func (s *WishlistImpl) UserCanViewWishlistByModel(userId int64, wishlist *model.Wishlist) bool {
@@ -127,7 +131,7 @@ func (s *WishlistImpl) UserCanViewWishlistByUuid(userId int64, wishlistUuid stri
 func (s *WishlistImpl) DeleteWish(userId int64, wishUuid string) error {
 
 	wish, err := s.WishRepository.Get(wishUuid)
-	if wish.UserId != userId || err != nil {
+	if err != nil || wish.UserId != userId {
 		return errors.New("user can't get access to the wishlist")
 	}
 
@@ -136,7 +140,7 @@ func (s *WishlistImpl) DeleteWish(userId int64, wishUuid string) error {
 
 func (s *WishlistImpl) RestoreWish(userId int64, wishUuid string) error {
 	existWish, err := s.WishRepository.Get(wishUuid)
-	if existWish.UserId != userId || err != nil {
+	if err != nil || existWish.UserId != userId {
 		return errors.New("user can't update wish")
 	}
 
@@ -145,7 +149,7 @@ func (s *WishlistImpl) RestoreWish(userId int64, wishUuid string) error {
 
 func (s *WishlistImpl) UpdateWish(userId int64, wish *model.Wish) (*model.Wish, error) {
 	existWish, err := s.WishRepository.Get(wish.Uuid)
-	if existWish.UserId != userId || err != nil {
+	if err != nil || existWish.UserId != userId {
 		return nil, errors.New("user can't update wish")
 	}
 
@@ -155,9 +159,41 @@ func (s *WishlistImpl) UpdateWish(userId int64, wish *model.Wish) (*model.Wish, 
 func (s *WishlistImpl) GetWish(userId int64, wishUuid string) (*model.Wish, error) {
 
 	existWish, err := s.WishRepository.Get(wishUuid)
-	if !s.UserCanViewWishlistByUuid(userId, existWish.WishlistUuid) || err != nil {
+	if err != nil || !s.UserCanViewWishlistByUuid(userId, existWish.WishlistUuid) {
 		return nil, errors.New("user can't view wish")
 	}
 	return existWish, nil
 
+}
+
+func (s *WishlistImpl) ReserveWish(userId int64, wishUuid string) error {
+	existWish, err := s.WishRepository.Get(wishUuid)
+	if err != nil || !s.UserCanViewWishlistByUuid(userId, existWish.WishlistUuid) {
+		return apperror.NewError(apperror.NotFound, "Желание не найдено")
+	}
+	if existWish.UserId == userId {
+		return apperror.NewError(apperror.WrongRequest, "Вы не можете забронировать ваше желание")
+	}
+	if existWish.PresenterId.Valid {
+		return apperror.NewError(apperror.WrongRequest, "Желание уже забронировано")
+	}
+
+	return s.WishRepository.SetPresenter(wishUuid, model.NullInt64{NullInt64: sql.NullInt64{Int64: userId, Valid: true}})
+}
+
+func (s *WishlistImpl) CancelWishReservation(userId int64, wishUuid string) error {
+	existWish, err := s.WishRepository.Get(wishUuid)
+	if err != nil {
+		return err
+	}
+	if existWish.PresenterId.Int64 != userId {
+		return apperror.NewError(apperror.WrongRequest, "Невозможно отменить бронь")
+	}
+
+	return s.WishRepository.SetPresenter(wishUuid, model.NullInt64{NullInt64: sql.NullInt64{}})
+
+}
+
+func (s *WishlistImpl) ReservedList(userId int64) (*[]model.Wish, error) {
+	return s.WishRepository.ReservedList(userId)
 }

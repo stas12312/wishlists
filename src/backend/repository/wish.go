@@ -11,4 +11,6 @@ type WishRepository interface {
 	ListForWishlist(wishlistUuid string) (*[]model.Wish, error)
 	Delete(wishUuid string) error
 	Restore(wishUuid string) error
+	SetPresenter(wishUuid string, presenterId model.NullInt64) error
+	ReservedList(userId int64) (*[]model.Wish, error)
 }

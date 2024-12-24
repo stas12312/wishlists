@@ -198,7 +198,7 @@ func (c *WishlistController) DeleteWishlist(ctx *fiber.Ctx) error {
 }
 
 func (c *WishlistController) GetWish(ctx *fiber.Ctx) error {
-	wishUuid := ctx.Params("utuid")
+	wishUuid := ctx.Params("uuid")
 	userId := GetUserIdFromCtx(ctx)
 
 	wish, err := c.WishlistService.GetWish(userId, wishUuid)
@@ -209,6 +209,38 @@ func (c *WishlistController) GetWish(ctx *fiber.Ctx) error {
 
 	return ctx.JSON(wish)
 
+}
+
+func (c *WishlistController) ReserveWishHandler(ctx *fiber.Ctx) error {
+	wishUuid := ctx.Params("uuid")
+	userId := GetUserIdFromCtx(ctx)
+
+	if err := c.WishlistService.ReserveWish(userId, wishUuid); err != nil {
+		return err
+	}
+
+	return ctx.JSON(model.ResponseWithMessage{Message: "Желание забранировано"})
+}
+
+func (c *WishlistController) CancelReserveWishHandler(ctx *fiber.Ctx) error {
+	wishUuid := ctx.Params("uuid")
+	userId := GetUserIdFromCtx(ctx)
+
+	if err := c.WishlistService.CancelWishReservation(userId, wishUuid); err != nil {
+		return err
+	}
+
+	return ctx.JSON(model.ResponseWithMessage{Message: "Бронь отменена"})
+}
+
+func (c *WishlistController) ReservedWishes(ctx *fiber.Ctx) error {
+	userId := GetUserIdFromCtx(ctx)
+	wishes, err := c.ReservedList(userId)
+	if err != nil {
+		return ctx.JSON(model.ErrorResponse{Message: "Не удалось получить список", Details: err.Error()})
+	}
+
+	return ctx.JSON(model.Response{Data: wishes})
 }
 
 func (c *WishlistController) Route(router fiber.Router) {
@@ -225,8 +257,12 @@ func (c *WishlistController) Route(router fiber.Router) {
 
 	wishGroup := router.Group("/wishes")
 	wishGroup.Post("/", middleware.Protected(true), c.CreateWishHandler)
+	wishGroup.Get("/reserved", middleware.Protected(true), c.ReservedWishes)
 	wishGroup.Delete("/:uuid", middleware.Protected(true), c.DeleteWishHandler)
 	wishGroup.Post("/:uuid", middleware.Protected(true), c.UpdateWishHandler)
 	wishGroup.Get("/:uuid", middleware.Protected(false), c.GetWish)
+
 	wishGroup.Post("/:uuid/restore", middleware.Protected(true), c.RestoreWishHandler)
+	wishGroup.Post("/:uuid/reserve", middleware.Protected(true), c.ReserveWishHandler)
+	wishGroup.Post("/:uuid/cancel_reserve", middleware.Protected(true), c.CancelReserveWishHandler)
 }

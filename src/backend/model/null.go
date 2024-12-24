@@ -101,3 +101,14 @@ func (nf *NullFloat64) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(nf.Float64)
 }
+
+type NullInt64 struct {
+	sql.NullInt64
+}
+
+func (nf *NullInt64) MarshalJSON() ([]byte, error) {
+	if !nf.Valid {
+		return []byte("null"), nil
+	}
+	return json.Marshal(nf.NullInt64)
+}

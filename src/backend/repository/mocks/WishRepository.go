@@ -105,6 +105,32 @@ func (_m *WishRepository) ListForWishlist(wishlistUuid string) (*[]model.Wish, e
 	return r0, r1
 }
 
+// ReservedList provides a mock function with given fields: userId
+func (_m *WishRepository) ReservedList(userId int64) (*[]model.Wish, error) {
+	ret := _m.Called(userId)
+
+	var r0 *[]model.Wish
+	var r1 error
+	if rf, ok := ret.Get(0).(func(int64) (*[]model.Wish, error)); ok {
+		return rf(userId)
+	}
+	if rf, ok := ret.Get(0).(func(int64) *[]model.Wish); ok {
+		r0 = rf(userId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*[]model.Wish)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(int64) error); ok {
+		r1 = rf(userId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // Restore provides a mock function with given fields: wishUuid
 func (_m *WishRepository) Restore(wishUuid string) error {
 	ret := _m.Called(wishUuid)
@@ -112,6 +138,20 @@ func (_m *WishRepository) Restore(wishUuid string) error {
 	var r0 error
 	if rf, ok := ret.Get(0).(func(string) error); ok {
 		r0 = rf(wishUuid)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// SetPresenter provides a mock function with given fields: wishUuid, presenterId
+func (_m *WishRepository) SetPresenter(wishUuid string, presenterId model.NullInt64) error {
+	ret := _m.Called(wishUuid, presenterId)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, model.NullInt64) error); ok {
+		r0 = rf(wishUuid, presenterId)
 	} else {
 		r0 = ret.Error(0)
 	}
