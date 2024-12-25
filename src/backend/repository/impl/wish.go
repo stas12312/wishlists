@@ -63,7 +63,11 @@ func (r *WishRepositoryPostgres) Update(wish *model.Wish) (*model.Wish, error) {
 
 func (r *WishRepositoryPostgres) Get(wishUuid string) (*model.Wish, error) {
 	query := `
-		SELECT wishes.*, wishlists.user_id FROM wishes
+		SELECT 
+		    wishes.*, 
+			wishlists.user_id,
+			wishes.presenter_id IS NOT NULL AS is_reserved
+		FROM wishes
 		JOIN wishlists USING (wishlist_uuid)
 		WHERE wish_uuid = $1
 `
