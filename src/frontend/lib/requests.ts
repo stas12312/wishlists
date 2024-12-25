@@ -224,3 +224,27 @@ export async function OAuth(type: string, token: string): Promise<ITokens | IErr
 export async function restoreWishlist(wishlistUUID: string) {
   await axiosInstance.post(`wishlists/${wishlistUUID}/restore`)
 }
+
+export async function reserveWish(wishUUID: string): Promise<IError | void>{
+  const response = await axiosInstance.post(`wishes/${wishUUID}/reserve`)
+  if (response.status != 200) {
+    return response.data as IError
+  }
+}
+
+export async function cancelReserveWish(wishUUID: string): Promise<IError | void>{
+  const response = await axiosInstance.post(`wishes/${wishUUID}/cancel_reserve`)
+  if (response.status != 200) {
+    return response.data as IError
+  }
+}
+
+export async function getWish(wishUUID: string): Promise<IWish> {
+  const response = await axiosInstance.get(`wishes/${wishUUID}`)
+  return response.data
+}
+
+export async function getReservedWishes(): Promise<IWish[]> {
+  const response = await axiosInstance.get("wishes/reserved")
+  return response.data.data
+}

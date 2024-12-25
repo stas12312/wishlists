@@ -11,20 +11,13 @@ export default function Menu() {
   return (
     <Listbox className="text-center" disabledKeys={["friends", "settings"]}>
       <ListboxSection showDivider>
-        <ListboxItem
-          key="main"
-          onPress={() => {
-            router.push("/");
-          }}
-        >
+        <ListboxItem key="main" href="/">
           Мои вишлисты
         </ListboxItem>
-        <ListboxItem
-          key="settings"
-          onPress={() => {
-            router.push("/settings");
-          }}
-        >
+        <ListboxItem key="wishes" href="/wishes">
+          Желания
+        </ListboxItem>
+        <ListboxItem key="settings" href="/settings">
           Настройки
         </ListboxItem>
         <ListboxItem key="friends">Друзья</ListboxItem>
