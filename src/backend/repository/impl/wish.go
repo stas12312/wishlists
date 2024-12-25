@@ -87,6 +87,7 @@ func (r *WishRepositoryPostgres) ListForWishlist(wishlistUuid string) (*[]model.
 		WHERE 
 		    wishlist_uuid = $1
 			AND wishes.is_active = True
+		ORDER BY created_at DESC 
 `
 	wishes := &[]model.Wish{}
 
@@ -149,6 +150,7 @@ func (r *WishRepositoryPostgres) ReservedList(userId int64) (*[]model.Wish, erro
 	WHERE 
 		presenter_id = $1	    
 		AND wishes.is_active IS TRUE
+	ORDER BY created_at DESC
 `
 	wishes := &[]model.Wish{}
 
