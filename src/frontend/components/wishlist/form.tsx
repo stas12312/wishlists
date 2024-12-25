@@ -105,7 +105,8 @@ export function WishlistCreateForm({
       <div>
         <I18nProvider locale="ru-RU">
           <DatePicker
-            label="Дата"
+            cle
+            label="Дата события"
             name="date"
             /* @ts-ignore */
             value={

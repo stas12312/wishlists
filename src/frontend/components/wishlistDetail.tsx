@@ -61,11 +61,9 @@ const WishlistDetail = observer(
           </span>
         </div>
         <div className="text-small text-default-500 flex gap-2">
-          <Chip size="sm">
-            {wishlist.date
-              ? new Date(wishlist.date).toLocaleDateString()
-              : null}
-          </Chip>
+          {wishlist.date ? (
+            <Chip>{new Date(wishlist.date).toLocaleDateString()}</Chip>
+          ) : null}
           <span className="my-auto">{wishlist.description}</span>
         </div>
       </div>
