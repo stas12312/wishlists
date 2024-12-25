@@ -216,20 +216,20 @@ export const WishItem = observer(
             src={item.image ? item.image : undefined}
           />
         </CardBody>
-        {item.cost ? (
-          <CardFooter className="z-10 absolute bottom-1 right-1 justify-end">
-            <div className="flex flex-col gap-1 ml-auto mr-0">
-              {item.is_reserved ? (
-                <Chip color="success" className="ml-auto mr-0">
-                  Забронировано
-                </Chip>
-              ) : null}
+        <CardFooter className="z-10 absolute bottom-1 right-1 justify-end">
+          <div className="flex flex-col gap-1 ml-auto mr-0">
+            {item.is_reserved ? (
+              <Chip color="success" className="ml-auto mr-0">
+                Забронировано
+              </Chip>
+            ) : null}
+            {item.cost ? (
               <Chip className="ml-auto mr-0">
                 {item.cost.toLocaleString() + " ₽"}
               </Chip>
-            </div>
-          </CardFooter>
-        ) : null}
+            ) : null}
+          </div>
+        </CardFooter>
       </Card>
     );
   }
