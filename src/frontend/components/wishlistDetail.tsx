@@ -89,7 +89,6 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
         getWishes(wishlistUUID),
         getWishlist(wishlistUUID),
       ]);
-      console.log(response);
       if ("message" in response[1]) {
         setError(response[1]);
       } else {
@@ -133,7 +132,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
 
   const components = items.map((wish: IWish) => (
     <div key={wish.uuid}>
-      <WishItem isEditable={isEditable} wish={wish} onDelete={onDeleteWish} />
+      <WishItem wish={wish} onDelete={onDeleteWish} />
     </div>
   ));
 
