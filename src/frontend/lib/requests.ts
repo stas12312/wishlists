@@ -12,6 +12,8 @@ import {
   IOAuthProvider,
 } from "./models";
 import { IWishlistFilter } from "@/components/wishlist/list";
+import { use } from "react";
+import { user } from "@nextui-org/theme";
 
 axios.defaults.baseURL = `${process.env.BASE_URL}/api`;
 const axiosInstance = axios.create({});
@@ -250,8 +252,8 @@ export async function getReservedWishes(): Promise<IWish[]> {
   return response.data.data
 }
 
-export async function getUserById(userId: number): Promise<IUser> {
-  const response = await axiosInstance.get(`user/${userId}`)
+export async function getUserByUsername(username: string): Promise<IUser> {
+  const response = await axiosInstance.get(`user/${username}`)
   console.log(response.data)
   return response.data
 }

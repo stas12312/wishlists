@@ -1,22 +1,26 @@
 "use client";
 import { IUser, IWishlist } from "@/lib/models";
-import { getUserById, getWishlists } from "@/lib/requests";
+import { getUserByUsername, getWishlists } from "@/lib/requests";
 import { User } from "@nextui-org/user";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { WishlistItem } from "./wishlist/card";
 import { Divider } from "@nextui-org/divider";
 import { PageSpinner } from "./pageSpinner";
+import userStore from "@/store/userStore";
 
-const UserView = observer(({ userId }: { userId: number }) => {
+const UserView = observer(({ username }: { username: string }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<IUser>({} as IUser);
   const [wishlists, setWishlists] = useState<IWishlist[]>([]);
 
   useEffect(() => {
     async function fetchData() {
-      setUser(await getUserById(userId));
-      setWishlists(await getWishlists({ showArchive: false, userId: userId }));
+      const responseUser = await getUserByUsername(username);
+      setUser(responseUser);
+      setWishlists(
+        await getWishlists({ showArchive: false, userId: responseUser.id })
+      );
       setIsLoading(false);
     }
     fetchData();
@@ -44,7 +48,11 @@ const UserView = observer(({ userId }: { userId: number }) => {
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <div className="col-span-full">
-          <User name={user.name}></User>
+          <User
+            name={user.name}
+            description={user.username}
+            avatarProps={{ src: user.image }}
+          ></User>
         </div>
         <h1 className="text-2xl">Вишлисты пользователя</h1>
         <Divider className="col-span-full"></Divider>
@@ -55,4 +63,3 @@ const UserView = observer(({ userId }: { userId: number }) => {
 });
 
 export default UserView;
-

@@ -16,7 +16,7 @@ const Content = observer(() => {
   const user = userStore.user;
   let profileLink = "";
   if (user.id) {
-    profileLink = `${window.location.origin}/users/${user.id}`;
+    profileLink = `${window.location.origin}/users/${user.username}`;
   }
   return (
     <>
