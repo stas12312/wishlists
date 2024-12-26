@@ -370,6 +370,22 @@ func (u *userServiceImpl) ChangePassword(ctx context.Context, userId int64, oldP
 
 }
 
+func (u *userServiceImpl) Update(ctx context.Context, user *model.UserForUpdate) (*model.User, error) {
+	updatedUser := &model.User{}
+	err := u.UnitOfWork.Do(ctx, func(ctx context.Context, store uof.UnitOfWorkStore) error {
+		dbUser, err := store.UserRepository().GetById(user.Id)
+		if err != nil {
+			return apperror.NewError(apperror.DatabaseError, "Ошибка при получении пользователя")
+		}
+		dbUser.Image = user.Image
+		dbUser.Username = user.Username
+		updatedUser, err = store.UserRepository().Update(dbUser)
+		return err
+	})
+
+	return updatedUser, err
+}
+
 func checkPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil

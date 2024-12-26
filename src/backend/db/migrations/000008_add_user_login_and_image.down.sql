@@ -1,0 +1,2 @@
+ALTER TABLE users DROP IF EXISTS username;
+ALTER TABLE users DROP IF EXISTS image;

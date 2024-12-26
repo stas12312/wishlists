@@ -67,14 +67,16 @@ func (r *UserRepositoryPostgres) Update(user *model.User) (*model.User, error) {
 	SET 
 	    password = $2,
 		name = $3,
-		is_active = $4
+		is_active = $4,
+		username = $5,
+		image = $6
 	WHERE user_id = $1
 	RETURNING *
 `
 
 	updatedUser := &model.User{}
 
-	err := r.Get(updatedUser, query, user.Id, user.Password, user.Name, user.IsActive)
+	err := r.Get(updatedUser, query, user.Id, user.Password, user.Name, user.IsActive, user.Username, user.Image)
 
 	return updatedUser, err
 
