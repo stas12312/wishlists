@@ -20,7 +20,7 @@ export const ReservedWishes = observer(() => {
 
   const components = wishes.map((wish: IWish) => (
     <div key={wish.uuid}>
-      <WishItem wish={wish} onDelete={() => {}} canCancelReserve={true} />
+      <WishItem wish={wish} onDelete={() => {}} />
     </div>
   ));
 
@@ -34,4 +34,3 @@ export const ReservedWishes = observer(() => {
     </>
   );
 });
-

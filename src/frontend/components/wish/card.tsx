@@ -21,17 +21,16 @@ import {
 
 import WishSaveModal from "./saveModal";
 
-import { IWish, WishActions } from "@/lib/models";
+import { IWish, IWishActions } from "@/lib/models";
 import {
   cancelReserveWish,
   deleteWish,
   getWish,
   reserveWish,
 } from "@/lib/requests";
-import ConfirmationModal from "../confirmation";
 import { observer } from "mobx-react-lite";
-import userStore from "@/store/userStore";
 import toast from "react-hot-toast";
+import ConfirmationModal from "../confirmation";
 
 export function WishItemMenu({
   wish,
@@ -39,14 +38,12 @@ export function WishItemMenu({
   onUpdate,
   onReserve,
   onCancelReserve,
-  actions,
 }: {
   wish: IWish;
   onDelete: { (wish: IWish): void };
   onUpdate: { (wish: IWish): void };
   onReserve: { (wish: IWish): void };
   onCancelReserve: { (wish: IWish): void };
-  actions: WishActions;
 }) {
   const { isOpen, onOpenChange } = useDisclosure();
   const [isConfirm, setIsConfirm] = useState(false);
@@ -86,13 +83,13 @@ export function WishItemMenu({
           </Button>
         </DropdownTrigger>
         <DropdownMenu aria-label="Wish actions" onAction={handleOnAction}>
-          {actions.canEdit ? (
+          {wish.actions.edit ? (
             <DropdownItem key="edit" startContent={<MdCreate />}>
               Редактировать
             </DropdownItem>
           ) : null}
 
-          {actions.canReserve ? (
+          {wish.actions.reserve ? (
             <DropdownItem
               key="reserve"
               color="primary"
@@ -102,7 +99,7 @@ export function WishItemMenu({
               Забронировать
             </DropdownItem>
           ) : null}
-          {actions.canCancelReserve ? (
+          {wish.actions.cancel_reserve ? (
             <DropdownItem
               key="cancel_reserve"
               className="text-danger"
@@ -112,7 +109,7 @@ export function WishItemMenu({
               Отменить бронь
             </DropdownItem>
           ) : null}
-          {actions.canEdit ? (
+          {wish.actions.edit ? (
             <DropdownItem
               key="delete"
               className="text-danger"
@@ -154,7 +151,6 @@ export const WishItem = observer(
     canCancelReserve?: boolean;
   }) => {
     const [item, setItem] = useState<IWish>(wish);
-    const userId = userStore.user.id;
 
     return (
       <Card
@@ -170,10 +166,7 @@ export const WishItem = observer(
               <span className="uppercase text-xl">{item.name}</span>
               <span className="text-default-500">{item.comment}</span>
             </p>
-            {userId &&
-            (userId == item.user_id ||
-              !item.is_reserved ||
-              canCancelReserve) ? (
+            {showMenu(wish.actions) ? (
               <span>
                 <WishItemMenu
                   wish={item}
@@ -199,11 +192,6 @@ export const WishItem = observer(
                       toast.success("Бронь отменена");
                     }
                   }}
-                  actions={{
-                    canEdit: userId == item.user_id,
-                    canCancelReserve: canCancelReserve && item.is_reserved,
-                    canReserve: userId != item.user_id && !item.is_reserved,
-                  }}
                 />
               </span>
             ) : null}
@@ -220,7 +208,7 @@ export const WishItem = observer(
           <div className="flex flex-col gap-1 ml-auto mr-0">
             {item.is_reserved ? (
               <Chip color="success" className="ml-auto mr-0">
-                Забронировано
+                Забронировано {item.actions.cancel_reserve ? "вами" : null}
               </Chip>
             ) : null}
             {item.cost ? (
@@ -241,3 +229,7 @@ WishItemMenu.defaultProps = {
   onReserve: () => {},
   onCancelReserve: () => {},
 };
+
+function showMenu(actions: IWishActions): boolean {
+  return actions.edit || actions.cancel_reserve || actions.reserve;
+}
