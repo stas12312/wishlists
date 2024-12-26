@@ -102,6 +102,7 @@ func (s *WishlistImpl) ListWishesForWishlist(userId int64, wishlistUuid string) 
 	}
 
 	wishes, err = s.WishRepository.ListForWishlist(wishlistUuid)
+	prepareWishes(userId, wishes)
 	return wishes, err
 
 }
@@ -195,5 +196,30 @@ func (s *WishlistImpl) CancelWishReservation(userId int64, wishUuid string) erro
 }
 
 func (s *WishlistImpl) ReservedList(userId int64) (*[]model.Wish, error) {
-	return s.WishRepository.ReservedList(userId)
+	wishes, err := s.WishRepository.ReservedList(userId)
+	if err != nil {
+		return wishes, apperror.NewError(apperror.NotFound, "Не удалось получить желания")
+	}
+	prepareWishes(userId, wishes)
+	return wishes, err
+}
+
+func prepareWishes(userId int64, wishes *[]model.Wish) {
+	for i := range *wishes {
+		wish := (*wishes)[i]
+		wish.Actions = getActionsForWish(userId, wish)
+
+		if wish.UserId == userId {
+			wish.IsReserved = false
+		}
+		(*wishes)[i] = wish
+	}
+}
+
+func getActionsForWish(userId int64, wish model.Wish) model.WishActions {
+	return model.WishActions{
+		Edit:          wish.UserId == userId,
+		Reserve:       userId > 0 && !wish.PresenterId.Valid && wish.UserId != userId,
+		CancelReserve: wish.PresenterId.Valid && wish.PresenterId.Int64 == userId,
+	}
 }
