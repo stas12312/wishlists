@@ -372,7 +372,10 @@ func TestWishlistImpl_ListWishesForWishlist(t *testing.T) {
 					Once().
 					Return(&[]model.Wish{{UserId: 1}, {UserId: 1}}, nil)
 			},
-			want: &[]model.Wish{{UserId: 1}, {UserId: 1}},
+			want: &[]model.Wish{
+				{UserId: 1, Actions: model.WishActions{Edit: true}},
+				{UserId: 1, Actions: model.WishActions{Edit: true}},
+			},
 			args: args{
 				userId:       1,
 				wishlistUuid: "0",
