@@ -9,6 +9,7 @@ import (
 	"main/middleware"
 	"main/model"
 	"main/service"
+	"strconv"
 	"time"
 )
 
@@ -19,23 +20,6 @@ func NewUserController(userService *service.UserService, config *config.Config) 
 type UserController struct {
 	service.UserService
 	*config.Config
-}
-
-func (c *UserController) Route(router fiber.Router) {
-	auth := router.Group("/auth")
-	auth.Post("/login", c.Auth)
-	auth.Post("/register", c.Register)
-	auth.Post("/refresh", c.RefreshToken)
-	auth.Post("/confirm", c.Confirm)
-	auth.Post("/restore", c.Restore)
-	auth.Post("/reset-password", c.Reset)
-	auth.Post("/check-code", c.CheckCode)
-	auth.Post("/oauth/", middleware.Protected(false), c.OAuth)
-	auth.Get("/oauth/providers", c.ListOAuthProviders)
-	user := router.Group("/user")
-	user.Use(middleware.Protected(true))
-	user.Get("/me", c.Me)
-	user.Post("/change-password", middleware.Protected(true), c.ChangePassword)
 }
 
 func (c *UserController) Me(ctx *fiber.Ctx) error {
@@ -134,7 +118,7 @@ func (c *UserController) RefreshToken(ctx *fiber.Ctx) error {
 		return ctx.JSON(newTokenPair)
 	} else {
 		return ctx.Status(fiber.StatusBadRequest).
-			JSON(model.ErrorResponse{Message: "Ошибка формирования токена", Details: err.Error()})
+			JSON(model.ErrorResponse{Message: "Ошибка формирования токена", Details: ""})
 	}
 
 }
@@ -303,6 +287,24 @@ func (c *UserController) ChangePassword(ctx *fiber.Ctx) error {
 
 }
 
+func (c *UserController) GetById(ctx *fiber.Ctx) error {
+
+	userId, err := strconv.ParseInt(ctx.Params("id"), 10, 64)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Некорректный идентификатор пользователя", Details: err.Error()})
+	}
+
+	user, err := c.UserService.GetById(ctx.UserContext(), userId)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Не удалось получить пользователя", Details: err.Error()})
+	}
+	user.Email = ""
+
+	return ctx.JSON(user)
+}
+
 func makeTokenPair(id int64, email string, jwtConfig *config.JWTConfig) model.TokenPariResponse {
 	accessToken := makeToken(id, email, jwtConfig.AccessSecretKey, jwtConfig.AccessExpireTime)
 	refreshToken := makeToken(id, email, jwtConfig.RefreshSecretKey, jwtConfig.RefreshExpireTime)
@@ -327,4 +329,23 @@ func GetUserIdFromCtx(ctx *fiber.Ctx) int64 {
 		return val
 	}
 	return 0
+}
+
+func (c *UserController) Route(router fiber.Router) {
+	auth := router.Group("/auth")
+	auth.Post("/login", c.Auth)
+	auth.Post("/register", c.Register)
+	auth.Post("/refresh", c.RefreshToken)
+	auth.Post("/confirm", c.Confirm)
+	auth.Post("/restore", c.Restore)
+	auth.Post("/reset-password", c.Reset)
+	auth.Post("/check-code", c.CheckCode)
+	auth.Post("/oauth/", middleware.Protected(false), c.OAuth)
+	auth.Get("/oauth/providers", c.ListOAuthProviders)
+
+	user := router.Group("/user")
+	user.Use(middleware.Protected(true))
+	user.Get("/me", c.Me)
+	user.Post("/change-password", middleware.Protected(true), c.ChangePassword)
+	user.Get("/:id", c.GetById)
 }
