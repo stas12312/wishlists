@@ -27,7 +27,7 @@ func (r *WishlistRepositoryPostgres) Create(wishlist *model.Wishlist) (*model.Wi
 	return createdWishlist, err
 }
 
-func (r *WishlistRepositoryPostgres) ListByUserId(userId int64, filter model.WishlistFilter) ([]model.Wishlist, error) {
+func (r *WishlistRepositoryPostgres) List(userId int64, filter model.WishlistFilter) ([]model.Wishlist, error) {
 	q := `
 		SELECT 
 		    *,
@@ -40,13 +40,22 @@ func (r *WishlistRepositoryPostgres) ListByUserId(userId int64, filter model.Wis
 			    ) as wishes_count
 		FROM wishlists
 		WHERE 
-		    user_id = $1
-			AND is_active = $2
+		    user_id = $3
+			AND 
+		    	CASE 
+		    	    WHEN user_id = $1 
+		    	        THEN is_active = $2
+		    	        ELSE is_active = True
+		    	END
+			AND (
+			    visible = 1
+			    OR user_id = $1
+			) 
 		ORDER BY 
 		    created_at DESC 
 `
 	wishlists := make([]model.Wishlist, 0)
-	err := r.Select(&wishlists, q, userId, filter.IsActive)
+	err := r.Select(&wishlists, q, userId, filter.IsActive, filter.UserId)
 	return wishlists, err
 }
 

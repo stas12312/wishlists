@@ -20,5 +20,6 @@ type Wishlist struct {
 }
 
 type WishlistFilter struct {
-	IsActive bool
+	IsActive bool  `query:"is_active"`
+	UserId   int64 `query:"user_id"`
 }
