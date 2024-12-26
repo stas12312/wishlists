@@ -141,15 +141,7 @@ export function WishItemMenu({
 }
 
 export const WishItem = observer(
-  ({
-    wish,
-    onDelete,
-    canCancelReserve = false,
-  }: {
-    wish: IWish;
-    onDelete: { (wish: IWish): void };
-    canCancelReserve?: boolean;
-  }) => {
+  ({ wish, onDelete }: { wish: IWish; onDelete: { (wish: IWish): void } }) => {
     const [item, setItem] = useState<IWish>(wish);
 
     return (
