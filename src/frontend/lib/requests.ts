@@ -257,3 +257,11 @@ export async function getUserByUsername(username: string): Promise<IUser> {
   console.log(response.data)
   return response.data
 }
+
+export async function updateUser(user: IUser): Promise<IUser | IError>{
+  const response = await axiosInstance.post("user", {
+    ...user
+  })
+  return response.data
+
+}
