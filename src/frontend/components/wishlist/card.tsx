@@ -22,6 +22,7 @@ import { VisibleStatus } from "../visibleIcon";
 
 import WishlistSaveModal from "./saveModal";
 
+import { getLabelForCount } from "@/lib/label";
 import { IWishlist } from "@/lib/models";
 import { deleteWishlist, restoreWishlist } from "@/lib/requests";
 import ConfirmationModal from "../confirmation";
@@ -46,7 +47,7 @@ export function WishlistItem({
   return (
     <Card
       isPressable={wishlist.is_active}
-      className="w-full h-32 flex-col md:hover:scale-[1.03]"
+      className="w-full h-40 flex-col md:hover:scale-[1.03]"
       onPress={() => router.push(`/wishlists/${cardWishlist.uuid}`)}
     >
       <CardHeader className="flex-col items-start">
@@ -77,11 +78,21 @@ export function WishlistItem({
       </CardHeader>
       <CardBody className="justify-end">
         <div className="flow-root">
-          {cardWishlist.date ? (
-            <Chip className="text-default-500 float-right" size="sm">
-              {new Date(cardWishlist.date).toLocaleDateString()}
+          <span className=" float-right flex flex-col gap-1">
+            <Chip className="mr-0 ml-auto" color="primary">
+              {cardWishlist.wishes_count > 0 ? wishlist.wishes_count : "Нет"}{" "}
+              {getLabelForCount(cardWishlist.wishes_count, [
+                "желание",
+                "желания",
+                "желаний",
+              ])}
             </Chip>
-          ) : null}
+            {cardWishlist.date ? (
+              <Chip className="text-default-500 mr-0 ml-auto">
+                {new Date(cardWishlist.date).toLocaleDateString()}
+              </Chip>
+            ) : null}
+          </span>
         </div>
       </CardBody>
     </Card>
