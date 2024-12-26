@@ -34,8 +34,10 @@ func (r *WishlistRepositoryPostgres) ListByUserId(userId int64, filter model.Wis
 			(
 			    SELECT COUNT(*)
 			    FROM wishes
-			    WHERE wishes.wishlist_uuid = wishlists.wishlist_uuid 
-			) as wishes_count
+			    WHERE 
+			        wishes.wishlist_uuid = wishlists.wishlist_uuid 
+					AND wishes.is_active IS TRUE
+			    ) as wishes_count
 		FROM wishlists
 		WHERE 
 		    user_id = $1
