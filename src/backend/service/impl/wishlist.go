@@ -154,7 +154,12 @@ func (s *WishlistImpl) UpdateWish(userId int64, wish *model.Wish) (*model.Wish, 
 		return nil, errors.New("user can't update wish")
 	}
 
-	return s.WishRepository.Update(wish)
+	updatedWish, err := s.WishRepository.Update(wish)
+	if err != nil {
+		return nil, apperror.NewError(apperror.WrongRequest, "Не удалось обновить желание")
+	}
+	preparedWish := prepareWish(userId, *updatedWish)
+	return &preparedWish, nil
 }
 
 func (s *WishlistImpl) GetWish(userId int64, wishUuid string) (*model.Wish, error) {
@@ -163,7 +168,8 @@ func (s *WishlistImpl) GetWish(userId int64, wishUuid string) (*model.Wish, erro
 	if err != nil || !s.UserCanViewWishlistByUuid(userId, existWish.WishlistUuid) {
 		return nil, errors.New("user can't view wish")
 	}
-	return existWish, nil
+	preparedWish := prepareWish(userId, *existWish)
+	return &preparedWish, nil
 
 }
 
@@ -204,22 +210,25 @@ func (s *WishlistImpl) ReservedList(userId int64) (*[]model.Wish, error) {
 	return wishes, err
 }
 
-func prepareWishes(userId int64, wishes *[]model.Wish) {
-	for i := range *wishes {
-		wish := (*wishes)[i]
-		wish.Actions = getActionsForWish(userId, wish)
-
-		if wish.UserId == userId {
-			wish.IsReserved = false
-		}
-		(*wishes)[i] = wish
-	}
-}
-
 func getActionsForWish(userId int64, wish model.Wish) model.WishActions {
 	return model.WishActions{
 		Edit:          wish.UserId == userId,
 		Reserve:       userId > 0 && !wish.PresenterId.Valid && wish.UserId != userId,
 		CancelReserve: wish.PresenterId.Valid && wish.PresenterId.Int64 == userId,
+	}
+}
+
+func prepareWish(userId int64, wish model.Wish) model.Wish {
+	wish.Actions = getActionsForWish(userId, wish)
+
+	if wish.UserId == userId {
+		wish.IsReserved = false
+	}
+	return wish
+}
+
+func prepareWishes(userId int64, wishes *[]model.Wish) {
+	for i := range *wishes {
+		(*wishes)[i] = prepareWish(userId, (*wishes)[i])
 	}
 }
