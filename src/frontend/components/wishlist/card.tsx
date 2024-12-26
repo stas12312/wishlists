@@ -105,7 +105,7 @@ export function WishlistItem({
 
 export function WishlistsSkeletonItem() {
   return (
-    <Card className="space-y-5 p-4 h-32" radius="lg">
+    <Card className="space-y-5 p-4 h-40" radius="lg">
       <div className="space-y-3">
         <Skeleton className="w-3/5 rounded-lg">
           <div className="h-3 w-3/5 rounded-lg bg-default-200" />
