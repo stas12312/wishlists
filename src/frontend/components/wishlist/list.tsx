@@ -3,7 +3,7 @@
 import { Button } from "@nextui-org/button";
 import { Divider } from "@nextui-org/divider";
 import { useDisclosure } from "@nextui-org/modal";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { WishlistItem, WishlistsSkeletonItem } from "./card";
 import WishlistSaveModal from "./saveModal";
@@ -22,11 +22,9 @@ export interface IWishlistFilter {
   userId: number;
 }
 
-export const Wishlists = observer(() => {
+export const Wishlists = observer(({ edit = true }: { edit?: boolean }) => {
   const [items, setItems] = useState<IWishlist[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {}, []);
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [filter, setFilter] = useState<IWishlistFilter>({
