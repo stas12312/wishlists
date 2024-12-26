@@ -23,6 +23,7 @@ export interface IWish {
   is_active?: boolean;
   user_id?: number;
   is_reserved: boolean;
+  actions: IWishActions;
 }
 
 export interface IUser {
@@ -60,8 +61,8 @@ export interface IOAuthProvider {
   logo: string;
 }
 
-export interface WishActions {
-  canEdit: boolean
-  canReserve: boolean
-  canCancelReserve: boolean
+export interface IWishActions {
+  edit: boolean
+  reserve: boolean
+  cancel_reserve: boolean
 }
