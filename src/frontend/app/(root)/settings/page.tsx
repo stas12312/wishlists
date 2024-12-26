@@ -24,7 +24,7 @@ const Content = observer(() => {
         <p className="text-2xl w-full">Настройки</p>
         <Divider />
         <p className="text-xl">Профиль</p>
-        <div className="flex flex-col gap-1 rounded-xl box-border shadow-medium p-4 m-1">
+        <div className="flex flex-col gap-1 rounded-xl bg-content1 box-border shadow-medium p-4 m-1">
           <p className="">Ссылка на профиль</p>
           <div className="flex gap-2">
             <Input
