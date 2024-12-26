@@ -12,6 +12,7 @@ type UserService interface {
 	Register(ctx context.Context, email, password, name string) (*model.User, *model.Code, error)
 	Login(ctx context.Context, email, password string) (*model.User, error)
 	GetById(ctx context.Context, id int64) (*model.User, error)
+	GetByUsername(ctx context.Context, username string) (*model.User, error)
 	GetByEmail(ctx context.Context, email string) (*model.User, error)
 	Confirm(ctx context.Context, code *model.Code) (*model.User, error)
 	OAuthAuth(ctx context.Context, userId int64, oAuthType, code string) (*model.User, error)

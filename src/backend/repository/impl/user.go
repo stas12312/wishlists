@@ -27,6 +27,20 @@ WHERE
 	return user, err
 }
 
+func (r *UserRepositoryPostgres) GetByUsername(username string) (*model.User, error) {
+	query := `
+		SELECT *
+		FROM users
+		WHERE 
+			username = $1
+`
+	user := &model.User{}
+
+	err := r.Get(user, query, username)
+
+	return user, err
+}
+
 func (r *UserRepositoryPostgres) GetById(id int64) (*model.User, error) {
 	query := `
 SELECT *
