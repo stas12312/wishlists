@@ -305,6 +305,29 @@ func (c *UserController) GetById(ctx *fiber.Ctx) error {
 	return ctx.JSON(user)
 }
 
+func (c *UserController) UpdateProfile(ctx *fiber.Ctx) error {
+	userId := GetUserIdFromCtx(ctx)
+	user := &model.UserForUpdate{}
+
+	if err := ctx.BodyParser(user); err != nil {
+		return ctx.Status(fiber.StatusUnprocessableEntity).JSON(model.ErrorResponse{Message: "Некорректные данные"})
+	}
+	user.Id = userId
+
+	if errs := NewValidator().Validate(user); len(errs) > 0 {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ValidateErrorResponse{Message: "Некорректно заполнены поля", Fields: errs})
+	}
+
+	updatedUser, err := c.UserService.Update(ctx.UserContext(), user)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Не удалось обновить пользователя", Details: err.Error()})
+	}
+
+	return ctx.JSON(updatedUser)
+}
+
 func makeTokenPair(id int64, email string, jwtConfig *config.JWTConfig) model.TokenPariResponse {
 	accessToken := makeToken(id, email, jwtConfig.AccessSecretKey, jwtConfig.AccessExpireTime)
 	refreshToken := makeToken(id, email, jwtConfig.RefreshSecretKey, jwtConfig.RefreshExpireTime)
@@ -344,8 +367,8 @@ func (c *UserController) Route(router fiber.Router) {
 	auth.Get("/oauth/providers", c.ListOAuthProviders)
 
 	user := router.Group("/user")
-	user.Use(middleware.Protected(true))
-	user.Get("/me", c.Me)
+	user.Post("/", middleware.Protected(true), c.UpdateProfile)
+	user.Get("/me", middleware.Protected(true), c.Me)
 	user.Post("/change-password", middleware.Protected(true), c.ChangePassword)
 	user.Get("/:id", c.GetById)
 }
