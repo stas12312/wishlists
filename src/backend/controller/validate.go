@@ -9,7 +9,7 @@ import (
 )
 
 var passwordRe = regexp.MustCompile(`^[0-9A-Za-z~!?@#$%^&*_\-+()\[\]{}></|]+$`)
-var loginRe = regexp.MustCompile(`^[0-9A-Za-z.-_]`)
+var loginRe = regexp.MustCompile(`^[0-9A-Za-z.\-_]+$`)
 
 type XValidator struct {
 	validator *validator.Validate
