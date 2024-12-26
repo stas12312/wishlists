@@ -3,7 +3,7 @@
 import { Button } from "@nextui-org/button";
 import { Divider } from "@nextui-org/divider";
 import { useDisclosure } from "@nextui-org/modal";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 
 import { WishlistItem, WishlistsSkeletonItem } from "./card";
 import WishlistSaveModal from "./saveModal";
@@ -14,23 +14,32 @@ import toast from "react-hot-toast";
 import AddCardButton from "../AddCardButton";
 
 import WishlistFilter from "../filter";
+import { observer } from "mobx-react-lite";
+import userStore from "@/store/userStore";
 
 export interface IWishlistFilter {
   showArchive: boolean;
+  userId: number;
 }
 
-export function Wishlists() {
+export const Wishlists = observer(() => {
   const [items, setItems] = useState<IWishlist[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {}, []);
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [filter, setFilter] = useState<IWishlistFilter>({
     showArchive: false,
+    userId: userStore.user.id,
   });
 
   useEffect(() => {
     setIsLoading(true);
+
     async function fetchWishlists() {
+      await userStore.fetchMe();
+      filter.userId = userStore.user.id;
       const res = await getWishlists(filter);
 
       setItems(res);
@@ -111,4 +120,4 @@ export function Wishlists() {
       )}
     </div>
   );
-}
+});

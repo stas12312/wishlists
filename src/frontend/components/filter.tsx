@@ -7,7 +7,6 @@ const WishlistFilter = ({
   filter: IWishlistFilter;
   setFilter: { (filter: IWishlistFilter): void };
 }) => {
-  console.log(filter);
   return (
     <>
       <Select

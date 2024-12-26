@@ -42,7 +42,8 @@ axiosInstance.interceptors.response.use(
 export async function getWishlists(filter?: IWishlistFilter | null): Promise<IWishlist[]> {
   const response = await axiosInstance.get("/wishlists", {
     params: {
-      is_active: !filter?.showArchive
+      is_active: !filter?.showArchive,
+      user_id: filter?.userId,
     }
   });
 
