@@ -9,7 +9,11 @@ export default function Menu() {
   const router = useRouter();
 
   return (
-    <Listbox className="text-center" disabledKeys={["friends", "settings"]}>
+    <Listbox
+      className="text-center"
+      disabledKeys={["friends"]}
+      aria-label="main menu"
+    >
       <ListboxSection showDivider>
         <ListboxItem key="main" href="/">
           Мои вишлисты
