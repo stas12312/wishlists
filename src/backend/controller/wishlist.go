@@ -44,11 +44,16 @@ func (c *WishlistController) Create(ctx *fiber.Ctx) error {
 
 }
 
-func (c *WishlistController) GetUserWishlists(ctx *fiber.Ctx) error {
+func (c *WishlistController) ListWishlists(ctx *fiber.Ctx) error {
 	userId := GetUserIdFromCtx(ctx)
-	filter := model.WishlistFilter{IsActive: ctx.QueryBool("is_active", true)}
 
-	wishlists, err := c.ListForUser(userId, filter)
+	filter := &model.WishlistFilter{}
+	err := ctx.QueryParser(filter)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Некорректные фильтры", Details: err.Error()})
+	}
+	wishlists, err := c.ListForUser(userId, *filter)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).
 			JSON(model.ErrorResponse{Message: "Ошибка при получении списка", Details: err.Error()})
@@ -248,7 +253,7 @@ func (c *WishlistController) Route(router fiber.Router) {
 	wishlistGroup := router.Group("/wishlists")
 
 	wishlistGroup.Post("/", middleware.Protected(true), c.Create)
-	wishlistGroup.Get("/", middleware.Protected(true), c.GetUserWishlists)
+	wishlistGroup.Get("/", middleware.Protected(false), c.ListWishlists)
 	wishlistGroup.Get("/:uuid", middleware.Protected(false), c.GetWishlist)
 	wishlistGroup.Post("/:uuid", middleware.Protected(true), c.Update)
 	wishlistGroup.Get("/:uuid/wishes", middleware.Protected(false), c.ListWishesForWishlistHandler)
