@@ -9,7 +9,6 @@ import (
 	"main/middleware"
 	"main/model"
 	"main/service"
-	"strconv"
 	"time"
 )
 
@@ -287,15 +286,11 @@ func (c *UserController) ChangePassword(ctx *fiber.Ctx) error {
 
 }
 
-func (c *UserController) GetById(ctx *fiber.Ctx) error {
+func (c *UserController) GetByUsername(ctx *fiber.Ctx) error {
 
-	userId, err := strconv.ParseInt(ctx.Params("id"), 10, 64)
-	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).
-			JSON(model.ErrorResponse{Message: "Некорректный идентификатор пользователя", Details: err.Error()})
-	}
+	username := ctx.Params("username")
 
-	user, err := c.UserService.GetById(ctx.UserContext(), userId)
+	user, err := c.UserService.GetByUsername(ctx.UserContext(), username)
 	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).
 			JSON(model.ErrorResponse{Message: "Не удалось получить пользователя", Details: err.Error()})
@@ -370,5 +365,5 @@ func (c *UserController) Route(router fiber.Router) {
 	user.Post("/", middleware.Protected(true), c.UpdateProfile)
 	user.Get("/me", middleware.Protected(true), c.Me)
 	user.Post("/change-password", middleware.Protected(true), c.ChangePassword)
-	user.Get("/:id", c.GetById)
+	user.Get("/:username", c.GetByUsername)
 }

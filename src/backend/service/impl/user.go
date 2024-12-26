@@ -126,6 +126,17 @@ func (u *userServiceImpl) GetByEmail(ctx context.Context, email string) (*model.
 	return resultUser, err
 }
 
+func (u *userServiceImpl) GetByUsername(ctx context.Context, username string) (*model.User, error) {
+	resultUser := &model.User{}
+
+	err := u.UnitOfWork.Do(ctx, func(ctx context.Context, store uof.UnitOfWorkStore) error {
+		user, err := store.UserRepository().GetByUsername(username)
+		resultUser = user
+		return err
+	})
+	return resultUser, err
+}
+
 func (u *userServiceImpl) Confirm(ctx context.Context, code *model.Code) (*model.User, error) {
 
 	resultUser := &model.User{}

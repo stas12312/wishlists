@@ -134,6 +134,32 @@ func (_m *UserService) GetById(ctx context.Context, id int64) (*model.User, erro
 	return r0, r1
 }
 
+// GetByUsername provides a mock function with given fields: ctx, username
+func (_m *UserService) GetByUsername(ctx context.Context, username string) (*model.User, error) {
+	ret := _m.Called(ctx, username)
+
+	var r0 *model.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*model.User, error)); ok {
+		return rf(ctx, username)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string) *model.User); ok {
+		r0 = rf(ctx, username)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*model.User)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, username)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // ListOAuthProviders provides a mock function with given fields: ctx
 func (_m *UserService) ListOAuthProviders(ctx context.Context) []oauth.Provider {
 	ret := _m.Called(ctx)
