@@ -296,7 +296,7 @@ func TestWishlistImpl_GetForUserByUUID(t *testing.T) {
 	}
 }
 
-func TestWishlistImpl_ListForUser(t *testing.T) {
+func TestWishlistImpl_List(t *testing.T) {
 
 	type args struct {
 		userId int64
@@ -318,7 +318,7 @@ func TestWishlistImpl_ListForUser(t *testing.T) {
 			want: []model.Wishlist{{UserId: 1, Name: "First"}, {UserId: 2, Name: "Second"}},
 			mocksBehaviour: func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository) {
 				wlMock.
-					On("ListByUserId", int64(1), model.WishlistFilter{IsActive: true}).
+					On("List", int64(1), model.WishlistFilter{IsActive: true}).
 					Once().
 					Return([]model.Wishlist{{UserId: 1, Name: "First"}, {UserId: 2, Name: "Second"}}, nil)
 			},

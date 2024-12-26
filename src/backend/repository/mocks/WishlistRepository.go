@@ -79,8 +79,8 @@ func (_m *WishlistRepository) GetByUUID(uuid string) (*model.Wishlist, error) {
 	return r0, r1
 }
 
-// ListByUserId provides a mock function with given fields: userId, filter
-func (_m *WishlistRepository) ListByUserId(userId int64, filter model.WishlistFilter) ([]model.Wishlist, error) {
+// List provides a mock function with given fields: userId, filter
+func (_m *WishlistRepository) List(userId int64, filter model.WishlistFilter) ([]model.Wishlist, error) {
 	ret := _m.Called(userId, filter)
 
 	var r0 []model.Wishlist
