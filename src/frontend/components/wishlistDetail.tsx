@@ -26,6 +26,7 @@ import { Spinner } from "@nextui-org/spinner";
 import { parseDate } from "@internationalized/date";
 import { Chip } from "@nextui-org/chip";
 import { Badge } from "@nextui-org/badge";
+import { PageSpinner } from "./pageSpinner";
 
 const WishlistDetail = observer(
   ({
@@ -121,11 +122,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex my-auto justify-center mt-[40vh]">
-        <Spinner></Spinner>
-      </div>
-    );
+    return <PageSpinner />;
   }
 
   const components = items.map((wish: IWish) => (

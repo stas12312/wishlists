@@ -249,3 +249,9 @@ export async function getReservedWishes(): Promise<IWish[]> {
   const response = await axiosInstance.get("wishes/reserved")
   return response.data.data
 }
+
+export async function getUserById(userId: number): Promise<IUser> {
+  const response = await axiosInstance.get(`user/${userId}`)
+  console.log(response.data)
+  return response.data
+}

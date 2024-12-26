@@ -31,10 +31,12 @@ export function WishlistItem({
   wishlist,
   onDelete,
   onRestore,
+  edit = true,
 }: {
   wishlist: IWishlist;
   onDelete: { (wishlist: IWishlist): void };
   onRestore: { (wishlist: IWishlist): void };
+  edit?: boolean;
 }) {
   const router = useRouter();
 
@@ -66,13 +68,15 @@ export function WishlistItem({
             </p>
           </div>
           <div>
-            <WishlistItemMenu
-              isEditable={true}
-              wishlist={cardWishlist}
-              onDelete={onDelete}
-              onUpdate={onUpdate}
-              onRestore={onRestore}
-            />
+            {edit ? (
+              <WishlistItemMenu
+                isEditable={true}
+                wishlist={cardWishlist}
+                onDelete={onDelete}
+                onUpdate={onUpdate}
+                onRestore={onRestore}
+              />
+            ) : null}
           </div>
         </div>
       </CardHeader>
