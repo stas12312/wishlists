@@ -15,6 +15,10 @@ class UserStore {
       this.user = yield getMe();
     }
   });
+
+  reloadMe = flow(function * (this: UserStore) {
+    this.user = yield getMe()
+  })
 }
 
 const userStore = new UserStore();
