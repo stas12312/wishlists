@@ -15,16 +15,14 @@ import toast from "react-hot-toast";
 
 export const UserItem = observer(() => {
   const user = userStore.user;
-
+  const profileLink = `${window.location.origin}/users/${user.username}`;
   useEffect(() => {
     userStore.fetchMe();
   }, []);
 
   function onHandleAction(key: Key) {
     if (key == "share") {
-      navigator.clipboard.writeText(
-        `${window.location.origin}/users/${user.id}`
-      );
+      navigator.clipboard.writeText(profileLink);
       toast.success("Ссылка на профиль скопирована");
     }
   }

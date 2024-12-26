@@ -4,7 +4,7 @@ import { IUser } from "@/lib/models";
 import { getMe } from "@/lib/requests";
 
 class UserStore {
-  user: IUser = { id: 0, name: "", email: "" };
+  user: IUser = { id: 0, name: "", email: "", username: "", image: ""};
 
   constructor() {
     makeAutoObservable(this);
