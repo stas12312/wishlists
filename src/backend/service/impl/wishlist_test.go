@@ -531,7 +531,7 @@ func TestWishlistImpl_UpdateWish(t *testing.T) {
 					Once().
 					Return(wish, nil)
 			},
-			want: &model.Wish{UserId: 1, Name: "Wish", Uuid: "0"},
+			want: &model.Wish{UserId: 1, Name: "Wish", Uuid: "0", Actions: model.WishActions{Edit: true}},
 		},
 		{
 			name: "User can't edit wish",
