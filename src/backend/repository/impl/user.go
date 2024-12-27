@@ -59,8 +59,8 @@ func (r *UserRepositoryPostgres) Create(
 ) (*model.User, error) {
 
 	query := `
-INSERT INTO users (email, password, name, is_active) 
-VALUES ($1, $2, $3, $4)
+INSERT INTO users (email, password, name, is_active, image) 
+VALUES ($1, $2, $3, $4, $5)
 ON CONFLICT (email)
     DO UPDATE 
 	SET 
