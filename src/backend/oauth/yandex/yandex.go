@@ -23,6 +23,7 @@ type User struct {
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 	Email     string `json:"default_email"`
+	AvatarId  string `json:"default_avatar_id"`
 }
 
 type Token struct {
@@ -78,6 +79,9 @@ func (c Client) GetUserInfo(token string) (*oauth.User, error) {
 	user.Id = yandexUser.Id
 	user.Name = fmt.Sprintf("%s %s", yandexUser.FirstName, yandexUser.LastName)
 	user.Email = yandexUser.Email
+	if yandexUser.AvatarId != "" {
+		user.Image = fmt.Sprintf("https://avatars.yandex.net/get-yapic/%s/islands-200", yandexUser.AvatarId)
+	}
 
 	return user, nil
 }
@@ -89,14 +93,13 @@ func (c Client) GetTokenByCode(code string) (string, error) {
 
 	client := http.Client{}
 	data := url.Values{"grant_type": {"authorization_code"}, "code": {code}}
-
 	r, _ := http.NewRequest(http.MethodPost, TokenUrl, strings.NewReader(data.Encode()))
 	r.Header.Add("Authorization", fmt.Sprintf("Basic %s", authHeader))
 	r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	r.Header.Add("Content-Length", strconv.Itoa(len(data.Encode())))
 	response, err := client.Do(r)
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 	if response.StatusCode == http.StatusBadRequest {
 		buf := new(bytes.Buffer)

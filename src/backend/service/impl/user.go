@@ -57,7 +57,7 @@ func (u *userServiceImpl) Register(ctx context.Context, email, password, name st
 			)
 		}
 
-		user, err = store.UserRepository().Create(email, hash, name, false)
+		user, err = store.UserRepository().Create(email, hash, name, false, "")
 		if err != nil {
 			return err
 		}
@@ -343,7 +343,9 @@ func (u *userServiceImpl) OAuthAuth(
 		if existsUser.Id != 0 {
 			oAuthUser.UserId = existsUser.Id
 		} else {
-			user, err = store.UserRepository().Create(userFromOAuth.Email, "", userFromOAuth.Name, true)
+			user, err = store.UserRepository().Create(
+				userFromOAuth.Email, "", userFromOAuth.Name, true, userFromOAuth.Image,
+			)
 			if err != nil {
 				return apperror.NewError(apperror.OAuthError, "Ошибка при авторизации через OAuth")
 			}
