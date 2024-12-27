@@ -15,7 +15,10 @@ import toast from "react-hot-toast";
 
 export const UserItem = observer(() => {
   const user = userStore.user;
-  const profileLink = `${window.location.origin}/users/${user.username}`;
+  let profileLink = "";
+  if (user.username) {
+    profileLink = `${window.location.origin}/users/${user.username}`;
+  }
   useEffect(() => {
     userStore.fetchMe();
   }, []);

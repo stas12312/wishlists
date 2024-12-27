@@ -73,7 +73,6 @@ const CodeInput = ({
   const inputs = [];
   for (let i = 0; i < digitsCount; i++) {
     inputsRefs.push(useRef(null));
-    console.log(currentIndex);
     inputs.push(
       <span key={i}>
         <Input
