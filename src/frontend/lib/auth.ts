@@ -24,7 +24,7 @@ export async function logout() {
 
   cookie.delete("access_token");
   cookie.delete("refresh_token");
-  redirect("/login");
+  redirect("/");
 }
 
 export async function setTokens(tokens: ITokens) {

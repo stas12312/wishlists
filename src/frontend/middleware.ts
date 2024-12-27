@@ -6,13 +6,14 @@ import { refreshTokenIfNeed } from "./lib/auth";
 
 export default async function middleware(request: NextRequest) {
   const cookieStore = await cookies();
-
   if (
     (
       !cookieStore.get("access_token")?.value ||
     !cookieStore.get("refresh_token")?.value
   )
-    && request.url.indexOf("wishlists") == -1 && request.url.indexOf("users") == -1
+    && !request.nextUrl.pathname.startsWith("/wishlists")
+    && !request.nextUrl.pathname.startsWith("/users")
+    && (request.nextUrl.pathname !== "/")
   ) {
     cookieStore.delete("access_token");
     cookieStore.delete("refresh_token");
