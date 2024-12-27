@@ -12,7 +12,7 @@ export default async function middleware(request: NextRequest) {
       !cookieStore.get("access_token")?.value ||
     !cookieStore.get("refresh_token")?.value
   )
-    && request.url.indexOf("wishlists") == -1
+    && request.url.indexOf("wishlists") == -1 && request.url.indexOf("users") == -1
   ) {
     cookieStore.delete("access_token");
     cookieStore.delete("refresh_token");
@@ -30,6 +30,6 @@ export default async function middleware(request: NextRequest) {
 // See "Matching Paths" below to learn more
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|auth|users).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|auth).*)",
   ],
 };

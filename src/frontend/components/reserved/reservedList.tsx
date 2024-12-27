@@ -12,7 +12,6 @@ export const ReservedWishes = observer(() => {
   useEffect(() => {
     async function fetchData() {
       const data = await getReservedWishes();
-      console.log(data);
       setWishes(data);
     }
     fetchData();

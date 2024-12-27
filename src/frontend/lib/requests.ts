@@ -32,7 +32,6 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async (error) => {
-    console.log(error.response.status)
     if (error.response.status == 403) {
     } else if (![400, 404, 500].includes(error.response.status)) {
       return Promise.reject(error);
@@ -206,7 +205,6 @@ export async function uploadFile(file : File): Promise<string> {
   const form = new FormData();
   form.append("file", file)
   const response = await axiosInstance.post("/images/upload", form)
-  console.log(response.data)
   return response.data.image_url ?? ""
 }
 
@@ -254,7 +252,6 @@ export async function getReservedWishes(): Promise<IWish[]> {
 
 export async function getUserByUsername(username: string): Promise<IUser> {
   const response = await axiosInstance.get(`user/${username}`)
-  console.log(response.data)
   return response.data
 }
 

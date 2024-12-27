@@ -1,13 +1,12 @@
 "use client";
 import { IUser, IWishlist } from "@/lib/models";
 import { getUserByUsername, getWishlists } from "@/lib/requests";
+import { Divider } from "@nextui-org/divider";
 import { User } from "@nextui-org/user";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
-import { WishlistItem } from "./wishlist/card";
-import { Divider } from "@nextui-org/divider";
 import { PageSpinner } from "./pageSpinner";
-import userStore from "@/store/userStore";
+import { WishlistItem } from "./wishlist/card";
 
 const UserView = observer(({ username }: { username: string }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -43,7 +42,6 @@ const UserView = observer(({ username }: { username: string }) => {
     </span>
   ));
 
-  console.log(user.name);
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
