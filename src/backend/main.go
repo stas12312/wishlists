@@ -55,7 +55,7 @@ func main() {
 
 	wishlistRepository := repository.NewWishlistRepository(db)
 	wishRepository := repository.NewWishRepositoryImpl(db)
-	wishlistService := service.NewWishlistService(wishlistRepository, wishRepository)
+	wishlistService := service.NewWishlistService(wishlistRepository, wishRepository, userService)
 	wishlistController := controller.NewWishlistController(&wishlistService, appConfig)
 
 	imageRepository := repository.NewS3ImageRepository(&appConfig.S3)

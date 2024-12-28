@@ -1,6 +1,7 @@
 package impl
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	apperror "main/error"
@@ -12,13 +13,15 @@ import (
 func NewWishlistService(
 	wlRepository repository.WishlistRepository,
 	wRepository repository.WishRepository,
+	uService service.UserService,
 ) service.WishlistService {
-	return &WishlistImpl{wlRepository, wRepository}
+	return &WishlistImpl{wlRepository, wRepository, uService}
 }
 
 type WishlistImpl struct {
 	repository.WishlistRepository
 	repository.WishRepository
+	service.UserService
 }
 
 func (s *WishlistImpl) Create(wishlist *model.Wishlist) (*model.Wishlist, error) {
@@ -35,6 +38,9 @@ func (s *WishlistImpl) GetForUserByUUID(userId int64, uuid string) (*model.Wishl
 	if err != nil {
 		return nil, err
 	}
+
+	wishlist.User, _ = s.GetById(context.Background(), wishlist.UserId)
+	wishlist.User.Email = ""
 
 	if wishlist.Visible == model.Public {
 		return wishlist, nil
