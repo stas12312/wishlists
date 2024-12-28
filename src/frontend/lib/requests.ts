@@ -262,3 +262,11 @@ export async function updateUser(user: IUser): Promise<IUser | IError>{
   return response.data
 
 }
+
+export async function makeWishFull(wishUUID: string) {
+  await axiosInstance.post(`/wishes/${wishUUID}/make_full`)
+}
+
+export async function cancelWishFull(wishUUID: string) {
+  await axiosInstance.post(`/wishes/${wishUUID}/cancel_full`)
+}
