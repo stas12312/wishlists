@@ -1,8 +1,10 @@
 package impl
 
 import (
+	"github.com/stretchr/testify/mock"
 	"main/model"
 	"main/repository/mocks"
+	mocks2 "main/service/mocks"
 	"reflect"
 	"testing"
 )
@@ -12,10 +14,10 @@ func TestNewWishlistService(t *testing.T) {
 	t.Run("Create service", func(t *testing.T) {
 		wlRepository := mocks.NewWishlistRepository(t)
 		wRepository := mocks.NewWishRepository(t)
+		uService := &mocks2.UserService{}
+		want := NewWishlistService(wlRepository, wRepository, uService)
 
-		want := NewWishlistService(wlRepository, wRepository)
-
-		if got := NewWishlistService(wlRepository, wRepository); !reflect.DeepEqual(got, want) {
+		if got := NewWishlistService(wlRepository, wRepository, uService); !reflect.DeepEqual(got, want) {
 			t.Errorf("NewWishlistService() = %v, want %v", got, want)
 		}
 	})
@@ -226,10 +228,14 @@ func TestWishlistImpl_GetForUserByUUID(t *testing.T) {
 	}
 	tests := []struct {
 		name           string
-		mocksBehaviour func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository)
-		args           args
-		want           *model.Wishlist
-		wantErr        bool
+		mocksBehaviour func(
+			wlMock *mocks.WishlistRepository,
+			wMock *mocks.WishRepository,
+			uService *mocks2.UserService,
+		)
+		args    args
+		want    *model.Wishlist
+		wantErr bool
 	}{
 		{
 			name: "OK",
@@ -237,12 +243,20 @@ func TestWishlistImpl_GetForUserByUUID(t *testing.T) {
 				userId: 1,
 				uuid:   "0",
 			},
-			want: &model.Wishlist{Name: "2", UserId: 1},
-			mocksBehaviour: func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository) {
+			want: &model.Wishlist{Name: "2", UserId: 1, User: &model.User{Id: 1}},
+			mocksBehaviour: func(
+				wlMock *mocks.WishlistRepository,
+				wMock *mocks.WishRepository,
+				uService *mocks2.UserService,
+			) {
 				wlMock.
 					On("GetByUUID", "0").
 					Once().
 					Return(&model.Wishlist{Name: "2", UserId: 1}, nil)
+				uService.
+					On("GetById", mock.Anything, int64(1)).
+					Once().
+					Return(&model.User{Id: 1}, nil)
 			},
 		},
 		{
@@ -252,11 +266,19 @@ func TestWishlistImpl_GetForUserByUUID(t *testing.T) {
 				uuid:   "0",
 			},
 			wantErr: true,
-			mocksBehaviour: func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository) {
+			mocksBehaviour: func(
+				wlMock *mocks.WishlistRepository,
+				wMock *mocks.WishRepository,
+				uService *mocks2.UserService,
+			) {
 				wlMock.
 					On("GetByUUID", "0").
 					Once().
 					Return(&model.Wishlist{Name: "2", UserId: 1}, nil)
+				uService.
+					On("GetById", mock.Anything, int64(1)).
+					Once().
+					Return(&model.User{Id: 1}, nil)
 			},
 		},
 		{
@@ -265,12 +287,20 @@ func TestWishlistImpl_GetForUserByUUID(t *testing.T) {
 				userId: 2,
 				uuid:   "0",
 			},
-			want: &model.Wishlist{Name: "2", UserId: 1, Visible: model.Public},
-			mocksBehaviour: func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository) {
+			want: &model.Wishlist{Name: "2", UserId: 1, Visible: model.Public, User: &model.User{Id: 1}},
+			mocksBehaviour: func(
+				wlMock *mocks.WishlistRepository,
+				wMock *mocks.WishRepository,
+				uService *mocks2.UserService,
+			) {
 				wlMock.
 					On("GetByUUID", "0").
 					Once().
 					Return(&model.Wishlist{Name: "2", UserId: 1, Visible: model.Public}, nil)
+				uService.
+					On("GetById", mock.Anything, int64(1)).
+					Once().
+					Return(&model.User{Id: 1}, nil)
 			},
 		},
 	}
@@ -278,11 +308,13 @@ func TestWishlistImpl_GetForUserByUUID(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			wlRepository := mocks.NewWishlistRepository(t)
 			wRepository := mocks.NewWishRepository(t)
-			tt.mocksBehaviour(wlRepository, wRepository)
+			uService := &mocks2.UserService{}
+			tt.mocksBehaviour(wlRepository, wRepository, uService)
 
 			s := &WishlistImpl{
 				WishlistRepository: wlRepository,
 				WishRepository:     wRepository,
+				UserService:        uService,
 			}
 			got, err := s.GetForUserByUUID(tt.args.userId, tt.args.uuid)
 			if (err != nil) != tt.wantErr {
