@@ -90,9 +90,12 @@ func (s *WishlistImpl) AddWish(userId int64, wish *model.Wish) (*model.Wish, err
 	}
 
 	wish, err := s.WishRepository.Create(wish)
+	if err != nil {
+		return nil, err
+	}
 	wish.UserId = userId
-
-	return wish, err
+	preparedWish := prepareWish(userId, *wish)
+	return &preparedWish, err
 }
 
 func (s *WishlistImpl) ListWishesForWishlist(userId int64, wishlistUuid string) (*[]model.Wish, error) {
