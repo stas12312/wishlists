@@ -242,10 +242,13 @@ func (s *WishlistImpl) ReservedList(userId int64) (*[]model.Wish, error) {
 }
 
 func getActionsForWish(userId int64, wish model.Wish) model.WishActions {
+	userIsOwner := userId == wish.UserId
 	return model.WishActions{
-		Edit:          wish.UserId == userId,
+		Edit:          userIsOwner,
 		Reserve:       userId > 0 && !wish.PresenterId.Valid && wish.UserId != userId,
 		CancelReserve: wish.PresenterId.Valid && wish.PresenterId.Int64 == userId,
+		MakeFull:      userIsOwner && !wish.FulfilledAt.Valid,
+		CancelFull:    userIsOwner && wish.FulfilledAt.Valid,
 	}
 }
 

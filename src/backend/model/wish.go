@@ -22,4 +22,6 @@ type WishActions struct {
 	Edit          bool `json:"edit"`
 	Reserve       bool `json:"reserve"`
 	CancelReserve bool `json:"cancel_reserve"`
+	MakeFull      bool `json:"make_full"`
+	CancelFull    bool `json:"cancel_full"`
 }
