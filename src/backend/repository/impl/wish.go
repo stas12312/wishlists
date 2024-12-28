@@ -139,6 +139,16 @@ func (r *WishRepositoryPostgres) SetPresenter(wishUuid string, presenterId model
 	return err
 }
 
+func (r *WishRepositoryPostgres) SetFulfilledAt(wishUuid string, fulfilledAt model.NullTime) error {
+	q := `
+	UPDATE wishes SET
+	    fulfilled_at = $2
+	WHERE wish_uuid = $1
+`
+	_, err := r.Exec(q, wishUuid, fulfilledAt)
+	return err
+}
+
 func (r *WishRepositoryPostgres) ReservedList(userId int64) (*[]model.Wish, error) {
 	q := `
 	SELECT 

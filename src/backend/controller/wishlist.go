@@ -248,6 +248,26 @@ func (c *WishlistController) ReservedWishes(ctx *fiber.Ctx) error {
 	return ctx.JSON(model.Response{Data: wishes})
 }
 
+func (c *WishlistController) MakeWishFullHandler(ctx *fiber.Ctx) error {
+	userId := GetUserIdFromCtx(ctx)
+	wishUuid := ctx.Params("uuid")
+	if err := c.WishlistService.MakeWishFull(userId, wishUuid); err != nil {
+		return err
+	}
+	return ctx.JSON(model.ResponseWithMessage{Message: "Желание отмечено исполненным"})
+
+}
+
+func (c *WishlistController) MakeCancelFullHandler(ctx *fiber.Ctx) error {
+	userId := GetUserIdFromCtx(ctx)
+	wishUuid := ctx.Params("uuid")
+	if err := c.WishlistService.CancelWishFull(userId, wishUuid); err != nil {
+		return err
+	}
+	return ctx.JSON(model.ResponseWithMessage{Message: "Желание отмечено неисполненным"})
+
+}
+
 func (c *WishlistController) Route(router fiber.Router) {
 
 	wishlistGroup := router.Group("/wishlists")
@@ -270,4 +290,7 @@ func (c *WishlistController) Route(router fiber.Router) {
 	wishGroup.Post("/:uuid/restore", middleware.Protected(true), c.RestoreWishHandler)
 	wishGroup.Post("/:uuid/reserve", middleware.Protected(true), c.ReserveWishHandler)
 	wishGroup.Post("/:uuid/cancel_reserve", middleware.Protected(true), c.CancelReserveWishHandler)
+
+	wishGroup.Post("/:uuid/make_full", middleware.Protected(true), c.MakeWishFullHandler)
+	wishGroup.Post("/:uuid/cancel_full", middleware.Protected(true), c.MakeCancelFullHandler)
 }

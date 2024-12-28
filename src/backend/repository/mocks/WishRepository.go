@@ -145,6 +145,20 @@ func (_m *WishRepository) Restore(wishUuid string) error {
 	return r0
 }
 
+// SetFulfilledAt provides a mock function with given fields: wishUuid, fulfilledAt
+func (_m *WishRepository) SetFulfilledAt(wishUuid string, fulfilledAt model.NullTime) error {
+	ret := _m.Called(wishUuid, fulfilledAt)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, model.NullTime) error); ok {
+		r0 = rf(wishUuid, fulfilledAt)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // SetPresenter provides a mock function with given fields: wishUuid, presenterId
 func (_m *WishRepository) SetPresenter(wishUuid string, presenterId model.NullInt64) error {
 	ret := _m.Called(wishUuid, presenterId)

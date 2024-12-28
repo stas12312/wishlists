@@ -8,6 +8,7 @@ import (
 	"main/model"
 	"main/repository"
 	"main/service"
+	"time"
 )
 
 func NewWishlistService(
@@ -204,7 +205,31 @@ func (s *WishlistImpl) CancelWishReservation(userId int64, wishUuid string) erro
 	}
 
 	return s.WishRepository.SetPresenter(wishUuid, model.NullInt64{NullInt64: sql.NullInt64{}})
+}
 
+func (s *WishlistImpl) MakeWishFull(userId int64, wishUuid string) error {
+	existWish, err := s.WishRepository.Get(wishUuid)
+	if err != nil {
+		return err
+	}
+	if existWish.UserId != userId || existWish.FulfilledAt.Valid {
+		return apperror.NewError(apperror.WrongRequest, "Невозможно отметить желание исполненным")
+	}
+	return s.WishRepository.SetFulfilledAt(
+		wishUuid,
+		model.NullTime{NullTime: sql.NullTime{Time: time.Now().UTC(), Valid: true}},
+	)
+}
+
+func (s *WishlistImpl) CancelWishFull(userId int64, wishUuid string) error {
+	existWish, err := s.WishRepository.Get(wishUuid)
+	if err != nil {
+		return err
+	}
+	if existWish.UserId != userId || !existWish.FulfilledAt.Valid {
+		return apperror.NewError(apperror.WrongRequest, "Невозможно отметить желание исполненным")
+	}
+	return s.WishRepository.SetFulfilledAt(wishUuid, model.NullTime{})
 }
 
 func (s *WishlistImpl) ReservedList(userId int64) (*[]model.Wish, error) {
