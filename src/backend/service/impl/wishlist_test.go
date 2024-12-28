@@ -47,6 +47,10 @@ func TestWishlistImpl_AddWish(t *testing.T) {
 				WishlistUuid: "0",
 				UserId:       1,
 				Uuid:         "00000000-0000-0000-0000-000000000001",
+				Actions: model.WishActions{
+					Edit:     true,
+					MakeFull: true,
+				},
 			},
 			wantErr: false,
 			mocksBehaviour: func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository) {
@@ -405,8 +409,8 @@ func TestWishlistImpl_ListWishesForWishlist(t *testing.T) {
 					Return(&[]model.Wish{{UserId: 1}, {UserId: 1}}, nil)
 			},
 			want: &[]model.Wish{
-				{UserId: 1, Actions: model.WishActions{Edit: true}},
-				{UserId: 1, Actions: model.WishActions{Edit: true}},
+				{UserId: 1, Actions: model.WishActions{Edit: true, MakeFull: true}},
+				{UserId: 1, Actions: model.WishActions{Edit: true, MakeFull: true}},
 			},
 			args: args{
 				userId:       1,
@@ -563,7 +567,12 @@ func TestWishlistImpl_UpdateWish(t *testing.T) {
 					Once().
 					Return(wish, nil)
 			},
-			want: &model.Wish{UserId: 1, Name: "Wish", Uuid: "0", Actions: model.WishActions{Edit: true}},
+			want: &model.Wish{
+				UserId:  1,
+				Name:    "Wish",
+				Uuid:    "0",
+				Actions: model.WishActions{Edit: true, MakeFull: true},
+			},
 		},
 		{
 			name: "User can't edit wish",
