@@ -45,11 +45,15 @@ const UserView = observer(({ username }: { username: string }) => {
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        <div className="col-span-full">
+        <div className="col-span-full flex justify-center">
           <User
-            name={user.name}
-            description={user.username}
-            avatarProps={{ src: user.image }}
+            avatarProps={{
+              name: user.name?.length ? user.name[0] : "",
+              src: user.image,
+              size: "lg",
+            }}
+            description={<span className="text-lg">{user.username}</span>}
+            name={<span className="text-2xl">{user.name}</span>}
           ></User>
         </div>
         <h1 className="text-2xl">Вишлисты пользователя</h1>

@@ -27,6 +27,8 @@ import { parseDate } from "@internationalized/date";
 import { Chip } from "@nextui-org/chip";
 import { Badge } from "@nextui-org/badge";
 import { PageSpinner } from "./pageSpinner";
+import { User } from "@nextui-org/user";
+import { Span } from "next/dist/trace";
 
 const WishlistDetail = observer(
   ({
@@ -40,8 +42,25 @@ const WishlistDetail = observer(
     onDelete: { (wishlist: IWishlist): void };
     isEditable: boolean;
   }) => {
+    const user = wishlist.user;
+    const router = useRouter();
     return (
       <div className="flex flex-col">
+        {user && user.id != userStore.user.id ? (
+          <User
+            as="button"
+            onClick={() => {
+              router.push(`/users/${user.username}`);
+            }}
+            avatarProps={{
+              name: user.name?.length ? user.name[0] : "",
+              src: user.image,
+              size: "lg",
+            }}
+            description={<span className="text-lg">{user.username}</span>}
+            name={<span className="text-2xl">{user.name}</span>}
+          />
+        ) : null}
         <div className="text-center lg:text-left flex gap-4">
           <span>
             <div className="flex flex-row gap-2 justify-center lg:justify-start">

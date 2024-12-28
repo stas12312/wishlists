@@ -8,6 +8,7 @@ export interface IWishlist {
   is_active: boolean;
   wishes_count: number;
   visible: number;
+  user?: IUser;
 }
 
 export interface IWish {
