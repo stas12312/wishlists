@@ -32,12 +32,7 @@ const Menu = observer(() => {
           <span>
             Друзья{" "}
             {countersStore.friendCounters.incoming_requests ? (
-              <Chip
-                color="primary"
-                size="sm"
-                className="my-auto"
-                variant="flat"
-              >
+              <Chip radius="sm" size="sm" color="primary" className="my-auto">
                 {countersStore.friendCounters.incoming_requests}
               </Chip>
             ) : (
