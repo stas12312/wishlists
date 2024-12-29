@@ -17,6 +17,11 @@ type UserForUpdate struct {
 	Image    string `json:"image"`
 }
 
+type UserShort struct {
+	Id   int64  `json:"id" db:"user_id"`
+	Name string `json:"name" db:"name"`
+}
+
 type TokenPariResponse struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`

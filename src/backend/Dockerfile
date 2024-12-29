@@ -1,4 +1,4 @@
-FROM golang:1.22 as base
+FROM golang:1.23 as base
 
 EXPOSE 8080
 

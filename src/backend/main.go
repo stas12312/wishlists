@@ -62,11 +62,16 @@ func main() {
 	imageService := service.NewImageService(imageRepository, uuid.NewString)
 	imageController := controller.NewImageController(imageService)
 
+	friendRepository := repository.NewFriendRepositoryPostgres(db)
+	friendService := service.NewFriendService(friendRepository, uof)
+	friendController := controller.NewFriendController(friendService)
+
 	api := app.Group("/api")
 
 	userController.Route(api)
 	wishlistController.Route(api)
 	imageController.Route(api)
+	friendController.Route(api)
 
 	log.Fatal(app.Listen(":8080"))
 }
