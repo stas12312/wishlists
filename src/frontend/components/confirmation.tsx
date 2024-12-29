@@ -20,8 +20,8 @@ const ConfirmationModal = ({
   onConfirm: { (): void };
   onDecline: { (): void };
   message: string;
-  confirmName: string;
-  declineName: string;
+  confirmName?: string;
+  declineName?: string;
   isOpen: boolean;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -65,9 +65,4 @@ const ConfirmationModal = ({
   );
 };
 
-ConfirmationModal.defaultProps = {
-  confirmName: "Да",
-  declineName: "Нет",
-};
 export default ConfirmationModal;
-
