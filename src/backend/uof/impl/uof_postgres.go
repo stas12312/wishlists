@@ -22,12 +22,14 @@ func NewUofStore(
 	wishlistRepository repository.WishlistRepository,
 	wishRepository repository.WishRepository,
 	oAuthRepository repository.OAuthUserRepository,
+	friendRepository repository.FriendRepository,
 ) *UowStore {
 	return &UowStore{
 		userRepository,
 		wishlistRepository,
 		wishRepository,
 		oAuthRepository,
+		friendRepository,
 	}
 }
 
@@ -36,6 +38,7 @@ type UowStore struct {
 	wishlistRepository repository.WishlistRepository
 	wishRepository     repository.WishRepository
 	oAuthRepository    repository.OAuthUserRepository
+	friendRepository   repository.FriendRepository
 }
 
 func (u *UowStore) UserRepository() repository.UserRepository {
@@ -52,6 +55,9 @@ func (u *UowStore) WishRepository() repository.WishRepository {
 
 func (u *UowStore) OAuthRepository() repository.OAuthUserRepository {
 	return u.oAuthRepository
+}
+func (u *UowStore) FriendRepository() repository.FriendRepository {
+	return u.friendRepository
 }
 
 type UnitOfWorkPostgres struct {
@@ -92,5 +98,6 @@ func StoreFactory(connection db.Connection) uof.UnitOfWorkStore {
 		impl.NewWishlistRepository(connection),
 		impl.NewWishRepositoryImpl(connection),
 		impl.NewOAuthPostgresRepository(connection),
+		impl.NewFriendRepositoryPostgres(connection),
 	)
 }

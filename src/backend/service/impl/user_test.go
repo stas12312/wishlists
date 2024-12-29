@@ -39,6 +39,7 @@ func TestNewUserService(t *testing.T) {
 						mocks.NewWishlistRepository(t),
 						mocks.NewWishRepository(t),
 						mocks.NewOAuthUserRepository(t),
+						mocks.NewFriendRepository(t),
 					)
 				},
 			)
@@ -160,6 +161,7 @@ func Test_userServiceImpl_GetByEmail(t *testing.T) {
 						mocks.NewWishlistRepository(t),
 						mocks.NewWishRepository(t),
 						mocks.NewOAuthUserRepository(t),
+						mocks.NewFriendRepository(t),
 					)
 				},
 			)
@@ -220,6 +222,7 @@ func Test_userServiceImpl_GetById(t *testing.T) {
 						mocks.NewWishlistRepository(t),
 						mocks.NewWishRepository(t),
 						mocks.NewOAuthUserRepository(t),
+						mocks.NewFriendRepository(t),
 					)
 				},
 			)
@@ -331,6 +334,7 @@ func Test_userServiceImpl_Login(t *testing.T) {
 						mocks.NewWishlistRepository(t),
 						mocks.NewWishRepository(t),
 						mocks.NewOAuthUserRepository(t),
+						mocks.NewFriendRepository(t),
 					)
 				},
 			)
@@ -550,6 +554,7 @@ func Test_userServiceImpl_Register(t *testing.T) {
 						mocks.NewWishlistRepository(t),
 						mocks.NewWishRepository(t),
 						mocks.NewOAuthUserRepository(t),
+						mocks.NewFriendRepository(t),
 					)
 				},
 			)
@@ -715,6 +720,7 @@ func Test_userServiceImpl_Confirm(t *testing.T) {
 						mocks.NewWishlistRepository(t),
 						mocks.NewWishRepository(t),
 						mocks.NewOAuthUserRepository(t),
+						mocks.NewFriendRepository(t),
 					)
 				},
 			)
@@ -908,6 +914,7 @@ func Test_userServiceImpl_CheckCodeWithType(t *testing.T) {
 						mocks.NewWishlistRepository(t),
 						mocks.NewWishRepository(t),
 						mocks.NewOAuthUserRepository(t),
+						mocks.NewFriendRepository(t),
 					)
 				},
 			)
@@ -998,6 +1005,7 @@ func Test_userServiceImpl_Restore(t *testing.T) {
 						mocks.NewWishlistRepository(t),
 						mocks.NewWishRepository(t),
 						mocks.NewOAuthUserRepository(t),
+						mocks.NewFriendRepository(t),
 					)
 				},
 			)
@@ -1088,6 +1096,7 @@ func Test_userServiceImpl_Reset(t *testing.T) {
 						mocks.NewWishlistRepository(t),
 						mocks.NewWishRepository(t),
 						mocks.NewOAuthUserRepository(t),
+						mocks.NewFriendRepository(t),
 					)
 				},
 			)
@@ -1275,6 +1284,7 @@ func Test_userServiceImpl_CheckCode(t *testing.T) {
 						mocks.NewWishlistRepository(t),
 						mocks.NewWishRepository(t),
 						mocks.NewOAuthUserRepository(t),
+						mocks.NewFriendRepository(t),
 					)
 				},
 			)
@@ -1381,6 +1391,7 @@ func Test_userServiceImpl_OAuthAuth(t *testing.T) {
 						mocks.NewWishlistRepository(t),
 						mocks.NewWishRepository(t),
 						oAuthRepository,
+						mocks.NewFriendRepository(t),
 					)
 				},
 			)
@@ -1466,6 +1477,7 @@ func Test_userServiceImpl_ChangePassword(t *testing.T) {
 						mocks.NewWishlistRepository(t),
 						mocks.NewWishRepository(t),
 						mocks.NewOAuthUserRepository(t),
+						mocks.NewFriendRepository(t),
 					)
 				},
 			)
