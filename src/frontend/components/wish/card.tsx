@@ -27,7 +27,6 @@ export const WishItem = observer(
     const { isOpen, onOpenChange } = useDisclosure();
 
     async function onDeleteWish() {
-      console.log("Удаление");
       await onDelete(wish);
       await deleteWish(wish.uuid ?? "");
       setIsConfirm(false);

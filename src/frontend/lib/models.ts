@@ -72,3 +72,23 @@ export interface IWishActions {
   make_full: boolean
   cancel_full: boolean
 }
+
+
+export interface IFriendRequest {
+  from_user: IUser
+  to_user: IUser
+  status: number
+}
+
+export enum FriendStatus {
+  no_friend = 0,
+  has_outcoming_request = 1,
+  has_incoming_request = 2,
+  is_friend = 3,
+  is_yourself = 4
+}
+
+export interface FriendsCounters {
+  friends: number
+  incoming_requests: number
+}
