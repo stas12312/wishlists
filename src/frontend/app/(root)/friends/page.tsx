@@ -13,17 +13,21 @@ const FriendsPage = observer(() => {
     <div className="flex flex-col gap-4">
       <p className="text-2xl w-full">Друзья</p>
       <Divider />
-      <Tabs aria-label="friends" className="mx-auto">
+      <Tabs aria-label="friends" className="mx-auto" size="lg">
         <Tab key="my-friends" title="Мои друзья">
           <FriendsList />
         </Tab>
         <Tab
           key="reqeusts"
           title={
-            <span>
-              Заявки{" "}
-              {incomingCounts ? <Chip size="sm">{incomingCounts}</Chip> : null}
-            </span>
+            <>
+              {"Заявки "}
+              {incomingCounts ? (
+                <Chip color="primary" radius="sm">
+                  {incomingCounts}
+                </Chip>
+              ) : null}
+            </>
           }
         >
           <FriendRequestsItems />
@@ -34,4 +38,3 @@ const FriendsPage = observer(() => {
 });
 
 export default FriendsPage;
-
