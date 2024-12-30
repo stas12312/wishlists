@@ -92,7 +92,7 @@ export const Wishlists = observer(({ edit = true }: { edit?: boolean }) => {
       <h1 className="text-2xl col-span-full text-center lg:text-left">
         Мои вишлисты
       </h1>
-      <Divider className="my-4 col-span-full" />
+      <Divider className="col-span-full" />
       <span className="flex col-span-full">
         <WishlistFilter filter={filter} setFilter={setFilter} />
       </span>

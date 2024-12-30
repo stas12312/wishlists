@@ -15,7 +15,6 @@ const Menu = observer(() => {
     }
     fetchData();
   }, []);
-  console.log("Счетсики", countersStore.friendCounters.incoming_requests);
   return (
     <Listbox className="text-center" aria-label="main menu">
       <ListboxSection showDivider>
