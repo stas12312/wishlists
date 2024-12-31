@@ -5,6 +5,7 @@ import { getMe } from "@/lib/requests";
 
 class UserStore {
   user: IUser = { id: 0, name: "", email: "", username: "", image: ""};
+  isLoading = true;
 
   constructor() {
     makeAutoObservable(this);
@@ -14,6 +15,7 @@ class UserStore {
     if (!this.user.id) {
       this.user = yield getMe();
     }
+    this.isLoading = false
   });
 
   reloadMe = flow(function * (this: UserStore) {

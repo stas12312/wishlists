@@ -92,3 +92,16 @@ export interface FriendsCounters {
   friends: number
   incoming_requests: number
 }
+
+export interface INavigation {
+  count?: number
+  cursor: string[]
+}
+
+export interface ListResponse<T> {
+  data: T[];
+  navigation: INavigation;
+}
+
+
+export type Cursor = string[]
