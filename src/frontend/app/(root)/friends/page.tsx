@@ -24,7 +24,7 @@ const FriendsPage = observer(() => {
               {"Заявки "}
               {incomingCounts ? (
                 <Chip color="primary" radius="sm">
-                  {incomingCounts}
+                  {incomingCounts.toLocaleString()}
                 </Chip>
               ) : null}
             </>
