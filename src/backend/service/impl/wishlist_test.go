@@ -354,7 +354,7 @@ func TestWishlistImpl_List(t *testing.T) {
 			want: []model.Wishlist{{UserId: 1, Name: "First"}, {UserId: 2, Name: "Second"}},
 			mocksBehaviour: func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository) {
 				wlMock.
-					On("List", int64(1), model.WishlistFilter{IsActive: true}).
+					On("List", int64(1), model.WishlistFilter{IsActive: true}, model.Navigation{}).
 					Once().
 					Return([]model.Wishlist{{UserId: 1, Name: "First"}, {UserId: 2, Name: "Second"}}, nil)
 			},
@@ -370,7 +370,7 @@ func TestWishlistImpl_List(t *testing.T) {
 				WishlistRepository: wlRepository,
 				WishRepository:     wRepository,
 			}
-			got, err := s.ListForUser(tt.args.userId, tt.args.filter)
+			got, err := s.ListForUser(tt.args.userId, tt.args.filter, model.Navigation{})
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ListForUser() error = %v, wantErr %v", err, tt.wantErr)
 				return

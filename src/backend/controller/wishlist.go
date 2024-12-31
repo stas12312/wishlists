@@ -48,18 +48,37 @@ func (c *WishlistController) ListWishlists(ctx *fiber.Ctx) error {
 	userId := GetUserIdFromCtx(ctx)
 
 	filter := &model.WishlistFilter{}
-	err := ctx.QueryParser(filter)
-	if err != nil {
+	if err := ctx.QueryParser(filter); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).
 			JSON(model.ErrorResponse{Message: "Некорректные фильтры", Details: err.Error()})
 	}
-	wishlists, err := c.ListForUser(userId, *filter)
+	navigation := &model.Navigation{}
+
+	if err := ctx.QueryParser(navigation); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Некорректная навигация", Details: err.Error()})
+	}
+
+	if navigation.Count > 100 {
+		navigation.Count = 100
+	}
+	if navigation.Cursor == nil || len(navigation.Cursor) == 0 {
+		navigation.Cursor = []string{"", ""}
+	}
+
+	wishlists, err := c.ListForUser(userId, *filter, *navigation)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).
 			JSON(model.ErrorResponse{Message: "Ошибка при получении списка", Details: err.Error()})
 	}
-
-	return ctx.JSON(model.Response{Data: wishlists})
+	lastWishlist := model.Wishlist{}
+	if len(wishlists) > 0 {
+		lastWishlist = wishlists[len(wishlists)-1]
+	}
+	return ctx.JSON(
+		model.Response{Data: wishlists,
+			Navigation: model.Navigation{Cursor: []string{lastWishlist.CreatedAt, lastWishlist.Uuid}}},
+	)
 }
 
 func (c *WishlistController) GetWishlist(ctx *fiber.Ctx) error {

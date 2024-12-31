@@ -1,7 +1,8 @@
 package model
 
 type Response struct {
-	Data interface{} `json:"data"`
+	Data       interface{} `json:"data"`
+	Navigation Navigation  `json:"navigation"`
 }
 
 type ResponseWithMessage struct {

@@ -79,25 +79,25 @@ func (_m *WishlistRepository) GetByUUID(uuid string) (*model.Wishlist, error) {
 	return r0, r1
 }
 
-// List provides a mock function with given fields: userId, filter
-func (_m *WishlistRepository) List(userId int64, filter model.WishlistFilter) ([]model.Wishlist, error) {
-	ret := _m.Called(userId, filter)
+// List provides a mock function with given fields: userId, filter, navigation
+func (_m *WishlistRepository) List(userId int64, filter model.WishlistFilter, navigation model.Navigation) ([]model.Wishlist, error) {
+	ret := _m.Called(userId, filter, navigation)
 
 	var r0 []model.Wishlist
 	var r1 error
-	if rf, ok := ret.Get(0).(func(int64, model.WishlistFilter) ([]model.Wishlist, error)); ok {
-		return rf(userId, filter)
+	if rf, ok := ret.Get(0).(func(int64, model.WishlistFilter, model.Navigation) ([]model.Wishlist, error)); ok {
+		return rf(userId, filter, navigation)
 	}
-	if rf, ok := ret.Get(0).(func(int64, model.WishlistFilter) []model.Wishlist); ok {
-		r0 = rf(userId, filter)
+	if rf, ok := ret.Get(0).(func(int64, model.WishlistFilter, model.Navigation) []model.Wishlist); ok {
+		r0 = rf(userId, filter, navigation)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]model.Wishlist)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(int64, model.WishlistFilter) error); ok {
-		r1 = rf(userId, filter)
+	if rf, ok := ret.Get(1).(func(int64, model.WishlistFilter, model.Navigation) error); ok {
+		r1 = rf(userId, filter, navigation)
 	} else {
 		r1 = ret.Error(1)
 	}

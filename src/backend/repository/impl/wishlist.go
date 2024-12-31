@@ -27,7 +27,11 @@ func (r *WishlistRepositoryPostgres) Create(wishlist *model.Wishlist) (*model.Wi
 	return createdWishlist, err
 }
 
-func (r *WishlistRepositoryPostgres) List(userId int64, filter model.WishlistFilter) ([]model.Wishlist, error) {
+func (r *WishlistRepositoryPostgres) List(
+	userId int64,
+	filter model.WishlistFilter,
+	navigation model.Navigation,
+) ([]model.Wishlist, error) {
 	q := `
 		SELECT 
 		    *,
@@ -50,12 +54,24 @@ func (r *WishlistRepositoryPostgres) List(userId int64, filter model.WishlistFil
 			AND (
 			    visible = 1
 			    OR user_id = $1
-			) 
+			)
+		  	AND (
+		  	     created_at < COALESCE(NULLIF($4, '')::timestamptz, NOW())
+		  	     OR (
+		  	         created_at = COALESCE(NULLIF($4, '')::timestamptz, NOW())
+					 AND wishlist_uuid < COALESCE(NULLIF($5, '')::uuid, 'ffffffff-ffff-ffff-ffff-ffffffffffff')
+		  	    )
+		  	)
 		ORDER BY 
-		    created_at DESC 
+		    created_at DESC,
+			wishlist_uuid DESC
+		LIMIT $6::int
 `
 	wishlists := make([]model.Wishlist, 0)
-	err := r.Select(&wishlists, q, userId, filter.IsActive, filter.UserId)
+	err := r.Select(
+		&wishlists, q,
+		userId, filter.IsActive, filter.UserId, navigation.Cursor[0], navigation.Cursor[1], navigation.Count,
+	)
 	return wishlists, err
 }
 
