@@ -8,17 +8,19 @@ import {
   FriendStatus,
   IError,
   IFriendRequest,
+  INavigation,
   IOAuthProvider,
   IRegisterData,
   ITokens,
   IUser,
   IWish,
-  IWishlist
+  IWishlist,
+  ListResponse
 } from "./models";
 
 axios.defaults.baseURL = `${process.env.BASE_URL}/api`;
 const axiosInstance = axios.create({});
-
+console.log(axios.defaults.baseURL)
 axiosInstance.interceptors.request.use(async (config) => {
   const cookieStore = await cookies();
 
@@ -41,15 +43,17 @@ axiosInstance.interceptors.response.use(
   },
 );
 
-export async function getWishlists(filter?: IWishlistFilter | null): Promise<IWishlist[]> {
+export async function getWishlists(filter?: IWishlistFilter | null, navigation?: INavigation): Promise<ListResponse<IWishlist>> {
   const response = await axiosInstance.get("/wishlists", {
     params: {
       is_active: !filter?.showArchive,
       user_id: filter?.userId,
+      count: navigation?.count,
+      cursor: navigation?.cursor,
     }
   });
 
-  return response.data.data;
+  return response.data;
 }
 
 export async function getWishes(wishlist_uuid: string): Promise<IWish[]> {

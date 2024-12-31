@@ -1,3 +1,4 @@
+import { getUserLink } from "@/lib/label";
 import { IFriendRequest, IUser } from "@/lib/models";
 import {
   applyFriendRequest,
@@ -5,18 +6,16 @@ import {
   deleteFriendRequest,
   getFriendRequests,
 } from "@/lib/requests";
+import countersStore from "@/store/counterStore";
 import userStore from "@/store/userStore";
+import { Button } from "@nextui-org/button";
 import { Card, CardBody } from "@nextui-org/card";
 import { User } from "@nextui-org/user";
 import { observer } from "mobx-react-lite";
-import { ReactNode, useEffect, useState } from "react";
-import { PageSpinner } from "../pageSpinner";
-import { Button } from "@nextui-org/button";
-import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { getUserLink } from "@/lib/label";
-import { getUser } from "@/app/auth/login/auth";
-import countersStore from "@/store/counterStore";
+import { ReactNode, useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { PageSpinner } from "../pageSpinner";
 
 const FriendRequestsItems = observer(() => {
   const [requests, setRequests] = useState<IFriendRequest[]>([]);
@@ -151,4 +150,3 @@ const FriendRequestItem = observer(
     );
   }
 );
-

@@ -13,7 +13,7 @@ import {
 import { useDisclosure } from "@nextui-org/modal";
 import { Skeleton } from "@nextui-org/skeleton";
 import { useRouter } from "next/navigation";
-import { Key, useState } from "react";
+import { forwardRef, Key, useState } from "react";
 import toast from "react-hot-toast";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { MdCreate, MdDelete, MdLink, MdRestoreFromTrash } from "react-icons/md";
@@ -27,81 +27,87 @@ import { IWishlist } from "@/lib/models";
 import { deleteWishlist, restoreWishlist } from "@/lib/requests";
 import ConfirmationModal from "../confirmation";
 
-export function WishlistItem({
-  wishlist,
-  onDelete,
-  onRestore,
-  edit = true,
-}: {
-  wishlist: IWishlist;
-  onDelete: { (wishlist: IWishlist): void };
-  onRestore: { (wishlist: IWishlist): void };
-  edit?: boolean;
-}) {
-  const router = useRouter();
+export const WishlistItem = forwardRef(
+  (
+    {
+      wishlist,
+      onDelete,
+      onRestore,
+      edit = true,
+    }: {
+      wishlist: IWishlist;
+      onDelete: { (wishlist: IWishlist): void };
+      onRestore: { (wishlist: IWishlist): void };
+      edit?: boolean;
+    },
+    ref: any
+  ) => {
+    const router = useRouter();
 
-  const [cardWishlist, setCardWishlist] = useState<IWishlist>(wishlist);
+    const [cardWishlist, setCardWishlist] = useState<IWishlist>(wishlist);
 
-  function onUpdate(wishlist: IWishlist): void {
-    setCardWishlist(wishlist);
-  }
+    function onUpdate(wishlist: IWishlist): void {
+      setCardWishlist(wishlist);
+    }
 
-  return (
-    <Card
-      isPressable={wishlist.is_active}
-      className="w-full h-40 flex-col md:hover:scale-[1.03]"
-      onPress={() => router.push(`/wishlists/${cardWishlist.uuid}`)}
-    >
-      <CardHeader className="flex-col items-start">
-        <div className="flex flex-row justify-between w-full">
-          <div className="text-tiny font-bold my-auto flex flex-col text-left overflow-hidden truncate">
-            <span
-              className={`flex flex-row gap-1 ${!wishlist.is_active ? "text-default-400" : ""}`}
-            >
-              <p className="uppercase text-large">{cardWishlist.name}</p>
-              <span className="text-small">
-                <VisibleStatus visible={cardWishlist.visible} />
+    return (
+      <Card
+        isPressable={wishlist.is_active}
+        className="w-full h-40 flex-col md:hover:scale-[1.03]"
+        onPress={() => router.push(`/wishlists/${cardWishlist.uuid}`)}
+        ref={ref}
+      >
+        <CardHeader className="flex-col items-start">
+          <div className="flex flex-row justify-between w-full">
+            <div className="text-tiny font-bold my-auto flex flex-col text-left overflow-hidden truncate">
+              <span
+                className={`flex flex-row gap-1 ${!wishlist.is_active ? "text-default-400" : ""}`}
+              >
+                <p className="uppercase text-large">{cardWishlist.name}</p>
+                <span className="text-small">
+                  <VisibleStatus visible={cardWishlist.visible} />
+                </span>
               </span>
-            </span>
-            <p className="text-default-500 text-left">
-              {cardWishlist.description}
-            </p>
+              <p className="text-default-500 text-left">
+                {cardWishlist.description}
+              </p>
+            </div>
+            <div>
+              {edit ? (
+                <WishlistItemMenu
+                  isEditable={true}
+                  wishlist={cardWishlist}
+                  onDelete={onDelete}
+                  onUpdate={onUpdate}
+                  onRestore={onRestore}
+                />
+              ) : null}
+            </div>
           </div>
-          <div>
-            {edit ? (
-              <WishlistItemMenu
-                isEditable={true}
-                wishlist={cardWishlist}
-                onDelete={onDelete}
-                onUpdate={onUpdate}
-                onRestore={onRestore}
-              />
-            ) : null}
-          </div>
-        </div>
-      </CardHeader>
-      <CardBody className="justify-end">
-        <div className="flow-root">
-          <span className=" float-right flex flex-col gap-1">
-            <Chip className="mr-0 ml-auto" color="primary">
-              {cardWishlist.wishes_count > 0 ? wishlist.wishes_count : "Нет"}{" "}
-              {getLabelForCount(cardWishlist.wishes_count, [
-                "желание",
-                "желания",
-                "желаний",
-              ])}
-            </Chip>
-            {cardWishlist.date ? (
-              <Chip className="text-default-500 mr-0 ml-auto">
-                {new Date(cardWishlist.date).toLocaleDateString()}
+        </CardHeader>
+        <CardBody className="justify-end">
+          <div className="flow-root">
+            <span className=" float-right flex flex-col gap-1">
+              <Chip className="mr-0 ml-auto" color="primary">
+                {cardWishlist.wishes_count > 0 ? wishlist.wishes_count : "Нет"}{" "}
+                {getLabelForCount(cardWishlist.wishes_count, [
+                  "желание",
+                  "желания",
+                  "желаний",
+                ])}
               </Chip>
-            ) : null}
-          </span>
-        </div>
-      </CardBody>
-    </Card>
-  );
-}
+              {cardWishlist.date ? (
+                <Chip className="text-default-500 mr-0 ml-auto">
+                  {new Date(cardWishlist.date).toLocaleDateString()}
+                </Chip>
+              ) : null}
+            </span>
+          </div>
+        </CardBody>
+      </Card>
+    );
+  }
+);
 
 export function WishlistsSkeletonItem() {
   return (
