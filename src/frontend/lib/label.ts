@@ -5,6 +5,6 @@ export function getLabelForCount(count: number, labels: string[]): string {
     return labels[count % 100 > 4 && count % 100 < 20 ? 2 : cases[count % 10 < 5 ? count % 10 : 5]];
 }
 
-export function getUserLink(user: IUser): string {
-    return `/users/${user.username}`
+export function getUserLink(username: string): string {
+    return `${window.location.origin}/users/${username}`
 }

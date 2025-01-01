@@ -1,6 +1,7 @@
 "use client";
 
 import ProfileForm from "@/components/settings/profile";
+import { getUserLink } from "@/lib/label";
 import { IUser } from "@/lib/models";
 import userStore from "@/store/userStore";
 import { Button } from "@nextui-org/button";
@@ -18,7 +19,7 @@ export default function SettingsPage() {
 const Profile = observer(() => {
   let profileLink = "";
   if (userStore.user.id) {
-    profileLink = `${window.location.origin}/users/${userStore.user.username}`;
+    profileLink = getUserLink(userStore.user.username);
   }
 
   return (

@@ -48,7 +48,7 @@ const FriendsList = observer(() => {
           <User
             className="cursor-pointer"
             onClick={() => {
-              router.push(getUserLink(friend));
+              router.push(getUserLink(friend.username));
             }}
             key={friend.id}
             name={friend.name}
@@ -99,4 +99,3 @@ const FriendsList = observer(() => {
 });
 
 export default FriendsList;
-
