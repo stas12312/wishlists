@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 import { ITokens } from "./models";
 import { refreshTokens } from "./requests";
+import { IToken } from "./models/token";
 
 export async function refreshTokenIfNeed() {
   const cookie = await cookies();
@@ -17,6 +18,20 @@ export async function refreshTokenIfNeed() {
       await refreshToken();
     }
   }
+}
+
+export async function getTokenData(token: string) {
+  return jwtDecode(token);
+}
+
+export async function getUserFromCookies(): Promise<number | null>{
+  const cookie = await cookies();
+  const accessToken: string | undefined = cookie.get("access_token")?.value;
+  if (accessToken) {
+    const tokenData = jwtDecode<IToken>(accessToken);
+    return tokenData["id"]
+  }
+  return null
 }
 
 export async function logout() {

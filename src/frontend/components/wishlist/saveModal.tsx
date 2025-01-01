@@ -2,7 +2,7 @@ import { Modal, ModalContent, ModalHeader, ModalBody } from "@nextui-org/modal";
 
 import { WishlistCreateForm } from "./form";
 
-import { IWishlist } from "@/lib/models";
+import { IWishlist } from "@/lib/models/wishlist";
 
 export default function WishlistSaveModal({
   isOpen,

@@ -10,7 +10,8 @@ import { VisibleStatus } from "./visibleIcon";
 import { WishItem } from "./wish/card";
 import WishSaveModal from "./wish/saveModal";
 
-import { IError, IWish, IWishlist } from "@/lib/models";
+import { IError, IWish } from "@/lib/models";
+import { IWishlist } from "@/lib/models/wishlist";
 import {
   deleteWishlist,
   getWishes,

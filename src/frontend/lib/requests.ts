@@ -14,9 +14,9 @@ import {
   ITokens,
   IUser,
   IWish,
-  IWishlist,
   ListResponse
 } from "./models";
+import { IWishlist } from "./models/wishlist";
 
 axios.defaults.baseURL = `${process.env.BASE_URL}/api`;
 const axiosInstance = axios.create({});
