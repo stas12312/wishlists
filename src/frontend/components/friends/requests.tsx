@@ -134,7 +134,7 @@ const FriendRequestItem = observer(
           <User
             className="cursor-pointer"
             onClick={() => {
-              router.push(getUserLink(user));
+              router.push(getUserLink(user.username));
             }}
             name={user.name}
             description={user.username}
