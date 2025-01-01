@@ -1,37 +1,25 @@
 "use client";
-import { FriendStatus, IUser, IWishlist } from "@/lib/models";
-import {
-  AddFriend,
-  getFriendStatus,
-  getUserByUsername,
-  getWishlists,
-} from "@/lib/requests";
+import { FriendStatus, IUser } from "@/lib/models";
+import { AddFriend, getFriendStatus, getUserByUsername } from "@/lib/requests";
+import { Button } from "@nextui-org/button";
+import { Chip } from "@nextui-org/chip";
 import { Divider } from "@nextui-org/divider";
 import { User } from "@nextui-org/user";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
-import { PageSpinner } from "./pageSpinner";
-import { WishlistItem } from "./wishlist/card";
-import { Button } from "@nextui-org/button";
 import toast from "react-hot-toast";
-import { Chip } from "@nextui-org/chip";
-import { Tienne } from "next/font/google";
-import userStore from "@/store/userStore";
+import { PageSpinner } from "./pageSpinner";
+import { Wishlists } from "./wishlist/list";
 
 const UserView = observer(({ username }: { username: string }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<IUser>({} as IUser);
-  const [wishlists, setWishlists] = useState<IWishlist[]>([]);
   const [friendStatus, setFriendStatus] = useState(0);
-  const currentUser = userStore.user.id;
 
   useEffect(() => {
     async function fetchData() {
       const responseUser = await getUserByUsername(username);
       setUser(responseUser);
-      setWishlists(
-        await getWishlists({ showArchive: false, userId: responseUser.id })
-      );
       setFriendStatus(await getFriendStatus(responseUser.id));
       setIsLoading(false);
     }
@@ -41,17 +29,6 @@ const UserView = observer(({ username }: { username: string }) => {
   if (isLoading) {
     return <PageSpinner />;
   }
-
-  const components = wishlists.map((wishlist: IWishlist) => (
-    <span key={wishlist.uuid}>
-      <WishlistItem
-        wishlist={wishlist}
-        onDelete={() => {}}
-        onRestore={() => {}}
-        edit={false}
-      />
-    </span>
-  ));
 
   return (
     <>
@@ -76,10 +53,13 @@ const UserView = observer(({ username }: { username: string }) => {
             }
           </div>
         </div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
         <h1 className="text-2xl">Вишлисты пользователя</h1>
         <Divider className="col-span-full"></Divider>
-        {components}
       </div>
+
+      <Wishlists actions={{ edit: false, filter: false }} userId={user.id} />
     </>
   );
 });

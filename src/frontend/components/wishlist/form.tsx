@@ -11,7 +11,7 @@ import { MdOutlinePublic, MdOutlinePublicOff } from "react-icons/md";
 import { Avatar } from "@nextui-org/avatar";
 
 import { createWishList, updateWishlist } from "@/lib/requests";
-import { IWishlist } from "@/lib/models";
+import { IWishlist } from "@/lib/models/wishlist";
 
 const visibleItems = [
   { key: "0", label: "Только мне", icon: <MdOutlinePublicOff /> },

@@ -23,7 +23,7 @@ import { VisibleStatus } from "../visibleIcon";
 import WishlistSaveModal from "./saveModal";
 
 import { getLabelForCount } from "@/lib/label";
-import { IWishlist } from "@/lib/models";
+import { IWishlist } from "@/lib/models/wishlist";
 import { deleteWishlist, restoreWishlist } from "@/lib/requests";
 import ConfirmationModal from "../confirmation";
 
