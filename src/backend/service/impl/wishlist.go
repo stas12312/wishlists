@@ -54,15 +54,11 @@ func (s *WishlistImpl) GetForUserByUUID(userId int64, uuid string) (*model.Wishl
 	wishlist.User, _ = s.GetById(context.Background(), wishlist.UserId)
 	wishlist.User.Email = ""
 
-	if wishlist.Visible == model.Public {
+	if s.UserCanViewWishlistByModel(userId, wishlist) {
 		return wishlist, nil
-	}
-
-	if wishlist.UserId != userId {
+	} else {
 		return nil, apperror.NewError(apperror.NotFound, "Вишлист не найден")
 	}
-
-	return wishlist, nil
 }
 
 func (s *WishlistImpl) UpdateForUser(userId int64, wishlist *model.Wishlist) (*model.Wishlist, error) {
