@@ -1,29 +1,32 @@
 "use client";
+import { Chip } from "@nextui-org/chip";
 import { Divider } from "@nextui-org/divider";
 import { useDisclosure } from "@nextui-org/modal";
+import { User } from "@nextui-org/user";
 import { observer } from "mobx-react-lite";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
-import { Chip } from "@nextui-org/chip";
-import { User } from "@nextui-org/user";
+import { Alert } from "@nextui-org/alert";
+import { Button } from "@nextui-org/button";
+import { Link } from "@nextui-org/link";
 
-import { PageSpinner } from "./pageSpinner";
 import AddCardButton from "./AddCardButton";
-import { WishlistItemMenu } from "./wishlist/card";
+import { PageSpinner } from "./pageSpinner";
+import { VisibleStatus } from "./visibleIcon";
 import { WishItem } from "./wish/card";
 import WishSaveModal from "./wish/saveModal";
-import { VisibleStatus } from "./visibleIcon";
+import { WishlistItemMenu } from "./wishlist/card";
 
-import userStore from "@/store/userStore";
+import { IError, IWish } from "@/lib/models";
+import { IWishlist } from "@/lib/models/wishlist";
 import {
   deleteWishlist,
   getWishes,
   getWishlist,
   updateWishlist,
 } from "@/lib/requests";
-import { IError, IWish } from "@/lib/models";
-import { IWishlist } from "@/lib/models/wishlist";
+import userStore from "@/store/userStore";
 
 const WishlistDetail = observer(
   ({
@@ -167,6 +170,30 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
         />
       </div>
       <Divider className="my-4 col-span-full" />
+      {!userStore.user.id ? (
+        <div className="col-span-full flex justify-center">
+          <div>
+            <Alert
+              hideIconWrapper
+              className="mx-auto"
+              color="warning"
+              description="Для отображения забронированных желаний войдите в свой аккаунт"
+              endContent={
+                <Button
+                  as={Link}
+                  className="ml-4"
+                  color="warning"
+                  href="/auth/login"
+                  variant="bordered"
+                >
+                  Войти
+                </Button>
+              }
+              title="Некоторые из желаний могут быть забронированы"
+            />
+          </div>
+        </div>
+      ) : null}
 
       <WishSaveModal
         isOpen={isOpen}
