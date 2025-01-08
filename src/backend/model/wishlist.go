@@ -9,7 +9,7 @@ const (
 
 type Wishlist struct {
 	Uuid        string          `json:"uuid" db:"wishlist_uuid"`
-	Name        string          `json:"name"`
+	Name        string          `json:"name" validate:"required"`
 	Description string          `json:"description"`
 	CreatedAt   string          `json:"created_at" db:"created_at"`
 	Date        NullTime        `json:"date"`
