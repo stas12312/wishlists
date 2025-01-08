@@ -269,7 +269,7 @@ func getActionsForWish(userId int64, wish model.Wish) model.WishActions {
 func prepareWish(userId int64, wish model.Wish) model.Wish {
 	wish.Actions = getActionsForWish(userId, wish)
 
-	if wish.UserId == userId {
+	if wish.UserId == userId || userId == 0 {
 		wish.IsReserved = false
 	}
 	return wish
