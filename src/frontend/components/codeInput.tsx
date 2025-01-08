@@ -1,11 +1,5 @@
 import { Input } from "@nextui-org/input";
-import {
-  ChangeEvent,
-  MutableRefObject,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { ChangeEvent, useEffect, useRef } from "react";
 
 const CodeInput = ({
   digitsCount,
@@ -18,13 +12,13 @@ const CodeInput = ({
   onValueChange: { (value: string): void };
   disabled: boolean;
 }) => {
-  const inputsRefs: MutableRefObject<HTMLInputElement | null>[] = [];
+  const inputsRefs = useRef<Array<HTMLInputElement | null>>([]);
   const currentIndex = value.length;
   const values: string[] = new Array<string>(digitsCount).fill("");
 
   useEffect(() => {
-    if (values[0] == "") {
-      inputsRefs[0].current?.focus();
+    if (values[0] == "" && inputsRefs.current[0]) {
+      inputsRefs.current[0].focus();
     }
   }, [values]);
 
@@ -49,8 +43,8 @@ const CodeInput = ({
     if (index == digitsCount - 1) {
       return;
     }
-    const input = inputsRefs[index + 1].current;
-    if (input !== null) {
+    const input = inputsRefs.current[index + 1];
+    if (input) {
       input.disabled = false;
       input.focus();
     }
@@ -63,19 +57,25 @@ const CodeInput = ({
     if (values[index] != "") {
       values[index] = "";
     } else {
-      inputsRefs[index - 1].current?.focus();
-      values[index - 1] = "";
-      values[index] = "";
+      const currentInput = inputsRefs.current[index - 1];
+      if (currentInput) {
+        currentInput.focus();
+        values[index - 1] = "";
+        values[index] = "";
+      }
     }
     onValueChange(values.join(""));
   }
 
   const inputs = [];
   for (let i = 0; i < digitsCount; i++) {
-    inputsRefs.push(useRef(null));
     inputs.push(
       <span key={i}>
         <Input
+          key={i}
+          ref={(ref) => {
+            inputsRefs.current[i] = ref;
+          }}
           className="w-12"
           classNames={{
             inputWrapper: [
@@ -83,19 +83,17 @@ const CodeInput = ({
             ],
             input: ["text-center"],
           }}
-          type="number"
-          size="lg"
-          key={i}
-          value={values[i]}
           isDisabled={disabled || i > currentIndex}
           name={i.toString()}
+          size="lg"
+          type="number"
+          value={values[i]}
           onChange={processInput}
           onKeyUp={(e) => {
             e.key == "Backspace" ? deleteDigit(i) : null;
           }}
-          ref={inputsRefs[i]}
-        ></Input>
-      </span>
+        />
+      </span>,
     );
   }
 
@@ -103,4 +101,3 @@ const CodeInput = ({
 };
 
 export default CodeInput;
-

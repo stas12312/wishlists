@@ -19,13 +19,13 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { MdCreate, MdDelete, MdLink, MdRestoreFromTrash } from "react-icons/md";
 
 import { VisibleStatus } from "../visibleIcon";
+import ConfirmationModal from "../confirmation";
 
 import WishlistSaveModal from "./saveModal";
 
 import { getLabelForCount } from "@/lib/label";
 import { IWishlist } from "@/lib/models/wishlist";
 import { deleteWishlist, restoreWishlist } from "@/lib/requests";
-import ConfirmationModal from "../confirmation";
 
 export const WishlistItem = forwardRef(
   (
@@ -40,7 +40,7 @@ export const WishlistItem = forwardRef(
       onRestore: { (wishlist: IWishlist): void };
       edit?: boolean;
     },
-    ref: any
+    ref: any,
   ) => {
     const router = useRouter();
 
@@ -52,10 +52,10 @@ export const WishlistItem = forwardRef(
 
     return (
       <Card
-        isPressable={wishlist.is_active}
-        className="w-full h-40 flex-col md:hover:scale-[1.03]"
-        onPress={() => router.push(`/wishlists/${cardWishlist.uuid}`)}
         ref={ref}
+        className="w-full h-40 flex-col md:hover:scale-[1.03]"
+        isPressable={wishlist.is_active}
+        onPress={() => router.push(`/wishlists/${cardWishlist.uuid}`)}
       >
         <CardHeader className="flex-col items-start">
           <div className="flex flex-row justify-between w-full">
@@ -78,8 +78,8 @@ export const WishlistItem = forwardRef(
                   isEditable={true}
                   wishlist={cardWishlist}
                   onDelete={onDelete}
-                  onUpdate={onUpdate}
                   onRestore={onRestore}
+                  onUpdate={onUpdate}
                 />
               ) : null}
             </div>
@@ -106,7 +106,7 @@ export const WishlistItem = forwardRef(
         </CardBody>
       </Card>
     );
-  }
+  },
 );
 
 export function WishlistsSkeletonItem() {
@@ -151,7 +151,7 @@ export const WishlistItemMenu = ({
     }
     if (key === "share") {
       navigator.clipboard.writeText(
-        `${window.location.origin}/wishlists/${wishlist.uuid}`
+        `${window.location.origin}/wishlists/${wishlist.uuid}`,
       );
       toast.success("Ссылка скопирована");
     }
@@ -198,8 +198,8 @@ export const WishlistItemMenu = ({
                 ) : (
                   <DropdownItem
                     key="restore"
-                    color="primary"
                     className="text-primary"
+                    color="primary"
                     startContent={<MdRestoreFromTrash />}
                   >
                     Восстановить
@@ -230,9 +230,9 @@ export const WishlistItemMenu = ({
         onSaveWishlist={onUpdateWishlist}
       />
       <ConfirmationModal
-        onConfirm={deleteWishlistByAction}
         isOpen={isConfirm}
         message={`Вы действительно хотите ${wishlist.is_active ? "архивировать" : "удалить"} вишлист?`}
+        onConfirm={deleteWishlistByAction}
         onDecline={() => {
           setIsConfirm(false);
         }}
@@ -244,3 +244,5 @@ export const WishlistItemMenu = ({
 WishlistItemMenu.defaultProps = {
   className: "",
 };
+
+WishlistItem.displayName = "WishlistItem";

@@ -3,8 +3,15 @@ import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/card";
 import { Chip } from "@nextui-org/chip";
 import { Image } from "@nextui-org/image";
 import { Key, useState } from "react";
+import { observer } from "mobx-react-lite";
+import toast from "react-hot-toast";
+import { useDisclosure } from "@nextui-org/modal";
 
-import { IWish, IWishActions } from "@/lib/models";
+import ConfirmationModal from "../confirmation";
+
+import { WishItemMenu } from "./card_menu";
+import WishSaveModal from "./saveModal";
+
 import {
   cancelReserveWish,
   cancelWishFull,
@@ -13,12 +20,7 @@ import {
   makeWishFull,
   reserveWish,
 } from "@/lib/requests";
-import { observer } from "mobx-react-lite";
-import toast from "react-hot-toast";
-import { WishItemMenu } from "./card_menu";
-import ConfirmationModal from "../confirmation";
-import WishSaveModal from "./saveModal";
-import { useDisclosure } from "@nextui-org/modal";
+import { IWish, IWishActions } from "@/lib/models";
 
 export const WishItem = observer(
   ({ wish, onDelete }: { wish: IWish; onDelete: { (wish: IWish): void } }) => {
@@ -91,7 +93,7 @@ export const WishItem = observer(
               </p>
               {showMenu(wish.actions) ? (
                 <span>
-                  <WishItemMenu wish={item} handeAction={handleOnAction} />
+                  <WishItemMenu handeAction={handleOnAction} wish={item} />
                 </span>
               ) : null}
             </div>
@@ -106,12 +108,12 @@ export const WishItem = observer(
           <CardFooter className="z-10 absolute bottom-1 right-1 justify-end">
             <div className="flex flex-col gap-1 ml-auto mr-0">
               {item.fulfilled_at ? (
-                <Chip color="primary" className="ml-auto mr-0">
+                <Chip className="ml-auto mr-0" color="primary">
                   Исполнено
                 </Chip>
               ) : null}
               {item.is_reserved ? (
-                <Chip color="success" className="ml-auto mr-0">
+                <Chip className="ml-auto mr-0" color="success">
                   Забронировано {item.actions.cancel_reserve ? "вами" : null}
                 </Chip>
               ) : null}
@@ -124,9 +126,9 @@ export const WishItem = observer(
           </CardFooter>
         </Card>
         <ConfirmationModal
-          onConfirm={onDeleteWish}
           isOpen={isConfirm}
           message="Вы действительно хотите удалить желание?"
+          onConfirm={onDeleteWish}
           onDecline={() => {
             setIsConfirm(false);
           }}
@@ -140,7 +142,7 @@ export const WishItem = observer(
         />
       </>
     );
-  }
+  },
 );
 
 function showMenu(actions: IWishActions): boolean {

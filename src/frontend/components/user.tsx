@@ -2,8 +2,6 @@
 import { User } from "@nextui-org/user";
 import { observer } from "mobx-react-lite";
 import { Key, useEffect } from "react";
-
-import userStore from "@/store/userStore";
 import {
   Dropdown,
   DropdownItem,
@@ -12,6 +10,8 @@ import {
 } from "@nextui-org/dropdown";
 import { MdLink } from "react-icons/md";
 import toast from "react-hot-toast";
+
+import userStore from "@/store/userStore";
 
 export const UserItem = observer(() => {
   const user = userStore.user;

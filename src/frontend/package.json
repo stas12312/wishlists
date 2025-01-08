@@ -6,7 +6,8 @@
 		"dev": "next dev --turbo -H 0.0.0.0",
 		"build": "next build",
 		"start": "next start",
-		"lint": "eslint . --fix --debug"
+		"lint": "eslint .",
+		"lint-fix": "eslint . --fix"
 	},
 	"dependencies": {
 		"@internationalized/date": "^3.5.6",

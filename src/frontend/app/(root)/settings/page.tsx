@@ -1,16 +1,15 @@
 "use client";
 
-import ProfileForm from "@/components/settings/profile";
-import { getUserLink } from "@/lib/label";
-import { IUser } from "@/lib/models";
-import userStore from "@/store/userStore";
 import { Button } from "@nextui-org/button";
 import { Divider } from "@nextui-org/divider";
 import { Input } from "@nextui-org/input";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
 import toast from "react-hot-toast";
 import { MdLink } from "react-icons/md";
+
+import userStore from "@/store/userStore";
+import { getUserLink } from "@/lib/label";
+import ProfileForm from "@/components/settings/profile";
 
 export default function SettingsPage() {
   return <Profile />;
@@ -32,11 +31,11 @@ const Profile = observer(() => {
           <p className="">Ссылка на профиль</p>
           <div className="flex gap-2">
             <Input
-              labelPlacement="outside"
-              value={userStore.user.id ? profileLink : ""}
               isReadOnly
+              labelPlacement="outside"
               startContent={<MdLink />}
-            ></Input>
+              value={userStore.user.id ? profileLink : ""}
+            />
             <Button
               color="primary"
               // startContent={<MdOutlineContentCopy />}

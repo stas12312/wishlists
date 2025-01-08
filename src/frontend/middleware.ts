@@ -7,13 +7,11 @@ import { refreshTokenIfNeed } from "./lib/auth";
 export default async function middleware(request: NextRequest) {
   const cookieStore = await cookies();
   if (
-    (
-      !cookieStore.get("access_token")?.value ||
-    !cookieStore.get("refresh_token")?.value
-  )
-    && !request.nextUrl.pathname.startsWith("/wishlists")
-    && !request.nextUrl.pathname.startsWith("/users")
-    && (request.nextUrl.pathname !== "/")
+    (!cookieStore.get("access_token")?.value ||
+      !cookieStore.get("refresh_token")?.value) &&
+    !request.nextUrl.pathname.startsWith("/wishlists") &&
+    !request.nextUrl.pathname.startsWith("/users") &&
+    request.nextUrl.pathname !== "/"
   ) {
     cookieStore.delete("access_token");
     cookieStore.delete("refresh_token");
@@ -22,7 +20,6 @@ export default async function middleware(request: NextRequest) {
   }
   if (cookieStore.get("refresh_token")?.value) {
     await refreshTokenIfNeed();
-
   }
 
   return NextResponse.next();

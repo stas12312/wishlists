@@ -6,10 +6,10 @@ import { observer } from "mobx-react-lite";
 const Login = observer(() => {
   return (
     <span className="flex flex-row gap-1">
-      <Button href="/auth/login" as={Link} color="primary" variant="ghost">
+      <Button as={Link} color="primary" href="/auth/login" variant="ghost">
         Войти
       </Button>
-      <Button href="/auth/register" as={Link} color="primary" variant="light">
+      <Button as={Link} color="primary" href="/auth/register" variant="light">
         Регистрация
       </Button>
     </span>
@@ -17,4 +17,3 @@ const Login = observer(() => {
 });
 
 export default Login;
-

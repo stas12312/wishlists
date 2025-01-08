@@ -3,9 +3,10 @@ import clsx from "clsx";
 import { Metadata, Viewport } from "next";
 import { Toaster } from "react-hot-toast";
 
+import { Providers } from "./providers";
+
 import { fontSans } from "@/config/fonts";
 import { siteConfig } from "@/config/site";
-import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: {
@@ -41,7 +42,7 @@ export default async function RootLayout({
       <body
         className={clsx(
           "h-screen bg-background font-sans antialiased",
-          fontSans.variable
+          fontSans.variable,
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>

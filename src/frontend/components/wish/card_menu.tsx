@@ -1,5 +1,3 @@
-import { IWish } from "@/lib/models";
-import { deleteWish } from "@/lib/requests";
 import { Button } from "@nextui-org/button";
 import {
   Dropdown,
@@ -7,8 +5,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "@nextui-org/dropdown";
-import { useDisclosure } from "@nextui-org/modal";
-import { Key, useState } from "react";
+import { Key } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import {
   MdCreate,
@@ -18,8 +15,8 @@ import {
   MdOutlineCheck,
   MdOutlineCancel,
 } from "react-icons/md";
-import ConfirmationModal from "../confirmation";
-import WishSaveModal from "./saveModal";
+
+import { IWish } from "@/lib/models";
 
 export function WishItemMenu({
   wish,
@@ -28,8 +25,6 @@ export function WishItemMenu({
   wish: IWish;
   handeAction: { (key: Key): void };
 }) {
-  const [isConfirm, setIsConfirm] = useState(false);
-
   return (
     <span>
       <Dropdown>
@@ -48,8 +43,8 @@ export function WishItemMenu({
           {wish.actions.reserve ? (
             <DropdownItem
               key="reserve"
-              color="primary"
               className="text-primary"
+              color="primary"
               startContent={<MdOutlineBookmarkAdded />}
             >
               Забронировать
@@ -58,8 +53,8 @@ export function WishItemMenu({
           {wish.actions.make_full ? (
             <DropdownItem
               key="make_full"
-              color="primary"
               className="text-primary"
+              color="primary"
               startContent={<MdOutlineCheck />}
             >
               Исполнено
@@ -68,8 +63,8 @@ export function WishItemMenu({
           {wish.actions.cancel_full ? (
             <DropdownItem
               key="cancel_full"
-              color="primary"
               className="text-primary"
+              color="primary"
               startContent={<MdOutlineCancel />}
             >
               Не исполнено
@@ -100,4 +95,3 @@ export function WishItemMenu({
     </span>
   );
 }
-

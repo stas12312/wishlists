@@ -55,7 +55,7 @@ export default function SignIn() {
       const confirmEmailData = await register(
         formData.name,
         formData.password,
-        formData.email
+        formData.email,
       );
 
       if ("message" in confirmEmailData) {
@@ -80,7 +80,7 @@ export default function SignIn() {
         confirmData.uuid,
         acceptCode,
         confirmData.secret_key,
-        undefined
+        undefined,
       );
       setAcceptCode("");
       if ("message" in result) {
@@ -93,7 +93,7 @@ export default function SignIn() {
   }
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
   ) => {
     const { name, value } = e.target;
 
@@ -164,9 +164,9 @@ export default function SignIn() {
           <div>
             <CodeInput
               digitsCount={6}
+              disabled={isLoading}
               value={acceptCode}
               onValueChange={setAcceptCode}
-              disabled={isLoading}
             />
           </div>
           <span className="text-danger text-tiny">{errorMessages.Code}</span>

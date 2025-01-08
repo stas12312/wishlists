@@ -1,13 +1,3 @@
-import { getUserLink } from "@/lib/label";
-import { IFriendRequest, IUser } from "@/lib/models";
-import {
-  applyFriendRequest,
-  declineFriendRequest,
-  deleteFriendRequest,
-  getFriendRequests,
-} from "@/lib/requests";
-import countersStore from "@/store/counterStore";
-import userStore from "@/store/userStore";
 import { Button } from "@nextui-org/button";
 import { Card, CardBody } from "@nextui-org/card";
 import { User } from "@nextui-org/user";
@@ -15,7 +5,19 @@ import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+
 import { PageSpinner } from "../pageSpinner";
+
+import userStore from "@/store/userStore";
+import countersStore from "@/store/counterStore";
+import {
+  applyFriendRequest,
+  declineFriendRequest,
+  deleteFriendRequest,
+  getFriendRequests,
+} from "@/lib/requests";
+import { IFriendRequest, IUser } from "@/lib/models";
+import { getUserLink } from "@/lib/label";
 
 const FriendRequestsItems = observer(() => {
   const [requests, setRequests] = useState<IFriendRequest[]>([]);
@@ -49,8 +51,8 @@ const FriendRequestsItems = observer(() => {
   const inpomingItems = incomingRequests.map((r) => (
     <FriendRequestItem key={r.from_user.id} user={r.from_user}>
       <Button
-        variant="flat"
         color="primary"
+        variant="flat"
         onPress={async () => {
           const result = await applyFriendRequest(r.from_user.id);
           if (result && "code" in result) {
@@ -65,8 +67,8 @@ const FriendRequestsItems = observer(() => {
         Принять
       </Button>
       <Button
-        variant="flat"
         color="danger"
+        variant="flat"
         onPress={async () => {
           const result = await declineFriendRequest(r.from_user.id);
           if (result && "code" in result) {
@@ -86,8 +88,8 @@ const FriendRequestsItems = observer(() => {
   const outcomingItems = outcomingRequests.map((r) => (
     <FriendRequestItem key={r.to_user.id} user={r.to_user}>
       <Button
-        variant="flat"
         color="danger"
+        variant="flat"
         onPress={async () => {
           const result = await deleteFriendRequest(r.to_user.id);
           if (result && "code" in result) {
@@ -132,15 +134,15 @@ const FriendRequestItem = observer(
       <Card className="max-w-[1000px] mx-auto w-full">
         <CardBody className="flex flex-row gap-4 justify-between">
           <User
-            className="cursor-pointer"
-            onClick={() => {
-              router.push(getUserLink(user.username));
-            }}
-            name={user.name}
-            description={user.username}
             avatarProps={{
               src: user.image,
               name: user.name[0],
+            }}
+            className="cursor-pointer"
+            description={user.username}
+            name={user.name}
+            onClick={() => {
+              router.push(getUserLink(user.username));
             }}
           />
 
@@ -148,5 +150,5 @@ const FriendRequestItem = observer(
         </CardBody>
       </Card>
     );
-  }
+  },
 );

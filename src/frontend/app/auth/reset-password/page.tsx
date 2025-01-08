@@ -107,9 +107,9 @@ const RestorePassword = observer(() => {
             <>
               <CodeInput
                 digitsCount={6}
+                disabled={isLoading}
                 value={code}
                 onValueChange={setCode}
-                disabled={isLoading}
               />
               <span className="text-danger text-tiny">{codeError}</span>
             </>
@@ -129,7 +129,7 @@ const RestorePassword = observer(() => {
         }
       })()}
 
-      <Button type="submit" isLoading={isLoading}>
+      <Button isLoading={isLoading} type="submit">
         {step !== 2 ? "Далее" : "Сменить пароль"}
       </Button>
       <Divider className="my-2" />

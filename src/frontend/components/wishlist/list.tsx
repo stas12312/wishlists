@@ -1,9 +1,13 @@
 "use client";
 
 import { Button } from "@nextui-org/button";
-import { Divider } from "@nextui-org/divider";
 import { useDisclosure } from "@nextui-org/modal";
 import { createRef, useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
+import { observer } from "mobx-react-lite";
+
+import AddCardButton from "../AddCardButton";
+import WishlistFilter from "../filter";
 
 import { WishlistItem, WishlistsSkeletonItem } from "./card";
 import WishlistSaveModal from "./saveModal";
@@ -11,12 +15,7 @@ import WishlistSaveModal from "./saveModal";
 import { Cursor } from "@/lib/models";
 import { IWishlist, IWishlistAction } from "@/lib/models/wishlist";
 import { getWishlists } from "@/lib/requests";
-import toast from "react-hot-toast";
-import AddCardButton from "../AddCardButton";
-
 import userStore from "@/store/userStore";
-import { observer } from "mobx-react-lite";
-import WishlistFilter from "../filter";
 
 export interface IWishlistFilter {
   showArchive: boolean;
@@ -55,7 +54,7 @@ export const Wishlists = observer(
       setItems(
         items.filter((value) => {
           return value.uuid != wishlist.uuid;
-        })
+        }),
       );
       toast.success(`Вишлист ${wishlist.is_active ? "архивирован" : "удален"}`);
     }
@@ -63,7 +62,7 @@ export const Wishlists = observer(
     async function fetchWishlists(
       firstRequest: boolean = false,
       filter: IWishlistFilter,
-      cursor: Cursor
+      cursor: Cursor,
     ) {
       const result = await getWishlists(filter, {
         cursor: cursor,
@@ -82,7 +81,7 @@ export const Wishlists = observer(
       setItems(
         items.filter((value) => {
           return value.uuid != wishlist.uuid;
-        })
+        }),
       );
     }
 
@@ -101,11 +100,11 @@ export const Wishlists = observer(
       components = items.map((wishlist: IWishlist, index: number) => (
         <span key={wishlist.uuid}>
           <WishlistItem
+            ref={index + 1 == items.length ? lastItem : null}
             edit={actions.edit}
             wishlist={wishlist}
             onDelete={onDelete}
             onRestore={onRestore}
-            ref={index + 1 == items.length ? lastItem : null}
           />
         </span>
       ));
@@ -162,5 +161,5 @@ export const Wishlists = observer(
         )}
       </div>
     );
-  }
+  },
 );

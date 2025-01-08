@@ -1,14 +1,15 @@
-import { IUser } from "@/lib/models";
-import { getMe, getUserByUsername, updateUser } from "@/lib/requests";
-import userStore from "@/store/userStore";
 import { Button } from "@nextui-org/button";
 import { Form } from "@nextui-org/form";
 import { Input } from "@nextui-org/input";
 import { observer } from "mobx-react-lite";
 import { FormEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+
 import UploadButton from "../uploadButton";
-import { PageSpinner } from "../pageSpinner";
+
+import userStore from "@/store/userStore";
+import { getMe, getUserByUsername, updateUser } from "@/lib/requests";
+import { IUser } from "@/lib/models";
 
 const ProfileForm = observer(() => {
   const [isProfileLoading, setIsProfileLoading] = useState(true);
@@ -47,49 +48,49 @@ const ProfileForm = observer(() => {
   return (
     <Form
       validationBehavior="native"
-      onSubmit={onSubmit}
       validationErrors={errors}
+      onSubmit={onSubmit}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-1 w-full">
         <Input
           isRequired
-          name="username"
-          value={user.username}
-          onValueChange={(value) => {
-            setUser({ ...user, username: value });
-          }}
           label="Имя пользователя"
+          name="username"
           validate={(value) => {
             if (value.length < 3) {
               return "Имя пользователя должно содержать не менее двух символов";
             }
           }}
-        ></Input>
+          value={user.username}
+          onValueChange={(value) => {
+            setUser({ ...user, username: value });
+          }}
+        />
         <Input
           isRequired
-          name="name"
-          value={user.name}
-          onValueChange={(value) => {
-            setUser({ ...user, name: value });
-          }}
           label="Имя"
+          name="name"
           validate={(value) => {
             if (value.length < 2) {
               return "Имя должно содержать не менее трех символов";
             }
           }}
-        ></Input>
+          value={user.name}
+          onValueChange={(value) => {
+            setUser({ ...user, name: value });
+          }}
+        />
       </div>
       <span className="text-sm">Изображение профиля</span>
       <UploadButton
-        previewUrl={user.image}
         accept={["jpg", "jpeg", "png", "webp"]}
         className="h-[100px] w-[120px] object-cover"
+        previewUrl={user.image}
         onUpload={(url) => {
           setUser({ ...user, image: url });
         }}
       />
-      <Button type="submit" fullWidth isLoading={isProfileLoading}>
+      <Button fullWidth isLoading={isProfileLoading} type="submit">
         Сохранить
       </Button>
     </Form>
@@ -98,11 +99,10 @@ const ProfileForm = observer(() => {
 
 async function isUsernameIsExists(
   username: string,
-  userId: number
+  userId: number,
 ): Promise<boolean> {
   const existsUser = await getUserByUsername(username);
   return existsUser.id !== undefined && existsUser.id != userId;
 }
 
 export default ProfileForm;
-

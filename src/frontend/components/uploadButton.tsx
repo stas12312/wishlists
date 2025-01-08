@@ -1,7 +1,8 @@
-import { uploadFile } from "@/lib/requests";
 import { useId, useState } from "react";
 import { Image } from "@nextui-org/image";
 import { MdOutlineFileUpload } from "react-icons/md";
+
+import { uploadFile } from "@/lib/requests";
 const UploadButton = ({
   onUpload,
   previewUrl,
@@ -58,20 +59,17 @@ const UploadButton = ({
   const id = useId();
   return (
     <label
-      onDrop={onDrop}
-      onDragEnter={onDragEnter}
-      onDragLeave={onDragLeave}
-      onDragOver={onDragEnter}
-      htmlFor={id}
       className={
         className +
         ` cursor-pointer relative group bg-default-100 rounded-xl hover:bg-default-200 ${isOver ? "outline-2 outline-dashed bg-default-200" : null}`
       }
+      htmlFor={id}
+      onDragEnter={onDragEnter}
+      onDragLeave={onDragLeave}
+      onDragOver={onDragEnter}
+      onDrop={onDrop}
     >
-      <Image
-        src={previewUrl || undefined}
-        className={className + " z-2"}
-      ></Image>
+      <Image className={className + " z-2"} src={previewUrl || undefined} />
       {!isOver ? (
         <span className="group-hover:opacity-90 w-full h-full duration-300 absolute flex top-0 justify-center hover:bg-default-300 bg-default-200 opacity-40 rounded-xl z-1">
           <span className="absolute flex flex-col justify-center left-0 top-0 right-0 bottom-0 ">
@@ -82,19 +80,19 @@ const UploadButton = ({
           </span>
         </span>
       ) : (
-        <span className="group-hover:opacity-90 w-full h-full duration-300 absolute flex top-0 justify-center hover:bg-default-300 bg-default-200 opacity-40 rounded-xl z-1"></span>
+        <span className="group-hover:opacity-90 w-full h-full duration-300 absolute flex top-0 justify-center hover:bg-default-300 bg-default-200 opacity-40 rounded-xl z-1" />
       )}
 
       <input
-        type="file"
-        id={id}
-        onChange={handleFileChange}
-        className="hidden"
         accept={accept
           .map((value) => {
             return `.${value}`;
           })
           .join(",")}
+        className="hidden"
+        id={id}
+        type="file"
+        onChange={handleFileChange}
       />
     </label>
   );

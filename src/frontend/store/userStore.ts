@@ -4,7 +4,7 @@ import { IUser } from "@/lib/models";
 import { getMe } from "@/lib/requests";
 
 class UserStore {
-  user: IUser = { id: 0, name: "", email: "", username: "", image: ""};
+  user: IUser = { id: 0, name: "", email: "", username: "", image: "" };
   isLoading = true;
 
   constructor() {
@@ -15,12 +15,12 @@ class UserStore {
     if (!this.user.id) {
       this.user = yield getMe();
     }
-    this.isLoading = false
+    this.isLoading = false;
   });
 
-  reloadMe = flow(function * (this: UserStore) {
-    this.user = yield getMe()
-  })
+  reloadMe = flow(function* (this: UserStore) {
+    this.user = yield getMe();
+  });
 }
 
 const userStore = new UserStore();

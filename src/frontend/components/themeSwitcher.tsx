@@ -1,6 +1,6 @@
 "use client";
 
-import { Switch } from "@nextui-org/switch";
+import { Button } from "@nextui-org/button";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
@@ -15,13 +15,15 @@ export function ThemeSwitcher() {
   if (!mounted) return null;
 
   return (
-    <div
-      className="text-2xl cursor-pointer hover:opacity-90 my-auto hover:bg-default-200 p-2 rounded-xl"
-      onClick={(e) => {
+    <Button
+      isIconOnly
+      className="text-2xl cursor-pointer hover:opacity-90 my-auto hover:bg-default-200 p-2 rounded-xl bg-none"
+      variant="flat"
+      onPress={() => {
         theme === "dark" ? setTheme("light") : setTheme("dark");
       }}
     >
       {theme == "dark" ? <MdLightMode /> : <MdDarkMode />}
-    </div>
+    </Button>
   );
 }
