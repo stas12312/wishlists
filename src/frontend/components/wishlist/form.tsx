@@ -1,13 +1,13 @@
 "use client";
 
-import { CalendarDate, DateValue } from "@internationalized/date";
+import { CalendarDate } from "@internationalized/date";
 import { Button } from "@nextui-org/button";
 import { DatePicker } from "@nextui-org/date-picker";
 import { Input } from "@nextui-org/input";
 import { Select, SelectItem } from "@nextui-org/select";
 import { I18nProvider } from "@react-aria/i18n";
 import { FormEvent, useState } from "react";
-import { MdOutlinePublic, MdOutlinePublicOff } from "react-icons/md";
+import { MdOutlinePublic, MdOutlinePublicOff, MdPerson } from "react-icons/md";
 import { Avatar } from "@nextui-org/avatar";
 
 import { createWishList, updateWishlist } from "@/lib/requests";
@@ -16,6 +16,7 @@ import { IWishlist } from "@/lib/models/wishlist";
 const visibleItems = [
   { key: "0", label: "Только мне", icon: <MdOutlinePublicOff /> },
   { key: "1", label: "Всем", icon: <MdOutlinePublic /> },
+  { key: "2", label: "Друзьям", icon: <MdPerson /> },
 ];
 
 export function WishlistCreateForm({
