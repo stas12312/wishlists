@@ -30,7 +30,11 @@ export const ReservedWishes = observer(() => {
       <h1 className="text-2xl">Забронированные желания</h1>
       <Divider className="my-4 col-span-full" />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
-        {components}
+        {components.length ? (
+          components
+        ) : (
+          <p className="text-2xl text-center col-span-full">Список пуст</p>
+        )}
       </div>
     </>
   );
