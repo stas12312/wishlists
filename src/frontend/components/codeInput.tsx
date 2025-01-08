@@ -69,10 +69,9 @@ const CodeInput = ({
 
   const inputs = [];
   for (let i = 0; i < digitsCount; i++) {
-    inputs.push(
+    const element = (
       <span key={i}>
         <Input
-          key={i}
           ref={(ref) => {
             inputsRefs.current[i] = ref;
           }}
@@ -93,8 +92,9 @@ const CodeInput = ({
             e.key == "Backspace" ? deleteDigit(i) : null;
           }}
         />
-      </span>,
+      </span>
     );
+    inputs.push(element);
   }
 
   return <div className="flex gap-2 text p-2 justify-center">{inputs}</div>;
