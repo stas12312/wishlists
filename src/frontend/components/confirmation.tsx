@@ -5,7 +5,6 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  useDisclosure,
 } from "@nextui-org/modal";
 import { useState } from "react";
 
@@ -30,7 +29,7 @@ const ConfirmationModal = ({
     <>
       <Modal isOpen={isOpen} onOpenChange={onDecline}>
         <ModalContent>
-          {(onClose) => (
+          {() => (
             <>
               <ModalHeader className="flex flex-col gap-1">
                 Подтвердите действие
@@ -47,8 +46,8 @@ const ConfirmationModal = ({
                   {declineName}
                 </Button>
                 <Button
-                  isLoading={isLoading}
                   color="danger"
+                  isLoading={isLoading}
                   onPress={() => {
                     setIsLoading(true);
                     onConfirm();

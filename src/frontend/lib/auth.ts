@@ -24,14 +24,14 @@ export async function getTokenData(token: string) {
   return jwtDecode(token);
 }
 
-export async function getUserFromCookies(): Promise<number | null>{
+export async function getUserFromCookies(): Promise<number | null> {
   const cookie = await cookies();
   const accessToken: string | undefined = cookie.get("access_token")?.value;
   if (accessToken) {
     const tokenData = jwtDecode<IToken>(accessToken);
-    return tokenData["id"]
+    return tokenData["id"];
   }
-  return null
+  return null;
 }
 
 export async function logout() {

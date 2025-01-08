@@ -1,12 +1,12 @@
 "use client";
 import { Button } from "@nextui-org/button";
-import { Image } from "@nextui-org/image";
 import { Input } from "@nextui-org/input";
 import { FormEvent, useState } from "react";
 
+import UploadButton from "../uploadButton";
+
 import { createWish, updateWish } from "@/lib/requests";
 import { IError, IWish } from "@/lib/models";
-import UploadButton from "../uploadButton";
 
 export default function WishForm(props: {
   onCreate: { (wish: IWish): void };
@@ -76,7 +76,7 @@ export default function WishForm(props: {
   function handlerChange(
     e: React.ChangeEvent<
       HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement
-    >
+    >,
   ) {
     e.preventDefault();
     const { name, value } = e.target;
@@ -142,10 +142,10 @@ export default function WishForm(props: {
           onChange={handlerChange}
         />
         <UploadButton
-          onUpload={onUploadImage}
-          previewUrl={formData.image}
-          className="h-[100px] w-[120px] object-cover"
           accept={["jpg", "jpeg", "png", "webp"]}
+          className="h-[100px] w-[120px] object-cover"
+          previewUrl={formData.image}
+          onUpload={onUploadImage}
         />
       </div>
       {errorMessages.details ? (

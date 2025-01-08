@@ -2,16 +2,16 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { fixupConfigRules, fixupPluginRules } from "@eslint/compat";
-import react from "eslint-plugin-react";
-import unusedImports from "eslint-plugin-unused-imports";
-import _import from "eslint-plugin-import";
+import { FlatCompat } from "@eslint/eslintrc";
+import js from "@eslint/js";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
+import tsParser from "@typescript-eslint/parser";
+import _import from "eslint-plugin-import";
 import jsxA11Y from "eslint-plugin-jsx-a11y";
 import prettier from "eslint-plugin-prettier";
+import react from "eslint-plugin-react";
+import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
-import tsParser from "@typescript-eslint/parser";
-import js from "@eslint/js";
-import { FlatCompat } from "@eslint/eslintrc";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,8 +20,15 @@ const compat = new FlatCompat({
   recommendedConfig: js.configs.recommended,
   allConfig: js.configs.all,
 });
-
 export default [
+  ...fixupConfigRules(
+    compat.extends(
+      "plugin:react/recommended",
+      "plugin:prettier/recommended",
+      "plugin:react-hooks/recommended",
+      "plugin:jsx-a11y/recommended",
+    ),
+  ),
   {
     ignores: [
       ".now/*",
@@ -36,7 +43,7 @@ export default [
       "**/.DS_Store",
       "**/node_modules",
       "**/coverage",
-      "**/.next",
+      "**/.next/",
       "**/build",
       "!**/.commitlintrc.cjs",
       "!**/.lintstagedrc.cjs",
@@ -47,51 +54,9 @@ export default [
     ],
   },
   {
-    files: ["**/*.{ts,tsx}"],
+    files: ["**/*.ts", "**/*.tsx"],
   },
-  ...fixupConfigRules(
-    compat.extends(
-      "plugin:react/recommended",
-      "plugin:prettier/recommended",
-      "plugin:react-hooks/recommended",
-      "plugin:jsx-a11y/recommended",
-    ),
-  ),
   {
-    plugins: {
-      react: fixupPluginRules(react),
-      "unused-imports": unusedImports,
-      import: fixupPluginRules(_import),
-      "@typescript-eslint": typescriptEslint,
-      "jsx-a11y": fixupPluginRules(jsxA11Y),
-      prettier: fixupPluginRules(prettier),
-    },
-
-    languageOptions: {
-      globals: {
-        ...Object.fromEntries(
-          Object.entries(globals.browser).map(([key]) => [key, "off"]),
-        ),
-        ...globals.node,
-      },
-
-      parser: tsParser,
-      ecmaVersion: 12,
-      sourceType: "module",
-
-      parserOptions: {
-        ecmaFeatures: {
-          jsx: true,
-        },
-      },
-    },
-
-    settings: {
-      react: {
-        version: "detect",
-      },
-    },
-
     rules: {
       "no-console": "warn",
       "react/prop-types": "off",
@@ -100,12 +65,10 @@ export default [
       "react-hooks/exhaustive-deps": "off",
       "jsx-a11y/click-events-have-key-events": "warn",
       "jsx-a11y/interactive-supports-focus": "warn",
-      "prettier/prettier": "warn",
+      "prettier/prettier": ["error", { endOfLine: "auto" }],
       "no-unused-vars": "off",
       "unused-imports/no-unused-vars": "off",
       "unused-imports/no-unused-imports": "warn",
-      'linebreak-style': ['error', process.platform === 'win32' ? 'windows' : 'unix'],
- },
       "@typescript-eslint/no-unused-vars": [
         "warn",
         {
@@ -114,7 +77,6 @@ export default [
           argsIgnorePattern: "^_.*?$",
         },
       ],
-
       "import/order": [
         "warn",
         {
@@ -142,7 +104,6 @@ export default [
       ],
 
       "react/self-closing-comp": "warn",
-
       "react/jsx-sort-props": [
         "warn",
         {
@@ -152,25 +113,38 @@ export default [
           reservedFirst: true,
         },
       ],
+    },
+    plugins: {
+      react: fixupPluginRules(react),
+      "unused-imports": unusedImports,
+      import: fixupPluginRules(_import),
+      "@typescript-eslint": typescriptEslint,
+      "jsx-a11y": fixupPluginRules(jsxA11Y),
+      prettier: fixupPluginRules(prettier),
+    },
+    languageOptions: {
+      globals: {
+        ...Object.fromEntries(
+          Object.entries(globals.browser).map(([key]) => [key, "off"]),
+        ),
+        ...globals.node,
+      },
 
-      "padding-line-between-statements": [
-        "warn",
-        {
-          blankLine: "always",
-          prev: "*",
-          next: "return",
+      parser: tsParser,
+      ecmaVersion: 12,
+      sourceType: "module",
+
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
         },
-        {
-          blankLine: "always",
-          prev: ["const", "let", "var"],
-          next: "*",
-        },
-        {
-          blankLine: "any",
-          prev: ["const", "let", "var"],
-          next: ["const", "let", "var"],
-        },
-      ],
+      },
+    },
+
+    settings: {
+      react: {
+        version: "detect",
+      },
     },
   },
 ];

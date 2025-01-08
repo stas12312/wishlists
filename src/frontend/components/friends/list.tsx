@@ -1,16 +1,18 @@
 "use client";
-import { IUser } from "@/lib/models";
-import { deleteFriend, getFriends } from "@/lib/requests";
 import { Card, CardBody } from "@nextui-org/card";
 import { User } from "@nextui-org/user";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { PageSpinner } from "../pageSpinner";
 import { Button } from "@nextui-org/button";
 import { MdOutlineCancel } from "react-icons/md";
-import ConfirmationModal from "../confirmation";
 import toast from "react-hot-toast";
+
+import ConfirmationModal from "../confirmation";
+import { PageSpinner } from "../pageSpinner";
+
+import { deleteFriend, getFriends } from "@/lib/requests";
+import { IUser } from "@/lib/models";
 import { getUserLink } from "@/lib/label";
 
 const FriendsList = observer(() => {
@@ -39,25 +41,25 @@ const FriendsList = observer(() => {
   const users = friends.map((friend) => (
     <div key={friend.id}>
       <Card
+        className="w-full"
         onPress={() => {
           router.push(`/users/${friend.username}`);
         }}
-        className="w-full"
       >
         <CardBody className="flex flex-row justify-between">
           <User
-            className="cursor-pointer"
-            onClick={() => {
-              router.push(getUserLink(friend.username));
-            }}
             key={friend.id}
-            name={friend.name}
-            description={friend.username}
             avatarProps={{
               src: friend.image,
               name: friend.name[0],
             }}
-          ></User>
+            className="cursor-pointer"
+            description={friend.username}
+            name={friend.name}
+            onClick={() => {
+              router.push(getUserLink(friend.username));
+            }}
+          />
           <Button
             isIconOnly
             color="danger"
@@ -71,6 +73,7 @@ const FriendsList = observer(() => {
         </CardBody>
       </Card>
       <ConfirmationModal
+        isOpen={isConfirm}
         message="Вы уверены, что хотите удалить пользователя из друзей?"
         onConfirm={async () => {
           await deleteFriend(friend.id);
@@ -79,10 +82,9 @@ const FriendsList = observer(() => {
           setFriends(
             friends.filter((f) => {
               f.id != friend.id;
-            })
+            }),
           );
         }}
-        isOpen={isConfirm}
         onDecline={() => {
           setIsConfirm(false);
         }}

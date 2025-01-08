@@ -3,7 +3,6 @@ import { jwtDecode } from "jwt-decode";
 import { cookies } from "next/headers";
 
 import { authRequest } from "@/lib/requests";
-import { IEnhancer } from "mobx";
 import { IError } from "@/lib/models";
 
 interface IToken {
@@ -16,11 +15,14 @@ interface User {
   id: number;
 }
 
-export async function getUser(email: string, password: string): Promise<User | IError> {
+export async function getUser(
+  email: string,
+  password: string,
+): Promise<User | IError> {
   const authData = await auth(email, password);
 
   if ("message" in authData) {
-    return authData
+    return authData;
   }
 
   const cookie = await cookies();

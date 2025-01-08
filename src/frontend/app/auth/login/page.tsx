@@ -7,9 +7,9 @@ import { Image } from "@nextui-org/image";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 
-import { IOAuthProvider } from "@/lib/models";
 import { getUser } from "./auth";
 
+import { IOAuthProvider } from "@/lib/models";
 import PasswordInput from "@/components/passwordInput";
 import { getOAuthProviders } from "@/lib/requests";
 export default function SignIn() {
@@ -44,7 +44,7 @@ export default function SignIn() {
   }
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
   ) => {
     const { name, value } = e.target;
 
@@ -104,8 +104,8 @@ export default function SignIn() {
       <div className="flex justify-center">
         {providers.map((provider) => {
           return (
-            <a key={provider.name} href={provider.url} className="h-10">
-              <Image src={provider.logo} height={32}></Image>
+            <a key={provider.name} className="h-10" href={provider.url}>
+              <Image height={32} src={provider.logo} />
             </a>
           );
         })}

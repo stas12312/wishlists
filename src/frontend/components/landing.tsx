@@ -54,11 +54,11 @@ const Landing = () => {
         </Card>
       </div>
       <Button
+        as={Link}
         className="text-4xl text-center"
-        size="lg"
         color="primary"
         href="/auth/login"
-        as={Link}
+        size="lg"
       >
         Начните прямо сейчас
       </Button>

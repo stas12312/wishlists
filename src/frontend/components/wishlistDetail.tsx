@@ -1,35 +1,29 @@
 "use client";
-import { Button } from "@nextui-org/button";
 import { Divider } from "@nextui-org/divider";
 import { useDisclosure } from "@nextui-org/modal";
 import { observer } from "mobx-react-lite";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { Chip } from "@nextui-org/chip";
+import { User } from "@nextui-org/user";
 
-import { MdOutlineFilterAlt } from "react-icons/md";
-import { VisibleStatus } from "./visibleIcon";
+import { PageSpinner } from "./pageSpinner";
+import AddCardButton from "./AddCardButton";
+import { WishlistItemMenu } from "./wishlist/card";
 import { WishItem } from "./wish/card";
 import WishSaveModal from "./wish/saveModal";
+import { VisibleStatus } from "./visibleIcon";
 
-import { IError, IWish } from "@/lib/models";
-import { IWishlist } from "@/lib/models/wishlist";
+import userStore from "@/store/userStore";
 import {
   deleteWishlist,
   getWishes,
   getWishlist,
   updateWishlist,
 } from "@/lib/requests";
-import userStore from "@/store/userStore";
-import toast from "react-hot-toast";
-import { WishlistItemMenu } from "./wishlist/card";
-import { useRouter } from "next/navigation";
-import AddCardButton from "./AddCardButton";
-import { Spinner } from "@nextui-org/spinner";
-import { parseDate } from "@internationalized/date";
-import { Chip } from "@nextui-org/chip";
-import { Badge } from "@nextui-org/badge";
-import { PageSpinner } from "./pageSpinner";
-import { User } from "@nextui-org/user";
-import { Span } from "next/dist/trace";
+import { IError, IWish } from "@/lib/models";
+import { IWishlist } from "@/lib/models/wishlist";
 
 const WishlistDetail = observer(
   ({
@@ -50,9 +44,6 @@ const WishlistDetail = observer(
         {user && user.id != userStore.user.id ? (
           <User
             as="button"
-            onClick={() => {
-              router.push(`/users/${user.username}`);
-            }}
             avatarProps={{
               name: user.name?.length ? user.name[0] : "",
               src: user.image,
@@ -60,6 +51,9 @@ const WishlistDetail = observer(
             }}
             description={<span className="text-lg">{user.username}</span>}
             name={<span className="text-2xl">{user.name}</span>}
+            onClick={() => {
+              router.push(`/users/${user.username}`);
+            }}
           />
         ) : null}
         <div className="text-center lg:text-left flex gap-4">
@@ -75,9 +69,9 @@ const WishlistDetail = observer(
             <WishlistItemMenu
               isEditable={isEditable}
               wishlist={wishlist}
-              onUpdate={onUpdate}
               onDelete={onDelete}
               onRestore={() => {}}
+              onUpdate={onUpdate}
             />
           </span>
         </div>
@@ -89,7 +83,7 @@ const WishlistDetail = observer(
         </div>
       </div>
     );
-  }
+  },
 );
 
 const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
@@ -123,7 +117,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
     setItems(
       items.filter((value) => {
         return value.uuid !== wish.uuid;
-      })
+      }),
     );
     toast.success("Желание удалено");
   }
@@ -168,8 +162,8 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
         <WishlistDetail
           isEditable={isEditable}
           wishlist={wishlist}
-          onUpdate={onUpdateWishlist}
           onDelete={onDeleteWishlist}
+          onUpdate={onUpdateWishlist}
         />
       </div>
       <Divider className="my-4 col-span-full" />
@@ -181,7 +175,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
         onUpdate={onCreateWish}
       />
       {isEditable ? (
-        <AddCardButton onPress={onOpen} className="md:h-[300px]" />
+        <AddCardButton className="md:h-[300px]" onPress={onOpen} />
       ) : null}
       {components}
     </div>

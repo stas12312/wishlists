@@ -1,8 +1,8 @@
+import { Divider } from "@nextui-org/divider";
+
 import Landing from "@/components/landing";
 import { Wishlists } from "@/components/wishlist/list";
 import { getUserFromCookies } from "@/lib/auth";
-import { Divider } from "@nextui-org/divider";
-import { cookies } from "next/headers";
 
 export default async function Home() {
   const userId = await getUserFromCookies();

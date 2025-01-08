@@ -1,9 +1,10 @@
+import { cookies } from "next/headers";
+
 import Login from "@/components/login";
 import Menu from "@/components/menu";
 import { ThemeSwitcher } from "@/components/themeSwitcher";
 import { UserItem } from "@/components/user";
 import Version from "@/components/version";
-import { cookies } from "next/headers";
 
 export default async function Layout({
   children,

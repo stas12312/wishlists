@@ -58,7 +58,7 @@ export function WishlistCreateForm({
   const handleChange = (
     e: React.ChangeEvent<
       HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement
-    >
+    >,
   ) => {
     let { name, value } = e.target;
 
@@ -73,7 +73,7 @@ export function WishlistCreateForm({
     const datetime = new Date(
       dateValue.year,
       dateValue.month - 1,
-      dateValue.day
+      dateValue.day,
     );
 
     setFormData({
@@ -149,6 +149,6 @@ function dateStringToCalendarDate(dateString: string): CalendarDate {
   return new CalendarDate(
     date.getFullYear(),
     date.getMonth() + 1,
-    date.getDate()
+    date.getDate(),
   );
 }

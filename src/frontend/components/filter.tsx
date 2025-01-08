@@ -1,4 +1,5 @@
 import { Select, SelectItem } from "@nextui-org/select";
+
 import { IWishlistFilter } from "./wishlist/list";
 const WishlistFilter = ({
   filter,
@@ -11,8 +12,8 @@ const WishlistFilter = ({
     <>
       <Select
         className="max-w-xs"
-        label="Статус"
         defaultSelectedKeys={["active"]}
+        label="Статус"
         size="sm"
         onSelectionChange={(key) => {
           setFilter({ ...filter, showArchive: key.currentKey == "deleted" });

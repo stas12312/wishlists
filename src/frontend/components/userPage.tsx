@@ -1,6 +1,4 @@
 "use client";
-import { FriendStatus, IUser } from "@/lib/models";
-import { AddFriend, getFriendStatus, getUserByUsername } from "@/lib/requests";
 import { Button } from "@nextui-org/button";
 import { Chip } from "@nextui-org/chip";
 import { Divider } from "@nextui-org/divider";
@@ -8,8 +6,12 @@ import { User } from "@nextui-org/user";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+
 import { PageSpinner } from "./pageSpinner";
 import { Wishlists } from "./wishlist/list";
+
+import { AddFriend, getFriendStatus, getUserByUsername } from "@/lib/requests";
+import { FriendStatus, IUser } from "@/lib/models";
 
 const UserView = observer(({ username }: { username: string }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -42,13 +44,13 @@ const UserView = observer(({ username }: { username: string }) => {
             }}
             description={<span className="text-lg">{user.username}</span>}
             name={<span className="text-2xl">{user.name}</span>}
-          ></User>
+          />
           <div className="mx-auto">
             {
               <UserItem
                 friendStatus={friendStatus}
-                userId={user.id}
                 setFriendStatus={setFriendStatus}
+                userId={user.id}
               />
             }
           </div>
@@ -56,7 +58,7 @@ const UserView = observer(({ username }: { username: string }) => {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
         <h1 className="text-2xl">Вишлисты пользователя</h1>
-        <Divider className="col-span-full"></Divider>
+        <Divider className="col-span-full" />
       </div>
 
       <Wishlists actions={{ edit: false, filter: false }} userId={user.id} />

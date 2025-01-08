@@ -53,18 +53,17 @@ export interface IOAuthProvider {
 }
 
 export interface IWishActions {
-  edit: boolean
-  reserve: boolean
-  cancel_reserve: boolean
-  make_full: boolean
-  cancel_full: boolean
+  edit: boolean;
+  reserve: boolean;
+  cancel_reserve: boolean;
+  make_full: boolean;
+  cancel_full: boolean;
 }
 
-
 export interface IFriendRequest {
-  from_user: IUser
-  to_user: IUser
-  status: number
+  from_user: IUser;
+  to_user: IUser;
+  status: number;
 }
 
 export enum FriendStatus {
@@ -72,17 +71,17 @@ export enum FriendStatus {
   has_outcoming_request = 1,
   has_incoming_request = 2,
   is_friend = 3,
-  is_yourself = 4
+  is_yourself = 4,
 }
 
 export interface FriendsCounters {
-  friends: number
-  incoming_requests: number
+  friends: number;
+  incoming_requests: number;
 }
 
 export interface INavigation {
-  count?: number
-  cursor: string[]
+  count?: number;
+  cursor: string[];
 }
 
 export interface ListResponse<T> {
@@ -90,5 +89,4 @@ export interface ListResponse<T> {
   navigation: INavigation;
 }
 
-
-export type Cursor = string[]
+export type Cursor = string[];
