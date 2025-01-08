@@ -15,14 +15,21 @@ func NewWishlistService(
 	wlRepository repository.WishlistRepository,
 	wRepository repository.WishRepository,
 	uService service.UserService,
+	fService service.FriendService,
 ) service.WishlistService {
-	return &WishlistImpl{wlRepository, wRepository, uService}
+	return &WishlistImpl{
+		wlRepository,
+		wRepository,
+		uService,
+		fService,
+	}
 }
 
 type WishlistImpl struct {
 	repository.WishlistRepository
 	repository.WishRepository
 	service.UserService
+	service.FriendService
 }
 
 func (s *WishlistImpl) Create(wishlist *model.Wishlist) (*model.Wishlist, error) {
@@ -34,6 +41,7 @@ func (s *WishlistImpl) ListForUser(
 	filter model.WishlistFilter,
 	navigation model.Navigation,
 ) ([]model.Wishlist, error) {
+	filter.IsFriend = s.IsFriends(userId, filter.UserId)
 	return s.WishlistRepository.List(userId, filter, navigation)
 }
 
