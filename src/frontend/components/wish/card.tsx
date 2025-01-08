@@ -2,16 +2,18 @@
 import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/card";
 import { Chip } from "@nextui-org/chip";
 import { Image } from "@nextui-org/image";
-import { Key, useState } from "react";
-import { observer } from "mobx-react-lite";
-import toast from "react-hot-toast";
 import { useDisclosure } from "@nextui-org/modal";
+import { observer } from "mobx-react-lite";
+import { Key, useState } from "react";
+import toast from "react-hot-toast";
+import { AiFillGift } from "react-icons/ai";
 
 import ConfirmationModal from "../confirmation";
 
 import { WishItemMenu } from "./card_menu";
 import WishSaveModal from "./saveModal";
 
+import { IWish, IWishActions } from "@/lib/models";
 import {
   cancelReserveWish,
   cancelWishFull,
@@ -20,7 +22,6 @@ import {
   makeWishFull,
   reserveWish,
 } from "@/lib/requests";
-import { IWish, IWishActions } from "@/lib/models";
 
 export const WishItem = observer(
   ({ wish, onDelete }: { wish: IWish; onDelete: { (wish: IWish): void } }) => {
@@ -99,11 +100,17 @@ export const WishItem = observer(
             </div>
           </CardHeader>
           <CardBody>
-            <Image
-              removeWrapper
-              className="z-0 object-cover w-full h-full"
-              src={item.image ? item.image : undefined}
-            />
+            {item.image ? (
+              <Image
+                removeWrapper
+                className="z-0 object-cover w-full h-full"
+                src={item.image}
+              />
+            ) : (
+              <div className=" bg-default-200 h-full rounded-large w-full flex">
+                <AiFillGift className="text-8xl mx-auto my-auto" />
+              </div>
+            )}
           </CardBody>
           <CardFooter className="z-10 absolute bottom-1 right-1 justify-end">
             <div className="flex flex-col gap-1 ml-auto mr-0">
