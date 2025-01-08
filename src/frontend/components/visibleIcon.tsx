@@ -25,4 +25,3 @@ export function VisibleStatus({ visible }: { visible: 0 | 1 | 2 }) {
     </Tooltip>
   );
 }
-

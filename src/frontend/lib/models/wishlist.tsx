@@ -9,7 +9,7 @@ export interface IWishlist {
   user_id: number;
   is_active: boolean;
   wishes_count: number;
-  visible: number;
+  visible: 0 | 1 | 2;
   user?: IUser;
 }
 
@@ -17,4 +17,3 @@ export interface IWishlistAction {
   edit: boolean;
   filter: boolean;
 }
-
