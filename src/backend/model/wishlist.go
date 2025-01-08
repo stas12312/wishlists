@@ -3,8 +3,9 @@ package model
 type WishlistVisible int
 
 const (
-	Private WishlistVisible = 0
-	Public  WishlistVisible = 1
+	Private    WishlistVisible = 0
+	Public     WishlistVisible = 1
+	ForFriends WishlistVisible = 2
 )
 
 type Wishlist struct {

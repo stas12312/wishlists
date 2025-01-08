@@ -138,6 +138,10 @@ func (s *WishlistImpl) UserCanViewWishlistByModel(userId int64, wishlist *model.
 		return true
 	}
 
+	if wishlist.Visible == model.ForFriends && s.FriendService.IsFriends(userId, wishlist.UserId) {
+		return true
+	}
+
 	return wishlist.UserId == userId
 
 }
