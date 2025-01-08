@@ -54,6 +54,7 @@ func (r *WishlistRepositoryPostgres) List(
 			AND (
 			    visible = 1
 			    OR user_id = $1
+			    OR (visible = 2 AND $7 IS TRUE)
 			)
 		  	AND (
 		  	     created_at < COALESCE(NULLIF($4, '')::timestamptz, NOW())
@@ -70,7 +71,9 @@ func (r *WishlistRepositoryPostgres) List(
 	wishlists := make([]model.Wishlist, 0)
 	err := r.Select(
 		&wishlists, q,
-		userId, filter.IsActive, filter.UserId, navigation.Cursor[0], navigation.Cursor[1], navigation.Count,
+		userId, filter.IsActive, filter.UserId,
+		navigation.Cursor[0], navigation.Cursor[1], navigation.Count,
+		filter.IsFriend,
 	)
 	return wishlists, err
 }

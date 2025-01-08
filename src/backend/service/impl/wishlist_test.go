@@ -14,10 +14,11 @@ func TestNewWishlistService(t *testing.T) {
 	t.Run("Create service", func(t *testing.T) {
 		wlRepository := mocks.NewWishlistRepository(t)
 		wRepository := mocks.NewWishRepository(t)
-		uService := &mocks2.UserService{}
-		want := NewWishlistService(wlRepository, wRepository, uService)
+		uService := mocks2.NewUserService(t)
+		fService := mocks2.NewFriendService(t)
+		want := NewWishlistService(wlRepository, wRepository, uService, fService)
 
-		if got := NewWishlistService(wlRepository, wRepository, uService); !reflect.DeepEqual(got, want) {
+		if got := NewWishlistService(wlRepository, wRepository, uService, fService); !reflect.DeepEqual(got, want) {
 			t.Errorf("NewWishlistService() = %v, want %v", got, want)
 		}
 	})
@@ -343,20 +344,34 @@ func TestWishlistImpl_List(t *testing.T) {
 		args           args
 		want           []model.Wishlist
 		wantErr        bool
-		mocksBehaviour func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository)
+		mocksBehaviour func(
+			wlMock *mocks.WishlistRepository,
+			wMock *mocks.WishRepository,
+			fMock *mocks2.FriendService,
+		)
 	}{
 		{
 			name: "OK",
 			args: args{
 				userId: 1,
-				filter: model.WishlistFilter{IsActive: true},
+				filter: model.WishlistFilter{IsActive: true, UserId: 2},
 			},
 			want: []model.Wishlist{{UserId: 1, Name: "First"}, {UserId: 2, Name: "Second"}},
-			mocksBehaviour: func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository) {
+			mocksBehaviour: func(
+				wlMock *mocks.WishlistRepository,
+				wMock *mocks.WishRepository,
+				fMock *mocks2.FriendService,
+			) {
 				wlMock.
-					On("List", int64(1), model.WishlistFilter{IsActive: true}, model.Navigation{}).
+					On("List",
+						int64(1), model.WishlistFilter{IsActive: true, UserId: 2}, model.Navigation{},
+					).
 					Once().
 					Return([]model.Wishlist{{UserId: 1, Name: "First"}, {UserId: 2, Name: "Second"}}, nil)
+				fMock.
+					On("IsFriends", int64(1), int64(2)).
+					Once().
+					Return(false)
 			},
 		},
 	}
@@ -364,11 +379,13 @@ func TestWishlistImpl_List(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			wlRepository := mocks.NewWishlistRepository(t)
 			wRepository := mocks.NewWishRepository(t)
-			tt.mocksBehaviour(wlRepository, wRepository)
+			fService := mocks2.NewFriendService(t)
+			tt.mocksBehaviour(wlRepository, wRepository, fService)
 
 			s := &WishlistImpl{
 				WishlistRepository: wlRepository,
 				WishRepository:     wRepository,
+				FriendService:      fService,
 			}
 			got, err := s.ListForUser(tt.args.userId, tt.args.filter, model.Navigation{})
 			if (err != nil) != tt.wantErr {

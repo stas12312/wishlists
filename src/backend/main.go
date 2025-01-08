@@ -53,18 +53,18 @@ func main() {
 	userService := service.NewUserService(uof, codeRepository, mailClient, appConfig, oAuthManager)
 	userController := controller.NewUserController(&userService, appConfig)
 
+	friendRepository := repository.NewFriendRepositoryPostgres(db)
+	friendService := service.NewFriendService(friendRepository, uof)
+	friendController := controller.NewFriendController(friendService)
+
 	wishlistRepository := repository.NewWishlistRepository(db)
 	wishRepository := repository.NewWishRepositoryImpl(db)
-	wishlistService := service.NewWishlistService(wishlistRepository, wishRepository, userService)
+	wishlistService := service.NewWishlistService(wishlistRepository, wishRepository, userService, friendService)
 	wishlistController := controller.NewWishlistController(&wishlistService, appConfig)
 
 	imageRepository := repository.NewS3ImageRepository(&appConfig.S3)
 	imageService := service.NewImageService(imageRepository, uuid.NewString)
 	imageController := controller.NewImageController(imageService)
-
-	friendRepository := repository.NewFriendRepositoryPostgres(db)
-	friendService := service.NewFriendService(friendRepository, uof)
-	friendController := controller.NewFriendController(friendService)
 
 	api := app.Group("/api")
 

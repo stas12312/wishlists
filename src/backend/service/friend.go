@@ -2,6 +2,8 @@ package service
 
 import "main/model"
 
+//go:generate mockery --name FriendService
+
 type FriendService interface {
 	AddFriend(userId int64, friendId int64) error
 	ListOfFriends(userId int64) (*[]model.User, error)
