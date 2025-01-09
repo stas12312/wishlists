@@ -1,11 +1,12 @@
 import { cookies } from "next/headers";
+import { Divider } from "@nextui-org/divider";
 
 import Login from "@/components/login";
 import Menu from "@/components/menu";
 import { ThemeSwitcher } from "@/components/themeSwitcher";
 import { UserItem } from "@/components/user";
 import Version from "@/components/version";
-
+import { Contacts } from "@/components/contacts";
 export default async function Layout({
   children,
 }: {
@@ -35,7 +36,9 @@ export default async function Layout({
               <div className="sticky top-10">
                 <Menu />
                 <span className="hidden md:block">
-                  <footer className="p-2">
+                  <footer className="px-1">
+                    <Divider />
+                    <Contacts />
                     <Version />
                   </footer>
                 </span>
@@ -50,8 +53,9 @@ export default async function Layout({
         </div>
       </div>
       <span className={`"mt-auto" ${isLogin ? "md:hidden" : ""}`}>
-        <footer>
+        <footer className="flex items-center justify-between">
           <Version />
+          <Contacts />
         </footer>
       </span>
     </div>
