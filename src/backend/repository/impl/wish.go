@@ -161,7 +161,9 @@ func (r *WishRepositoryPostgres) ReservedList(userId int64) (*[]model.Wish, erro
 		users.username AS "user.username",
 		users.user_id AS "user.user_id",
 		
-		wishlists.name AS "wishlist.name"
+		wishlists.name AS "wishlist.name",
+		wishlists.date AS "wishlist.date"
+	
 	FROM wishes
 	JOIN wishlists USING (wishlist_uuid)
 	JOIN users USING (user_id)
