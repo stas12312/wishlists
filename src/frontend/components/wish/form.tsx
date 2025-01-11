@@ -4,6 +4,7 @@ import { Input } from "@nextui-org/input";
 import { FormEvent, useState } from "react";
 
 import UploadButton from "../uploadButton";
+import Desirability from "../desirability";
 
 import { createWish, updateWish } from "@/lib/requests";
 import { IError } from "@/lib/models";
@@ -23,6 +24,7 @@ export default function WishForm(props: {
     image: string | undefined;
     wishlist_uuid: string;
     uuid: string | undefined;
+    desirability: number;
   }>({
     name: existsWish?.name || "",
     comment: existsWish?.comment || "",
@@ -31,6 +33,7 @@ export default function WishForm(props: {
     image: existsWish?.image || "",
     wishlist_uuid: props.wishlistUUID,
     uuid: existsWish?.uuid,
+    desirability: existsWish?.desirability || 1,
   });
 
   const [errorMessages, setErrorMessages] = useState({
@@ -135,6 +138,7 @@ export default function WishForm(props: {
           onChange={handlerChange}
         />
       </div>
+
       <div className="flex sm:flex-row flex-col gap-3">
         <Input
           label="Ссылка на картинку"
@@ -147,6 +151,16 @@ export default function WishForm(props: {
           className="h-[100px] w-[120px] object-cover"
           previewUrl={formData.image}
           onUpload={onUploadImage}
+        />
+      </div>
+      <div>
+        <span>Желанность</span>
+        <Desirability
+          size="lg"
+          value={formData.desirability}
+          onChange={(value) => {
+            setFormData({ ...formData, desirability: value });
+          }}
         />
       </div>
       {errorMessages.details ? (

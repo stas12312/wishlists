@@ -11,6 +11,7 @@ import { Avatar } from "@nextui-org/avatar";
 import { useRouter } from "next/navigation";
 
 import ConfirmationModal from "../confirmation";
+import Desirability from "../desirability";
 
 import { WishItemMenu } from "./card_menu";
 import WishSaveModal from "./saveModal";
@@ -123,26 +124,36 @@ export const WishItem = observer(
                   src={item.image}
                 />
               ) : (
-                <div className=" bg-default-200 h-full rounded-large w-full flex">
+                <div className=" bg-default-100 h-full rounded-large w-full flex">
                   <AiFillGift className="text-8xl mx-auto my-auto" />
                 </div>
               )}
-              <div className="z-1 absolute bottom-4 right-4 flex flex-col gap-1 ml-auto mr-0">
-                {item.fulfilled_at ? (
-                  <Chip className="ml-auto mr-0" color="primary">
-                    Исполнено
-                  </Chip>
-                ) : null}
-                {item.is_reserved ? (
-                  <Chip className="ml-auto mr-0" color="success">
-                    Забронировано {item.actions.cancel_reserve ? "вами" : null}
-                  </Chip>
-                ) : null}
-                {item.cost ? (
-                  <Chip className="ml-auto mr-0">
-                    {item.cost.toLocaleString() + " ₽"}
-                  </Chip>
-                ) : null}
+              <div className="z-1 absolute bottom-4 right-4 flex items-end w-full">
+                <div className="mr-auto ml-8">
+                  {item.desirability && item.desirability > 1 ? (
+                    <Chip>
+                      <Desirability onlyRead value={item.desirability} />
+                    </Chip>
+                  ) : null}
+                </div>
+                <div className="flex flex-col ml-auto mr-0 gap-1">
+                  {item.fulfilled_at ? (
+                    <Chip className="ml-auto mr-0" color="primary">
+                      Исполнено
+                    </Chip>
+                  ) : null}
+                  {item.is_reserved ? (
+                    <Chip className="ml-auto mr-0" color="success">
+                      Забронировано{" "}
+                      {item.actions.cancel_reserve ? "вами" : null}
+                    </Chip>
+                  ) : null}
+                  {item.cost ? (
+                    <Chip className="ml-auto mr-0">
+                      {item.cost.toLocaleString() + " ₽"}
+                    </Chip>
+                  ) : null}
+                </div>
               </div>
             </div>
           </CardBody>
