@@ -154,9 +154,17 @@ func (r *WishRepositoryPostgres) ReservedList(userId int64) (*[]model.Wish, erro
 	SELECT 
 	    wishes.*, 
 		wishlists.user_id,
-		wishes.presenter_id IS NOT NULL AS is_reserved
+		wishes.presenter_id IS NOT NULL AS is_reserved,
+
+		users.name AS "user.name",
+		users.image AS "user.image",
+		users.username AS "user.username",
+		users.user_id AS "user.user_id",
+		
+		wishlists.name AS "wishlist.name"
 	FROM wishes
 	JOIN wishlists USING (wishlist_uuid)
+	JOIN users USING (user_id)
 	WHERE 
 		presenter_id = $1	    
 		AND wishes.is_active IS TRUE
