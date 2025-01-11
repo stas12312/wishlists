@@ -13,7 +13,7 @@ type Wishlist struct {
 	Name        string          `json:"name" validate:"required"`
 	Description string          `json:"description"`
 	CreatedAt   string          `json:"created_at" db:"created_at"`
-	Date        NullTime        `json:"date"`
+	Date        NullTime        `json:"date" db:"date"`
 	UserId      int64           `json:"user_id" db:"user_id"`
 	IsActive    bool            `json:"is_active" db:"is_active"`
 	WishesCount NullInt32       `json:"wishes_count" db:"wishes_count"`
@@ -22,7 +22,8 @@ type Wishlist struct {
 }
 
 type WishlistShort struct {
-	Name string `json:"name" db:"name"`
+	Name string   `json:"name" db:"name"`
+	Date NullTime `json:"date" db:"date"`
 }
 
 type WishlistFilter struct {
