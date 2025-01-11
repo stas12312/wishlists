@@ -7,13 +7,16 @@ import { observer } from "mobx-react-lite";
 import { Key, useState } from "react";
 import toast from "react-hot-toast";
 import { AiFillGift } from "react-icons/ai";
+import { Avatar } from "@nextui-org/avatar";
+import { useRouter } from "next/navigation";
 
 import ConfirmationModal from "../confirmation";
 
 import { WishItemMenu } from "./card_menu";
 import WishSaveModal from "./saveModal";
 
-import { IWish, IWishActions } from "@/lib/models";
+import { IWishActions } from "@/lib/models/wish";
+import { IWish } from "@/lib/models/wish";
 import {
   cancelReserveWish,
   cancelWishFull,
@@ -24,7 +27,16 @@ import {
 } from "@/lib/requests";
 
 export const WishItem = observer(
-  ({ wish, onDelete }: { wish: IWish; onDelete: { (wish: IWish): void } }) => {
+  ({
+    wish,
+    onDelete,
+    withUser = false,
+  }: {
+    wish: IWish;
+    onDelete: { (wish: IWish): void };
+    withUser?: boolean;
+  }) => {
+    const router = useRouter();
     const [item, setItem] = useState<IWish>(wish);
     const [isConfirm, setIsConfirm] = useState(false);
     const { isOpen, onOpenChange } = useDisclosure();
@@ -75,12 +87,15 @@ export const WishItem = observer(
         await cancelWishFull(wishUUID);
         setItem(await getWish(wishUUID));
       }
+      if (key === "open_wishlist") {
+        router.push(`/wishlists/${wish.wishlist_uuid}`);
+      }
     }
 
     return (
       <>
         <Card
-          className="flex-col h-[300px] md:hover:scale-[1.03] w-full"
+          className={`flex-col ${withUser ? "h-[340px]" : "h-[300px]"} md:hover:scale-[1.03] w-full`}
           isPressable={item.link !== null && item.link != ""}
           onPress={() => {
             window.open(item.link);
@@ -100,37 +115,49 @@ export const WishItem = observer(
             </div>
           </CardHeader>
           <CardBody>
-            {item.image ? (
-              <Image
-                removeWrapper
-                className="z-0 object-cover w-full h-full"
-                src={item.image}
-              />
-            ) : (
-              <div className=" bg-default-200 h-full rounded-large w-full flex">
-                <AiFillGift className="text-8xl mx-auto my-auto" />
+            <div className="h-full">
+              {item.image ? (
+                <Image
+                  removeWrapper
+                  className="z-0 object-cover w-full h-full"
+                  src={item.image}
+                />
+              ) : (
+                <div className=" bg-default-200 h-full rounded-large w-full flex">
+                  <AiFillGift className="text-8xl mx-auto my-auto" />
+                </div>
+              )}
+              <div className="z-1 absolute bottom-4 right-4 flex flex-col gap-1 ml-auto mr-0">
+                {item.fulfilled_at ? (
+                  <Chip className="ml-auto mr-0" color="primary">
+                    Исполнено
+                  </Chip>
+                ) : null}
+                {item.is_reserved ? (
+                  <Chip className="ml-auto mr-0" color="success">
+                    Забронировано {item.actions.cancel_reserve ? "вами" : null}
+                  </Chip>
+                ) : null}
+                {item.cost ? (
+                  <Chip className="ml-auto mr-0">
+                    {item.cost.toLocaleString() + " ₽"}
+                  </Chip>
+                ) : null}
               </div>
-            )}
-          </CardBody>
-          <CardFooter className="z-10 absolute bottom-1 right-1 justify-end">
-            <div className="flex flex-col gap-1 ml-auto mr-0">
-              {item.fulfilled_at ? (
-                <Chip className="ml-auto mr-0" color="primary">
-                  Исполнено
-                </Chip>
-              ) : null}
-              {item.is_reserved ? (
-                <Chip className="ml-auto mr-0" color="success">
-                  Забронировано {item.actions.cancel_reserve ? "вами" : null}
-                </Chip>
-              ) : null}
-              {item.cost ? (
-                <Chip className="ml-auto mr-0">
-                  {item.cost.toLocaleString() + " ₽"}
-                </Chip>
-              ) : null}
             </div>
-          </CardFooter>
+          </CardBody>
+          {withUser ? (
+            <CardFooter className="flex justify-between">
+              <Chip avatar={<Avatar src={item.user.image} />}>
+                {item.user.name}
+              </Chip>
+              {item.wishlist.date ? (
+                <Chip color="warning">
+                  {new Date(item.wishlist.date).toLocaleDateString()}
+                </Chip>
+              ) : null}
+            </CardFooter>
+          ) : null}
         </Card>
         <ConfirmationModal
           isOpen={isConfirm}

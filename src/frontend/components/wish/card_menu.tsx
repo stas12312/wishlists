@@ -14,9 +14,10 @@ import {
   MdDelete,
   MdOutlineCheck,
   MdOutlineCancel,
+  MdOutlineOpenInNew,
 } from "react-icons/md";
 
-import { IWish } from "@/lib/models";
+import { IWish } from "@/lib/models/wish";
 
 export function WishItemMenu({
   wish,
@@ -58,6 +59,16 @@ export function WishItemMenu({
               startContent={<MdOutlineCheck />}
             >
               Исполнено
+            </DropdownItem>
+          ) : null}
+          {wish.actions.open_wishlist ? (
+            <DropdownItem
+              key="open_wishlist"
+              className="text-primary"
+              color="primary"
+              startContent={<MdOutlineOpenInNew />}
+            >
+              Перейти в вишлист
             </DropdownItem>
           ) : null}
           {wish.actions.cancel_full ? (

@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { WishItem } from "../wish/card";
 
 import { getReservedWishes } from "@/lib/requests";
-import { IWish } from "@/lib/models";
+import { IWish } from "@/lib/models/wish";
 
 export const ReservedWishes = observer(() => {
   const [wishes, setWishes] = useState<IWish[]>([]);
@@ -21,7 +21,11 @@ export const ReservedWishes = observer(() => {
 
   const components = wishes.map((wish: IWish) => (
     <div key={wish.uuid}>
-      <WishItem wish={wish} onDelete={() => {}} />
+      <WishItem
+        wish={{ ...wish, actions: { ...wish.actions, open_wishlist: true } }}
+        withUser={true}
+        onDelete={() => {}}
+      />
     </div>
   ));
 

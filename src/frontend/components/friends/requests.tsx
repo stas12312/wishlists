@@ -16,7 +16,8 @@ import {
   deleteFriendRequest,
   getFriendRequests,
 } from "@/lib/requests";
-import { IFriendRequest, IUser } from "@/lib/models";
+import { IFriendRequest } from "@/lib/models";
+import { IUser } from "@/lib/models/user";
 import { getUserLink } from "@/lib/label";
 
 const FriendRequestsItems = observer(() => {

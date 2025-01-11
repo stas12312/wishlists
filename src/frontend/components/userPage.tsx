@@ -11,7 +11,8 @@ import { PageSpinner } from "./pageSpinner";
 import { Wishlists } from "./wishlist/list";
 
 import { AddFriend, getFriendStatus, getUserByUsername } from "@/lib/requests";
-import { FriendStatus, IUser } from "@/lib/models";
+import { FriendStatus } from "@/lib/models";
+import { IUser } from "@/lib/models/user";
 
 const UserView = observer(({ username }: { username: string }) => {
   const [isLoading, setIsLoading] = useState(true);

@@ -12,7 +12,7 @@ import ConfirmationModal from "../confirmation";
 import { PageSpinner } from "../pageSpinner";
 
 import { deleteFriend, getFriends } from "@/lib/requests";
-import { IUser } from "@/lib/models";
+import { IUser } from "@/lib/models/user";
 import { getUserLink } from "@/lib/label";
 
 const FriendsList = observer(() => {

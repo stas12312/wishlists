@@ -9,7 +9,7 @@ import UploadButton from "../uploadButton";
 
 import userStore from "@/store/userStore";
 import { getMe, getUserByUsername, updateUser } from "@/lib/requests";
-import { IUser } from "@/lib/models";
+import { IUser } from "@/lib/models/user";
 
 const ProfileForm = observer(() => {
   const [isProfileLoading, setIsProfileLoading] = useState(true);
