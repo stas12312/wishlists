@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@nextui-org/button";
-import { Divider } from "@nextui-org/divider";
 import { Input } from "@nextui-org/input";
 import { observer } from "mobx-react-lite";
 import toast from "react-hot-toast";
@@ -10,6 +9,7 @@ import { MdLink } from "react-icons/md";
 import userStore from "@/store/userStore";
 import { getUserLink } from "@/lib/label";
 import ProfileForm from "@/components/settings/profile";
+import PageHeader from "@/components/pageHeader";
 
 export default function SettingsPage() {
   return <Profile />;
@@ -24,8 +24,7 @@ const Profile = observer(() => {
   return (
     <>
       <div className="flex flex-col gap-3 sm:text-center md:text-left ">
-        <p className="text-2xl w-full">Настройки</p>
-        <Divider />
+        <PageHeader>Настройки</PageHeader>
         <p className="text-xl">Профиль</p>
         <div className="flex flex-col gap-1 rounded-xl bg-content1 box-border shadow-medium p-4 m-1">
           <p className="">Ссылка на профиль</p>

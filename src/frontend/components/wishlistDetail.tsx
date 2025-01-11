@@ -1,6 +1,5 @@
 "use client";
 import { Chip } from "@nextui-org/chip";
-import { Divider } from "@nextui-org/divider";
 import { useDisclosure } from "@nextui-org/modal";
 import { User } from "@nextui-org/user";
 import { observer } from "mobx-react-lite";
@@ -17,6 +16,7 @@ import { VisibleStatus } from "./visibleIcon";
 import { WishItem } from "./wish/card";
 import WishSaveModal from "./wish/saveModal";
 import { WishlistItemMenu } from "./wishlist/card";
+import PageHeader from "./pageHeader";
 
 import { IError } from "@/lib/models";
 import { IWish } from "@/lib/models/wish";
@@ -60,31 +60,33 @@ const WishlistDetail = observer(
             }}
           />
         ) : null}
-        <div className="text-center lg:text-left flex gap-4">
-          <span>
-            <div className="flex flex-row gap-2 justify-center lg:justify-start">
-              <span className={"text-2xl"}>{wishlist.name}</span>
-              <span>
-                <VisibleStatus visible={wishlist.visible} />
-              </span>
-            </div>
-          </span>
-          <span className="my-auto">
-            <WishlistItemMenu
-              isEditable={isEditable}
-              wishlist={wishlist}
-              onDelete={onDelete}
-              onRestore={() => {}}
-              onUpdate={onUpdate}
-            />
-          </span>
-        </div>
-        <div className="text-small text-default-500 flex gap-2">
-          {wishlist.date ? (
-            <Chip>{new Date(wishlist.date).toLocaleDateString()}</Chip>
-          ) : null}
-          <span className="my-auto">{wishlist.description}</span>
-        </div>
+        <PageHeader>
+          <div className="flex">
+            <span>
+              <div className="flex flex-row gap-2 justify-center lg:justify-start">
+                <span className={"text-2xl"}>{wishlist.name}</span>
+                <span>
+                  <VisibleStatus visible={wishlist.visible} />
+                </span>
+              </div>
+            </span>
+            <span className="my-auto">
+              <WishlistItemMenu
+                isEditable={isEditable}
+                wishlist={wishlist}
+                onDelete={onDelete}
+                onRestore={() => {}}
+                onUpdate={onUpdate}
+              />
+            </span>
+          </div>
+          <div className="text-small text-default-500 flex gap-2">
+            {wishlist.date ? (
+              <Chip>{new Date(wishlist.date).toLocaleDateString()}</Chip>
+            ) : null}
+            <span className="my-auto">{wishlist.description}</span>
+          </div>
+        </PageHeader>
       </div>
     );
   },
@@ -170,7 +172,6 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
           onUpdate={onUpdateWishlist}
         />
       </div>
-      <Divider className="my-4 col-span-full" />
       {!userStore.user.id ? (
         <div className="col-span-full flex justify-center">
           <div>
