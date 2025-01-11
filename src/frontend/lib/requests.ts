@@ -11,10 +11,10 @@ import {
   IOAuthProvider,
   IRegisterData,
   ITokens,
-  IUser,
-  IWish,
   ListResponse,
 } from "./models";
+import { IUser } from "./models/user";
+import { IWish } from "./models/wish";
 import { IWishlist } from "./models/wishlist";
 
 import { IWishlistFilter } from "@/components/wishlist/list";

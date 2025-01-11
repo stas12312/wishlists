@@ -6,7 +6,8 @@ import { FormEvent, useState } from "react";
 import UploadButton from "../uploadButton";
 
 import { createWish, updateWish } from "@/lib/requests";
-import { IError, IWish } from "@/lib/models";
+import { IError } from "@/lib/models";
+import { IWish } from "@/lib/models/wish";
 
 export default function WishForm(props: {
   onCreate: { (wish: IWish): void };

@@ -18,7 +18,8 @@ import { WishItem } from "./wish/card";
 import WishSaveModal from "./wish/saveModal";
 import { WishlistItemMenu } from "./wishlist/card";
 
-import { IError, IWish } from "@/lib/models";
+import { IError } from "@/lib/models";
+import { IWish } from "@/lib/models/wish";
 import { IWishlist } from "@/lib/models/wishlist";
 import {
   deleteWishlist,

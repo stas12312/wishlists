@@ -1,6 +1,6 @@
 import { makeAutoObservable, flow } from "mobx";
 
-import { IUser } from "@/lib/models";
+import { IUser } from "@/lib/models/user";
 import { getMe } from "@/lib/requests";
 
 class UserStore {

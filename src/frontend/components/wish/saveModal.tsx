@@ -2,7 +2,7 @@ import { Modal, ModalContent, ModalHeader, ModalBody } from "@nextui-org/modal";
 
 import WishForm from "./form";
 
-import { IWish } from "@/lib/models";
+import { IWish } from "@/lib/models/wish";
 
 export default function WishSaveModal({
   isOpen,
