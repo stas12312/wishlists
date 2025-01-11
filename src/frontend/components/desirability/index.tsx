@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { IoMdHeart } from "react-icons/io";
 
 export const Desirability = ({
   value,
@@ -24,13 +25,13 @@ export const Desirability = ({
       break;
   }
   return (
-    <div className="star-rating">
+    <div className="flex items-center">
       {[...Array(5)].map((star, index) => {
         index += 1;
         return (
           <button
             key={index}
-            className={index <= (hover || value) ? "text-danger-200" : "off"}
+            className={index <= (hover || value) ? "text-danger-200" : ""}
             disabled={onlyRead}
             type="button"
             onClick={() => {
@@ -43,7 +44,9 @@ export const Desirability = ({
               onlyRead ? null : setHover(index);
             }}
           >
-            <span className={className}>❤</span>
+            <span className={className}>
+              <IoMdHeart />
+            </span>
           </button>
         );
       })}
