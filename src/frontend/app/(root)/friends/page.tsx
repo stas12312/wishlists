@@ -1,7 +1,6 @@
 "use client";
 import { Button } from "@nextui-org/button";
 import { Chip } from "@nextui-org/chip";
-import { Divider } from "@nextui-org/divider";
 import { Tab, Tabs } from "@nextui-org/tabs";
 import { observer } from "mobx-react-lite";
 import toast from "react-hot-toast";
@@ -12,13 +11,13 @@ import countersStore from "@/store/counterStore";
 import { getUserLink } from "@/lib/label";
 import FriendRequestsItems from "@/components/friends/requests";
 import FriendsList from "@/components/friends/list";
+import PageHeader from "@/components/pageHeader";
 
 const FriendsPage = observer(() => {
   const incomingCounts = countersStore.friendCounters.incoming_requests;
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-2xl w-full">Друзья</p>
-      <Divider />
+      <PageHeader>Друзья</PageHeader>
       <Tabs aria-label="friends" className="mx-auto" size="lg">
         <Tab key="my-friends" title="Мои друзья">
           <CopyLinkButton username={userStore.user.username} />
