@@ -21,6 +21,10 @@ type Wishlist struct {
 	User        *User           `json:"user"`
 }
 
+type WishlistShort struct {
+	Name string `json:"name" db:"name"`
+}
+
 type WishlistFilter struct {
 	IsActive bool  `query:"is_active"`
 	UserId   int64 `query:"user_id"`
