@@ -37,15 +37,23 @@ func (r *WishRepositoryPostgres) Update(wish *model.Wish) (*model.Wish, error) {
 	updatedWish := &model.Wish{}
 
 	query := `
-	UPDATE wishes SET 
-	  name = $2,
-	  comment = $3,
-	  link = $4,
-	  image = $5,
-	  desirability = $6,
-	  cost = $7
-	WHERE wishes.wish_uuid = $1
-	RETURNING *
+	WITH update AS (
+		UPDATE wishes SET 
+		  name = $2,
+		  comment = $3,
+		  link = $4,
+		  image = $5,
+		  desirability = $6,
+		  cost = $7
+		WHERE wishes.wish_uuid = $1
+		RETURNING *
+	)
+	SELECT
+		update.*,
+		wishlists.user_id,
+		update.presenter_id IS NOT NULL AS is_reserved
+	FROM update
+	JOIN wishlists USING (wishlist_uuid)
 `
 
 	err := r.Connection.Get(
