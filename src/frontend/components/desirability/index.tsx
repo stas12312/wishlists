@@ -24,33 +24,48 @@ export const Desirability = ({
       className = "text-2xl";
       break;
   }
+
   return (
-    <div className="flex items-center">
-      {[...Array(5)].map((star, index) => {
-        index += 1;
-        return (
-          <button
-            key={index}
-            className={index <= (hover || value) ? "text-danger-500" : ""}
-            disabled={onlyRead}
-            type="button"
-            onClick={() => {
-              onlyRead ? null : onChange(index);
-            }}
-            onDoubleClick={() => {
-              onlyRead ? null : onChange(0);
-            }}
-            onMouseEnter={() => {
-              onlyRead ? null : setHover(index);
-            }}
-          >
-            <span className={className}>
-              <IoMdHeart />
-            </span>
-          </button>
-        );
-      })}
-    </div>
+    <>
+      {onlyRead ? (
+        <div className="flex items-center">
+          {[...Array(5)].map((star, index) => {
+            index += 1;
+            return (
+              <div
+                key={index}
+                className={index <= (hover || value) ? "text-danger-500" : ""}
+              >
+                <span className={className}>
+                  <IoMdHeart />
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="flex items-center" onMouseLeave={() => setHover(value)}>
+          {[...Array(5)].map((star, index) => {
+            index += 1;
+            return (
+              <button
+                key={index}
+                className={index <= (hover || value) ? "text-danger-500" : ""}
+                disabled={onlyRead}
+                type="button"
+                onClick={() => onChange(index)}
+                onDoubleClick={() => onChange(0)}
+                onMouseEnter={() => setHover(index)}
+              >
+                <span className={className}>
+                  <IoMdHeart />
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </>
   );
 };
 
