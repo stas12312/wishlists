@@ -180,7 +180,7 @@ export const WishItem = observer(
         />
         <WishSaveModal
           isOpen={isOpen}
-          wish={wish}
+          wish={item}
           wishlistUUID={wish.wishlist_uuid}
           onOpenChange={onOpenChange}
           onUpdate={onWishUpdate}
