@@ -52,11 +52,13 @@ func (ns *NullString) MarshalJSON() ([]byte, error) {
 }
 
 func (ns *NullString) UnmarshalJSON(b []byte) error {
-	s := strings.ReplaceAll(string(b), "\"", "")
+	s := string(b)
 	if s == "null" {
 		ns.Valid = false
 		return nil
 	}
+	s = string(b)[1 : len(string(b))-1]
+	s = strings.ReplaceAll(s, "\\\"", "\"")
 
 	ns.String = s
 	ns.Valid = true
