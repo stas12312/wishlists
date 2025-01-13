@@ -117,6 +117,16 @@ export const WishItem = observer(
           </CardHeader>
           <CardBody>
             <div className="h-full">
+              <div className="absolute flex flex-col items-center gap-1 m-1 w-[89%] z-10">
+                {item.fulfilled_at ? (
+                  <Chip color="primary">Исполнено</Chip>
+                ) : null}
+                {item.is_reserved ? (
+                  <Chip color="success">
+                    Забронировано {item.actions.cancel_reserve ? "вами" : null}
+                  </Chip>
+                ) : null}
+              </div>
               {item.image ? (
                 <Image
                   removeWrapper
@@ -128,6 +138,7 @@ export const WishItem = observer(
                   <AiFillGift className="text-8xl mx-auto my-auto" />
                 </div>
               )}
+
               <div className="z-1 absolute bottom-4 right-4 flex items-end w-full">
                 <div className="mr-auto ml-8">
                   {item.desirability && item.desirability > 1 ? (
@@ -137,17 +148,6 @@ export const WishItem = observer(
                   ) : null}
                 </div>
                 <div className="flex flex-col ml-auto mr-0 gap-1">
-                  {item.fulfilled_at ? (
-                    <Chip className="ml-auto mr-0" color="primary">
-                      Исполнено
-                    </Chip>
-                  ) : null}
-                  {item.is_reserved ? (
-                    <Chip className="ml-auto mr-0" color="success">
-                      Забронировано{" "}
-                      {item.actions.cancel_reserve ? "вами" : null}
-                    </Chip>
-                  ) : null}
                   {item.cost ? (
                     <Chip className="ml-auto mr-0">
                       {item.cost.toLocaleString() + " ₽"}
