@@ -137,6 +137,9 @@ func (s *WishlistImpl) UserCanViewWishlistByModel(userId int64, wishlist *model.
 	if wishlist.Visible == model.ForFriends && s.FriendService.IsFriends(userId, wishlist.UserId) {
 		return true
 	}
+	if wishlist.Visible == model.ForSelectedFriends && userHasAccess(userId, wishlist.VisibleUserIds) {
+		return true
+	}
 
 	return wishlist.UserId == userId
 
@@ -279,4 +282,14 @@ func prepareWishes(userId int64, wishes *[]model.Wish) {
 	for i := range *wishes {
 		(*wishes)[i] = prepareWish(userId, (*wishes)[i])
 	}
+}
+
+func userHasAccess(userId int64, userIds model.Int64Array) bool {
+	for _, value := range userIds.Values() {
+		if value == userId {
+			return true
+		}
+	}
+
+	return false
 }

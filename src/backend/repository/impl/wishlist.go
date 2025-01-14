@@ -15,14 +15,15 @@ type WishlistRepositoryPostgres struct {
 
 func (r *WishlistRepositoryPostgres) Create(wishlist *model.Wishlist) (*model.Wishlist, error) {
 	q := `
-		INSERT INTO wishlists (name, date,description, user_id, visible) 
-		VALUES ($1, $2, $3, $4, $5)
+		INSERT INTO wishlists (name, date,description, user_id, visible, visible_user_ids) 
+		VALUES ($1, $2, $3, $4, $5, $6)
 		RETURNING *
 `
 	createdWishlist := &model.Wishlist{}
 
 	err := r.Get(createdWishlist, q,
-		wishlist.Name, wishlist.Date, wishlist.Description, wishlist.UserId, wishlist.Visible,
+		wishlist.Name, wishlist.Date, wishlist.Description,
+		wishlist.UserId, wishlist.Visible, wishlist.VisibleUserIds,
 	)
 	return createdWishlist, err
 }
@@ -35,13 +36,26 @@ func (r *WishlistRepositoryPostgres) List(
 	q := `
 		SELECT 
 		    *,
+		    COALESCE(visible_user_ids, '{}'::bigint[]) AS visible_user_ids,
 			(
 			    SELECT COUNT(*)
 			    FROM wishes
 			    WHERE 
 			        wishes.wishlist_uuid = wishlists.wishlist_uuid 
 					AND wishes.is_active IS TRUE
-			    ) as wishes_count
+			    ) AS wishes_count,
+		    (
+				SELECT COALESCE(json_agg(users.*), '[]'::json)
+				FROM (
+					SELECT
+						user_id AS id,
+						username,
+						image,
+						name
+					FROM users
+					WHERE user_id = ANY(wishlists.visible_user_ids)
+        		) AS users
+    		) AS visible_users
 		FROM wishlists
 		WHERE 
 		    user_id = $3
@@ -55,6 +69,7 @@ func (r *WishlistRepositoryPostgres) List(
 			    visible = 1
 			    OR user_id = $1
 			    OR (visible = 2 AND $7 IS TRUE)
+			    OR (visible = 3 AND $1 = ANY(visible_user_ids))
 			)
 		  	AND (
 		  	     created_at < COALESCE(NULLIF($4, '')::timestamptz, NOW())
@@ -86,13 +101,26 @@ func (r *WishlistRepositoryPostgres) GetByUUID(UUID string) (*model.Wishlist, er
 			SELECT COUNT(*)
 			FROM wishes
 			WHERE wishes.wishlist_uuid = wishlists.wishlist_uuid 
-		) as wishes_count   
+		) AS wishes_count,
+		(
+			SELECT COALESCE(json_agg(users.*), '[]'::json)
+			FROM (
+				SELECT
+					user_id AS id,
+					username,
+					image,
+					name
+				FROM users
+				WHERE user_id = ANY(wishlists.visible_user_ids)
+			) AS users
+		) AS visible_users
 	FROM wishlists
 	WHERE wishlist_uuid = $1
 `
 	wishlist := &model.Wishlist{}
 
 	err := r.Get(wishlist, q, UUID)
+
 	return wishlist, err
 }
 
@@ -102,14 +130,17 @@ func (r *WishlistRepositoryPostgres) Update(wishlist *model.Wishlist) (*model.Wi
 		name = $2,
 		description = $3,
 		date = $4,
-		visible = $5
+		visible = $5,
+		visible_user_ids = $6
 	WHERE wishlist_uuid = $1
 	RETURNING *
 `
 	updatedWishlist := &model.Wishlist{}
 
 	err := r.Get(
-		updatedWishlist, q, wishlist.Uuid, wishlist.Name, wishlist.Description, wishlist.Date, wishlist.Visible,
+		updatedWishlist, q,
+		wishlist.Uuid, wishlist.Name, wishlist.Description,
+		wishlist.Date, wishlist.Visible, wishlist.VisibleUserIds,
 	)
 
 	return updatedWishlist, err

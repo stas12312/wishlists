@@ -3,7 +3,9 @@ package model
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/lib/pq"
 	"strconv"
 	"strings"
 	"time"
@@ -113,4 +115,54 @@ func (nf *NullInt64) MarshalJSON() ([]byte, error) {
 		return []byte("null"), nil
 	}
 	return json.Marshal(nf.NullInt64)
+}
+
+type Int64Array struct {
+	pq.Int64Array
+}
+
+func (a *Int64Array) MarshalJSON() ([]byte, error) {
+	values := make([]string, len(a.Int64Array))
+	for i, value := range []int64(a.Int64Array) {
+		values[i] = fmt.Sprintf(`%v`, value)
+	}
+	return []byte(fmt.Sprintf("[%v]", strings.Join(values, ","))), nil
+
+}
+func (a *Int64Array) UnmarshalJSON(b []byte) error {
+	return json.Unmarshal(b, &a.Int64Array)
+}
+
+func (a *Int64Array) Values() []int64 {
+	return a.Int64Array
+}
+
+type UserArray []User
+
+func (u *UserArray) UnmarshalJSON(b []byte) error {
+	var list []json.RawMessage
+	if err := json.Unmarshal(b, &list); err != nil {
+		return err
+	}
+	slice := make(UserArray, len(list))
+	for i, elemText := range list {
+		item := User{}
+		err := json.Unmarshal(elemText, &item)
+		if err != nil {
+			return err
+		}
+		slice[i] = item
+	}
+	*u = slice
+	return nil
+}
+
+func (u *UserArray) Scan(src interface{}) error {
+	switch v := src.(type) {
+	case []byte:
+		return json.Unmarshal(v, u)
+	case string:
+		return json.Unmarshal([]byte(v), u)
+	}
+	return errors.New("type assertion failed")
 }
