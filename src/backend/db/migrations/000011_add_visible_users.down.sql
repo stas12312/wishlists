@@ -1,0 +1,1 @@
+ALTER TABLE wishlists DROP COLUMN visible_user_ids;
