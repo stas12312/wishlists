@@ -7,6 +7,7 @@ import { useEffect } from "react";
 
 import countersStore from "@/store/counterStore";
 import { logout } from "@/lib/auth";
+import userStore from "@/store/userStore";
 
 const Menu = observer(() => {
   useEffect(() => {
@@ -44,7 +45,10 @@ const Menu = observer(() => {
         <ListboxItem
           key="logout"
           className="text-danger"
-          onPress={() => logout()}
+          onPress={() => {
+            userStore.logout();
+            logout();
+          }}
         >
           Выход
         </ListboxItem>
