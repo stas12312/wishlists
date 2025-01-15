@@ -3,8 +3,10 @@ import { makeAutoObservable, flow } from "mobx";
 import { IUser } from "@/lib/models/user";
 import { getMe } from "@/lib/requests";
 
+const emptyUser = { id: 0, name: "", email: "", username: "", image: "" };
+
 class UserStore {
-  user: IUser = { id: 0, name: "", email: "", username: "", image: "" };
+  user: IUser = emptyUser;
   isLoading = true;
 
   constructor() {
@@ -17,6 +19,10 @@ class UserStore {
     }
     this.isLoading = false;
   });
+
+  logout() {
+    this.user = emptyUser;
+  }
 
   reloadMe = flow(function* (this: UserStore) {
     this.user = yield getMe();
