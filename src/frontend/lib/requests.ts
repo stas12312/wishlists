@@ -54,7 +54,6 @@ export async function getWishlists(
       cursor: navigation?.cursor,
     },
   });
-
   return response.data;
 }
 

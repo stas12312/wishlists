@@ -14,9 +14,13 @@ const visibleData = {
     text: "Доступен друзьям",
     icon: <MdPerson />,
   },
+  3: {
+    text: "Доступен указанным друзьям",
+    icon: <MdPerson />,
+  },
 };
 
-export function VisibleStatus({ visible }: { visible: 0 | 1 | 2 }) {
+export function VisibleStatus({ visible }: { visible: 0 | 1 | 2 | 3 }) {
   const data = visibleData[visible];
 
   return (
