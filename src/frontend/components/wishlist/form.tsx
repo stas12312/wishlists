@@ -165,7 +165,17 @@ export function WishlistCreateForm({
             return (
               <div className="flex flex-wrap gap-2">
                 {items.map((item) => (
-                  <Chip key={item.key}>{item.data?.name}</Chip>
+                  <Chip
+                    key={item.key}
+                    avatar={
+                      <Avatar
+                        name={item.data?.name[0]}
+                        src={item.data?.image}
+                      />
+                    }
+                  >
+                    {item.data?.name}
+                  </Chip>
                 ))}
               </div>
             );
@@ -190,6 +200,7 @@ export function WishlistCreateForm({
                 <Avatar
                   alt={user.name}
                   className="flex-shrink-0"
+                  name={user.name[0]}
                   size="sm"
                   src={user.image}
                 />
