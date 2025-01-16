@@ -6,8 +6,8 @@ RUN npm ci
 
 COPY . .
 
-ARG base_path
-ENV BASE_PATH $base_path
+ARG base_url
+ENV BASE_URL $base_url
 
 RUN npm run build
 
@@ -20,11 +20,11 @@ COPY --from=base /app/.next ./.next
 
 ARG version
 ARG build_time
-ARG base_path
+ARG base_url
 
 ENV VERSION $version
 ENV BUILD_TIME $build_time
-ENV BASE_PATH $base_path
+ENV BASE_URL $base_url
 
 EXPOSE 3000
 
