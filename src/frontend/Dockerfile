@@ -6,6 +6,9 @@ RUN npm ci
 
 COPY . .
 
+ARG base_path
+ENV BASE_PATH $base_path
+
 RUN npm run build
 
 FROM node:20-alpine3.19 as release
