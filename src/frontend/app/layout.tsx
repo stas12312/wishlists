@@ -9,6 +9,7 @@ import { fontSans } from "@/config/fonts";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.BASE_URL || ""),
   title: {
     default: siteConfig.name,
     template: `%s`,
