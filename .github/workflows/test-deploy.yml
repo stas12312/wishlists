@@ -16,4 +16,4 @@ jobs:
           script: |
             cd ${{ secrets.TEST_PROJECT_PATH }}
             git pull
-            docker-compose build --build-arg build_time="$(date +"%d.%m.%Y %H:%M")" --build-arg version="${{ github.run_number }}"-dev  --build-arg base_path="${{ secrets.TEST_BASE_PATH }}" && docker-compose up -d
+            docker-compose build --build-arg build_time="$(date +"%d.%m.%Y %H:%M")" --build-arg version="${{ github.run_number }}"-dev  --build-arg base_url="${{ secrets.TEST_BASE_URL }}" && docker-compose up -d
