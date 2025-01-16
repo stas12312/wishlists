@@ -43,6 +43,7 @@ jobs:
           build-args: |
             build_time=${{ steps.date.outputs.build_date }}
             version=${{ github.ref_name }}
+            base_path=${{ secrets.PROD_BASE_PATH }}
 
   deploy:
     runs-on: ubuntu-latest

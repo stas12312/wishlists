@@ -17,9 +17,11 @@ COPY --from=base /app/.next ./.next
 
 ARG version
 ARG build_time
+ARG base_path
 
 ENV VERSION $version
 ENV BUILD_TIME $build_time
+ENV BASE_PATH $base_path
 
 EXPOSE 3000
 
