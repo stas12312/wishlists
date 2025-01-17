@@ -2,5 +2,7 @@ export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
   name: "Мои вишлисты",
-  description: "Следуй мечте",
+  description: "Сервис для составления вишлистов",
+  siteName: "mywishlists.ru",
+  locale: "ru",
 };
