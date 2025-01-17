@@ -9,14 +9,15 @@ import toast from "react-hot-toast";
 import { Alert } from "@nextui-org/alert";
 import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
+import { Skeleton } from "@nextui-org/skeleton";
 
 import AddCardButton from "./AddCardButton";
-import { PageSpinner } from "./pageSpinner";
 import { VisibleStatus } from "./visibleIcon";
 import { WishItem } from "./wish/card";
 import WishSaveModal from "./wish/saveModal";
 import { WishlistItemMenu } from "./wishlist/card";
 import PageHeader from "./pageHeader";
+import { PageSpinner } from "./pageSpinner";
 
 import { IError } from "@/lib/models";
 import { IWish } from "@/lib/models/wish";
@@ -133,24 +134,6 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
     items.push(wish);
   }
 
-  if (error?.message) {
-    return (
-      <div className="flex justify-center">
-        <span className="text-large font-bold">{error.message}</span>
-      </div>
-    );
-  }
-
-  if (isLoading) {
-    return <PageSpinner />;
-  }
-
-  const components = items.map((wish: IWish) => (
-    <div key={wish.uuid}>
-      <WishItem wish={wish} onDelete={onDeleteWish} />
-    </div>
-  ));
-
   async function onDeleteWishlist(wishlist: IWishlist) {
     await deleteWishlist(wishlist.uuid);
     toast.success("Вишлист удален");
@@ -162,51 +145,83 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
     setWishlist(updatedWishlist);
   }
 
+  if (error?.message) {
+    return (
+      <div className="flex justify-center">
+        <span className="text-large font-bold">{error.message}</span>
+      </div>
+    );
+  }
+
+  const components = items.map((wish: IWish) => (
+    <div key={wish.uuid}>
+      <WishItem wish={wish} onDelete={onDeleteWish} />
+    </div>
+  ));
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
       <div className="col-span-full">
-        <WishlistDetail
-          isEditable={isEditable}
-          wishlist={wishlist}
-          onDelete={onDeleteWishlist}
-          onUpdate={onUpdateWishlist}
-        />
+        {isLoading ? (
+          <PageHeader>
+            <div>
+              <Skeleton className="h-[32px] w-2/5" />
+            </div>
+            <div>
+              <Skeleton className="h-[20px] w-3/5 mt-[8px]" />
+            </div>
+          </PageHeader>
+        ) : (
+          <WishlistDetail
+            isEditable={isEditable}
+            wishlist={wishlist}
+            onDelete={onDeleteWishlist}
+            onUpdate={onUpdateWishlist}
+          />
+        )}
       </div>
-      {!userStore.user.id ? (
-        <div className="col-span-full flex justify-center">
-          <div>
-            <Alert
-              hideIconWrapper
-              className="mx-auto"
-              color="warning"
-              description="Для отображения забронированных желаний войдите в свой аккаунт"
-              endContent={
-                <Button
-                  as={Link}
-                  className="ml-4"
-                  color="warning"
-                  href="/auth/login"
-                  variant="bordered"
-                >
-                  Войти
-                </Button>
-              }
-              title="Некоторые из желаний могут быть забронированы"
-            />
-          </div>
+      {isLoading ? (
+        <div className="col-span-full">
+          <PageSpinner />
         </div>
-      ) : null}
-
-      <WishSaveModal
-        isOpen={isOpen}
-        wishlistUUID={wishlistUUID}
-        onOpenChange={onOpenChange}
-        onUpdate={onCreateWish}
-      />
-      {isEditable ? (
-        <AddCardButton className="md:h-[300px]" onPress={onOpen} />
-      ) : null}
-      {components}
+      ) : (
+        <>
+          {!userStore.user.id ? (
+            <div className="col-span-full flex justify-center">
+              <div>
+                <Alert
+                  hideIconWrapper
+                  className="mx-auto"
+                  color="warning"
+                  description="Для отображения забронированных желаний войдите в свой аккаунт"
+                  endContent={
+                    <Button
+                      as={Link}
+                      className="ml-4"
+                      color="warning"
+                      href="/auth/login"
+                      variant="bordered"
+                    >
+                      Войти
+                    </Button>
+                  }
+                  title="Некоторые из желаний могут быть забронированы"
+                />
+              </div>
+            </div>
+          ) : null}
+          <WishSaveModal
+            isOpen={isOpen}
+            wishlistUUID={wishlistUUID}
+            onOpenChange={onOpenChange}
+            onUpdate={onCreateWish}
+          />
+          {isEditable ? (
+            <AddCardButton className="md:h-[300px]" onPress={onOpen} />
+          ) : null}
+          {components}
+        </>
+      )}
     </div>
   );
 });
