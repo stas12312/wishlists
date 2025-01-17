@@ -6,8 +6,8 @@ import { User } from "@nextui-org/user";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { Skeleton } from "@nextui-org/skeleton";
 
-import { PageSpinner } from "./pageSpinner";
 import { Wishlists } from "./wishlist/list";
 
 import { AddFriend, getFriendStatus, getUserByUsername } from "@/lib/requests";
@@ -29,32 +29,47 @@ const UserView = observer(({ username }: { username: string }) => {
     fetchData();
   }, []);
 
-  if (isLoading) {
-    return <PageSpinner />;
-  }
-
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <div className="col-span-full flex justify-center flex-col gap-2">
-          <User
-            avatarProps={{
-              name: user.name?.length ? user.name[0] : "",
-              src: user.image,
-              size: "lg",
-            }}
-            description={<span className="text-lg">{user.username}</span>}
-            name={<span className="text-2xl">{user.name}</span>}
-          />
-          <div className="mx-auto">
-            {
-              <UserItem
-                friendStatus={friendStatus}
-                setFriendStatus={setFriendStatus}
-                userId={user.id}
+          {isLoading ? (
+            <>
+              <div className="max-w-[200px] w-full flex items-center gap-3 mx-auto">
+                <div>
+                  <Skeleton className="rounded-full w-14 h-14" />
+                </div>
+                <div className="max-w-[120px] w-full flex flex-col gap-2">
+                  <Skeleton className="h-8 w-4/5" />
+                  <Skeleton className="h-5 w-5/5" />
+                </div>
+              </div>
+              <div className="mx-auto w-full">
+                <Skeleton className="h-7 w-1/5 rounded-full mx-auto" />
+              </div>
+            </>
+          ) : (
+            <>
+              <User
+                avatarProps={{
+                  name: user.name?.length ? user.name[0] : "",
+                  src: user.image,
+                  size: "lg",
+                }}
+                description={<span className="text-lg">{user.username}</span>}
+                name={<span className="text-2xl">{user.name}</span>}
               />
-            }
-          </div>
+              <div className="mx-auto">
+                {
+                  <UserItem
+                    friendStatus={friendStatus}
+                    setFriendStatus={setFriendStatus}
+                    userId={user.id}
+                  />
+                }
+              </div>
+            </>
+          )}
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">

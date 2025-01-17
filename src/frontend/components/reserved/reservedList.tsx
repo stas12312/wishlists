@@ -4,17 +4,20 @@ import { useEffect, useState } from "react";
 
 import { WishItem } from "../wish/card";
 import PageHeader from "../pageHeader";
+import { PageSpinner } from "../pageSpinner";
 
 import { getReservedWishes } from "@/lib/requests";
 import { IWish } from "@/lib/models/wish";
 
 export const ReservedWishes = observer(() => {
   const [wishes, setWishes] = useState<IWish[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
       const data = await getReservedWishes();
       setWishes(data);
+      setIsLoading(false);
     }
     fetchData();
   }, []);
@@ -32,13 +35,17 @@ export const ReservedWishes = observer(() => {
   return (
     <>
       <PageHeader>Забронированные желания</PageHeader>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
-        {components.length ? (
-          components
-        ) : (
-          <p className="text-2xl text-center col-span-full">Список пуст</p>
-        )}
-      </div>
+      {isLoading ? (
+        <PageSpinner />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+          {components.length ? (
+            components
+          ) : (
+            <p className="text-2xl text-center col-span-full">Список пуст</p>
+          )}
+        </div>
+      )}
     </>
   );
 });
