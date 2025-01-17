@@ -77,7 +77,9 @@ const UserView = observer(({ username }: { username: string }) => {
         <Divider className="col-span-full" />
       </div>
 
-      <Wishlists actions={{ edit: false, filter: false }} userId={user.id} />
+      {user.id ? (
+        <Wishlists actions={{ edit: false, filter: false }} userId={user.id} />
+      ) : null}
     </>
   );
 });
