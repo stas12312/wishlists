@@ -33,7 +33,7 @@ export async function getOgImage(
         }}
       >
         <div
-          style={{ display: "flex", fontFamily: "Roboto Bold", fontSize: 16 }}
+          style={{ display: "flex", fontFamily: "Roboto Bold", fontSize: 20 }}
         >
           <h2 style={{ color: "gold", margin: 0 }}>{<BsStars />}</h2>
           <h2 style={{ whiteSpace: "nowrap", margin: 0, display: "flex" }}>
