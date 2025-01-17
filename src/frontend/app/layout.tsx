@@ -18,6 +18,12 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
   },
+  openGraph: {
+    title: siteConfig.name,
+    description: siteConfig.description,
+    siteName: siteConfig.siteName,
+    locale: siteConfig.locale,
+  },
 };
 
 export const viewport: Viewport = {
