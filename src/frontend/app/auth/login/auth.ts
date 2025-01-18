@@ -1,9 +1,9 @@
 "use server";
 import { jwtDecode } from "jwt-decode";
-import { cookies } from "next/headers";
 
 import { authRequest } from "@/lib/requests";
 import { IError } from "@/lib/models";
+import { setTokens } from "@/lib/auth";
 
 interface IToken {
   access_token: string;
@@ -25,10 +25,7 @@ export async function getUser(
     return authData;
   }
 
-  const cookie = await cookies();
-
-  cookie.set("access_token", authData.access_token);
-  cookie.set("refresh_token", authData.refresh_token);
+  await setTokens(authData);
 
   const decoded = jwtDecode<User>(authData.access_token);
 
