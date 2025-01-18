@@ -1,28 +1,34 @@
-import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import { refreshTokenIfNeed } from "./lib/auth";
 
 export default async function middleware(request: NextRequest) {
-  const cookieStore = await cookies();
   if (
-    (!cookieStore.get("access_token")?.value ||
-      !cookieStore.get("refresh_token")?.value) &&
+    (!request.cookies.has("access_token") ||
+      !request.cookies.has("refresh_token")) &&
     !request.nextUrl.pathname.startsWith("/wishlists") &&
     !request.nextUrl.pathname.startsWith("/users") &&
     request.nextUrl.pathname !== "/"
   ) {
-    cookieStore.delete("access_token");
-    cookieStore.delete("refresh_token");
+    request.cookies.delete("access_token");
+    request.cookies.delete("refresh_token");
 
     return NextResponse.redirect(new URL("/auth/login", request.url));
   }
-  if (cookieStore.get("refresh_token")?.value) {
-    await refreshTokenIfNeed();
+  if (request.cookies.get("refresh_token")?.value) {
+    try {
+      const accessToken = await refreshTokenIfNeed();
+      if (accessToken) {
+        request.cookies.set("access_token", accessToken);
+      }
+    } catch {
+      return NextResponse.redirect(new URL("/auth/login", request.url));
+    }
   }
 
-  return NextResponse.next();
+  return NextResponse.next({
+    request: request,
+  });
 }
 
 // See "Matching Paths" below to learn more
