@@ -44,12 +44,12 @@ const UserView = observer(({ username }: { username: string }) => {
                   <Skeleton className="h-5 w-5/5" />
                 </div>
               </div>
-              <div className="mx-auto w-full">
+              <div className="mx-auto w-full mb-4">
                 <Skeleton className="h-7 w-1/5 rounded-full mx-auto" />
               </div>
             </>
           ) : (
-            <>
+            <div className="mb-4 flex justify-center flex-col gap-2">
               <User
                 avatarProps={{
                   name: user.name?.length ? user.name[0] : "",
@@ -68,7 +68,7 @@ const UserView = observer(({ username }: { username: string }) => {
                   />
                 }
               </div>
-            </>
+            </div>
           )}
         </div>
       </div>

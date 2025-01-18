@@ -2,13 +2,13 @@
 
 import { Button } from "@nextui-org/button";
 import { useDisclosure } from "@nextui-org/modal";
+import { observer } from "mobx-react-lite";
 import { createRef, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import { observer } from "mobx-react-lite";
 
 import AddCardButton from "../AddCardButton";
-import WishlistFilter from "../filter";
 
+import WishlistFilter from "./filter";
 import { WishlistItem, WishlistsSkeletonItem } from "./card";
 import WishlistSaveModal from "./saveModal";
 
@@ -92,7 +92,6 @@ export const Wishlists = observer(
 
     let components = [];
     if (isLoading) {
-      components = [];
       for (let i = 1; i < 10; i++) {
         components.push(<div key={i}>{<WishlistsSkeletonItem />}</div>);
       }
