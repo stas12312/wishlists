@@ -7,6 +7,8 @@ import { ITokens } from "./models";
 import { refreshTokens } from "./requests";
 import { IToken } from "./models/token";
 
+const MAX_AGE = 60 * 60 * 24 * 30;
+
 export async function refreshTokenIfNeed() {
   const cookie = await cookies();
 
@@ -45,8 +47,8 @@ export async function logout() {
 export async function setTokens(tokens: ITokens) {
   const cookie = await cookies();
 
-  cookie.set("access_token", tokens.access_token);
-  cookie.set("refresh_token", tokens.refresh_token);
+  cookie.set("access_token", tokens.access_token, { maxAge: MAX_AGE });
+  cookie.set("refresh_token", tokens.refresh_token, { maxAge: MAX_AGE });
   redirect("/");
 }
 
@@ -63,6 +65,5 @@ async function refreshToken() {
     throw "Некорректный ответ";
   }
 
-  cookie.set("access_token", response.access_token);
-  cookie.set("refresh_token", response.refresh_token);
+  await setTokens(response);
 }
