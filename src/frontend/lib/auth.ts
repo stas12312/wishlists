@@ -9,17 +9,19 @@ import { IToken } from "./models/token";
 
 const MAX_AGE = 60 * 60 * 24 * 30;
 
-export async function refreshTokenIfNeed() {
+export async function refreshTokenIfNeed(): Promise<string | null> {
   const cookie = await cookies();
 
   const accessToken: string | undefined = cookie.get("access_token")?.value;
   if (accessToken) {
     const tokenData = jwtDecode(accessToken);
-    const exporedTime = tokenData.exp;
-    if (exporedTime && exporedTime * 1000 < Date.now()) {
-      await refreshToken();
+    const expiredTime = tokenData.exp;
+    if (expiredTime && expiredTime * 1000 < Date.now()) {
+      console.log("Обновление токена");
+      return await refreshToken();
     }
   }
+  return null;
 }
 
 export async function getTokenData(token: string) {
@@ -44,15 +46,15 @@ export async function logout() {
   redirect("/");
 }
 
-export async function setTokens(tokens: ITokens) {
+export async function setTokens(tokens: ITokens): Promise<string> {
   const cookie = await cookies();
 
   cookie.set("access_token", tokens.access_token, { maxAge: MAX_AGE });
   cookie.set("refresh_token", tokens.refresh_token, { maxAge: MAX_AGE });
-  redirect("/");
+  return tokens.access_token;
 }
 
-async function refreshToken() {
+async function refreshToken(): Promise<string> {
   const cookie = await cookies();
   const refreshToken = cookie.get("refresh_token")?.value;
 
@@ -65,5 +67,5 @@ async function refreshToken() {
     throw "Некорректный ответ";
   }
 
-  await setTokens(response);
+  return await setTokens(response);
 }
