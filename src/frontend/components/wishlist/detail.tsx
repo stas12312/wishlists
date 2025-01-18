@@ -11,13 +11,14 @@ import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
 import { Skeleton } from "@nextui-org/skeleton";
 
-import AddCardButton from "./AddCardButton";
-import { VisibleStatus } from "./visibleIcon";
-import { WishItem } from "./wish/card";
-import WishSaveModal from "./wish/saveModal";
-import { WishlistItemMenu } from "./wishlist/card";
-import PageHeader from "./pageHeader";
-import { PageSpinner } from "./pageSpinner";
+import AddCardButton from "../AddCardButton";
+import { VisibleStatus } from "../visibleIcon";
+import { WishItem } from "../wish/card";
+import WishSaveModal from "../wish/saveModal";
+import PageHeader from "../pageHeader";
+import { PageSpinner } from "../pageSpinner";
+
+import { WishlistItemMenu } from "./card";
 
 import { IError } from "@/lib/models";
 import { IWish } from "@/lib/models/wish";
@@ -47,19 +48,21 @@ const WishlistDetail = observer(
     return (
       <div className="flex flex-col">
         {user && user.id != userStore.user.id ? (
-          <User
-            as="button"
-            avatarProps={{
-              name: user.name?.length ? user.name[0] : "",
-              src: user.image,
-              size: "lg",
-            }}
-            description={<span className="text-lg">{user.username}</span>}
-            name={<span className="text-2xl">{user.name}</span>}
-            onClick={() => {
-              router.push(`/users/${user.username}`);
-            }}
-          />
+          <div className="mx-auto mb-4">
+            <User
+              as="button"
+              avatarProps={{
+                name: user.name?.length ? user.name[0] : "",
+                src: user.image,
+                size: "lg",
+              }}
+              description={<span className="text-lg">{user.username}</span>}
+              name={<span className="text-2xl">{user.name}</span>}
+              onClick={() => {
+                router.push(`/users/${user.username}`);
+              }}
+            />
+          </div>
         ) : null}
         <PageHeader>
           <div className="flex">

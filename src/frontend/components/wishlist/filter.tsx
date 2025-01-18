@@ -1,6 +1,6 @@
 import { Select, SelectItem } from "@nextui-org/select";
 
-import { IWishlistFilter } from "./wishlist/list";
+import { IWishlistFilter } from "./list";
 const WishlistFilter = ({
   filter,
   setFilter,
