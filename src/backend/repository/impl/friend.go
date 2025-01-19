@@ -160,7 +160,7 @@ func (r *FriendRepositoryPostgres) FriendRequestList(userId int64) (*[]model.Fri
 	WHERE
 	    (from_user_id = $1 OR to_user_id = $1)
 	    AND status = 0
-		ORDER BY created_at DESC 
+		ORDER BY friend_requests.created_at DESC 
 	
 `
 	rawData := &[]RawFriendRequest{}
