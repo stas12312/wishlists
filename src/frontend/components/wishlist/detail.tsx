@@ -168,10 +168,10 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
         {isLoading ? (
           <PageHeader>
             <div>
-              <Skeleton className="h-[32px] w-2/5" />
+              <Skeleton className="h-[32px] w-1/5 rounded-full" />
             </div>
             <div>
-              <Skeleton className="h-[20px] w-3/5 mt-[8px]" />
+              <Skeleton className="h-[20px] w-2/5 mt-[8px] rounded-full" />
             </div>
           </PageHeader>
         ) : (
