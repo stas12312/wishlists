@@ -1,13 +1,14 @@
 package model
 
 type User struct {
-	Id       int64  `json:"id" db:"user_id"`
-	Email    string `json:"email"`
-	Name     string `json:"name"`
-	Password string `json:"-"`
-	IsActive bool   `json:"-" db:"is_active"`
-	Username string `json:"username" db:"username"`
-	Image    string `json:"image" db:"image"`
+	Id        int64  `json:"id" db:"user_id"`
+	Email     string `json:"email"`
+	Name      string `json:"name"`
+	Password  string `json:"-"`
+	IsActive  bool   `json:"-" db:"is_active"`
+	Username  string `json:"username" db:"username"`
+	Image     string `json:"image" db:"image"`
+	CreatedAt string `json:"-" db:"created_at"`
 }
 
 type UserForUpdate struct {
