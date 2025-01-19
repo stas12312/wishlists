@@ -39,10 +39,10 @@ const FriendsList = observer(() => {
   }
 
   const users = friends.map((friend) => (
-    <div key={friend.id}>
+    <div key={friend.id} className="md:hover:scale-[1.03] duration-200">
       <Card
         isPressable
-        className="w-full md:hover:scale-[1.03]"
+        className="w-full"
         onPress={() => {
           router.push(getUserLink(friend.username));
         }}
