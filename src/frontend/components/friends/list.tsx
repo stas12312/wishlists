@@ -4,12 +4,12 @@ import { User } from "@nextui-org/user";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Button } from "@nextui-org/button";
-import { MdOutlineCancel } from "react-icons/md";
 import toast from "react-hot-toast";
 
 import ConfirmationModal from "../confirmation";
 import { PageSpinner } from "../pageSpinner";
+
+import FriendMenu from "./menu";
 
 import { deleteFriend, getFriends } from "@/lib/requests";
 import { IUser } from "@/lib/models/user";
@@ -41,14 +41,14 @@ const FriendsList = observer(() => {
   const users = friends.map((friend) => (
     <div key={friend.id}>
       <Card
-        className="w-full"
+        isPressable
+        className="w-full md:hover:scale-[1.03]"
         onPress={() => {
-          router.push(`/users/${friend.username}`);
+          router.push(getUserLink(friend.username));
         }}
       >
         <CardBody className="flex flex-row justify-between">
           <User
-            key={friend.id}
             avatarProps={{
               src: friend.image,
               name: friend.name[0],
@@ -56,20 +56,14 @@ const FriendsList = observer(() => {
             className="cursor-pointer"
             description={friend.username}
             name={friend.name}
-            onClick={() => {
-              router.push(getUserLink(friend.username));
+          />
+          <FriendMenu
+            handleAction={(action) => {
+              if (action == "delete") {
+                setIsConfirm(true);
+              }
             }}
           />
-          <Button
-            isIconOnly
-            color="danger"
-            variant="flat"
-            onPress={() => {
-              setIsConfirm(true);
-            }}
-          >
-            <MdOutlineCancel />
-          </Button>
         </CardBody>
       </Card>
       <ConfirmationModal
@@ -81,7 +75,7 @@ const FriendsList = observer(() => {
           setIsConfirm(false);
           setFriends(
             friends.filter((f) => {
-              f.id != friend.id;
+              return f.id != friend.id;
             }),
           );
         }}
