@@ -51,60 +51,64 @@ export const WishlistItem = forwardRef(
     }
 
     return (
-      <Card
-        ref={ref}
-        className="w-full h-40 flex-col md:hover:scale-[1.03]"
-        isPressable={wishlist.is_active}
-        onPress={() => router.push(`/wishlists/${cardWishlist.uuid}`)}
-      >
-        <CardHeader className="flex-col items-start">
-          <div className="flex flex-row justify-between w-full">
-            <div className="text-tiny font-bold my-auto flex flex-col text-left overflow-hidden truncate">
-              <span
-                className={`flex flex-row gap-1 ${!wishlist.is_active ? "text-default-400" : ""}`}
-              >
-                <p className="uppercase text-large">{cardWishlist.name}</p>
-                <span className="text-small">
-                  <VisibleStatus visible={cardWishlist.visible} />
+      <div className="md:hover:scale-[1.03] duration-200">
+        <Card
+          ref={ref}
+          className="w-full h-40 flex-col"
+          isPressable={wishlist.is_active}
+          onPress={() => router.push(`/wishlists/${cardWishlist.uuid}`)}
+        >
+          <CardHeader className="flex-col items-start">
+            <div className="flex flex-row justify-between w-full">
+              <div className="text-tiny font-bold my-auto flex flex-col text-left overflow-hidden truncate">
+                <span
+                  className={`flex flex-row gap-1 ${!wishlist.is_active ? "text-default-400" : ""}`}
+                >
+                  <p className="uppercase text-large">{cardWishlist.name}</p>
+                  <span className="text-small">
+                    <VisibleStatus visible={cardWishlist.visible} />
+                  </span>
                 </span>
-              </span>
-              <p className="text-default-500 text-left">
-                {cardWishlist.description}
-              </p>
+                <p className="text-default-500 text-left">
+                  {cardWishlist.description}
+                </p>
+              </div>
+              <div>
+                {edit ? (
+                  <WishlistItemMenu
+                    isEditable={true}
+                    wishlist={cardWishlist}
+                    onDelete={onDelete}
+                    onRestore={onRestore}
+                    onUpdate={onUpdate}
+                  />
+                ) : null}
+              </div>
             </div>
-            <div>
-              {edit ? (
-                <WishlistItemMenu
-                  isEditable={true}
-                  wishlist={cardWishlist}
-                  onDelete={onDelete}
-                  onRestore={onRestore}
-                  onUpdate={onUpdate}
-                />
-              ) : null}
-            </div>
-          </div>
-        </CardHeader>
-        <CardBody className="justify-end">
-          <div className="flow-root">
-            <span className=" float-right flex flex-col gap-1">
-              <Chip className="mr-0 ml-auto" color="primary">
-                {cardWishlist.wishes_count > 0 ? wishlist.wishes_count : "Нет"}{" "}
-                {getLabelForCount(cardWishlist.wishes_count, [
-                  "желание",
-                  "желания",
-                  "желаний",
-                ])}
-              </Chip>
-              {cardWishlist.date ? (
-                <Chip className="text-default-500 mr-0 ml-auto">
-                  {new Date(cardWishlist.date).toLocaleDateString()}
+          </CardHeader>
+          <CardBody className="justify-end">
+            <div className="flow-root">
+              <span className=" float-right flex flex-col gap-1">
+                <Chip className="mr-0 ml-auto" color="primary">
+                  {cardWishlist.wishes_count > 0
+                    ? wishlist.wishes_count
+                    : "Нет"}{" "}
+                  {getLabelForCount(cardWishlist.wishes_count, [
+                    "желание",
+                    "желания",
+                    "желаний",
+                  ])}
                 </Chip>
-              ) : null}
-            </span>
-          </div>
-        </CardBody>
-      </Card>
+                {cardWishlist.date ? (
+                  <Chip className="text-default-500 mr-0 ml-auto">
+                    {new Date(cardWishlist.date).toLocaleDateString()}
+                  </Chip>
+                ) : null}
+              </span>
+            </div>
+          </CardBody>
+        </Card>
+      </div>
     );
   },
 );

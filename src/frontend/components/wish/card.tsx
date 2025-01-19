@@ -95,81 +95,84 @@ export const WishItem = observer(
 
     return (
       <>
-        <Card
-          className={`flex-col ${withUser ? "h-[340px]" : "h-[300px]"} md:hover:scale-[1.03] w-full`}
-          isPressable={item.link !== null && item.link != ""}
-          onPress={() => {
-            window.open(item.link);
-          }}
-        >
-          <CardHeader className="flex-col items-start">
-            <div className="flex flex-row justify-between w-full h-[40px]">
-              <p className="text-tiny font-bold my-auto flex flex-col text-left overflow-hidden text-ellipsis truncate">
-                <span className="uppercase text-xl">{item.name}</span>
-                <span className="text-default-500">{item.comment}</span>
-              </p>
-              {showMenu(wish.actions) ? (
-                <span>
-                  <WishItemMenu handeAction={handleOnAction} wish={item} />
-                </span>
-              ) : null}
-            </div>
-          </CardHeader>
-          <CardBody>
-            <div className="h-full">
-              <div className="absolute flex flex-col items-center gap-1 m-1 w-[89%] z-10">
-                {item.fulfilled_at ? (
-                  <Chip color="primary">Исполнено</Chip>
+        <div className="md:hover:scale-[1.03] duration-200">
+          <Card
+            className={`flex-col ${withUser ? "h-[340px]" : "h-[300px]"} w-full`}
+            isPressable={item.link !== null && item.link != ""}
+            onPress={() => {
+              window.open(item.link);
+            }}
+          >
+            <CardHeader className="flex-col items-start">
+              <div className="flex flex-row justify-between w-full h-[40px]">
+                <p className="text-tiny font-bold my-auto flex flex-col text-left overflow-hidden text-ellipsis truncate">
+                  <span className="uppercase text-xl">{item.name}</span>
+                  <span className="text-default-500">{item.comment}</span>
+                </p>
+                {showMenu(wish.actions) ? (
+                  <span>
+                    <WishItemMenu handeAction={handleOnAction} wish={item} />
+                  </span>
                 ) : null}
-                {item.is_reserved ? (
-                  <Chip color="success">
-                    Забронировано {item.actions.cancel_reserve ? "вами" : null}
+              </div>
+            </CardHeader>
+            <CardBody>
+              <div className="h-full">
+                <div className="absolute flex flex-col items-center gap-1 m-1 w-[89%] z-10">
+                  {item.fulfilled_at ? (
+                    <Chip color="primary">Исполнено</Chip>
+                  ) : null}
+                  {item.is_reserved ? (
+                    <Chip color="success">
+                      Забронировано{" "}
+                      {item.actions.cancel_reserve ? "вами" : null}
+                    </Chip>
+                  ) : null}
+                </div>
+                {item.image ? (
+                  <Image
+                    removeWrapper
+                    className="z-0 object-cover w-full h-full"
+                    src={item.image}
+                  />
+                ) : (
+                  <div className=" bg-default-100 h-full rounded-large w-full flex">
+                    <AiFillGift className="text-8xl mx-auto my-auto" />
+                  </div>
+                )}
+
+                <div className="z-1 absolute bottom-4 right-4 flex items-end w-full">
+                  <div className="mr-auto ml-8">
+                    {item.desirability && item.desirability > 1 ? (
+                      <Chip>
+                        <Desirability onlyRead value={item.desirability} />
+                      </Chip>
+                    ) : null}
+                  </div>
+                  <div className="flex flex-col ml-auto mr-0 gap-1">
+                    {item.cost ? (
+                      <Chip className="ml-auto mr-0">
+                        {item.cost.toLocaleString() + " ₽"}
+                      </Chip>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+            </CardBody>
+            {withUser ? (
+              <CardFooter className="flex justify-between">
+                <Chip avatar={<Avatar src={item.user.image} />}>
+                  {item.user.name}
+                </Chip>
+                {item.wishlist.date ? (
+                  <Chip color="warning">
+                    {new Date(item.wishlist.date).toLocaleDateString()}
                   </Chip>
                 ) : null}
-              </div>
-              {item.image ? (
-                <Image
-                  removeWrapper
-                  className="z-0 object-cover w-full h-full"
-                  src={item.image}
-                />
-              ) : (
-                <div className=" bg-default-100 h-full rounded-large w-full flex">
-                  <AiFillGift className="text-8xl mx-auto my-auto" />
-                </div>
-              )}
-
-              <div className="z-1 absolute bottom-4 right-4 flex items-end w-full">
-                <div className="mr-auto ml-8">
-                  {item.desirability && item.desirability > 1 ? (
-                    <Chip>
-                      <Desirability onlyRead value={item.desirability} />
-                    </Chip>
-                  ) : null}
-                </div>
-                <div className="flex flex-col ml-auto mr-0 gap-1">
-                  {item.cost ? (
-                    <Chip className="ml-auto mr-0">
-                      {item.cost.toLocaleString() + " ₽"}
-                    </Chip>
-                  ) : null}
-                </div>
-              </div>
-            </div>
-          </CardBody>
-          {withUser ? (
-            <CardFooter className="flex justify-between">
-              <Chip avatar={<Avatar src={item.user.image} />}>
-                {item.user.name}
-              </Chip>
-              {item.wishlist.date ? (
-                <Chip color="warning">
-                  {new Date(item.wishlist.date).toLocaleDateString()}
-                </Chip>
-              ) : null}
-            </CardFooter>
-          ) : null}
-        </Card>
+              </CardFooter>
+            ) : null}
+          </Card>
+        </div>
         <ConfirmationModal
           isOpen={isConfirm}
           message="Вы действительно хотите удалить желание?"
