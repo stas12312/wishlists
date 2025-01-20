@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 
 import { Contacts } from "@/components/contacts";
 import Login from "@/components/login";
-import Menu from "@/components/mobileMenu";
+import Menu from "@/components/menu";
 import { ThemeSwitcher } from "@/components/themeSwitcher";
 import { UserItem } from "@/components/user";
 import Version from "@/components/version";
