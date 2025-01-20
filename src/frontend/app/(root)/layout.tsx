@@ -33,7 +33,7 @@ export default async function Layout({
               </div>
             </div>
             <div className="col-span-full md:col-span-3 lg:col-span-2 flex-col">
-              <div className="sticky top-10 hidden md:block">
+              <div className="sticky top-10 hidden md:block px-4">
                 <Menu variant="desktop" />
                 <span className="hidden md:block">
                   <footer className="px-1">
