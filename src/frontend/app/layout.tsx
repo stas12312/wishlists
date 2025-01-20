@@ -56,6 +56,7 @@ export default async function RootLayout({
           <>
             {children}
             <Toaster
+              containerClassName="mb-20 md:mb-0"
               position="bottom-right"
               toastOptions={{
                 className: "!bg-content1 dark:!text-white !text-base-content",
