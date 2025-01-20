@@ -53,7 +53,7 @@ export default async function Layout({
         </div>
       </div>
       <span className={`"mt-auto" ${isLogin ? "md:hidden" : ""}`}>
-        <footer className="flex items-center justify-between mb-20">
+        <footer className="flex items-center justify-between mb-20 md:mb-0 px-3">
           <Version />
           <Contacts />
         </footer>
