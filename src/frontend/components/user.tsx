@@ -8,10 +8,11 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@nextui-org/dropdown";
-import { MdLink } from "react-icons/md";
+import { MdLink, MdOutlineExitToApp } from "react-icons/md";
 import toast from "react-hot-toast";
 
 import userStore from "@/store/userStore";
+import { logout } from "@/lib/auth";
 
 export const UserItem = observer(() => {
   const user = userStore.user;
@@ -48,6 +49,18 @@ export const UserItem = observer(() => {
           <DropdownMenu variant="flat" onAction={onHandleAction}>
             <DropdownItem key="share" startContent={<MdLink />}>
               Ссылка на профиль
+            </DropdownItem>
+            <DropdownItem
+              key="logoun"
+              className="text-danger"
+              color="danger"
+              startContent={<MdOutlineExitToApp />}
+              onPress={async () => {
+                await logout();
+                userStore.logout();
+              }}
+            >
+              Выйти
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>

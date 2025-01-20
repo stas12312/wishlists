@@ -4,12 +4,13 @@ import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { observer } from "mobx-react-lite";
 import toast from "react-hot-toast";
-import { MdLink } from "react-icons/md";
+import { MdLink, MdOutlineExitToApp } from "react-icons/md";
 
 import userStore from "@/store/userStore";
 import { getUserLink } from "@/lib/label";
 import ProfileForm from "@/components/settings/profile";
 import PageHeader from "@/components/pageHeader";
+import { logout } from "@/lib/auth";
 
 export default function SettingsPage() {
   return <Profile />;
@@ -49,6 +50,18 @@ const Profile = observer(() => {
           <p className="font mt-4">Данные профиля</p>
           <ProfileForm />
         </div>
+        <Button
+          fullWidth
+          color="danger"
+          startContent={<MdOutlineExitToApp />}
+          variant="light"
+          onPress={async () => {
+            await logout();
+            userStore.logout();
+          }}
+        >
+          Выйти
+        </Button>
       </div>
     </>
   );
