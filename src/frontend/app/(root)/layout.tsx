@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 
 import { Contacts } from "@/components/contacts";
 import Login from "@/components/login";
-import Menu from "@/components/mobileMenu";
+import Menu from "@/components/menu";
 import { ThemeSwitcher } from "@/components/themeSwitcher";
 import { UserItem } from "@/components/user";
 import Version from "@/components/version";
@@ -53,7 +53,7 @@ export default async function Layout({
         </div>
       </div>
       <span className={`"mt-auto" ${isLogin ? "md:hidden" : ""}`}>
-        <footer className="flex items-center justify-between mb-20">
+        <footer className="flex items-center justify-between mb-20 md:mb-0 px-3">
           <Version />
           <Contacts />
         </footer>
