@@ -89,9 +89,10 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
               key={item.title}
               className="h-[34px] mx-auto"
               href={item.href}
+              startContent={item.icon}
             >
               <span className="px-2 items-center flex justify-normal gap-2">
-                {item.icon} {item.title}{" "}
+                {item.title}{" "}
                 {item.counterName ? (
                   <Counter value={countersValues.get(item.counterName) || 0} />
                 ) : (
@@ -105,14 +106,13 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
           <ListboxItem
             key="logout"
             className="text-danger"
+            startContent={<MdOutlineExitToApp />}
             onPress={() => {
               userStore.logout();
               logout();
             }}
           >
-            <span className="px-2 items-center flex justify-normal gap-2">
-              {<MdOutlineExitToApp />} Выход
-            </span>
+            <span className="px-2">Выйти</span>
           </ListboxItem>
         </ListboxSection>
       </Listbox>
