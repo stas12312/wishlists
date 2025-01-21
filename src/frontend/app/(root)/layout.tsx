@@ -53,14 +53,18 @@ export default async function Layout({
         </div>
       </div>
       <span className={`"mt-auto" ${isLogin ? "md:hidden" : ""}`}>
-        <footer className="flex items-center justify-between mb-20 md:mb-0 px-3">
+        <footer
+          className={`flex items-center justify-between ${isLogin ? "mb-20 md:mb-0" : ""} px-3`}
+        >
           <Version />
           <Contacts />
         </footer>
       </span>
-      <div className="bg-content1 fixed inset-x-0 bottom-0 z-10 shadow-medium md:hidden">
-        <Menu variant="mobile" />
-      </div>
+      {isLogin ? (
+        <div className="bg-content1 fixed inset-x-0 bottom-0 z-10 shadow-medium md:hidden">
+          <Menu variant="mobile" />
+        </div>
+      ) : null}
     </div>
   );
 }
