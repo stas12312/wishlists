@@ -17,7 +17,6 @@ export async function refreshTokenIfNeed(): Promise<string | null> {
     const tokenData = jwtDecode(accessToken);
     const expiredTime = tokenData.exp;
     if (expiredTime && expiredTime * 1000 < Date.now()) {
-      console.log("Обновление токена");
       return await refreshToken();
     }
   }
