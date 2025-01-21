@@ -5,7 +5,7 @@ import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
 import { Badge } from "@nextui-org/badge";
 import {
-  MdViewList,
+  MdAutoAwesome,
   MdPerson,
   MdSettings,
   MdStar,
@@ -24,7 +24,7 @@ const ITEMS: {
   counterName?: string;
 }[] = [
   {
-    icon: <MdViewList />,
+    icon: <MdAutoAwesome />,
     title: "Вишлисты",
     href: "/",
   },
