@@ -61,7 +61,7 @@ export default async function Layout({
         </footer>
       </span>
       {isLogin ? (
-        <div className="bg-content1 fixed inset-x-0 bottom-0 z-10 shadow-medium md:hidden">
+        <div className=" bg-content1 bg-opacity-50 backdrop-blur-xl fixed inset-x-0 bottom-0 z-10 shadow-medium md:hidden">
           <Menu variant="mobile" />
         </div>
       ) : null}
