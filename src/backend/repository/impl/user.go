@@ -18,7 +18,7 @@ func (r *UserRepositoryPostgres) GetByEmail(email string) (*model.User, error) {
 SELECT *
 FROM users
 WHERE 
-    email = $1
+    lower(email) = lower($1)
 `
 	user := &model.User{}
 
@@ -32,7 +32,7 @@ func (r *UserRepositoryPostgres) GetByUsername(username string) (*model.User, er
 		SELECT *
 		FROM users
 		WHERE 
-			username = $1
+			lower(username) = lower($1)
 `
 	user := &model.User{}
 
