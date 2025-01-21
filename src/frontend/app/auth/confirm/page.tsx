@@ -1,5 +1,5 @@
 "use client";
-import { useSearchParams } from "next/navigation";
+import { redirect, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 
 import { setTokens } from "@/lib/auth";
@@ -29,6 +29,7 @@ function Confirm() {
       return;
     }
     await setTokens(tokens);
+    redirect("/");
   }
 
   return <div>{error ?? "Подтверждение email"}</div>;

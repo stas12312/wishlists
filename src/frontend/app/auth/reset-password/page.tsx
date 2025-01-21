@@ -4,7 +4,7 @@ import { Divider } from "@nextui-org/divider";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
 import { observer } from "mobx-react-lite";
-import { useSearchParams } from "next/navigation";
+import { redirect, useSearchParams } from "next/navigation";
 import { FormEvent, Suspense, useEffect, useState } from "react";
 
 import { checkCode, resetPassword, restorePassword } from "@/lib/requests";
@@ -68,7 +68,8 @@ const RestorePassword = observer(() => {
         setIsLoading(false);
         return;
       }
-      setTokens(response as ITokens);
+      await setTokens(response as ITokens);
+      redirect("/");
     }
     setIsLoading(false);
   }

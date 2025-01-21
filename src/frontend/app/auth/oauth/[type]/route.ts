@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { redirect } from "next/navigation";
 
 import { setTokens } from "@/lib/auth";
 import { OAuth } from "@/lib/requests";
@@ -16,4 +17,5 @@ export const GET = async (
   }
 
   await setTokens(tokens);
+  redirect("/");
 };

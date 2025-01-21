@@ -4,6 +4,7 @@ import { Divider } from "@nextui-org/divider";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
 import { FormEvent, useEffect, useState } from "react";
+import { redirect } from "next/navigation";
 
 import CodeInput from "@/components/codeInput";
 import PasswordInput from "@/components/passwordInput";
@@ -35,7 +36,7 @@ export default function SignIn() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    processRegister();
+    await processRegister();
   }
 
   useEffect(() => {
@@ -86,7 +87,8 @@ export default function SignIn() {
       if ("message" in result) {
         setErrorMessages({ ...errorMessages, Code: result.message });
       } else {
-        setTokens(result);
+        await setTokens(result);
+        redirect("/");
       }
     }
     setIsLoading(false);
