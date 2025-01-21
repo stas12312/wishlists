@@ -31,7 +31,7 @@ const ITEMS: {
   {
     icon: <MdStar />,
     title: "Желания",
-    href: "wishes",
+    href: "/wishes",
   },
   {
     icon: <MdPerson />,
