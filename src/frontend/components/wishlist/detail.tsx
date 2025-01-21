@@ -65,7 +65,7 @@ const WishlistDetail = observer(
           </div>
         ) : null}
         <PageHeader>
-          <div className="flex">
+          <div className="flex justify-center md:justify-start">
             <span>
               <div className="flex flex-row gap-2 justify-center lg:justify-start">
                 <span className={"text-2xl"}>{wishlist.name}</span>
@@ -84,7 +84,7 @@ const WishlistDetail = observer(
               />
             </span>
           </div>
-          <div className="text-small text-default-500 flex gap-2">
+          <div className="text-small text-default-500 flex gap-2 justify-center md:justify-start">
             {wishlist.date ? (
               <Chip>{new Date(wishlist.date).toLocaleDateString()}</Chip>
             ) : null}
@@ -167,10 +167,10 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
       <div className="col-span-full">
         {isLoading ? (
           <PageHeader>
-            <div>
+            <div className="flex justify-center md:justify-start">
               <Skeleton className="h-[32px] w-1/5 rounded-full" />
             </div>
-            <div>
+            <div className="flex justify-center md:justify-start">
               <Skeleton className="h-[20px] w-2/5 mt-[8px] rounded-full" />
             </div>
           </PageHeader>
