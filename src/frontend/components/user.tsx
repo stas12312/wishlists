@@ -56,8 +56,8 @@ export const UserItem = observer(() => {
               color="danger"
               startContent={<MdOutlineExitToApp />}
               onPress={async () => {
-                await logout();
                 userStore.logout();
+                await logout();
               }}
             >
               Выйти

@@ -57,8 +57,8 @@ const Profile = observer(() => {
           startContent={<MdOutlineExitToApp />}
           variant="light"
           onPress={async () => {
-            await logout();
             userStore.logout();
+            await logout();
           }}
         >
           Выйти
