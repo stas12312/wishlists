@@ -18,6 +18,8 @@ COPY --from=base /app/node_modules ./node_modules
 COPY --from=base /app/package.json ./package.json
 COPY --from=base /app/.next ./.next
 
+COPY --from=base /app/public ./public
+
 ARG version
 ARG build_time
 ARG base_url
