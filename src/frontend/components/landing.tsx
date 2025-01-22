@@ -20,7 +20,7 @@ const Landing = () => {
           </div>
         </div>
         <div className="col-span-2">
-          <Image src="static/image.png" />
+          <Image src="/static/image.png" />
         </div>
       </div>
 
