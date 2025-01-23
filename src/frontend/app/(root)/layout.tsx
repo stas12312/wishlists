@@ -17,19 +17,11 @@ export default async function Layout({
   return (
     <div className="flex flex-col  min-h-screen justify-between">
       <div>
-        <header className="w-full flex col-span-full justify-end">
-          {isLogin ? (
-            <div className="ml-auto mr-6 pt-3 px-10 flex flex-row gap-2">
-              <ThemeSwitcher />
-              <UserItem />
-            </div>
-          ) : (
-            <div className="ml-auto mr-6 py-2 flex gap-2">
-              <ThemeSwitcher />
-              <Login />
-            </div>
-          )}
+        <header className="w-full flex col-span-full justify-between md:justify-end px-4 py-4 gap-4">
+          <ThemeSwitcher />
+          {isLogin ? <UserItem /> : <Login />}
         </header>
+        <Divider className="md:hidden" />
 
         <div className="gap-1 pb-4 flex">
           {isLogin ? (

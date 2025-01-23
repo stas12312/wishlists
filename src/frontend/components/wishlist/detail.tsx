@@ -48,7 +48,7 @@ const WishlistDetail = observer(
     return (
       <div className="flex flex-col">
         {user && user.id != userStore.user.id ? (
-          <div className="mx-auto mb-4">
+          <div className="mx-auto mt-4">
             <User
               as="button"
               avatarProps={{
