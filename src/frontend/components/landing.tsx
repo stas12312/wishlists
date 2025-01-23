@@ -6,20 +6,18 @@ import Link from "next/link";
 const Landing = () => {
   return (
     <div className="flex flex-col max-w-[1500px] mx-auto gap-4">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+        <div className="flex flex-col gap-4 col-span-full lg:col-span-2 justify-center">
           <h1 className="text-5xl w-full text-center">
-            <span className="font-bold">mywishlists</span> - сервис для
+            <span className="font-bold">MyWishlists</span> - сервис для
             составления вишлистов
           </h1>
-          <div className="flex h-full">
-            <h2 className="text-3xl text-justify">
-              Создавайте вишлисты которые будут отражать ваши вкусы и желания, а
-              также позволят получать только то, что вы действительно желаете.
-            </h2>
-          </div>
+          <h2 className="text-3xl text-justify mt-10">
+            Создавайте вишлисты которые будут отражать ваши вкусы и желания, а
+            также позволят получать только то, что вы действительно желаете.
+          </h2>
         </div>
-        <div className="col-span-2">
+        <div className="col-span-full lg:col-span-2">
           <Image src="/static/image.png" />
         </div>
       </div>
