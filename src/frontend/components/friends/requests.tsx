@@ -107,18 +107,18 @@ const FriendRequestsItems = observer(() => {
     </FriendRequestItem>
   ));
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-2">
       {incomingRequests.length ? (
-        <div>
+        <>
           <p className="text-xl text-center my-2">Входящие</p>
           {inpomingItems}
-        </div>
+        </>
       ) : null}
       {outcomingRequests.length ? (
-        <div>
-          <p className="text-xl text-center  my-2">Исходящие</p>
+        <>
+          <p className="text-xl text-center my-2">Исходящие</p>
           {outcomingItems}
-        </div>
+        </>
       ) : null}
 
       {}
