@@ -3,11 +3,11 @@ import { Card, CardBody } from "@nextui-org/card";
 import { User } from "@nextui-org/user";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 
-import ConfirmationModal from "../confirmation";
 import { PageSpinner } from "../pageSpinner";
+import ConfirmationModal from "../confirmation";
 
 import FriendMenu from "./menu";
 
@@ -16,6 +16,7 @@ import { IUser } from "@/lib/models/user";
 import { getUserLink } from "@/lib/label";
 
 const FriendsList = observer(() => {
+  const successFunction = useRef<{ (): void }>();
   const router = useRouter();
   const [friends, setFriends] = useState<IUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -58,38 +59,43 @@ const FriendsList = observer(() => {
             name={friend.name}
           />
           <FriendMenu
-            handleAction={(action) => {
+            handleAction={async (action) => {
               if (action == "delete") {
+                successFunction.current = async () => {
+                  await deleteFriend(friend.id);
+                  toast.success("Пользователь удален из друзей");
+                  setIsConfirm(false);
+                  setFriends(
+                    friends.filter((f) => {
+                      return f.id != friend.id;
+                    }),
+                  );
+                };
                 setIsConfirm(true);
               }
             }}
           />
         </CardBody>
       </Card>
-      <ConfirmationModal
-        isOpen={isConfirm}
-        message="Вы уверены, что хотите удалить пользователя из друзей?"
-        onConfirm={async () => {
-          await deleteFriend(friend.id);
-          toast.success("Пользователь удален из друзей");
-          setIsConfirm(false);
-          setFriends(
-            friends.filter((f) => {
-              return f.id != friend.id;
-            }),
-          );
-        }}
-        onDecline={() => {
-          setIsConfirm(false);
-        }}
-      />
     </div>
   ));
   if (friends) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {users}
-      </div>
+      <>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {users}
+        </div>
+        <ConfirmationModal
+          isOpen={isConfirm}
+          message="Вы уверены, что хотите удалить пользователя из друзей?"
+          onConfirm={
+            successFunction.current ? successFunction.current : () => {}
+          }
+          onDecline={() => {
+            setIsConfirm(false);
+          }}
+        />
+      </>
     );
   }
 });

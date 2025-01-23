@@ -48,9 +48,10 @@ const ConfirmationModal = ({
                 <Button
                   color="danger"
                   isLoading={isLoading}
-                  onPress={() => {
+                  onPress={async () => {
                     setIsLoading(true);
-                    onConfirm();
+                    await onConfirm();
+                    setIsLoading(false);
                   }}
                 >
                   {confirmName}
