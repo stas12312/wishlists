@@ -151,7 +151,7 @@ export const Wishlists = observer(
         ) : (
           <div className="col-span-full text-center">
             <h1 className="text-4xl	col-span-full">Список пуст</h1>
-            {actions.edit ? (
+            {actions.edit && !filter.showArchive ? (
               <Button color="primary" variant="light" onPress={onOpen}>
                 Добавить
               </Button>

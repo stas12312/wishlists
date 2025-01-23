@@ -37,7 +37,7 @@ const UserView = observer(({ username }: { username: string }) => {
             <>
               <div className="max-w-[200px] w-full flex items-center gap-3 mx-auto">
                 <div>
-                  <Skeleton className="rounded-full w-14 h-14 rounded-full" />
+                  <Skeleton className="w-14 h-14 rounded-full" />
                 </div>
                 <div className="max-w-[120px] w-full flex flex-col gap-2">
                   <Skeleton className="h-8 w-4/5 rounded-full" />
