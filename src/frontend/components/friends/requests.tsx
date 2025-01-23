@@ -98,11 +98,11 @@ const FriendRequestsItems = observer(() => {
           } else {
             setRequests(await getFriendRequests());
             countersStore.getCounters();
-            toast.success("Заявка отклонена");
+            toast.success("Заявка отменена");
           }
         }}
       >
-        Удалить
+        Отменить
       </Button>
     </FriendRequestItem>
   ));
