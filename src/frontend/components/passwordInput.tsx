@@ -5,18 +5,20 @@ import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 export default function PasswordInput({
   value,
   onChange,
+  onBlur,
   label,
   name,
   errorMessage,
 }: {
   value: string;
   onChange: { (e: React.ChangeEvent<HTMLInputElement>): void };
+  onBlur?: { (e: React.ChangeEvent<HTMLInputElement>): void };
   errorMessage: string;
   label: string;
   name: string;
 }) {
   const [isVisible, setIsVisible] = useState(false);
-
+  errorMessage;
   return (
     <Input
       fullWidth
@@ -40,6 +42,7 @@ export default function PasswordInput({
       name={name}
       type={isVisible ? "text" : "password"}
       value={value}
+      onBlur={onBlur}
       onChange={onChange}
     />
   );
