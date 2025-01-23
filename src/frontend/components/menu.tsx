@@ -1,21 +1,21 @@
 "use client";
+import { Badge } from "@nextui-org/badge";
+import { Chip } from "@nextui-org/chip";
 import { Link } from "@nextui-org/link";
 import { Listbox, ListboxItem, ListboxSection } from "@nextui-org/listbox";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
-import { Badge } from "@nextui-org/badge";
 import {
   MdAutoAwesome,
+  MdOutlineExitToApp,
   MdPerson,
   MdSettings,
   MdStar,
-  MdOutlineExitToApp,
 } from "react-icons/md";
-import { Chip } from "@nextui-org/chip";
 
+import { logout } from "@/lib/auth";
 import countersStore from "@/store/counterStore";
 import userStore from "@/store/userStore";
-import { logout } from "@/lib/auth";
 
 const ITEMS: {
   icon: React.ReactNode;
@@ -51,6 +51,7 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
   const [countersValues, setCounterValues] = useState<Map<string, number>>(
     new Map<string, number>(),
   );
+
   useEffect(() => {
     async function fetchData() {
       countersStore.getCounters();

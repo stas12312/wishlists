@@ -122,6 +122,9 @@ const RestorePassword = observer(() => {
               label="Пароль"
               name="new-password"
               value={password}
+              onBlur={() => {
+                setPasswordError("");
+              }}
               onChange={(e) => setPassword(e.target.value)}
             />
           );

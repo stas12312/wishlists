@@ -52,6 +52,7 @@ export default function SignIn() {
     errorMessages.Name = "";
     errorMessages.message = "";
     errorMessages.Code = "";
+    setErrorMessages({ ...errorMessages });
     if (step === 0) {
       const confirmEmailData = await register(
         formData.name,
@@ -98,7 +99,6 @@ export default function SignIn() {
     e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
   ) => {
     const { name, value } = e.target;
-
     setFormData({ ...formData, [name]: value });
   };
 
@@ -137,6 +137,9 @@ export default function SignIn() {
               label="Пароль"
               name="password"
               value={formData.password}
+              onBlur={() => {
+                setErrorMessages({ ...errorMessages, Password: "" });
+              }}
               onChange={handleChange}
             />
           </div>
