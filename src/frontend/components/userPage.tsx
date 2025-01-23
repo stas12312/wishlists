@@ -31,7 +31,7 @@ const UserView = observer(({ username }: { username: string }) => {
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mt-4">
         <div className="col-span-full flex justify-center flex-col gap-2">
           {isLoading ? (
             <>
