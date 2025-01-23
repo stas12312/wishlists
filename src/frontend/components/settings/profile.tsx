@@ -13,7 +13,7 @@ import { IUser } from "@/lib/models/user";
 
 const ProfileForm = observer(() => {
   const [isProfileLoading, setIsProfileLoading] = useState(true);
-  const [errors, setErrors] = useState({ username: "" });
+  const [errors, setErrors] = useState({ username: "", image: "" });
   const [user, setUser] = useState<IUser>({} as IUser);
 
   useEffect(() => {
@@ -29,7 +29,7 @@ const ProfileForm = observer(() => {
     e.preventDefault();
 
     if (await isUsernameIsExists(user.username, user.id)) {
-      setErrors({ username: "Имя пользователя занято" });
+      setErrors({ ...errors, username: "Имя пользователя занято" });
       setIsProfileLoading(false);
       return;
     }
@@ -86,10 +86,14 @@ const ProfileForm = observer(() => {
         accept={["jpg", "jpeg", "png", "webp"]}
         className="h-[100px] w-[120px] object-cover"
         previewUrl={user.image}
+        onError={(error) => {
+          setErrors({ ...errors, image: error });
+        }}
         onUpload={(url) => {
           setUser({ ...user, image: url });
         }}
       />
+      <span className="text-danger text-tiny">{errors.image}</span>
       <Button fullWidth isLoading={isProfileLoading} type="submit">
         Сохранить
       </Button>
