@@ -42,6 +42,7 @@ export default function WishForm(props: {
     Price: "",
     details: "",
     message: "",
+    image: "",
   });
 
   const [isCreating, setIsCreating] = useState(false);
@@ -146,12 +147,19 @@ export default function WishForm(props: {
           value={formData.image}
           onChange={handlerChange}
         />
-        <UploadButton
-          accept={["jpg", "jpeg", "png", "webp"]}
-          className="h-[100px] w-[120px] object-cover"
-          previewUrl={formData.image}
-          onUpload={onUploadImage}
-        />
+        <div className="flex flex-col">
+          <UploadButton
+            accept={["jpg", "jpeg", "png", "webp"]}
+            className="h-[140px] w-[180px] object-cover"
+            previewUrl={formData.image}
+            onError={(error) => {
+              setErrorMessages({ ...errorMessages, image: error });
+            }}
+            onUpload={onUploadImage}
+          />
+
+          <span className="text-danger text-tiny">{errorMessages.image}</span>
+        </div>
       </div>
       <div>
         <span>Желанность</span>
