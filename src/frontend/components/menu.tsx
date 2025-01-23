@@ -2,7 +2,6 @@
 import { Badge } from "@nextui-org/badge";
 import { Chip } from "@nextui-org/chip";
 import { Link } from "@nextui-org/link";
-import { Listbox, ListboxItem, ListboxSection } from "@nextui-org/listbox";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
 import {
@@ -12,38 +11,45 @@ import {
   MdSettings,
   MdStar,
 } from "react-icons/md";
+import { usePathname } from "next/navigation";
+import { Divider } from "@nextui-org/divider";
 
-import { logout } from "@/lib/auth";
 import countersStore from "@/store/counterStore";
 import userStore from "@/store/userStore";
+import { logout } from "@/lib/auth";
 
 const ITEMS: {
   icon: React.ReactNode;
   title: string;
   href: string;
   counterName?: string;
+  selectedIconClassName?: string;
 }[] = [
   {
     icon: <MdAutoAwesome />,
     title: "Вишлисты",
     href: "/",
+    selectedIconClassName: "text-yellow-500",
   },
   {
     icon: <MdStar />,
     title: "Желания",
     href: "/wishes",
+    selectedIconClassName: "text-yellow-500",
   },
   {
     icon: <MdPerson />,
     title: "Друзья",
     href: "/friends",
     counterName: "requests",
+    selectedIconClassName: "text-primary",
   },
 
   {
     icon: <MdSettings />,
     title: "Настройки",
     href: "/settings",
+    selectedIconClassName: "text-gray-500",
   },
 ];
 
@@ -52,6 +58,7 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
     new Map<string, number>(),
   );
 
+  const pathname = usePathname();
   useEffect(() => {
     async function fetchData() {
       countersStore.getCounters();
@@ -67,7 +74,7 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
 
   if (variant == "mobile") {
     return (
-      <div className="flex justify-between p-4">
+      <div className="flex justify-between">
         {ITEMS.map((item) => (
           <MenuItem
             key={item.title}
@@ -76,6 +83,8 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
             }
             href={item.href}
             icon={item.icon}
+            isCurrent={pathname == item.href}
+            selectedIconClassName={item.selectedIconClassName}
             title={item.title}
           />
         ))}
@@ -83,40 +92,49 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
     );
   } else {
     return (
-      <Listbox aria-label="menu">
-        <ListboxSection showDivider>
-          {ITEMS.map((item) => (
-            <ListboxItem
-              key={item.title}
-              className="h-[34px] mx-auto"
-              href={item.href}
-              startContent={item.icon}
-            >
-              <span className="px-2 items-center flex justify-normal gap-2">
-                {item.title}{" "}
-                {item.counterName ? (
-                  <Counter value={countersValues.get(item.counterName) || 0} />
-                ) : (
-                  ""
-                )}
-              </span>
-            </ListboxItem>
-          ))}
-        </ListboxSection>
-        <ListboxSection>
-          <ListboxItem
-            key="logout"
-            className="text-danger"
-            startContent={<MdOutlineExitToApp />}
-            onPress={() => {
-              userStore.logout();
-              logout();
-            }}
+      <div>
+        {ITEMS.map((item) => (
+          <Link
+            key={item.title}
+            disableAnimation
+            className={`w-full flex gap-2 p-1 rounded-small hover:transition-colors ease-in items-center hover:bg-default-200 text-lg ${pathname == item.href ? "bg-default" : null}`}
+            color="foreground"
+            href={item.href}
           >
-            <span className="px-2">Выйти</span>
-          </ListboxItem>
-        </ListboxSection>
-      </Listbox>
+            <span
+              className={
+                pathname == item.href && item.selectedIconClassName
+                  ? item.selectedIconClassName
+                  : ""
+              }
+            >
+              {item.icon}
+            </span>
+            {item.title}
+            {item.counterName ? (
+              <Counter value={countersValues.get(item.counterName) || 0} />
+            ) : (
+              ""
+            )}
+          </Link>
+        ))}
+        <Divider className="my-2" />
+        <Link
+          key="Выход"
+          disableAnimation
+          className={`w-full flex gap-2 p-1 rounded-small hover:transition-colors ease-in items-center hover:bg-danger-100 text-lg cursor-pointer text-danger`}
+          color="foreground"
+          onPress={() => {
+            userStore.logout();
+            logout();
+          }}
+        >
+          <span>
+            <MdOutlineExitToApp />
+          </span>
+          Выход
+        </Link>
+      </div>
     );
   }
 });
@@ -126,24 +144,43 @@ const MenuItem = ({
   title,
   href,
   counter,
+  isCurrent,
+  selectedIconClassName,
 }: {
   icon: React.ReactNode;
   title: string;
   href: string;
   counter: number;
+  isCurrent: boolean;
+  selectedIconClassName?: string;
 }) => {
   return (
-    <Badge
-      color="primary"
-      content={counter}
-      isInvisible={counter == 0}
-      showOutline={false}
+    <div
+      className={`h-full w-full p-4 flex justify-center ${isCurrent ? "bg-default-200 backdrop-blur-xl bg-opacity-25" : ""} rounded-xl`}
     >
-      <Link className="flex flex-col" color="foreground" href={href}>
-        <div className="text-3xl mx-auto">{icon}</div>
-        <span className="text-tiny">{title}</span>
-      </Link>
-    </Badge>
+      <Badge
+        color="primary"
+        content={counter}
+        isInvisible={counter == 0}
+        showOutline={false}
+      >
+        <Link
+          disableAnimation
+          className={`flex flex-col `}
+          color="foreground"
+          href={href}
+        >
+          <div
+            className={`text-3xl mx-auto ${
+              isCurrent && selectedIconClassName ? selectedIconClassName : ""
+            }`}
+          >
+            {icon}
+          </div>
+          <span className="text-tiny">{title}</span>
+        </Link>
+      </Badge>
+    </div>
   );
 };
 
