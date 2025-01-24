@@ -105,6 +105,7 @@ export default function SignIn() {
   return (
     <form
       className="flex flex-col mx-auto my-10 max-w-md gap-4 bg-content1 p-4 rounded-xl box-border shadow-medium"
+      id="register"
       onSubmit={handleSubmit}
     >
       <h2 className="text-center">{formTitle}</h2>

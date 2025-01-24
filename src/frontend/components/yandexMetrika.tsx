@@ -5,7 +5,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import Script from "next/script";
 
 declare const ym: any;
-const YANDEX_METRIKA_ID = 99650143;
+const YANDEX_METRIKA_ID = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID;
 
 export function Metrika() {
   const pathName = usePathname();

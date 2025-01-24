@@ -102,7 +102,11 @@ export default function WishForm(props: {
   }
 
   return (
-    <form className="flex flex-col space-y-4" onSubmit={onSumbitForm}>
+    <form
+      className="flex flex-col space-y-4"
+      name="wish"
+      onSubmit={onSumbitForm}
+    >
       <div>
         <Input
           isRequired
