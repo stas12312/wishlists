@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
 declare const ym: any;
-const YANDEX_METRIKA_ID = process.env.YANDEX_METRIKA_ID;
+const YANDEX_METRIKA_ID = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID;
 
 export function Metrika() {
   const pathName = usePathname();
