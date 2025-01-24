@@ -156,7 +156,7 @@ const MenuItem = ({
 }) => {
   return (
     <div
-      className={`h-full w-full p-4 flex justify-center ${isCurrent ? "bg-default-200 backdrop-blur-xl bg-opacity-25" : ""} rounded-xl`}
+      className={`h-full w-full p-4 flex justify-center rounded-xl`}
     >
       <Badge
         color="primary"
