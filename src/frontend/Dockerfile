@@ -7,7 +7,7 @@ RUN npm ci
 COPY . .
 
 ARG base_url
-ARG yandex_metrica_id
+ARG yandex_metrika_id
 
 ENV BASE_URL $base_url
 ENV YANDEX_METRIKA_ID $yandex_metrika_id
