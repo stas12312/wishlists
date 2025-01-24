@@ -77,6 +77,7 @@ const RestorePassword = observer(() => {
   return (
     <form
       className="mx-auto my-10 max-w-md gap-4 flex flex-col bg-content1 p-4 rounded-xl box-border shadow-medium"
+      id="reset-password"
       onSubmit={handleOnSumbit}
     >
       <p className="text-lg text-center">

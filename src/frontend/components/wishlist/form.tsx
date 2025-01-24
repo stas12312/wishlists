@@ -105,7 +105,11 @@ export function WishlistCreateForm({
   };
 
   return (
-    <form className="flex flex-col space-y-4" onSubmit={handleSubmit}>
+    <form
+      className="flex flex-col space-y-4"
+      name="wishlist"
+      onSubmit={handleSubmit}
+    >
       <div>
         <Input
           fullWidth

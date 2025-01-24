@@ -54,6 +54,7 @@ export default function SignIn() {
   return (
     <form
       className="mx-auto my-10 max-w-md flex flex-col gap-2 bg-content1 p-4 rounded-xl box-border shadow-medium"
+      id="login"
       onSubmit={handleSubmit}
     >
       <h2 className={"text-center"}>Войти</h2>
