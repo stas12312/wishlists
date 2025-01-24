@@ -2,22 +2,21 @@
 
 import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
+import Script from "next/script";
 
 declare const ym: any;
-const YANDEX_METRIKA_ID = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID;
+const YANDEX_METRIKA_ID = 99650143;
 
 export function Metrika() {
   const pathName = usePathname();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (typeof window.document.scripts.namedItem("ym") != undefined) {
-      ym(YANDEX_METRIKA_ID, "hit", window.location.href);
-    }
+    ym(YANDEX_METRIKA_ID, "hit", window.location.href);
   }, [pathName, searchParams]);
 
   return (
-    <script id="yandex-metrica">
+    <Script id="yandex-metrica">
       {`
         (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
         m[i].l=1*new Date();
@@ -32,6 +31,6 @@ export function Metrika() {
           accurateTrackBounce:true
         });    
       `}
-    </script>
+    </Script>
   );
 }
