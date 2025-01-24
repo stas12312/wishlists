@@ -10,7 +10,7 @@ ARG base_url
 ARG yandex_metrika_id
 
 ENV BASE_URL $base_url
-ENV YANDEX_METRIKA_ID $yandex_metrika_id
+ENV NEXT_PUBLIC_YANDEX_METRIKA_ID $yandex_metrika_id
 RUN npm run build
 
 FROM node:20-alpine3.19 as release
@@ -25,12 +25,10 @@ COPY --from=base /app/public ./public
 ARG version
 ARG build_time
 ARG base_url
-ARG yandex_metrika_id
 
 ENV VERSION $version
 ENV BUILD_TIME $build_time
 ENV BASE_URL $base_url
-ENV YANDEX_METRIKA_ID $yandex_metrika_id
 
 EXPOSE 3000
 
