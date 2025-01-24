@@ -11,7 +11,9 @@ export function Metrika() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    ym(YANDEX_METRIKA_ID, "hit", window.location.href);
+    if (typeof window.document.scripts.namedItem("ym") != undefined) {
+      ym(YANDEX_METRIKA_ID, "hit", window.location.href);
+    }
   }, [pathName, searchParams]);
 
   return (
