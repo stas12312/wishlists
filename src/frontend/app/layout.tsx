@@ -2,11 +2,13 @@ import "@/styles/globals.css";
 import clsx from "clsx";
 import { Metadata, Viewport } from "next";
 import { Toaster } from "react-hot-toast";
+import { Suspense } from "react";
 
 import { Providers } from "./providers";
 
 import { fontSans } from "@/config/fonts";
 import { siteConfig } from "@/config/site";
+import { Metrika } from "@/components/yandexMetrika";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.BASE_URL || ""),
@@ -64,6 +66,9 @@ export default async function RootLayout({
             />
           </>
         </Providers>
+        <Suspense>
+          <Metrika />
+        </Suspense>
       </body>
     </html>
   );

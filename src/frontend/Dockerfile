@@ -7,8 +7,10 @@ RUN npm ci
 COPY . .
 
 ARG base_url
-ENV BASE_URL $base_url
+ARG yandex_metrica_id
 
+ENV BASE_URL $base_url
+ENV YANDEX_METRIKA_ID $yandex_metrika_id
 RUN npm run build
 
 FROM node:20-alpine3.19 as release
