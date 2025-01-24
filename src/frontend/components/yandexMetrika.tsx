@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
+import Script from "next/script";
 
 declare const ym: any;
 const YANDEX_METRIKA_ID = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID;
@@ -11,13 +12,11 @@ export function Metrika() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    try {
-      ym(YANDEX_METRIKA_ID, "hit", window.location.href);
-    } catch {}
+    ym(YANDEX_METRIKA_ID, "hit", window.location.href);
   }, [pathName, searchParams]);
 
   return (
-    <script id="yandex-metrica">
+    <Script id="yandex-metrica">
       {`
         (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
         m[i].l=1*new Date();
@@ -32,6 +31,6 @@ export function Metrika() {
           accurateTrackBounce:true
         });    
       `}
-    </script>
+    </Script>
   );
 }
