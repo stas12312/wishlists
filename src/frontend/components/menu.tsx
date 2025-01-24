@@ -155,9 +155,7 @@ const MenuItem = ({
   selectedIconClassName?: string;
 }) => {
   return (
-    <div
-      className={`h-full w-full p-4 flex justify-center rounded-xl`}
-    >
+    <div className="h-full w-full p-4 flex justify-center rounded-xl">
       <Badge
         color="primary"
         content={counter}
