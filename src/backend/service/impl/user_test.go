@@ -15,6 +15,7 @@ import (
 	"main/repository/mocks"
 	"main/uof"
 	"main/uof/impl"
+	"os"
 	"reflect"
 	"strings"
 	"testing"
@@ -750,7 +751,7 @@ func Test_getConfirmEmailMessage(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want string
+		want []string
 	}{
 		{
 			name: "OK",
@@ -762,16 +763,18 @@ func Test_getConfirmEmailMessage(t *testing.T) {
 				},
 				baseUrl: "http://test.ru",
 			},
-			want: "Ваш код подтверждения: 123\nСсылка для подтверждения: http://test.ru/auth/confirm?uuid=uuid&key=key",
+			want: []string{"123", "http://test.ru/auth/confirm?uuid=uuid&key=key"},
 		},
 	}
+	os.Chdir("../..")
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getConfirmEmailMessage(tt.args.code, tt.args.baseUrl); got != tt.want {
+			if got := getConfirmEmailMessage(tt.args.code, tt.args.baseUrl); !checkAllContains(got, tt.want) {
 				t.Errorf("getConfirmEmailMessage() = %v, want %v", got, tt.want)
 			}
 		})
 	}
+	os.Chdir("./service/impl")
 }
 
 func Test_getRestorePasswordMessage(t *testing.T) {
@@ -782,7 +785,7 @@ func Test_getRestorePasswordMessage(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want string
+		want []string
 	}{
 		{
 			name: "OK",
@@ -794,17 +797,18 @@ func Test_getRestorePasswordMessage(t *testing.T) {
 				},
 				baseUrl: "http://test.ru",
 			},
-			want: "Код для сброса пароля: 123\n" +
-				"Ссылка для сброса пароля: http://test.ru/auth/reset-password?uuid=uuid&key=key",
+			want: []string{"123", "http://test.ru/auth/reset-password?uuid=uuid&key=key"},
 		},
 	}
+	os.Chdir("../..")
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getRestorePasswordMessage(tt.args.code, tt.args.baseUrl); got != tt.want {
+			if got := getRestorePasswordMessage(tt.args.code, tt.args.baseUrl); !checkAllContains(got, tt.want) {
 				t.Errorf("getConfirmEmailMessage() = %v, want %v", got, tt.want)
 			}
 		})
 	}
+	os.Chdir("./service/impl")
 }
 
 func Test_userServiceImpl_CheckCodeWithType(t *testing.T) {
@@ -1499,4 +1503,13 @@ func Test_userServiceImpl_ChangePassword(t *testing.T) {
 
 		})
 	}
+}
+
+func checkAllContains(result string, subStings []string) bool {
+	for _, subSting := range subStings {
+		if !strings.Contains(result, subSting) {
+			return false
+		}
+	}
+	return true
 }
