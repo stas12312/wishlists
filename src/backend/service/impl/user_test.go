@@ -774,6 +774,7 @@ func Test_getConfirmEmailMessage(t *testing.T) {
 			}
 		})
 	}
+	os.Chdir("./service/impl")
 }
 
 func Test_getRestorePasswordMessage(t *testing.T) {
@@ -807,6 +808,7 @@ func Test_getRestorePasswordMessage(t *testing.T) {
 			}
 		})
 	}
+	os.Chdir("./service/impl")
 }
 
 func Test_userServiceImpl_CheckCodeWithType(t *testing.T) {
