@@ -14,7 +14,6 @@ import (
 	"main/repository"
 	"main/service"
 	"main/uof"
-	"strings"
 )
 
 func NewUserService(
@@ -411,19 +410,29 @@ func hashPassword(password string) (string, error) {
 }
 
 func getConfirmEmailMessage(code *model.Code, baseUrl string) string {
-	rows := []string{
-		fmt.Sprintf("Ваш код подтверждения: %s", code.Code),
-		fmt.Sprintf("Ссылка для подтверждения: %s/auth/confirm?uuid=%s&key=%s", baseUrl, code.UUID, code.Key),
+	template, err := mail.LoadTemplate("code")
+	if err != nil {
+		return ""
 	}
+	link := fmt.Sprintf("%s/auth/confirm?uuid=%s&key=%s", baseUrl, code.UUID, code.Key)
 
-	return strings.Join(rows, "\n")
+	return mail.CompileTemplate(template, map[string]string{
+		"code":       code.Code,
+		"code_title": "Код для подтверждения email",
+		"link":       link,
+	})
 }
 
 func getRestorePasswordMessage(code *model.Code, baseUrl string) string {
-	rows := []string{
-		fmt.Sprintf("Код для сброса пароля: %s", code.Code),
-		fmt.Sprintf("Ссылка для сброса пароля: %s/auth/reset-password?uuid=%s&key=%s", baseUrl, code.UUID, code.Key),
+	template, err := mail.LoadTemplate("code")
+	if err != nil {
+		return ""
 	}
+	link := fmt.Sprintf("%s/auth/reset-password?uuid=%s&key=%s", baseUrl, code.UUID, code.Key)
 
-	return strings.Join(rows, "\n")
+	return mail.CompileTemplate(template, map[string]string{
+		"code":       code.Code,
+		"code_title": "Код для восстановления пароля",
+		"link":       link,
+	})
 }
