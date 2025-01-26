@@ -5,11 +5,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Mywishlists - Регистрация",
     description:
-      "Mywishlists - регистрация в бесплатном сервисе для составления вишлиство",
+      "Регистрация в бесплатном сервисе для составления вишлистов - MyWishlists",
   },
 };
 
-export const Layout = ({ children }: { children: React.ReactNode }) => {
+export const Layout = async ({ children }: { children: React.ReactNode }) => {
   return children;
 };
 
