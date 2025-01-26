@@ -38,5 +38,6 @@ RUN apk update \
 
 COPY --from=builder /server /server
 COPY ./db /db
+ADD /mail/template /mail/template
 
 ENTRYPOINT ["/server"]
