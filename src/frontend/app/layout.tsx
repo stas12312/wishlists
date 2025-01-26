@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   icons: {
-    icon: "/favicon.ico",
+    icon: "/icon",
   },
   openGraph: {
     title: siteConfig.name,
@@ -42,7 +42,8 @@ export default async function RootLayout({
 }) {
   return (
     <html suppressHydrationWarning lang="en">
-      <head title="Мои желания">
+      <head>
+        <title>MyWishlists</title>
         <meta
           content="width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1, maximum-scale=5"
           name="viewport"
