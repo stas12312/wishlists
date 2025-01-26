@@ -12,6 +12,7 @@ import { getUser } from "./auth";
 import { IOAuthProvider } from "@/lib/models";
 import PasswordInput from "@/components/passwordInput";
 import { getOAuthProviders } from "@/lib/requests";
+
 export default function SignIn() {
   const router = useRouter();
   const [providers, setProviders] = useState<IOAuthProvider[]>([]);
