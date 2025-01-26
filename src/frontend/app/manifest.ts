@@ -18,12 +18,6 @@ export default function manifest(): MetadataRoute.Manifest {
         type: "image/png",
       },
     ],
-    related_applications: [
-      {
-        platform: "web",
-        url: process.env.BASE_URL || "",
-      },
-    ],
     screenshots: [
       {
         form_factor: "wide",
