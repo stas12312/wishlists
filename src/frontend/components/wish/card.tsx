@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import { AiFillGift } from "react-icons/ai";
 import { Avatar } from "@nextui-org/avatar";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import ConfirmationModal from "../confirmation";
 import Desirability from "../desirability";
@@ -26,6 +27,7 @@ import {
   makeWishFull,
   reserveWish,
 } from "@/lib/requests";
+import { getUserLink } from "@/lib/label";
 
 export const WishItem = observer(
   ({
@@ -120,12 +122,14 @@ export const WishItem = observer(
               <div className="h-full">
                 <div className="absolute flex flex-col items-center gap-1 m-1 w-[89%] z-10">
                   {item.fulfilled_at ? (
-                    <Chip color="primary">Исполнено</Chip>
+                    <Chip color="primary">
+                      Исполнено {item.actions.cancel_reserve ? " вами" : null}
+                    </Chip>
                   ) : null}
-                  {item.is_reserved ? (
+                  {item.is_reserved && !item.fulfilled_at ? (
                     <Chip color="success">
-                      Забронировано{" "}
-                      {item.actions.cancel_reserve ? "вами" : null}
+                      Забронировано
+                      {item.actions.cancel_reserve ? " вами" : null}
                     </Chip>
                   ) : null}
                 </div>
@@ -161,9 +165,15 @@ export const WishItem = observer(
             </CardBody>
             {withUser ? (
               <CardFooter className="flex justify-between">
-                <Chip avatar={<Avatar src={item.user.image} />}>
-                  {item.user.name}
-                </Chip>
+                <Link
+                  className="md:hover:scale-[1.03] transition"
+                  href={getUserLink(item.user.username)}
+                >
+                  <Chip avatar={<Avatar src={item.user.image} />}>
+                    {item.user.name}
+                  </Chip>
+                </Link>
+
                 {item.wishlist.date ? (
                   <Chip color="warning">
                     {new Date(item.wishlist.date).toLocaleDateString()}

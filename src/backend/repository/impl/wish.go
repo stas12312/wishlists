@@ -71,13 +71,23 @@ func (r *WishRepositoryPostgres) Update(wish *model.Wish) (*model.Wish, error) {
 
 func (r *WishRepositoryPostgres) Get(wishUuid string) (*model.Wish, error) {
 	query := `
-		SELECT 
-		    wishes.*, 
-			wishlists.user_id,
-			wishes.presenter_id IS NOT NULL AS is_reserved
-		FROM wishes
-		JOIN wishlists USING (wishlist_uuid)
-		WHERE wish_uuid = $1
+	SELECT 
+		wishes.*, 
+		wishlists.user_id,
+		wishes.presenter_id IS NOT NULL AS is_reserved,
+
+		users.name AS "user.name",
+		users.image AS "user.image",
+		users.username AS "user.username",
+		users.user_id AS "user.user_id",
+		
+		wishlists.name AS "wishlist.name",
+		wishlists.date AS "wishlist.date"
+	
+	FROM wishes
+	JOIN wishlists USING (wishlist_uuid)
+	JOIN users USING (user_id)
+	WHERE wish_uuid = $1
 `
 	wish := &model.Wish{}
 	err := r.Connection.Get(wish, query, wishUuid)
