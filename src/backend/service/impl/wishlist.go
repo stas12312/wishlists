@@ -205,6 +205,9 @@ func (s *WishlistImpl) ReserveWish(userId int64, wishUuid string) error {
 	if existWish.UserId == userId {
 		return apperror.NewError(apperror.WrongRequest, "Вы не можете забронировать ваше желание")
 	}
+	if existWish.FulfilledAt.Valid {
+		return apperror.NewError(apperror.WrongRequest, "Вы не можете забронировать исполненное желание")
+	}
 	if existWish.PresenterId.Valid {
 		return apperror.NewError(apperror.WrongRequest, "Желание уже забронировано")
 	}
@@ -262,7 +265,7 @@ func getActionsForWish(userId int64, wish model.Wish) model.WishActions {
 	userIsOwner := userId == wish.UserId
 	return model.WishActions{
 		Edit:          userIsOwner,
-		Reserve:       userId > 0 && !wish.PresenterId.Valid && wish.UserId != userId,
+		Reserve:       userId > 0 && !wish.PresenterId.Valid && wish.UserId != userId && !wish.FulfilledAt.Valid,
 		CancelReserve: wish.PresenterId.Valid && wish.PresenterId.Int64 == userId,
 		MakeFull:      userIsOwner && !wish.FulfilledAt.Valid,
 		CancelFull:    userIsOwner && wish.FulfilledAt.Valid,

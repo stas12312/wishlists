@@ -12,8 +12,15 @@ export function Metrika() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
+    if (!YANDEX_METRIKA_ID) {
+      return;
+    }
     ym(YANDEX_METRIKA_ID, "hit", window.location.href);
   }, [pathName, searchParams]);
+
+  if (!YANDEX_METRIKA_ID) {
+    return null;
+  }
 
   return (
     <Script id="yandex-metrica">
