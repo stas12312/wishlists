@@ -10,3 +10,11 @@ export function getLabelForCount(count: number, labels: string[]): string {
 export function getUserLink(username: string): string {
   return `${window.location.origin}/users/${username}`;
 }
+
+export function getOgImageUrl(
+  title: string,
+  description?: string,
+  footer?: string,
+): string {
+  return `/image/opengraph?title=${title}&descirption=${description}&footer=${footer}`;
+}

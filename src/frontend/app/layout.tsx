@@ -9,6 +9,7 @@ import { Providers } from "./providers";
 import { fontSans } from "@/config/fonts";
 import { siteConfig } from "@/config/site";
 import { Metrika } from "@/components/yandexMetrika";
+import { getOgImageUrl } from "@/lib/label";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.BASE_URL || ""),
@@ -25,6 +26,12 @@ export const metadata: Metadata = {
     description: siteConfig.description,
     siteName: siteConfig.siteName,
     locale: siteConfig.locale,
+    images: [
+      getOgImageUrl(
+        "MyWishlists",
+        "Бесплатный сервис для составления вишлистов",
+      ),
+    ],
   },
 };
 
