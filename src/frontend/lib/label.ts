@@ -16,5 +16,5 @@ export function getOgImageUrl(
   description?: string,
   footer?: string,
 ): string {
-  return `/image/opengraph?title=${title}&descirption=${description}&footer=${footer}`;
+  return `/image/opengraph?title=${title || ""}&descirption=${description || ""}&footer=${footer || ""}`;
 }
