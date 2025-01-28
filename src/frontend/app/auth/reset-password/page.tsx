@@ -6,24 +6,12 @@ import { Link } from "@nextui-org/link";
 import { observer } from "mobx-react-lite";
 import { redirect, useSearchParams } from "next/navigation";
 import { FormEvent, Suspense, useEffect, useState } from "react";
-import { Metadata } from "next";
 
 import { checkCode, resetPassword, restorePassword } from "@/lib/requests";
 import { IRegisterData, ITokens } from "@/lib/models";
 import { setTokens } from "@/lib/auth";
 import PasswordInput from "@/components/passwordInput";
 import CodeInput from "@/components/codeInput";
-import { getOgImageUrl } from "@/lib/label";
-
-export const metadata: Metadata = {
-  title: "Mywishlists - Сброс пароля",
-  openGraph: {
-    title: "Mywishlists - Сброс пароля",
-    description:
-      "Сброс пароля в бесплатном сервисе для составления вишлистов - MyWishlists",
-    images: [getOgImageUrl("Mywishlists", "Сброс пароля")],
-  },
-};
 
 const RestorePassword = observer(() => {
   const [email, setEmail] = useState("");
