@@ -1,8 +1,8 @@
 import { Button } from "@nextui-org/button";
 import { Form } from "@nextui-org/form";
+import { Spinner } from "@nextui-org/spinner";
 import { FormEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Spinner } from "@nextui-org/spinner";
 
 import PasswordInput from "../passwordInput";
 
