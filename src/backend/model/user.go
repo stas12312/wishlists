@@ -27,3 +27,7 @@ type TokenPariResponse struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 }
+
+type AuthInfo struct {
+	HasPassword bool `json:"has_password"`
+}

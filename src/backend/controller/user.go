@@ -323,6 +323,23 @@ func (c *UserController) UpdateProfile(ctx *fiber.Ctx) error {
 	return ctx.JSON(updatedUser)
 }
 
+func (c *UserController) GetAuthInfo(ctx *fiber.Ctx) error {
+
+	userId := GetUserIdFromCtx(ctx)
+	user, err := c.GetById(ctx.Context(), userId)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Ошибка при получении пользователя", Details: err.Error()})
+	}
+
+	authInfo := &model.AuthInfo{
+		HasPassword: user.Password != "",
+	}
+
+	return ctx.JSON(authInfo)
+
+}
+
 func makeTokenPair(id int64, email string, jwtConfig *config.JWTConfig) model.TokenPariResponse {
 	accessToken := makeToken(id, email, jwtConfig.AccessSecretKey, jwtConfig.AccessExpireTime)
 	refreshToken := makeToken(id, email, jwtConfig.RefreshSecretKey, jwtConfig.RefreshExpireTime)
@@ -365,5 +382,6 @@ func (c *UserController) Route(router fiber.Router) {
 	user.Post("/", middleware.Protected(true), c.UpdateProfile)
 	user.Get("/me", middleware.Protected(true), c.Me)
 	user.Post("/change-password", middleware.Protected(true), c.ChangePassword)
+	user.Get("/auth-info", middleware.Protected(true), c.GetAuthInfo)
 	user.Get("/:username", c.GetByUsername)
 }
