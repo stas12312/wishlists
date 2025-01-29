@@ -372,7 +372,7 @@ func (u *userServiceImpl) ChangePassword(ctx context.Context, userId int64, oldP
 		}
 
 		if user.Password != "" && !checkPasswordHash(oldPassword, user.Password) {
-			return apperror.NewError(apperror.WrongPassword, "Неверный пароль")
+			return apperror.NewError(apperror.WrongPassword, "Неверный текущий пароль")
 		}
 
 		user.Password, _ = hashPassword(newPassword)
