@@ -8,10 +8,10 @@ import { MdContentCopy, MdLink } from "react-icons/md";
 
 import UploadButton from "../uploadButton";
 
-import userStore from "@/store/userStore";
-import { getMe, getUserByUsername, updateUser } from "@/lib/requests";
-import { IUser } from "@/lib/models/user";
 import { getUserLink } from "@/lib/label";
+import { IUser } from "@/lib/models/user";
+import { getMe, getUserByUsername, updateUser } from "@/lib/requests";
+import userStore from "@/store/userStore";
 
 const ProfileForm = observer(() => {
   const [isProfileLoading, setIsProfileLoading] = useState(true);
