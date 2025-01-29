@@ -5,3 +5,7 @@ export interface IUser {
   username: string;
   image: string;
 }
+
+export interface AuthInfo {
+  has_password: boolean;
+}

@@ -5,17 +5,25 @@ import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 export default function PasswordInput({
   value,
   onChange,
+  onValueChange,
   onBlur,
+  isInvalid,
   label,
   name,
   errorMessage,
+  isRequired,
+  validate,
 }: {
-  value: string;
-  onChange: { (e: React.ChangeEvent<HTMLInputElement>): void };
+  value?: string;
+  onChange?: { (e: React.ChangeEvent<HTMLInputElement>): void };
+  onValueChange?: { (value: string): void };
   onBlur?: { (e: React.ChangeEvent<HTMLInputElement>): void };
-  errorMessage: string;
+  errorMessage?: string;
   label: string;
   name: string;
+  isRequired?: boolean;
+  isInvalid?: boolean;
+  validate?: { (value: any): string | null };
 }) {
   const [isVisible, setIsVisible] = useState(false);
   errorMessage;
@@ -37,13 +45,16 @@ export default function PasswordInput({
         </button>
       }
       errorMessage={errorMessage}
-      isInvalid={errorMessage !== "" && errorMessage !== undefined}
+      isInvalid={isInvalid}
+      isRequired={isRequired}
       label={label}
       name={name}
       type={isVisible ? "text" : "password"}
+      validate={validate}
       value={value}
       onBlur={onBlur}
       onChange={onChange}
+      onValueChange={onValueChange}
     />
   );
 }

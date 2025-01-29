@@ -4,12 +4,14 @@ import { Input } from "@nextui-org/input";
 import { observer } from "mobx-react-lite";
 import { FormEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { MdContentCopy, MdLink } from "react-icons/md";
 
 import UploadButton from "../uploadButton";
 
 import userStore from "@/store/userStore";
 import { getMe, getUserByUsername, updateUser } from "@/lib/requests";
 import { IUser } from "@/lib/models/user";
+import { getUserLink } from "@/lib/label";
 
 const ProfileForm = observer(() => {
   const [isProfileLoading, setIsProfileLoading] = useState(true);
@@ -109,4 +111,43 @@ async function isUsernameIsExists(
   return existsUser.id !== undefined && existsUser.id != userId;
 }
 
-export default ProfileForm;
+const ProfileLink = observer(() => {
+  let profileLink = "";
+  if (userStore.user.id) {
+    profileLink = getUserLink(userStore.user.username);
+  }
+  return (
+    <>
+      <p className="">Ссылка на профиль</p>
+      <div className="flex gap-2 flex-col md:flex-row">
+        <Input
+          isReadOnly
+          className="w-full md:max-w-[60%]"
+          labelPlacement="outside"
+          startContent={<MdLink />}
+          value={userStore.user.id ? profileLink : ""}
+        />
+        <Button
+          className="w-full md:w-[40%]"
+          startContent={<MdContentCopy />}
+          onPress={() => {
+            navigator.clipboard.writeText(profileLink);
+            toast.success("Ссылка на профиль скопирована");
+          }}
+        >
+          Скопировать
+        </Button>
+      </div>
+      <p className="font mt-4">Данные профиля</p>
+    </>
+  );
+});
+
+export const ProfileSection = observer(() => {
+  return (
+    <>
+      <ProfileLink />
+      <ProfileForm />
+    </>
+  );
+});
