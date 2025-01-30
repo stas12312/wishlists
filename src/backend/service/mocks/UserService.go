@@ -82,6 +82,20 @@ func (_m *UserService) Confirm(ctx context.Context, code *model.Code) (*model.Us
 	return r0, r1
 }
 
+// Delete provides a mock function with given fields: ctx, userId
+func (_m *UserService) Delete(ctx context.Context, userId int64) error {
+	ret := _m.Called(ctx, userId)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64) error); ok {
+		r0 = rf(ctx, userId)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // GetByEmail provides a mock function with given fields: ctx, email
 func (_m *UserService) GetByEmail(ctx context.Context, email string) (*model.User, error) {
 	ret := _m.Called(ctx, email)

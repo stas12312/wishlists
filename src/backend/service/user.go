@@ -22,4 +22,5 @@ type UserService interface {
 	CheckCode(ctx context.Context, code *model.Code, withAttempt bool) (*model.Code, bool)
 	ChangePassword(ctx context.Context, userId int64, oldPassword, newPassword string) error
 	Update(ctx context.Context, user *model.UserForUpdate) (*model.User, error)
+	Delete(ctx context.Context, userId int64) error
 }

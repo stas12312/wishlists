@@ -337,7 +337,16 @@ func (c *UserController) GetAuthInfo(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(authInfo)
+}
 
+func (c *UserController) DeleteUser(ctx *fiber.Ctx) error {
+	userId := GetUserIdFromCtx(ctx)
+	err := c.Delete(ctx.Context(), userId)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Не удалось удалить пользователя", Details: err.Error()})
+	}
+	return ctx.JSON(model.Response{Data: true})
 }
 
 func makeTokenPair(id int64, email string, jwtConfig *config.JWTConfig) model.TokenPariResponse {
@@ -380,6 +389,7 @@ func (c *UserController) Route(router fiber.Router) {
 
 	user := router.Group("/user")
 	user.Post("/", middleware.Protected(true), c.UpdateProfile)
+	user.Delete("/", middleware.Protected(true), c.DeleteUser)
 	user.Get("/me", middleware.Protected(true), c.Me)
 	user.Post("/change-password", middleware.Protected(true), c.ChangePassword)
 	user.Get("/auth-info", middleware.Protected(true), c.GetAuthInfo)
