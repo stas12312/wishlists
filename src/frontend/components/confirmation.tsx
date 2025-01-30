@@ -1,4 +1,5 @@
 import { Button } from "@nextui-org/button";
+import { Input } from "@nextui-org/input";
 import {
   Modal,
   ModalBody,
@@ -6,7 +7,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@nextui-org/modal";
-import { useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
 const ConfirmationModal = ({
   onConfirm,
@@ -15,15 +16,28 @@ const ConfirmationModal = ({
   message,
   confirmName = "Да",
   declineName = "Нет",
+  title = "Подтвердите действие",
+  confirmByText = false,
+  confirmText,
+  confirmLabel,
 }: {
   onConfirm: { (): void };
   onDecline: { (): void };
-  message: string;
+  message: string | ReactNode;
   confirmName?: string;
   declineName?: string;
   isOpen: boolean;
+  title?: string;
+  confirmByText?: boolean;
+  confirmText?: string;
+  confirmLabel?: string;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [text, setText] = useState("");
+
+  useEffect(() => {
+    setText("");
+  }, [isOpen]);
 
   return (
     <>
@@ -31,10 +45,19 @@ const ConfirmationModal = ({
         <ModalContent>
           {() => (
             <>
-              <ModalHeader className="flex flex-col gap-1">
-                Подтвердите действие
-              </ModalHeader>
-              <ModalBody>{message}</ModalBody>
+              <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
+              <ModalBody>
+                <div className="flex flex-col gap-2">
+                  {message}
+                  {confirmByText ? (
+                    <Input
+                      label={confirmLabel}
+                      value={text}
+                      onValueChange={setText}
+                    />
+                  ) : null}
+                </div>
+              </ModalBody>
               <ModalFooter>
                 <Button
                   color="primary"
@@ -47,6 +70,7 @@ const ConfirmationModal = ({
                 </Button>
                 <Button
                   color="danger"
+                  isDisabled={confirmByText && !(confirmText == text)}
                   isLoading={isLoading}
                   onPress={async () => {
                     setIsLoading(true);
