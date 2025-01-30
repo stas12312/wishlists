@@ -16,4 +16,5 @@ type UnitOfWorkStore interface {
 	WishRepository() repository.WishRepository
 	OAuthRepository() repository.OAuthUserRepository
 	FriendRepository() repository.FriendRepository
+	AccountRepository() repository.AccountRepository
 }

@@ -399,6 +399,13 @@ func (u *userServiceImpl) Update(ctx context.Context, user *model.UserForUpdate)
 	return updatedUser, err
 }
 
+func (u *userServiceImpl) Delete(ctx context.Context, userId int64) error {
+	err := u.UnitOfWork.Do(ctx, func(ctx context.Context, store uof.UnitOfWorkStore) error {
+		return store.AccountRepository().Delete(userId)
+	})
+	return err
+}
+
 func checkPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
