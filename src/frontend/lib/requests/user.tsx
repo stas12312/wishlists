@@ -19,3 +19,8 @@ export async function changePassword(
   });
   return response.data;
 }
+
+export async function deleteAccount(): Promise<IError> {
+  const response = await axiosInstance.delete("user/");
+  return response.data;
+}
