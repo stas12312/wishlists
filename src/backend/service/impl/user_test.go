@@ -19,6 +19,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestNewUserService(t *testing.T) {
@@ -412,6 +413,16 @@ func Test_userServiceImpl_Register(t *testing.T) {
 					On("Create", mock.AnythingOfType("*model.Code")).
 					Once().
 					Return(&model.Code{Code: "123456"}, nil)
+				confirmCodeRepository.On(
+					"SaveEmailCountDown",
+					"email",
+					time.Second*30,
+				).
+					Once().
+					Return(nil)
+				confirmCodeRepository.On("GetEmailCountDown", "email").
+					Once().
+					Return(time.Duration(1), nil)
 			},
 			sendEmail: true,
 		},
@@ -493,6 +504,10 @@ func Test_userServiceImpl_Register(t *testing.T) {
 					On("Create", mock.AnythingOfType("*model.Code")).
 					Once().
 					Return(nil, errors.New("error"))
+
+				confirmCodeRepository.On("GetEmailCountDown", "email").
+					Once().
+					Return(time.Duration(0), nil)
 			},
 		},
 		{
@@ -527,8 +542,51 @@ func Test_userServiceImpl_Register(t *testing.T) {
 					On("Create", mock.AnythingOfType("*model.Code")).
 					Once().
 					Return(&model.Code{Code: "123123"}, nil)
+
+				confirmCodeRepository.On("GetEmailCountDown", "email").
+					Once().
+					Return(time.Duration(0), nil)
+
 			},
 			mailError: errors.New("error"),
+		},
+		{
+			name: "Error in email countdown",
+			args: args{
+				email:    "email",
+				password: "password",
+				name:     "name",
+			},
+			wantUser:   &model.User{},
+			codeExists: false,
+			wantErr:    true,
+			sendEmail:  false,
+			mockBehaviour: func(userRepository *mocks.UserRepository, confirmCodeRepository *mocks.CodeRepository) {
+				userRepository.
+					On("GetByEmail", "email").
+					Once().
+					Return(&model.User{}, nil)
+
+				userRepository.On(
+					"Create",
+					"email",
+					mock.AnythingOfType("string"),
+					"name",
+					false,
+					"",
+				).
+					Once().
+					Return(&model.User{}, nil)
+
+				confirmCodeRepository.
+					On("Create", mock.AnythingOfType("*model.Code")).
+					Once().
+					Return(nil, errors.New("error"))
+
+				confirmCodeRepository.On("GetEmailCountDown", "email").
+					Once().
+					Return(time.Duration(1), nil)
+			},
 		},
 	}
 	for _, tt := range tests {

@@ -1,6 +1,9 @@
 package repository
 
-import "main/model"
+import (
+	"main/model"
+	"time"
+)
 
 //go:generate mockery --name CodeRepository
 type CodeRepository interface {
@@ -8,4 +11,6 @@ type CodeRepository interface {
 	Get(uuid string) (*model.Code, error)
 	DeleteByUUID(uuid string) error
 	Update(code *model.Code) error
+	SaveEmailCountDown(email string, duration time.Duration) error
+	GetEmailCountDown(email string) (time.Duration, error)
 }

@@ -3,12 +3,17 @@ package error
 import "fmt"
 
 func NewError(Code int, Message string) *Error {
-	return &Error{Code, Message}
+	return &Error{Code: Code, Message: Message}
+}
+
+func NewErrorWithData(Code int, Message string, Details string) *Error {
+	return &Error{Code, Message, Details}
 }
 
 type Error struct {
 	Code    int
 	Message string
+	Details string
 }
 
 func (e *Error) Error() string {
