@@ -3,7 +3,7 @@ import { Button } from "@nextui-org/button";
 import { Divider } from "@nextui-org/divider";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { redirect } from "next/navigation";
 import toast from "react-hot-toast";
 
@@ -16,6 +16,7 @@ import { confirmEmail, register } from "@/lib/requests";
 const COUNT_DOWN_DURATION = 1000 * 30 + 500;
 
 export default function SignIn() {
+  const timer = useRef<NodeJS.Timeout | undefined>();
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState({
     email: "",
@@ -123,13 +124,17 @@ export default function SignIn() {
   };
 
   useEffect(() => {
-    if (!countDownDate) {
+    if (!countDownDate || countDown < 0) {
       return;
     }
-    const interval = setInterval(() => {
+    timer.current = setInterval(() => {
       setCountDown(countDownDate - new Date().getTime());
-    }, 100);
-    return () => clearInterval(interval);
+      if (countDownDate - new Date().getTime() < 0) {
+        clearInterval(timer.current);
+        timer.current = undefined;
+      }
+    }, 500);
+    return () => clearInterval(timer.current);
   }, [countDownDate]);
 
   return (
