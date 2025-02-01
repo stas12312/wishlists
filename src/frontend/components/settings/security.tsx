@@ -63,7 +63,7 @@ const SecuritySection = () => {
         onSubmit={onSubmit}
       >
         {isSectionLoading ? (
-          <div className="flex w-full min-h-28">
+          <div className="flex w-full min-h-32">
             <Spinner className="mx-auto" />
           </div>
         ) : (
