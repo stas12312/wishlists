@@ -20,6 +20,7 @@ export interface IFieldError {
 export interface IError {
   message: string;
   details: string;
+  code: number;
   fields?: IFieldError[];
 }
 
