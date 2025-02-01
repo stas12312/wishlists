@@ -11,6 +11,7 @@ const WishlistFilter = ({
   return (
     <>
       <Select
+        disallowEmptySelection
         className="max-w-xs"
         defaultSelectedKeys={["active"]}
         label="Статус"
