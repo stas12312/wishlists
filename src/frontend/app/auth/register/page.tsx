@@ -5,12 +5,15 @@ import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
 import { FormEvent, useEffect, useState } from "react";
 import { redirect } from "next/navigation";
+import toast from "react-hot-toast";
 
 import CodeInput from "@/components/codeInput";
 import PasswordInput from "@/components/passwordInput";
 import { setTokens } from "@/lib/auth";
 import { IRegisterData } from "@/lib/models";
 import { confirmEmail, register } from "@/lib/requests";
+
+const COUNT_DOWN_DURATION = 1000 * 30 + 500;
 
 export default function SignIn() {
   const [step, setStep] = useState(0);
@@ -33,6 +36,9 @@ export default function SignIn() {
 
   const [confirmData, setConfirmData] = useState({} as IRegisterData);
   const [isLoading, setIsLoading] = useState(false);
+  const [countDown, setCountDown] = useState(0);
+  const [countDownDate, setCountDownDate] = useState<number>(0);
+  const [retryIsLoading, setRetryIsLoading] = useState(false);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -45,22 +51,14 @@ export default function SignIn() {
     }
   }, [acceptCode]);
 
-  async function processRegister() {
-    setIsLoading(true);
-    errorMessages.Email = "";
-    errorMessages.Password = "";
-    errorMessages.Name = "";
-    errorMessages.message = "";
-    errorMessages.Code = "";
-    setErrorMessages({ ...errorMessages });
-    if (step === 0) {
-      const confirmEmailData = await register(
-        formData.name,
-        formData.password,
-        formData.email,
-      );
-
-      if ("message" in confirmEmailData) {
+  async function sendDataForRegister() {
+    const confirmEmailData = await register(
+      formData.name,
+      formData.password,
+      formData.email,
+    );
+    if ("message" in confirmEmailData) {
+      if (confirmEmailData.code != 112) {
         setErrorMessages({
           ...errorMessages,
           message: confirmEmailData.message,
@@ -71,11 +69,33 @@ export default function SignIn() {
             [field.name]: field.message,
           });
         });
-      } else {
-        setConfirmData(confirmEmailData);
-        setStep(1);
-        setFormTitle("Подтверждение email");
+        return;
       }
+    }
+    setStep(1);
+    setFormTitle("Подтверждение email");
+    let countDownDate = new Date().getTime() + COUNT_DOWN_DURATION;
+
+    if ("message" in confirmEmailData && confirmEmailData.code == 112) {
+      countDownDate = new Date().getTime() + parseInt(confirmEmailData.details);
+    } else {
+      setConfirmData(confirmEmailData as IRegisterData);
+    }
+
+    setCountDownDate(countDownDate);
+    setCountDown(countDownDate - new Date().getTime());
+  }
+
+  async function processRegister() {
+    setIsLoading(true);
+    errorMessages.Email = "";
+    errorMessages.Password = "";
+    errorMessages.Name = "";
+    errorMessages.message = "";
+    errorMessages.Code = "";
+    setErrorMessages({ ...errorMessages });
+    if (step === 0) {
+      await sendDataForRegister();
     }
     if (step === 1) {
       const result = await confirmEmail(
@@ -101,6 +121,16 @@ export default function SignIn() {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
+
+  useEffect(() => {
+    if (!countDownDate) {
+      return;
+    }
+    const interval = setInterval(() => {
+      setCountDown(countDownDate - new Date().getTime());
+    }, 100);
+    return () => clearInterval(interval);
+  }, [countDownDate]);
 
   return (
     <form
@@ -135,6 +165,7 @@ export default function SignIn() {
           <div>
             <PasswordInput
               errorMessage={errorMessages.Password}
+              isInvalid={errorMessages.Password != ""}
               label="Пароль"
               name="password"
               value={formData.password}
@@ -177,16 +208,37 @@ export default function SignIn() {
           </div>
           <span className="text-danger text-tiny">{errorMessages.Code}</span>
           <span className="text-danger text-tiny">{errorMessages.message}</span>
-          <Button
-            fullWidth
-            onPress={() => {
-              setStep(0);
-              setFormTitle("Регистрация");
-              setAcceptCode("");
-            }}
-          >
-            Назад
-          </Button>
+          <div className="flex flex-col gap-2 mt-2">
+            <Button
+              fullWidth
+              color="primary"
+              isDisabled={countDown >= 0}
+              isLoading={retryIsLoading}
+              onPress={async () => {
+                setRetryIsLoading(true);
+                await sendDataForRegister();
+                toast.success(
+                  `Подтверждение было повторно отправлено на ${formData.email}`,
+                );
+                setRetryIsLoading(false);
+              }}
+            >
+              Отправить письмо повторно{" "}
+              {countDown >= 0 ? (
+                <>(Через {Math.floor(countDown / 1000)} сек.)</>
+              ) : null}{" "}
+            </Button>
+            <Button
+              fullWidth
+              onPress={() => {
+                setStep(0);
+                setFormTitle("Регистрация");
+                setAcceptCode("");
+              }}
+            >
+              Назад
+            </Button>
+          </div>
         </div>
       ) : null}
     </form>
