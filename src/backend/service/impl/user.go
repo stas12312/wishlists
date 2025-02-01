@@ -14,6 +14,8 @@ import (
 	"main/repository"
 	"main/service"
 	"main/uof"
+	"strconv"
+	"time"
 )
 
 func NewUserService(
@@ -55,23 +57,36 @@ func (u *userServiceImpl) Register(ctx context.Context, email, password, name st
 				"Пользователь с указанным email уже зарегистрирован",
 			)
 		}
-
 		user, err = store.UserRepository().Create(email, hash, name, false, "")
 		if err != nil {
 			return err
 		}
-		code = model.NewCode(user.Id, 6, 64, model.ConfirmEmailCode, 3)
 
+		emailCountDown, err := u.CodeRepository.GetEmailCountDown(email)
+		if emailCountDown.Milliseconds() != 0 {
+			return apperror.NewErrorWithData(
+				apperror.EmailCountDown,
+				fmt.Sprintf(
+					"Отправка повторного письма будет доступна через %s сек.",
+					strconv.FormatFloat(emailCountDown.Seconds(), 'f', 0, 32),
+				),
+				strconv.FormatInt(emailCountDown.Milliseconds(), 10),
+			)
+		}
+		code = model.NewCode(user.Id, 6, 64, model.ConfirmEmailCode, 3)
 		_, err = u.CodeRepository.Create(code)
 		if err != nil {
 			return err
 		}
-		err = u.MailClient.Send(
+
+		if err = u.MailClient.Send(
 			[]string{email},
 			"Подтвердите ваш e-mail",
 			getConfirmEmailMessage(code, u.Config.BaseUrl),
-		)
-		return err
+		); err != nil {
+			return err
+		}
+		return u.CodeRepository.SaveEmailCountDown(email, time.Second*30)
 	})
 
 	return user, code, err

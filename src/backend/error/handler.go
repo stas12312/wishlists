@@ -12,7 +12,7 @@ var AppErrorHandler = func(ctx *fiber.Ctx, err error) error {
 	if errors.As(err, &appError) {
 		return ctx.
 			Status(fiber.StatusBadRequest).
-			JSON(model.ErrorResponse{Message: appError.Message, Code: appError.Code})
+			JSON(model.ErrorResponse{Message: appError.Message, Code: appError.Code, Details: appError.Details})
 	}
 	return ctx.Status(fiber.StatusInternalServerError).
 		JSON(model.ErrorResponse{Message: "Внутренняя ошибка сервера", Details: err.Error()})

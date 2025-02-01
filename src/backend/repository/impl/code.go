@@ -56,3 +56,12 @@ func (c CodeRedis) Update(code *model.Code) error {
 	result := c.redisClient.HSet(context.Background(), code.UUID, code)
 	return result.Err()
 }
+
+func (c CodeRedis) SaveEmailCountDown(email string, duration time.Duration) error {
+	result := c.redisClient.Set(context.Background(), email, email, duration)
+	return result.Err()
+}
+
+func (c CodeRedis) GetEmailCountDown(email string) (time.Duration, error) {
+	return c.redisClient.TTL(context.Background(), email).Result()
+}

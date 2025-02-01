@@ -8,6 +8,7 @@ const (
 
 	WrongCode      = 110
 	CodeIsNotFound = 111
+	EmailCountDown = 112
 
 	NotFound      = 120
 	DatabaseError = 121
