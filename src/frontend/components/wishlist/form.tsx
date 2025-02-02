@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDate } from "@internationalized/date";
+import { CalendarDate, getLocalTimeZone } from "@internationalized/date";
 import { Button } from "@nextui-org/button";
 import { DatePicker } from "@nextui-org/date-picker";
 import { Input } from "@nextui-org/input";
@@ -33,14 +33,14 @@ export function WishlistCreateForm({
   const [formData, setFormData] = useState<{
     name: string;
     description: string;
-    date: undefined | string;
+    date: null | string;
     visible: number;
     uuid: string;
     visible_user_ids: number[];
   }>({
     name: wishlist?.name || "",
     description: wishlist?.description || "",
-    date: wishlist?.date || undefined,
+    date: wishlist?.date || null,
     visible: wishlist?.visible || 0,
     uuid: wishlist?.uuid || "",
     visible_user_ids: wishlist?.visible_user_ids || [],
@@ -92,16 +92,15 @@ export function WishlistCreateForm({
     }
   };
 
-  const setData = (dateValue: CalendarDate) => {
-    const datetime = new Date(
-      dateValue.year,
-      dateValue.month - 1,
-      dateValue.day,
-    );
+  const setData = (dateValue: CalendarDate | null) => {
+    let datetime = null;
+    if (dateValue) {
+      datetime = dateValue.toDate(getLocalTimeZone());
+    }
 
     setFormData({
       ...formData,
-      ["date"]: datetime.toISOString(),
+      ["date"]: datetime ? datetime.toISOString() : null,
     });
   };
 
@@ -135,12 +134,9 @@ export function WishlistCreateForm({
       />
       <I18nProvider locale="ru-RU">
         <DatePicker
-          cle
           label="Дата события"
           name="date"
-          /* @ts-ignore */
-          value={formData.date ? dateStringToCalendarDate(formData.date) : null}
-          /* @ts-ignore */
+          value={dateStringToCalendarDate(formData.date)}
           onChange={setData}
         />
       </I18nProvider>
@@ -226,7 +222,12 @@ export function WishlistCreateForm({
   );
 }
 
-function dateStringToCalendarDate(dateString: string): CalendarDate {
+function dateStringToCalendarDate(
+  dateString: string | null,
+): CalendarDate | null {
+  if (!dateString) {
+    return null;
+  }
   const date = new Date(dateString);
 
   return new CalendarDate(
