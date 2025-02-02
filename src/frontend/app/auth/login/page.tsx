@@ -6,6 +6,8 @@ import { Yandex } from "@/components/logo/yandex";
 import { getOgImageUrl } from "@/lib/label";
 import { getOAuthProviders } from "@/lib/requests";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Mywishlists - Вход",
   openGraph: {
