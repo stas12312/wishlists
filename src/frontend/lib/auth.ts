@@ -3,7 +3,7 @@ import { jwtDecode } from "jwt-decode";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { ITokens } from "./models";
+import { ITokens } from "./models/auth";
 import { refreshTokens } from "./requests";
 import { IToken } from "./models/token";
 

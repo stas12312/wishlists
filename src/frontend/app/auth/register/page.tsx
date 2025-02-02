@@ -10,7 +10,7 @@ import toast from "react-hot-toast";
 import CodeInput from "@/components/codeInput";
 import PasswordInput from "@/components/passwordInput";
 import { setTokens } from "@/lib/auth";
-import { IRegisterData } from "@/lib/models";
+import { IRegisterData } from "@/lib/models/auth";
 import { confirmEmail, register } from "@/lib/requests";
 
 const COUNT_DOWN_DURATION = 1000 * 30 + 500;
@@ -139,11 +139,11 @@ export default function SignIn() {
 
   return (
     <form
-      className="flex flex-col mx-auto my-10 max-w-md gap-4 bg-content1 p-4 rounded-xl box-border shadow-medium"
+      className="flex flex-col gap-2 bg-content1 p-4 rounded-xl box-border shadow-medium"
       id="register"
       onSubmit={handleSubmit}
     >
-      <h2 className="text-center">{formTitle}</h2>
+      <h2 className="text-center text-2xl">{formTitle}</h2>
 
       {step === 0 ? (
         <div className="flex flex-col gap-2">

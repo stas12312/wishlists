@@ -7,11 +7,11 @@ import {
   IError,
   IFriendRequest,
   INavigation,
-  IOAuthProvider,
-  IRegisterData,
-  ITokens,
   ListResponse,
 } from "./models";
+import { ITokens } from "./models/auth";
+import { IRegisterData } from "./models/auth";
+import { IOAuthProvider } from "./models/auth";
 import { IUser } from "./models/user";
 import { IWish } from "./models/wish";
 import { IWishlist } from "./models/wishlist";
