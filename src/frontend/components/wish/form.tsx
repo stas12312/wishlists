@@ -2,6 +2,7 @@
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { FormEvent, useState } from "react";
+import { Form } from "@nextui-org/form";
 
 import UploadButton from "../uploadButton";
 import Desirability from "../desirability";
@@ -102,49 +103,55 @@ export default function WishForm(props: {
   }
 
   return (
-    <form
-      className="flex flex-col space-y-4"
-      name="wish"
+    <Form
+      className="flex flex-col gap-3"
+      id="wish"
+      validationBehavior="native"
       onSubmit={onSumbitForm}
     >
-      <div>
-        <Input
-          isRequired
-          autoComplete="false"
-          errorMessage={errorMessages.Name}
-          isInvalid={errorMessages.Name !== ""}
-          label="Название"
-          name="name"
-          value={formData.name}
-          onChange={handlerChange}
-        />
-      </div>
-      <div>
-        <Input
-          label="Комментарий"
-          name="comment"
-          value={formData.comment}
-          onChange={handlerChange}
-        />
-      </div>
-      <div>
-        <Input
-          label="Цена"
-          name="cost"
-          value={formData.cost !== 0 ? formData.cost?.toLocaleString() : ""}
-          onChange={handlerChange}
-        />
-      </div>
-      <div>
-        <Input
-          label="Ссылка на товар"
-          name="link"
-          value={formData.link}
-          onChange={handlerChange}
-        />
-      </div>
+      <Input
+        isRequired
+        errorMessage={errorMessages.Name}
+        label="Название"
+        name="name"
+        validate={(value) => {
+          if (value === "") {
+            return "Заполните это поле";
+          }
+          if (value.length > 50) {
+            return "Максимальна длина строки 50 символов";
+          }
+          return null;
+        }}
+        value={formData.name}
+        onChange={handlerChange}
+      />
+      <Input
+        label="Комментарий"
+        name="comment"
+        value={formData.comment}
+        onChange={handlerChange}
+      />
+      <Input
+        label="Цена"
+        name="cost"
+        value={formData.cost !== 0 ? formData.cost?.toLocaleString() : ""}
+        onChange={handlerChange}
+      />
+      <Input
+        label="Ссылка на товар"
+        name="link"
+        validate={(value) => {
+          if (value.length > 500) {
+            return "Максимальна длина строки 500 символов";
+          }
+          return null;
+        }}
+        value={formData.link}
+        onChange={handlerChange}
+      />
 
-      <div className="flex sm:flex-row flex-col gap-3">
+      <div className="flex sm:flex-row flex-col gap-4 w-full">
         <Input
           label="Ссылка на картинку"
           name="image"
@@ -165,10 +172,10 @@ export default function WishForm(props: {
           <span className="text-danger text-tiny">{errorMessages.image}</span>
         </div>
       </div>
-      <div>
+      <div className="flex flex-col justify-center items-center w-full">
         <span>Желанность</span>
         <Desirability
-          size="lg"
+          size="xl"
           value={formData.desirability}
           onChange={(value) => {
             setFormData({ ...formData, desirability: value });
@@ -184,7 +191,7 @@ export default function WishForm(props: {
       <Button fullWidth isLoading={isCreating} type="submit">
         Сохранить
       </Button>
-    </form>
+    </Form>
   );
 }
 
