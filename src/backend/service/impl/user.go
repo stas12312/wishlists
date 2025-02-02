@@ -107,7 +107,10 @@ func (u *userServiceImpl) Login(ctx context.Context, email, password string) (*m
 		}
 
 		if !user.IsActive {
-			return apperror.NewError(apperror.NotConfirmEmail, "Не подтвержден email")
+			return apperror.NewError(
+				apperror.NotConfirmEmail,
+				"Не подтвержден email, пройдите повторную регистрацию",
+			)
 		}
 
 		resultUser = user
