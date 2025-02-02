@@ -96,10 +96,7 @@ const SignInForm = ({ providers }: { providers: IOAuthProvider[] }) => {
       <div className="flex justify-center">
         {providers.map((provider) => {
           return (
-            <div
-              key={provider.name}
-              className="p-1 rounded-lg hover:bg-foreground-100 transition hover:duration-100"
-            >
+            <div key={provider.name} className="p-1 rounded-full">
               <a className="h-10 text-5xl font-bold" href={provider.url}>
                 {provider.icon}
               </a>
