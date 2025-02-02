@@ -8,7 +8,8 @@ import { redirect, useSearchParams } from "next/navigation";
 import { FormEvent, Suspense, useEffect, useState } from "react";
 
 import { checkCode, resetPassword, restorePassword } from "@/lib/requests";
-import { IRegisterData, ITokens } from "@/lib/models";
+import { ITokens } from "@/lib/models/auth";
+import { IRegisterData } from "@/lib/models/auth";
 import { setTokens } from "@/lib/auth";
 import PasswordInput from "@/components/passwordInput";
 import CodeInput from "@/components/codeInput";
@@ -76,17 +77,17 @@ const RestorePassword = observer(() => {
 
   return (
     <form
-      className="mx-auto my-10 max-w-md gap-4 flex flex-col bg-content1 p-4 rounded-xl box-border shadow-medium"
+      className="gap-2 flex flex-col bg-content1 rounded-xl box-border shadow-medium p-4"
       id="reset-password"
       onSubmit={handleOnSumbit}
     >
-      <p className="text-lg text-center">
+      <h2 className="text-2xl text-center">
         {step == 0
           ? "Восстановление пароля"
           : step == 2
             ? "Новый пароль"
             : "Код подтверждения"}
-      </p>
+      </h2>
       {email !== "" && step === 1 ? (
         <span className="text-tiny">
           На {email} было отправлено письмо с кодом подтверждения
@@ -120,6 +121,7 @@ const RestorePassword = observer(() => {
           return (
             <PasswordInput
               errorMessage={passwordError}
+              isInvalid={passwordError != ""}
               label="Пароль"
               name="new-password"
               value={password}

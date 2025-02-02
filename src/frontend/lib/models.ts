@@ -1,16 +1,5 @@
 import { IUser } from "./models/user";
 
-export interface IRegisterData {
-  uuid: string;
-  secret_key: string;
-  key?: string;
-}
-
-export interface ITokens {
-  access_token: string;
-  refresh_token: string;
-}
-
 export interface IFieldError {
   name: string;
   tag: string;
@@ -22,12 +11,6 @@ export interface IError {
   details: string;
   code: number;
   fields?: IFieldError[];
-}
-
-export interface IOAuthProvider {
-  name: string;
-  url: string;
-  logo: string;
 }
 
 export interface IFriendRequest {
