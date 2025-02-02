@@ -1,11 +1,10 @@
 "use client";
 import { Button } from "@nextui-org/button";
-import { Divider } from "@nextui-org/divider";
 import { Input } from "@nextui-org/input";
-import { Link } from "@nextui-org/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { redirect } from "next/navigation";
 import toast from "react-hot-toast";
+import { Link } from "@nextui-org/link";
 
 import CodeInput from "@/components/codeInput";
 import PasswordInput from "@/components/passwordInput";
@@ -138,114 +137,119 @@ export default function SignIn() {
   }, [countDownDate]);
 
   return (
-    <form
-      className="flex flex-col gap-2 bg-content1 p-4 rounded-xl box-border shadow-medium"
-      id="register"
-      onSubmit={handleSubmit}
-    >
-      <h2 className="text-center text-2xl">{formTitle}</h2>
+    <>
+      <form
+        className="flex flex-col gap-2 bg-content1 p-4 rounded-xl box-border shadow-medium"
+        id="register"
+        onSubmit={handleSubmit}
+      >
+        <h2 className="text-center text-2xl">{formTitle}</h2>
 
-      {step === 0 ? (
-        <div className="flex flex-col gap-2">
-          <div>
-            <Input
-              fullWidth
-              isRequired
-              label="Имя"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-            />
+        {step === 0 ? (
+          <div className="flex flex-col gap-2">
+            <div>
+              <Input
+                fullWidth
+                isRequired
+                label="Имя"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <Input
+                fullWidth
+                isRequired
+                label="Email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <PasswordInput
+                errorMessage={errorMessages.Password}
+                isInvalid={errorMessages.Password != ""}
+                label="Пароль"
+                name="password"
+                value={formData.password}
+                onBlur={() => {
+                  setErrorMessages({ ...errorMessages, Password: "" });
+                }}
+                onChange={handleChange}
+              />
+            </div>
+            <span className="text-danger text-tiny">
+              {errorMessages.message}
+            </span>
+            <div>
+              <Button
+                fullWidth
+                isLoading={isLoading}
+                spinnerPlacement="end"
+                type="submit"
+              >
+                Далее
+              </Button>
+            </div>
           </div>
-          <div>
-            <Input
-              fullWidth
-              isRequired
-              label="Email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-            />
-          </div>
-          <div>
-            <PasswordInput
-              errorMessage={errorMessages.Password}
-              isInvalid={errorMessages.Password != ""}
-              label="Пароль"
-              name="password"
-              value={formData.password}
-              onBlur={() => {
-                setErrorMessages({ ...errorMessages, Password: "" });
-              }}
-              onChange={handleChange}
-            />
-          </div>
-          <span className="text-danger text-tiny">{errorMessages.message}</span>
-          <div>
-            <Button
-              fullWidth
-              isLoading={isLoading}
-              spinnerPlacement="end"
-              type="submit"
-            >
-              Далее
-            </Button>
-          </div>
-          <Divider className="my-4" />
-          <div className="text-center">
-            <Link href="/auth/login">Войти</Link>
-          </div>
-        </div>
-      ) : null}
+        ) : null}
 
-      {step === 1 ? (
-        <div>
-          <p className="text-tiny text-center">
-            На {formData.email} было отправлено письмо с кодом подтверждения
-          </p>
+        {step === 1 ? (
           <div>
-            <CodeInput
-              digitsCount={6}
-              disabled={isLoading}
-              value={acceptCode}
-              onValueChange={setAcceptCode}
-            />
+            <p className="text-tiny text-center">
+              На {formData.email} было отправлено письмо с кодом подтверждения
+            </p>
+            <div>
+              <CodeInput
+                digitsCount={6}
+                disabled={isLoading}
+                value={acceptCode}
+                onValueChange={setAcceptCode}
+              />
+            </div>
+            <span className="text-danger text-tiny">{errorMessages.Code}</span>
+            <span className="text-danger text-tiny">
+              {errorMessages.message}
+            </span>
+            <div className="flex flex-col gap-2 mt-2">
+              <Button
+                fullWidth
+                color="primary"
+                isDisabled={countDown >= 0}
+                isLoading={retryIsLoading}
+                onPress={async () => {
+                  setRetryIsLoading(true);
+                  await sendDataForRegister();
+                  toast.success(
+                    `Подтверждение было повторно отправлено на ${formData.email}`,
+                  );
+                  setRetryIsLoading(false);
+                }}
+              >
+                Отправить письмо повторно{" "}
+                {countDown >= 0 ? (
+                  <>(Через {Math.floor(countDown / 1000)} сек.)</>
+                ) : null}{" "}
+              </Button>
+              <Button
+                fullWidth
+                onPress={() => {
+                  setStep(0);
+                  setFormTitle("Регистрация");
+                  setAcceptCode("");
+                }}
+              >
+                Назад
+              </Button>
+            </div>
           </div>
-          <span className="text-danger text-tiny">{errorMessages.Code}</span>
-          <span className="text-danger text-tiny">{errorMessages.message}</span>
-          <div className="flex flex-col gap-2 mt-2">
-            <Button
-              fullWidth
-              color="primary"
-              isDisabled={countDown >= 0}
-              isLoading={retryIsLoading}
-              onPress={async () => {
-                setRetryIsLoading(true);
-                await sendDataForRegister();
-                toast.success(
-                  `Подтверждение было повторно отправлено на ${formData.email}`,
-                );
-                setRetryIsLoading(false);
-              }}
-            >
-              Отправить письмо повторно{" "}
-              {countDown >= 0 ? (
-                <>(Через {Math.floor(countDown / 1000)} сек.)</>
-              ) : null}{" "}
-            </Button>
-            <Button
-              fullWidth
-              onPress={() => {
-                setStep(0);
-                setFormTitle("Регистрация");
-                setAcceptCode("");
-              }}
-            >
-              Назад
-            </Button>
-          </div>
-        </div>
-      ) : null}
-    </form>
+        ) : null}
+      </form>
+      <div className="text-center mt-4">
+        Уже есть аккаунт? <Link href="/auth/login">Войти</Link>
+      </div>
+    </>
   );
 }
