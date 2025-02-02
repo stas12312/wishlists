@@ -10,6 +10,7 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { MdOutlinePublic, MdOutlinePublicOff, MdPerson } from "react-icons/md";
 import { Avatar } from "@nextui-org/avatar";
 import { Chip } from "@nextui-org/chip";
+import { Form } from "@nextui-org/form";
 
 import { createWishList, getFriends, updateWishlist } from "@/lib/requests";
 import { IWishlist } from "@/lib/models/wishlist";
@@ -105,45 +106,44 @@ export function WishlistCreateForm({
   };
 
   return (
-    <form
-      className="flex flex-col space-y-4"
-      name="wishlist"
+    <Form
+      className="flex flex-col gap-3"
+      id="wishlist"
+      validationBehavior="native"
       onSubmit={handleSubmit}
     >
-      <div>
-        <Input
-          fullWidth
-          isRequired
-          label="Название"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
+      <Input
+        fullWidth
+        isRequired
+        label="Название"
+        name="name"
+        validate={(value) => {
+          if (value === "") {
+            return "Заполните это поле";
+          }
+          return null;
+        }}
+        value={formData.name}
+        onChange={handleChange}
+      />
+      <Input
+        fullWidth
+        label="Описание"
+        name="description"
+        value={formData.description}
+        onChange={handleChange}
+      />
+      <I18nProvider locale="ru-RU">
+        <DatePicker
+          cle
+          label="Дата события"
+          name="date"
+          /* @ts-ignore */
+          value={formData.date ? dateStringToCalendarDate(formData.date) : null}
+          /* @ts-ignore */
+          onChange={setData}
         />
-      </div>
-      <div>
-        <Input
-          fullWidth
-          label="Описание"
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-        />
-      </div>
-      <div>
-        <I18nProvider locale="ru-RU">
-          <DatePicker
-            cle
-            label="Дата события"
-            name="date"
-            /* @ts-ignore */
-            value={
-              formData.date ? dateStringToCalendarDate(formData.date) : null
-            }
-            /* @ts-ignore */
-            onChange={setData}
-          />
-        </I18nProvider>
-      </div>
+      </I18nProvider>
       <Select
         label="Кому доступен"
         name="visible"
@@ -219,12 +219,10 @@ export function WishlistCreateForm({
           )}
         </Select>
       ) : null}
-      <div>
-        <Button fullWidth isLoading={isCreating} type="submit">
-          Сохранить
-        </Button>
-      </div>
-    </form>
+      <Button fullWidth isLoading={isCreating} type="submit">
+        Сохранить
+      </Button>
+    </Form>
   );
 }
 

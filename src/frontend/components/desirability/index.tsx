@@ -10,7 +10,7 @@ export const Desirability = ({
   value: number;
   onChange?: { (value: number): void };
   onlyRead?: boolean;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
 }) => {
   const [hover, setHover] = useState(0);
   let className = "";
@@ -23,6 +23,8 @@ export const Desirability = ({
     case "lg":
       className = "text-2xl";
       break;
+    case "xl":
+      className = "text-4xl";
   }
 
   return (
