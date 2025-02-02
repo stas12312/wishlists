@@ -1,11 +1,10 @@
 "use client";
 import { Button } from "@nextui-org/button";
-import { Divider } from "@nextui-org/divider";
 import { Input } from "@nextui-org/input";
-import { Link } from "@nextui-org/link";
 import { observer } from "mobx-react-lite";
 import { redirect, useSearchParams } from "next/navigation";
 import { FormEvent, Suspense, useEffect, useState } from "react";
+import { Link } from "@nextui-org/link";
 
 import { checkCode, resetPassword, restorePassword } from "@/lib/requests";
 import { ITokens } from "@/lib/models/auth";
@@ -76,76 +75,79 @@ const RestorePassword = observer(() => {
   }
 
   return (
-    <form
-      className="gap-2 flex flex-col bg-content1 rounded-xl box-border shadow-medium p-4"
-      id="reset-password"
-      onSubmit={handleOnSumbit}
-    >
-      <h2 className="text-2xl text-center">
-        {step == 0
-          ? "Восстановление пароля"
-          : step == 2
-            ? "Новый пароль"
-            : "Код подтверждения"}
-      </h2>
-      {email !== "" && step === 1 ? (
-        <span className="text-tiny">
-          На {email} было отправлено письмо с кодом подтверждения
-        </span>
-      ) : null}
-      {(() => {
-        if (step === 0) {
-          return (
-            <Input
-              label="Email"
-              name="email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-            />
-          );
-        } else if (step === 1) {
-          return (
-            <>
-              <CodeInput
-                digitsCount={6}
-                disabled={isLoading}
-                value={code}
-                onValueChange={setCode}
+    <>
+      <form
+        className="gap-2 flex flex-col bg-content1 rounded-xl box-border shadow-medium p-4"
+        id="reset-password"
+        onSubmit={handleOnSumbit}
+      >
+        <h2 className="text-2xl text-center">
+          {step == 0
+            ? "Восстановление пароля"
+            : step == 2
+              ? "Новый пароль"
+              : "Код подтверждения"}
+        </h2>
+        {email !== "" && step === 1 ? (
+          <span className="text-tiny text-center">
+            На {email} было отправлено письмо с кодом подтверждения
+          </span>
+        ) : null}
+        {(() => {
+          if (step === 0) {
+            return (
+              <Input
+                label="Email"
+                name="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
               />
-              <span className="text-danger text-tiny">{codeError}</span>
-            </>
-          );
-        } else if (step == 2) {
-          return (
-            <PasswordInput
-              errorMessage={passwordError}
-              isInvalid={passwordError != ""}
-              label="Пароль"
-              name="new-password"
-              value={password}
-              onBlur={() => {
-                setPasswordError("");
-              }}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          );
-        } else {
-          return null;
-        }
-      })()}
-
-      <Button isLoading={isLoading} type="submit">
-        {step !== 2 ? "Далее" : "Сменить пароль"}
-      </Button>
-      <Divider className="my-2" />
-      <div className="w-full text-center">
+            );
+          } else if (step === 1) {
+            return (
+              <>
+                <CodeInput
+                  digitsCount={6}
+                  disabled={isLoading}
+                  value={code}
+                  onValueChange={setCode}
+                />
+                <span className="text-danger text-tiny">{codeError}</span>
+              </>
+            );
+          } else if (step == 2) {
+            return (
+              <PasswordInput
+                errorMessage={passwordError}
+                isInvalid={passwordError != ""}
+                label="Пароль"
+                name="new-password"
+                value={password}
+                onBlur={() => {
+                  setPasswordError("");
+                }}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            );
+          } else {
+            return null;
+          }
+        })()}
+        {[0, 2].includes(step) ? (
+          <Button isLoading={isLoading} type="submit">
+            {step !== 2 ? "Далее" : "Сменить пароль"}
+          </Button>
+        ) : null}
+      </form>
+      <div className="text-center mt-4">
+        Вспомнили пароль?{" "}
         <Link className="w" href="/auth/login">
           Войти
         </Link>
       </div>
-    </form>
+    </>
   );
 });
 
