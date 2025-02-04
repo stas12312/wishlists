@@ -1,9 +1,9 @@
 "use client";
-import { Avatar } from "@nextui-org/avatar";
-import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/card";
-import { Chip } from "@nextui-org/chip";
-import { Image } from "@nextui-org/image";
-import { useDisclosure } from "@nextui-org/modal";
+import { Avatar } from "@heroui/avatar";
+import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
+import { Chip } from "@heroui/chip";
+import { Image } from "@heroui/image";
+import { useDisclosure } from "@heroui/modal";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

@@ -1,11 +1,11 @@
 "use client";
-import { Button } from "@nextui-org/button";
-import { Chip } from "@nextui-org/chip";
-import { User } from "@nextui-org/user";
+import { Button } from "@heroui/button";
+import { Chip } from "@heroui/chip";
+import { User } from "@heroui/user";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Skeleton } from "@nextui-org/skeleton";
+import { Skeleton } from "@heroui/skeleton";
 
 import { Wishlists } from "./wishlist/list";
 import PageHeader from "./pageHeader";

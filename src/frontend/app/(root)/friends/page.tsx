@@ -1,7 +1,7 @@
 "use client";
-import { Button } from "@nextui-org/button";
-import { Chip } from "@nextui-org/chip";
-import { Tab, Tabs } from "@nextui-org/tabs";
+import { Button } from "@heroui/button";
+import { Chip } from "@heroui/chip";
+import { Tab, Tabs } from "@heroui/tabs";
 import { observer } from "mobx-react-lite";
 import toast from "react-hot-toast";
 import { IoMdLink } from "react-icons/io";

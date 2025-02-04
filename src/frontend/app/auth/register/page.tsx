@@ -1,10 +1,10 @@
 "use client";
-import { Button } from "@nextui-org/button";
-import { Input } from "@nextui-org/input";
+import { Button } from "@heroui/button";
+import { Input } from "@heroui/input";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { redirect } from "next/navigation";
 import toast from "react-hot-toast";
-import { Link } from "@nextui-org/link";
+import { Link } from "@heroui/link";
 
 import CodeInput from "@/components/codeInput";
 import PasswordInput from "@/components/passwordInput";

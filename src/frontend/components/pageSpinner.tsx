@@ -1,4 +1,4 @@
-import { Spinner } from "@nextui-org/spinner";
+import { Spinner } from "@heroui/spinner";
 
 export const PageSpinner = () => {
   return (

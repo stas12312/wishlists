@@ -1,8 +1,8 @@
 "use client";
-import { Button } from "@nextui-org/button";
-import { Input } from "@nextui-org/input";
+import { Button } from "@heroui/button";
+import { Input } from "@heroui/input";
 import { FormEvent, useState } from "react";
-import { Form } from "@nextui-org/form";
+import { Form } from "@heroui/form";
 
 import UploadButton from "../uploadButton";
 import Desirability from "../desirability";

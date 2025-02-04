@@ -4,12 +4,12 @@ import {
   DrawerHeader,
   DrawerBody,
   DrawerFooter,
-} from "@nextui-org/drawer";
-import { Image } from "@nextui-org/image";
+} from "@heroui/drawer";
+import { Image } from "@heroui/image";
 import { AiFillGift } from "react-icons/ai";
-import { Link } from "@nextui-org/link";
-import { Chip } from "@nextui-org/chip";
-import { Button } from "@nextui-org/button";
+import { Link } from "@heroui/link";
+import { Chip } from "@heroui/chip";
+import { Button } from "@heroui/button";
 
 import Desirability from "../desirability";
 

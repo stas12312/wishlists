@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@nextui-org/button";
+import { Button } from "@heroui/button";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { MdDarkMode, MdLightMode } from "react-icons/md";

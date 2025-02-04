@@ -1,9 +1,9 @@
-import { Button } from "@nextui-org/button";
+import { Button } from "@heroui/button";
 import { observer } from "mobx-react-lite";
 import { MdDelete, MdOutlineExitToApp } from "react-icons/md";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { Divider } from "@nextui-org/divider";
+import { Divider } from "@heroui/divider";
 
 import ConfirmationModal from "../confirmation";
 

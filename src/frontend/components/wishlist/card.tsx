@@ -1,17 +1,17 @@
 "use client";
 
-import { Button } from "@nextui-org/button";
-import { Card, CardBody, CardHeader } from "@nextui-org/card";
-import { Chip } from "@nextui-org/chip";
+import { Button } from "@heroui/button";
+import { Card, CardBody, CardHeader } from "@heroui/card";
+import { Chip } from "@heroui/chip";
 import {
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownSection,
   DropdownTrigger,
-} from "@nextui-org/dropdown";
-import { useDisclosure } from "@nextui-org/modal";
-import { Skeleton } from "@nextui-org/skeleton";
+} from "@heroui/dropdown";
+import { useDisclosure } from "@heroui/modal";
+import { Skeleton } from "@heroui/skeleton";
 import { useRouter } from "next/navigation";
 import { forwardRef, Key, useState } from "react";
 import toast from "react-hot-toast";

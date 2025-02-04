@@ -1,6 +1,6 @@
-import { Button } from "@nextui-org/button";
-import { Form } from "@nextui-org/form";
-import { Input } from "@nextui-org/input";
+import { Button } from "@heroui/button";
+import { Form } from "@heroui/form";
+import { Input } from "@heroui/input";
 import { observer } from "mobx-react-lite";
 import { FormEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";

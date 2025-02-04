@@ -1,7 +1,7 @@
 import { useId, useState } from "react";
-import { Image } from "@nextui-org/image";
+import { Image } from "@heroui/image";
 import { MdOutlineFileUpload } from "react-icons/md";
-import { Spinner } from "@nextui-org/spinner";
+import { Spinner } from "@heroui/spinner";
 
 import { uploadFile } from "@/lib/requests";
 

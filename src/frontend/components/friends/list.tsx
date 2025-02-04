@@ -1,6 +1,6 @@
 "use client";
-import { Card, CardBody } from "@nextui-org/card";
-import { User } from "@nextui-org/user";
+import { Card, CardBody } from "@heroui/card";
+import { User } from "@heroui/user";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
