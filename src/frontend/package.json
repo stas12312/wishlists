@@ -20,6 +20,7 @@
 		"@nextui-org/code": "^2.2.5",
 		"@nextui-org/date-picker": "^2.3.8",
 		"@nextui-org/divider": "^2.2.5",
+		"@nextui-org/drawer": "^2.2.7",
 		"@nextui-org/dropdown": "^2.3.8",
 		"@nextui-org/form": "^2.1.7",
 		"@nextui-org/image": "^2.2.4",

@@ -7,17 +7,9 @@ import {
 } from "@nextui-org/dropdown";
 import { Key } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import {
-  MdCreate,
-  MdOutlineBookmarkAdded,
-  MdOutlineBookmarkRemove,
-  MdDelete,
-  MdOutlineCheck,
-  MdOutlineCancel,
-  MdOutlineOpenInNew,
-} from "react-icons/md";
 
 import { IWish } from "@/lib/models/wish";
+import { getMenuItemsByActions } from "@/lib/wish/menu";
 
 export function WishItemMenu({
   wish,
@@ -26,6 +18,7 @@ export function WishItemMenu({
   wish: IWish;
   handeAction: { (key: Key): void };
 }) {
+  const menuItems = getMenuItemsByActions(wish.actions);
   return (
     <span>
       <Dropdown>
@@ -35,7 +28,17 @@ export function WishItemMenu({
           </Button>
         </DropdownTrigger>
         <DropdownMenu aria-label="Wish actions" onAction={handeAction}>
-          {wish.actions.edit ? (
+          {menuItems.map((value) => (
+            <DropdownItem
+              key={value.key}
+              className={value.className}
+              color={value.color}
+              startContent={<value.icon />}
+            >
+              {value.title}
+            </DropdownItem>
+          ))}
+          {/* {wish.actions.edit ? (
             <DropdownItem key="edit" startContent={<MdCreate />}>
               Редактировать
             </DropdownItem>
@@ -100,7 +103,7 @@ export function WishItemMenu({
             >
               Удалить
             </DropdownItem>
-          ) : null}
+          ) : null} */}
         </DropdownMenu>
       </Dropdown>
     </span>
