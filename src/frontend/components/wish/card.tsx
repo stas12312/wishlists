@@ -1,24 +1,26 @@
 "use client";
+import { Avatar } from "@nextui-org/avatar";
 import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/card";
 import { Chip } from "@nextui-org/chip";
 import { Image } from "@nextui-org/image";
 import { useDisclosure } from "@nextui-org/modal";
 import { observer } from "mobx-react-lite";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Key, useState } from "react";
 import toast from "react-hot-toast";
 import { AiFillGift } from "react-icons/ai";
-import { Avatar } from "@nextui-org/avatar";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 import ConfirmationModal from "../confirmation";
 import Desirability from "../desirability";
 
-import { WishItemMenu } from "./card_menu";
+import { WishItemMenu } from "./cardMenu";
+import WishFullCard from "./fullCard";
 import WishSaveModal from "./saveModal";
+import WishlistStatus from "./wishlistStatus";
 
-import { IWishActions } from "@/lib/models/wish";
-import { IWish } from "@/lib/models/wish";
+import { getUserLink } from "@/lib/label";
+import { IWish, IWishActions } from "@/lib/models/wish";
 import {
   cancelReserveWish,
   cancelWishFull,
@@ -27,7 +29,6 @@ import {
   makeWishFull,
   reserveWish,
 } from "@/lib/requests";
-import { getUserLink } from "@/lib/label";
 
 export const WishItem = observer(
   ({
@@ -43,6 +44,7 @@ export const WishItem = observer(
     const [item, setItem] = useState<IWish>(wish);
     const [isConfirm, setIsConfirm] = useState(false);
     const { isOpen, onOpenChange } = useDisclosure();
+    const FullCardDisclosure = useDisclosure();
 
     async function onDeleteWish() {
       await onDelete(wish);
@@ -55,7 +57,7 @@ export const WishItem = observer(
       setItem(wish);
     }
 
-    async function handleOnAction(key: Key) {
+    async function handleOnAction(key: Key | string) {
       const wishUUID = wish.uuid ?? "";
 
       if (key === "delete" && wish.uuid) {
@@ -100,15 +102,15 @@ export const WishItem = observer(
         <div className="md:hover:scale-[1.03] duration-200">
           <Card
             className={`flex-col ${withUser ? "h-[340px]" : "h-[300px]"} w-full`}
-            isPressable={item.link !== null && item.link != ""}
+            isPressable={true}
             onPress={() => {
-              window.open(item.link);
+              FullCardDisclosure.onOpen();
             }}
           >
             <CardHeader className="flex-col items-start">
               <div className="flex flex-row justify-between w-full h-[40px]">
                 <p className="text-tiny font-bold my-auto flex flex-col text-left overflow-hidden text-ellipsis truncate">
-                  <span className="uppercase text-xl">{item.name}</span>
+                  <span className="text-xl">{item.name}</span>
                   <span className="text-default-500">{item.comment}</span>
                 </p>
                 {showMenu(wish.actions) ? (
@@ -121,17 +123,7 @@ export const WishItem = observer(
             <CardBody>
               <div className="h-full">
                 <div className="absolute flex flex-col items-center gap-1 m-1 w-[89%] z-10">
-                  {item.fulfilled_at ? (
-                    <Chip color="primary">
-                      Исполнено {item.actions.cancel_reserve ? " вами" : null}
-                    </Chip>
-                  ) : null}
-                  {item.is_reserved && !item.fulfilled_at ? (
-                    <Chip color="success">
-                      Забронировано
-                      {item.actions.cancel_reserve ? " вами" : null}
-                    </Chip>
-                  ) : null}
+                  <WishlistStatus wish={item} />
                 </div>
                 {item.image ? (
                   <Image
@@ -197,6 +189,12 @@ export const WishItem = observer(
           wishlistUUID={wish.wishlist_uuid}
           onOpenChange={onOpenChange}
           onUpdate={onWishUpdate}
+        />
+        <WishFullCard
+          handeAction={handleOnAction}
+          isOpen={FullCardDisclosure.isOpen}
+          wish={item}
+          onOpenChange={FullCardDisclosure.onOpenChange}
         />
       </>
     );
