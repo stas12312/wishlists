@@ -1,10 +1,10 @@
 "use client";
-import { Button } from "@nextui-org/button";
-import { Input } from "@nextui-org/input";
+import { Button } from "@heroui/button";
+import { Input } from "@heroui/input";
 import { observer } from "mobx-react-lite";
 import { redirect, useSearchParams } from "next/navigation";
 import { FormEvent, Suspense, useEffect, useState } from "react";
-import { Link } from "@nextui-org/link";
+import { Link } from "@heroui/link";
 
 import { checkCode, resetPassword, restorePassword } from "@/lib/requests";
 import { ITokens } from "@/lib/models/auth";

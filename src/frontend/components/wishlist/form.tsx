@@ -1,16 +1,16 @@
 "use client";
 
 import { CalendarDate, getLocalTimeZone } from "@internationalized/date";
-import { Button } from "@nextui-org/button";
-import { DatePicker } from "@nextui-org/date-picker";
-import { Input } from "@nextui-org/input";
-import { Select, SelectItem } from "@nextui-org/select";
+import { Button } from "@heroui/button";
+import { DatePicker } from "@heroui/date-picker";
+import { Input } from "@heroui/input";
+import { Select, SelectItem } from "@heroui/select";
 import { I18nProvider } from "@react-aria/i18n";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { MdOutlinePublic, MdOutlinePublicOff, MdPerson } from "react-icons/md";
-import { Avatar } from "@nextui-org/avatar";
-import { Chip } from "@nextui-org/chip";
-import { Form } from "@nextui-org/form";
+import { Avatar } from "@heroui/avatar";
+import { Chip } from "@heroui/chip";
+import { Form } from "@heroui/form";
 
 import { createWishList, getFriends, updateWishlist } from "@/lib/requests";
 import { IWishlist } from "@/lib/models/wishlist";

@@ -1,4 +1,4 @@
-import { Divider } from "@nextui-org/divider";
+import { Divider } from "@heroui/divider";
 import { ReactNode } from "react";
 
 const PageHeader = ({ children }: { children: ReactNode }) => {

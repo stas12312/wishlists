@@ -1,7 +1,7 @@
 "use client";
-import { Badge } from "@nextui-org/badge";
-import { Chip } from "@nextui-org/chip";
-import { Link } from "@nextui-org/link";
+import { Badge } from "@heroui/badge";
+import { Chip } from "@heroui/chip";
+import { Link } from "@heroui/link";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
 import {
@@ -12,7 +12,7 @@ import {
   MdStar,
 } from "react-icons/md";
 import { usePathname } from "next/navigation";
-import { Divider } from "@nextui-org/divider";
+import { Divider } from "@heroui/divider";
 
 import countersStore from "@/store/counterStore";
 import userStore from "@/store/userStore";

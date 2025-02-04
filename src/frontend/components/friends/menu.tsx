@@ -1,5 +1,5 @@
 "use client";
-import { Dropdown, DropdownItem, DropdownMenu } from "@nextui-org/dropdown";
+import { Dropdown, DropdownItem, DropdownMenu } from "@heroui/dropdown";
 import { observer } from "mobx-react-lite";
 import { Key } from "react";
 import { MdDelete } from "react-icons/md";

@@ -1,4 +1,4 @@
-import { Modal, ModalContent, ModalHeader, ModalBody } from "@nextui-org/modal";
+import { Modal, ModalContent, ModalHeader, ModalBody } from "@heroui/modal";
 
 import { WishlistCreateForm } from "./form";
 

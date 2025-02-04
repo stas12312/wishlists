@@ -1,4 +1,4 @@
-import { Input } from "@nextui-org/input";
+import { Input } from "@heroui/input";
 import { ChangeEvent, useEffect, useRef } from "react";
 
 const CodeInput = ({

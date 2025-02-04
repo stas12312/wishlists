@@ -1,8 +1,8 @@
 "use client";
-import { Button } from "@nextui-org/button";
-import { Divider } from "@nextui-org/divider";
-import { Input } from "@nextui-org/input";
-import { Link } from "@nextui-org/link";
+import { Button } from "@heroui/button";
+import { Divider } from "@heroui/divider";
+import { Input } from "@heroui/input";
+import { Link } from "@heroui/link";
 import { useRouter } from "next/navigation";
 import { useState, FormEvent } from "react";
 

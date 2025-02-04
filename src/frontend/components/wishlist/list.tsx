@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@nextui-org/button";
-import { useDisclosure } from "@nextui-org/modal";
+import { Button } from "@heroui/button";
+import { useDisclosure } from "@heroui/modal";
 import { observer } from "mobx-react-lite";
 import { createRef, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";

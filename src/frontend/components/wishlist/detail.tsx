@@ -1,15 +1,15 @@
 "use client";
-import { Chip } from "@nextui-org/chip";
-import { useDisclosure } from "@nextui-org/modal";
-import { User } from "@nextui-org/user";
+import { Chip } from "@heroui/chip";
+import { useDisclosure } from "@heroui/modal";
+import { User } from "@heroui/user";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Alert } from "@nextui-org/alert";
-import { Button } from "@nextui-org/button";
-import { Link } from "@nextui-org/link";
-import { Skeleton } from "@nextui-org/skeleton";
+import { Alert } from "@heroui/alert";
+import { Button } from "@heroui/button";
+import { Link } from "@heroui/link";
+import { Skeleton } from "@heroui/skeleton";
 
 import AddCardButton from "../AddCardButton";
 import { VisibleStatus } from "../visibleIcon";

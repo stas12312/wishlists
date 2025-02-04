@@ -1,5 +1,5 @@
 "use client";
-import { User } from "@nextui-org/user";
+import { User } from "@heroui/user";
 import { observer } from "mobx-react-lite";
 import { Key, useEffect } from "react";
 import {
@@ -7,7 +7,7 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
-} from "@nextui-org/dropdown";
+} from "@heroui/dropdown";
 import { MdLink, MdOutlineExitToApp } from "react-icons/md";
 import toast from "react-hot-toast";
 

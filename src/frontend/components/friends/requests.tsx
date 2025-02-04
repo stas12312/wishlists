@@ -1,6 +1,6 @@
-import { Button } from "@nextui-org/button";
-import { Card, CardBody } from "@nextui-org/card";
-import { User } from "@nextui-org/user";
+import { Button } from "@heroui/button";
+import { Card, CardBody } from "@heroui/card";
+import { User } from "@heroui/user";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";

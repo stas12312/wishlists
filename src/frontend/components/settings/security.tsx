@@ -1,6 +1,6 @@
-import { Button } from "@nextui-org/button";
-import { Form } from "@nextui-org/form";
-import { Spinner } from "@nextui-org/spinner";
+import { Button } from "@heroui/button";
+import { Form } from "@heroui/form";
+import { Spinner } from "@heroui/spinner";
 import { FormEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 

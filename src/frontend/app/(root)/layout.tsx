@@ -1,4 +1,4 @@
-import { Divider } from "@nextui-org/divider";
+import { Divider } from "@heroui/divider";
 import { cookies } from "next/headers";
 
 import { Contacts } from "@/components/contacts";
