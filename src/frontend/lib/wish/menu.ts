@@ -46,7 +46,7 @@ const ACTIONS: IWishMenuItem[] = [
     key: "open_wishlist",
     className: "text-primary",
     color: "primary",
-    title: "Перейти в вишлист",
+    title: "Открыть вишлист",
     icon: MdOutlineOpenInNew,
   },
   {
@@ -60,7 +60,7 @@ const ACTIONS: IWishMenuItem[] = [
     key: "cancel_reserve",
     className: "text-danger",
     color: "primary",
-    title: "Не исполнено",
+    title: "Отменить бронь",
     icon: MdOutlineBookmarkRemove,
   },
   {
