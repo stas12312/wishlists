@@ -37,7 +37,7 @@ export const DeleteAccountButton = observer(() => {
           <>
             <span className="text-center">
               Данное действие необратимо, все ваши желания и список друзей будут
-              удалены беззвозвратно
+              удалены безвозвратно
             </span>
             <Divider className="my-2" />
             <div className="flex flex-col justify-center">
