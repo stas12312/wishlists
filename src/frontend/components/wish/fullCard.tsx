@@ -21,11 +21,13 @@ const WishFullCard = ({
   onOpenChange,
   handeAction,
   wish,
+  withUser = false,
 }: {
   isOpen: boolean;
   onOpenChange: { (): void };
   handeAction: { (action: string): void };
   wish: IWish;
+  withUser?: boolean;
 }) => {
   const menuItems = getMenuItemsByActions(wish.actions);
 
@@ -39,7 +41,7 @@ const WishFullCard = ({
             </DrawerHeader>
 
             <DrawerBody className="flex">
-              {wish.user.username ? (
+              {withUser ? (
                 <div className="mx-auto">
                   <Link
                     className="md:hover:scale-[1.03] transition"

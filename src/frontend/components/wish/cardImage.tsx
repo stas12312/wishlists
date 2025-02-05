@@ -33,12 +33,12 @@ const CardImage = ({
           <AiFillGift className="text-8xl mx-auto my-auto" />
         </div>
       )}
-      <div className="absolute top-2 flex flex-col items-center w-full">
+      <div className="absolute top-1.5 flex flex-col items-center w-full">
         <span className="mx-auto">
           <WishlistStatus size="lg" wish={wish} />
         </span>
       </div>
-      <div className="flex absolute bottom-2 px-2 w-full z-10">
+      <div className="flex absolute bottom-1.5 px-1 w-full z-10">
         {wish.desirability && wish.desirability > 1 ? (
           <Chip>
             <Desirability onlyRead value={wish.desirability} />
