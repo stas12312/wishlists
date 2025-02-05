@@ -3,9 +3,11 @@ import { IoMdAdd } from "react-icons/io";
 const AddCardButton = ({
   onPress,
   className,
+  title,
 }: {
   onPress: { (): void };
   className: string;
+  title: string;
 }) => {
   return (
     <Card
@@ -17,8 +19,9 @@ const AddCardButton = ({
       onPress={onPress}
     >
       <CardBody>
-        <div className="mx-auto flex my-auto">
-          <IoMdAdd className="my-auto text-4xl" />
+        <div className="mx-auto flex flex-col my-auto">
+          <IoMdAdd className="my-auto text-4xl mx-auto" />
+          <span className="">{title}</span>
         </div>
       </CardBody>
     </Card>

@@ -1,22 +1,22 @@
 "use client";
+import { Alert } from "@heroui/alert";
+import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
+import { Link } from "@heroui/link";
 import { useDisclosure } from "@heroui/modal";
+import { Skeleton } from "@heroui/skeleton";
 import { User } from "@heroui/user";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Alert } from "@heroui/alert";
-import { Button } from "@heroui/button";
-import { Link } from "@heroui/link";
-import { Skeleton } from "@heroui/skeleton";
 
-import AddCardButton from "../AddCardButton";
+import AddCardButton from "../addCardButton";
+import PageHeader from "../pageHeader";
+import { PageSpinner } from "../pageSpinner";
 import { VisibleStatus } from "../visibleIcon";
 import { WishItem } from "../wish/card";
 import WishSaveModal from "../wish/saveModal";
-import PageHeader from "../pageHeader";
-import { PageSpinner } from "../pageSpinner";
 
 import { WishlistItemMenu } from "./card";
 
@@ -220,7 +220,11 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
             onUpdate={onCreateWish}
           />
           {isEditable ? (
-            <AddCardButton className="md:h-[300px]" onPress={onOpen} />
+            <AddCardButton
+              className="md:h-[300px]"
+              title="Добавить желание"
+              onPress={onOpen}
+            />
           ) : null}
           {components}
         </>

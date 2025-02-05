@@ -4,7 +4,6 @@ import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import { useDisclosure } from "@heroui/modal";
 import { observer } from "mobx-react-lite";
-import { useRouter } from "next/navigation";
 import { Key, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -35,7 +34,6 @@ export const WishItem = observer(
     onDelete: { (wish: IWish): void };
     withUser?: boolean;
   }) => {
-    const router = useRouter();
     const [item, setItem] = useState<IWish>(wish);
     const [isConfirm, setIsConfirm] = useState(false);
     const { isOpen, onOpenChange } = useDisclosure();

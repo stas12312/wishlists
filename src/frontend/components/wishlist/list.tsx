@@ -5,8 +5,9 @@ import { useDisclosure } from "@heroui/modal";
 import { observer } from "mobx-react-lite";
 import { createRef, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
+import { IoMdAdd } from "react-icons/io";
 
-import AddCardButton from "../AddCardButton";
+import AddCardButton from "../addCardButton";
 
 import WishlistFilter from "./filter";
 import { WishlistItem, WishlistsSkeletonItem } from "./card";
@@ -143,16 +144,25 @@ export const Wishlists = observer(
         </div>
         {components.length ? (
           <>
-            {!filter.showArchive && actions.edit ? (
-              <AddCardButton onPress={onOpen} />
+            {!filter.showArchive && actions.edit && !isLoading ? (
+              <AddCardButton title="Добавить вишлист" onPress={onOpen} />
             ) : null}
             {components}
           </>
         ) : (
           <div className="col-span-full text-center">
-            <h1 className="text-4xl	col-span-full">Список пуст</h1>
+            <h1 className="text-4xl	col-span-full">
+              {filter.showArchive
+                ? "Список архивированных вишлистов пуст"
+                : "Список вишлистов пуст"}
+            </h1>
             {actions.edit && !filter.showArchive ? (
-              <Button color="primary" variant="light" onPress={onOpen}>
+              <Button
+                color="primary"
+                startContent={<IoMdAdd />}
+                variant="light"
+                onPress={onOpen}
+              >
                 Добавить
               </Button>
             ) : null}
