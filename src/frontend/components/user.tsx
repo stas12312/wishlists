@@ -36,15 +36,19 @@ export const UserItem = observer(() => {
       {user ? (
         <Dropdown placement="bottom-end">
           <DropdownTrigger>
-            <User
-              as="button"
-              avatarProps={{
-                name: user.name?.length ? user.name[0] : "",
-                src: user.image,
-              }}
-              description={user.email}
-              name={user.name}
-            />
+            {userStore.isLoading ? (
+              <User description={user.email} name={user.name} />
+            ) : (
+              <User
+                as="button"
+                avatarProps={{
+                  name: user.name?.length ? user.name[0] : "",
+                  src: user.image,
+                }}
+                description={user.email}
+                name={user.name}
+              />
+            )}
           </DropdownTrigger>
           <DropdownMenu variant="flat" onAction={onHandleAction}>
             <DropdownItem key="share" startContent={<MdLink />}>
