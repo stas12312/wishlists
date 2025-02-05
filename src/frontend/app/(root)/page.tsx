@@ -8,7 +8,7 @@ export default async function Home() {
   if (userId) {
     return (
       <>
-        <PageHeader>Мои вишлисты</PageHeader>
+        <PageHeader>Вишлисты</PageHeader>
         <section>
           <Wishlists actions={{ edit: true, filter: true }} userId={userId} />
         </section>
