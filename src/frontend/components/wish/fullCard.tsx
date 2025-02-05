@@ -5,18 +5,16 @@ import {
   DrawerBody,
   DrawerFooter,
 } from "@heroui/drawer";
-import { Image } from "@heroui/image";
-import { AiFillGift } from "react-icons/ai";
+import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
 import { Chip } from "@heroui/chip";
-import { Button } from "@heroui/button";
+import { Avatar } from "@heroui/avatar";
 
-import Desirability from "../desirability";
-
-import WishlistStatus from "./wishlistStatus";
+import CardImage from "./cardImage";
 
 import { IWish } from "@/lib/models/wish";
 import { getMenuItemsByActions } from "@/lib/wish/menu";
+import { getUserLink } from "@/lib/label";
 
 const WishFullCard = ({
   isOpen,
@@ -32,7 +30,7 @@ const WishFullCard = ({
   const menuItems = getMenuItemsByActions(wish.actions);
 
   return (
-    <Drawer isOpen={isOpen} size="lg" onOpenChange={onOpenChange}>
+    <Drawer isOpen={isOpen} size="xl" onOpenChange={onOpenChange}>
       <DrawerContent>
         {(onClose) => (
           <>
@@ -41,53 +39,42 @@ const WishFullCard = ({
             </DrawerHeader>
 
             <DrawerBody className="flex">
-              <span className="mx-auto">
-                <WishlistStatus wish={wish} />
-              </span>
-              <span className="text-default-500">{wish.comment}</span>
-              <div>
-                {wish.image ? (
-                  <Image
-                    isZoomed
-                    className="z-0 object-cover"
-                    src={wish.image}
-                  />
-                ) : (
-                  <div className=" bg-default-100 h-64 rounded-large w-full flex">
-                    <AiFillGift className="text-8xl mx-auto my-auto" />
-                  </div>
-                )}
-                <div className="flex -my-8 px-2">
-                  {wish.desirability && wish.desirability > 1 ? (
-                    <Chip>
-                      <Desirability onlyRead value={wish.desirability} />
-                    </Chip>
-                  ) : null}
-                  {wish.cost ? (
-                    <Chip className="ml-auto mr-0">
-                      {wish.cost.toLocaleString() + " ₽"}
-                    </Chip>
-                  ) : null}
-                </div>
-              </div>
-              <div className="mt-8 flex flex-col gap-2">
-                {wish.link ? (
+              {wish.user.username ? (
+                <div className="mx-auto">
                   <Link
-                    isBlock
-                    isExternal
-                    showAnchorIcon
-                    className="w-full"
-                    href={wish.link}
-                    size="lg"
+                    className="md:hover:scale-[1.03] transition"
+                    href={getUserLink(wish.user.username)}
                   >
-                    <span className="mx-auto">Перейти в магазин</span>
+                    <Chip avatar={<Avatar src={wish.user.image} />}>
+                      {wish.user.name}
+                    </Chip>
                   </Link>
-                ) : null}
+                </div>
+              ) : null}
+
+              <span className="text-default-500">{wish.comment}</span>
+              {wish.link ? (
+                <Link
+                  isBlock
+                  isExternal
+                  showAnchorIcon
+                  className="w-full"
+                  href={wish.link}
+                  size="lg"
+                >
+                  <span className="mx-auto">Перейти в магазин</span>
+                </Link>
+              ) : null}
+
+              <CardImage iconClassName="h-64" wish={wish} />
+
+              <div className="flex flex-col gap-2">
                 {menuItems.map((value) => (
                   <Button
                     key={value.key}
                     color={value.color}
                     startContent={<value.icon />}
+                    variant="flat"
                     onPress={() => {
                       handeAction(value.key);
                     }}

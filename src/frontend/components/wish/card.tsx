@@ -2,24 +2,19 @@
 import { Avatar } from "@heroui/avatar";
 import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
 import { Chip } from "@heroui/chip";
-import { Image } from "@heroui/image";
 import { useDisclosure } from "@heroui/modal";
 import { observer } from "mobx-react-lite";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Key, useState } from "react";
 import toast from "react-hot-toast";
-import { AiFillGift } from "react-icons/ai";
 
 import ConfirmationModal from "../confirmation";
-import Desirability from "../desirability";
 
 import { WishItemMenu } from "./cardMenu";
 import WishFullCard from "./fullCard";
 import WishSaveModal from "./saveModal";
-import WishlistStatus from "./wishlistStatus";
+import CardImage from "./cardImage";
 
-import { getUserLink } from "@/lib/label";
 import { IWish, IWishActions } from "@/lib/models/wish";
 import {
   cancelReserveWish,
@@ -93,7 +88,7 @@ export const WishItem = observer(
         setItem(await getWish(wishUUID));
       }
       if (key === "open_wishlist") {
-        router.push(`/wishlists/${wish.wishlist_uuid}`);
+        window.open(`/wishlists/${wish.wishlist_uuid}`);
       }
     }
 
@@ -121,50 +116,18 @@ export const WishItem = observer(
               </div>
             </CardHeader>
             <CardBody>
-              <div className="h-full">
-                <div className="absolute flex flex-col items-center gap-1 m-1 w-[89%] z-10">
-                  <WishlistStatus wish={item} />
-                </div>
-                {item.image ? (
-                  <Image
-                    removeWrapper
-                    className="z-0 object-cover w-full h-full"
-                    src={item.image}
-                  />
-                ) : (
-                  <div className=" bg-default-100 h-full rounded-large w-full flex">
-                    <AiFillGift className="text-8xl mx-auto my-auto" />
-                  </div>
-                )}
-
-                <div className="z-1 absolute bottom-4 right-4 flex items-end w-full">
-                  <div className="mr-auto ml-8">
-                    {item.desirability && item.desirability > 1 ? (
-                      <Chip>
-                        <Desirability onlyRead value={item.desirability} />
-                      </Chip>
-                    ) : null}
-                  </div>
-                  <div className="flex flex-col ml-auto mr-0 gap-1">
-                    {item.cost ? (
-                      <Chip className="ml-auto mr-0">
-                        {item.cost.toLocaleString() + " ₽"}
-                      </Chip>
-                    ) : null}
-                  </div>
-                </div>
-              </div>
+              <CardImage
+                removeWrapper
+                className="h-full"
+                iconClassName="h-full"
+                wish={item}
+              />
             </CardBody>
             {withUser ? (
               <CardFooter className="flex justify-between">
-                <Link
-                  className="md:hover:scale-[1.03] transition"
-                  href={getUserLink(item.user.username)}
-                >
-                  <Chip avatar={<Avatar src={item.user.image} />}>
-                    {item.user.name}
-                  </Chip>
-                </Link>
+                <Chip avatar={<Avatar src={item.user.image} />}>
+                  {item.user.name}
+                </Chip>
 
                 {item.wishlist.date ? (
                   <Chip color="warning">
