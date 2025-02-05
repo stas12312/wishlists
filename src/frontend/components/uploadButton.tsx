@@ -99,7 +99,9 @@ const UploadButton = ({
         </div>
       ) : (
         <>
-          <Image className={className + " z-2"} src={previewUrl || undefined} />
+          {previewUrl ? (
+            <Image className={className + " z-2"} src={previewUrl} />
+          ) : null}
 
           {!isOver ? (
             <span className="group-hover:opacity-90 w-full h-full duration-300 absolute flex top-0 justify-center hover:bg-default-300 bg-default-200 opacity-40 rounded-xl z-1">
