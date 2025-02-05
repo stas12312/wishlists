@@ -45,7 +45,9 @@ const ConfirmationModal = ({
         <ModalContent>
           {() => (
             <>
-              <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1 text-center">
+                {title}
+              </ModalHeader>
               <ModalBody>
                 <div className="flex flex-col gap-2">
                   {message}
