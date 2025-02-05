@@ -155,6 +155,7 @@ export const WishItem = observer(
           handeAction={handleOnAction}
           isOpen={FullCardDisclosure.isOpen}
           wish={item}
+          withUser={withUser}
           onOpenChange={FullCardDisclosure.onOpenChange}
         />
       </>
