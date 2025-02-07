@@ -157,7 +157,7 @@ export const WishlistItemMenu = ({
       navigator.clipboard.writeText(
         `${window.location.origin}/wishlists/${wishlist.uuid}`,
       );
-      toast.success("Ссылка скопирована");
+      toast.success("Ссылка на вишлист скопирована");
     }
     if (key === "restore") {
       await restoreWishlist(wishlist.uuid);
@@ -196,7 +196,7 @@ export const WishlistItemMenu = ({
                     </DropdownItem>
 
                     <DropdownItem key="share" startContent={<MdLink />}>
-                      Скопировать
+                      Поделиться
                     </DropdownItem>
                   </>
                 ) : (
@@ -222,7 +222,7 @@ export const WishlistItemMenu = ({
             </>
           ) : (
             <DropdownItem key="share" startContent={<MdLink />}>
-              Скопировать
+              Поделиться
             </DropdownItem>
           )}
         </DropdownMenu>
