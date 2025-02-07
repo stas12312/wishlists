@@ -22,7 +22,7 @@ const CardImage = ({
     <div className={`relative ${className}`}>
       {wish.image ? (
         <Image
-          className="z-0 object-cover h-full w-full"
+          className="z-0 object-cover h-full w-full mx-auto"
           removeWrapper={removeWrapper}
           src={wish.image}
         />
