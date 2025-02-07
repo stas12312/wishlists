@@ -113,6 +113,7 @@ export function WishlistCreateForm({
     >
       <Input
         fullWidth
+        isClearable
         isRequired
         label="Название"
         name="name"
@@ -124,13 +125,16 @@ export function WishlistCreateForm({
         }}
         value={formData.name}
         onChange={handleChange}
+        onClear={() => setFormData({ ...formData, name: "" })}
       />
       <Input
         fullWidth
+        isClearable
         label="Описание"
         name="description"
         value={formData.description}
         onChange={handleChange}
+        onClear={() => setFormData({ ...formData, description: "" })}
       />
       <I18nProvider locale="ru-RU">
         <DatePicker

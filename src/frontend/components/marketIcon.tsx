@@ -13,8 +13,13 @@ const ICON_BY_DOMAIN = new Map<string, string>([
   ["goldapple", getIconUrl(STATIC_URL, "goldapple.png")],
   ["afisha.yandex", getIconUrl(STATIC_URL, "yandex-afisha.ico")],
 ]);
-
-const MarketIcon = ({ link }: { link: string }) => {
+const MarketIcon = ({
+  link,
+  className = "",
+}: {
+  link?: string;
+  className?: string;
+}) => {
   if (!link) {
     return;
   }
@@ -24,7 +29,14 @@ const MarketIcon = ({ link }: { link: string }) => {
   if (!ICON_BY_DOMAIN.has(domain)) {
     return null;
   }
-  return <Image height={32} src={ICON_BY_DOMAIN.get(domain) as string} />;
+  return (
+    <Image
+      removeWrapper
+      className={className}
+      height={32}
+      src={ICON_BY_DOMAIN.get(domain) as string}
+    />
+  );
 };
 
 function getIconUrl(baseUrl: string, icon: string): string {
