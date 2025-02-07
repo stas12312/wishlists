@@ -139,6 +139,7 @@ export function WishlistCreateForm({
       <I18nProvider locale="ru-RU">
         <DatePicker
           showMonthAndYearPickers
+          calendarWidth={300}
           label="Дата события"
           name="date"
           value={dateStringToCalendarDate(formData.date)}
