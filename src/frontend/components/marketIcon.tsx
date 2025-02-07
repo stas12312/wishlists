@@ -11,7 +11,7 @@ const ICON_BY_DOMAIN = new Map<string, string>([
   ["store.steampowered", getIconUrl(STATIC_URL, "steam.ico")],
   ["dns-shop", getIconUrl(STATIC_URL, "dns.png")],
   ["goldapple", getIconUrl(STATIC_URL, "goldapple.png")],
-  ["afisha.yandex", getIconUrl(STATIC_URL), "yandex-afisha.ico"],
+  ["afisha.yandex", getIconUrl(STATIC_URL, "yandex-afisha.ico")],
 ]);
 
 const MarketIcon = ({ link }: { link: string }) => {
