@@ -112,6 +112,7 @@ export default function WishForm(props: {
       onSubmit={onSumbitForm}
     >
       <Input
+        isClearable
         isRequired
         errorMessage={errorMessages.Name}
         label="Название"
@@ -127,41 +128,48 @@ export default function WishForm(props: {
         }}
         value={formData.name}
         onChange={handlerChange}
+        onClear={() => setFormData({ ...formData, name: "" })}
       />
       <Input
+        isClearable
         label="Комментарий"
         name="comment"
         value={formData.comment}
         onChange={handlerChange}
+        onClear={() => setFormData({ ...formData, comment: "" })}
       />
       <Input
+        isClearable
         label="Цена"
         name="cost"
         value={formData.cost !== 0 ? formData.cost?.toLocaleString() : ""}
         onChange={handlerChange}
+        onClear={() => setFormData({ ...formData, cost: undefined })}
       />
-      <Input
-        endContent={<MarketIcon link={formData.link} />}
-        label="Ссылка на товар"
-        name="link"
-        validate={(value) => {
-          if (!value) {
+      <div className="flex w-full gap-4">
+        <Input
+          isClearable
+          label="Ссылка на товар"
+          name="link"
+          validate={(value) => {
+            if (value.length > 500) {
+              return "Максимальна длина строки 500 символов";
+            }
+            if (value && !isURL(value)) {
+              return "Некорректная ссылка";
+            }
             return null;
-          }
-          if (value.length > 500) {
-            return "Максимальна длина строки 500 символов";
-          }
-          if (!isURL(value)) {
-            return "Некорректная ссылка";
-          }
-          return null;
-        }}
-        value={formData.link}
-        onChange={handlerChange}
-      />
+          }}
+          value={formData.link}
+          onChange={handlerChange}
+          onClear={() => setFormData({ ...formData, link: "" })}
+        />
+        {<MarketIcon className="my-auto" link={formData.link} />}
+      </div>
 
       <div className="flex sm:flex-row flex-col gap-4 w-full">
         <Input
+          isClearable
           label="Ссылка на картинку"
           name="image"
           value={formData.image}
