@@ -10,6 +10,7 @@ import Desirability from "../desirability";
 import { createWish, updateWish } from "@/lib/requests";
 import { IError } from "@/lib/models";
 import { IWish } from "@/lib/models/wish";
+import { isURL } from "@/lib/url";
 
 export default function WishForm(props: {
   onCreate: { (wish: IWish): void };
@@ -142,8 +143,14 @@ export default function WishForm(props: {
         label="Ссылка на товар"
         name="link"
         validate={(value) => {
+          if (!value) {
+            return null;
+          }
           if (value.length > 500) {
             return "Максимальна длина строки 500 символов";
+          }
+          if (!isURL(value)) {
+            return "Некорректная ссылка";
           }
           return null;
         }}

@@ -68,7 +68,7 @@ const WishFullCard = ({
                 </Link>
               ) : null}
 
-              <CardImage iconClassName="h-64" wish={wish} />
+              <CardImage removeWrapper iconClassName="h-64" wish={wish} />
 
               <div className="flex flex-col gap-2">
                 {menuItems.map((value) => (
