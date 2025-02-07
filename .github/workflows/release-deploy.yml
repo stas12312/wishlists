@@ -45,6 +45,7 @@ jobs:
             version=${{ github.ref_name }}
             base_url=${{ secrets.PROD_BASE_URL }}
             yandex_metrika_id=${{ secrets.PROD_YANDEX_METRIKA_ID }}
+            static_url=${{ secrets.PROD_STATIC_URL }}
 
   deploy:
     runs-on: ubuntu-latest

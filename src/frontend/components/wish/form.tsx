@@ -6,6 +6,7 @@ import { Form } from "@heroui/form";
 
 import UploadButton from "../uploadButton";
 import Desirability from "../desirability";
+import MarketIcon from "../marketIcon";
 
 import { createWish, updateWish } from "@/lib/requests";
 import { IError } from "@/lib/models";
@@ -140,6 +141,7 @@ export default function WishForm(props: {
         onChange={handlerChange}
       />
       <Input
+        endContent={<MarketIcon link={formData.link} />}
         label="Ссылка на товар"
         name="link"
         validate={(value) => {

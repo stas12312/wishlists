@@ -10,6 +10,8 @@ import { Link } from "@heroui/link";
 import { Chip } from "@heroui/chip";
 import { Avatar } from "@heroui/avatar";
 
+import MarketIcon from "../marketIcon";
+
 import CardImage from "./cardImage";
 
 import { IWish } from "@/lib/models/wish";
@@ -55,6 +57,7 @@ const WishFullCard = ({
               ) : null}
 
               <span className="text-default-500">{wish.comment}</span>
+
               {wish.link ? (
                 <Link
                   isBlock
@@ -64,6 +67,8 @@ const WishFullCard = ({
                   href={wish.link}
                   size="lg"
                 >
+                  <MarketIcon link={wish.link || ""} />
+
                   <span className="mx-auto">Перейти в магазин</span>
                 </Link>
               ) : null}
