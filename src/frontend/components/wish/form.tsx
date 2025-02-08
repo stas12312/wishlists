@@ -174,6 +174,7 @@ export default function WishForm(props: {
           name="image"
           value={formData.image}
           onChange={handlerChange}
+          onClear={() => setFormData({ ...formData, image: "" })}
         />
         <div className="flex flex-col">
           <UploadButton
