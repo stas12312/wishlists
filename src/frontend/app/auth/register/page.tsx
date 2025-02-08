@@ -5,6 +5,7 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import { redirect } from "next/navigation";
 import toast from "react-hot-toast";
 import { Link } from "@heroui/link";
+import { Form } from "@heroui/form";
 
 import CodeInput from "@/components/codeInput";
 import PasswordInput from "@/components/passwordInput";
@@ -138,77 +139,78 @@ export default function SignIn() {
 
   return (
     <>
-      <form
+      <Form
         className="flex flex-col gap-2 bg-content1 p-4 rounded-xl box-border shadow-medium"
         id="register"
+        validationBehavior="native"
         onSubmit={handleSubmit}
       >
         <h2 className="text-center text-2xl">{formTitle}</h2>
 
         {step === 0 ? (
-          <div className="flex flex-col gap-2">
-            <div>
-              <Input
-                fullWidth
-                isRequired
-                label="Имя"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <Input
-                fullWidth
-                isRequired
-                label="Email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <PasswordInput
-                errorMessage={errorMessages.Password}
-                isInvalid={errorMessages.Password != ""}
-                label="Пароль"
-                name="password"
-                value={formData.password}
-                onBlur={() => {
-                  setErrorMessages({ ...errorMessages, Password: "" });
-                }}
-                onChange={handleChange}
-              />
-            </div>
+          <div className="flex flex-col gap-2 w-full">
+            <Input
+              fullWidth
+              isRequired
+              label="Имя"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+            />
+            <Input
+              fullWidth
+              isRequired
+              label="Email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+            />
+            <PasswordInput
+              errorMessage={errorMessages.Password}
+              isInvalid={errorMessages.Password != ""}
+              label="Пароль"
+              name="password"
+              value={formData.password}
+              onBlur={() => {
+                setErrorMessages({ ...errorMessages, Password: "" });
+              }}
+              onChange={handleChange}
+            />
+            <span className="text-center">
+              <span>Регистрируясь, вы соглашаетесь с </span>{" "}
+              <Link
+                isExternal
+                className="inline"
+                href={`${process.env.NEXT_PUBLIC_STATIC_URL}/docs/terms-of-service.pdf`}
+              >
+                пользовательским соглашением
+              </Link>
+            </span>
             <span className="text-danger text-tiny">
               {errorMessages.message}
             </span>
-            <div>
-              <Button
-                fullWidth
-                isLoading={isLoading}
-                spinnerPlacement="end"
-                type="submit"
-              >
-                Далее
-              </Button>
-            </div>
+            <Button
+              fullWidth
+              isLoading={isLoading}
+              spinnerPlacement="end"
+              type="submit"
+            >
+              Далее
+            </Button>
           </div>
         ) : null}
 
         {step === 1 ? (
-          <div>
+          <div className="w-full">
             <p className="text-tiny text-center">
               На {formData.email} было отправлено письмо с кодом подтверждения
             </p>
-            <div>
-              <CodeInput
-                digitsCount={6}
-                disabled={isLoading}
-                value={acceptCode}
-                onValueChange={setAcceptCode}
-              />
-            </div>
+            <CodeInput
+              digitsCount={6}
+              disabled={isLoading}
+              value={acceptCode}
+              onValueChange={setAcceptCode}
+            />
             <span className="text-danger text-tiny">{errorMessages.Code}</span>
             <span className="text-danger text-tiny">
               {errorMessages.message}
@@ -246,7 +248,7 @@ export default function SignIn() {
             </div>
           </div>
         ) : null}
-      </form>
+      </Form>
       <div className="text-center mt-4">
         Уже есть аккаунт? <Link href="/auth/login">Войти</Link>
       </div>
