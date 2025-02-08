@@ -31,9 +31,10 @@ func (r *S3ImageRepository) Upload(filename string, file io.Reader) (string, err
 	uploader := s3manager.NewUploader(r.Session)
 
 	_, err := uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String(r.Bucket),
-		Key:    aws.String(filename),
-		Body:   file,
+		Bucket:       aws.String(r.Bucket),
+		Key:          aws.String(filename),
+		Body:         file,
+		CacheControl: aws.String("max-age=15552000,immutable"),
 	})
 	return strings.Join([]string{r.Domain, filename}, "/"), err
 
