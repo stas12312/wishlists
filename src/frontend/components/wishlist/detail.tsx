@@ -30,6 +30,7 @@ import {
   updateWishlist,
 } from "@/lib/requests";
 import userStore from "@/store/userStore";
+import { wrapUsername } from "@/lib/user";
 
 const WishlistDetail = observer(
   ({
@@ -56,7 +57,9 @@ const WishlistDetail = observer(
                 src: user.image,
                 size: "lg",
               }}
-              description={<span className="text-lg">{user.username}</span>}
+              description={
+                <span className="text-lg">{wrapUsername(user.username)}</span>
+              }
               name={<span className="text-2xl">{user.name}</span>}
               onClick={() => {
                 router.push(`/users/${user.username}`);

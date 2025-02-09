@@ -58,6 +58,7 @@ const ProfileForm = observer(() => {
           isRequired
           label="Имя пользователя"
           name="username"
+          startContent="@"
           validate={(value) => {
             if (value.length < 3) {
               return "Имя пользователя должно содержать не менее двух символов";

@@ -13,6 +13,7 @@ import PageHeader from "./pageHeader";
 import { AddFriend, getFriendStatus, getUserByUsername } from "@/lib/requests";
 import { FriendStatus } from "@/lib/models";
 import { IUser } from "@/lib/models/user";
+import { wrapUsername } from "@/lib/user";
 
 const UserView = observer(({ username }: { username: string }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -56,7 +57,9 @@ const UserView = observer(({ username }: { username: string }) => {
                   src: user.image,
                   size: "lg",
                 }}
-                description={<span className="text-lg">{user.username}</span>}
+                description={
+                  <span className="text-lg">{wrapUsername(user.username)}</span>
+                }
                 name={<span className="text-2xl">{user.name}</span>}
               />
               <div className="mx-auto">
