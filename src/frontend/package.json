@@ -10,7 +10,6 @@
     "lint-fix": "eslint . --fix"
   },
   "dependencies": {
-    "@internationalized/date": "^3.5.6",
     "@heroui/alert": "2.2.10",
     "@heroui/badge": "2.2.6",
     "@heroui/button": "2.2.10",
@@ -41,9 +40,11 @@
     "@heroui/theme": "2.4.6",
     "@heroui/tooltip": "2.2.8",
     "@heroui/user": "2.2.7",
+    "@internationalized/date": "^3.5.6",
     "@react-aria/i18n": "^3.12.3",
     "@react-aria/ssr": "3.9.6",
     "@react-aria/visually-hidden": "3.8.17",
+    "@sentry/nextjs": "^8.54.0",
     "axios": "^1.7.7",
     "clsx": "2.1.1",
     "framer-motion": "~11.11.17",

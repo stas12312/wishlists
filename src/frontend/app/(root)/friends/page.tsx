@@ -15,6 +15,9 @@ import PageHeader from "@/components/pageHeader";
 
 const FriendsPage = observer(() => {
   const incomingCounts = countersStore.friendCounters.incoming_requests;
+  if (incomingCounts == 0) {
+    throw new Error("Ошибка");
+  }
   return (
     <div className="flex flex-col gap-4">
       <PageHeader>Друзья</PageHeader>
