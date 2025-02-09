@@ -3,6 +3,8 @@ import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Image } from "@heroui/image";
 import Link from "next/link";
+import { MdOutlineAdd } from "react-icons/md";
+
 const Landing = () => {
   return (
     <div className="flex flex-col max-w-[1500px] mx-auto gap-4">
@@ -79,10 +81,12 @@ const Landing = () => {
       </div>
       <Button
         as={Link}
-        className="text-4xl text-center"
+        className="text-4xl text-center w-full md:w-2/5 mx-auto mt-4 p-10"
         color="primary"
         href="/auth/login"
         size="lg"
+        startContent={<MdOutlineAdd />}
+        variant="flat"
       >
         Создать вишлист
       </Button>
