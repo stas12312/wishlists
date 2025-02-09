@@ -81,7 +81,7 @@ const Landing = () => {
       </div>
       <Button
         as={Link}
-        className="text-4xl text-center w-full md:w-2/5 mx-auto mt-4 p-10"
+        className="text-4xl text-center w-full md:w-1/3 mx-auto mt-4 p-10"
         color="primary"
         href="/auth/login"
         size="lg"
