@@ -22,6 +22,6 @@ jobs:
             --build-arg base_url="${{ secrets.TEST_BASE_URL }}" \
             --build-arg yandex_metrika_id="${{ secrets.TEST_YANDEX_METRIKA_ID }}" \
             --build-arg static_url="${{ secrets.TEST_STATIC_URL }}" \
-            --build-arg sentry_dsn="${{ secrets.SENTRY_DSN }}
-            --build-arg sentry_auth_token="${{ secrets.SENTRY_AUTH_TOKEN }}
+            --build-arg sentry_dsn="${{ secrets.SENTRY_DSN }} \
+            --build-arg sentry_auth_token="${{ secrets.SENTRY_AUTH_TOKEN }} \
             && docker-compose up -d
