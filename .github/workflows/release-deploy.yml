@@ -46,6 +46,8 @@ jobs:
             base_url=${{ secrets.PROD_BASE_URL }}
             yandex_metrika_id=${{ secrets.PROD_YANDEX_METRIKA_ID }}
             static_url=${{ secrets.PROD_STATIC_URL }}
+            sentry_dsn=${{ secrets.SENTRY_DSN }}
+            sentru_auth_token=${{ secrets.SENTRY_AUTH_TOKEN }}
 
   deploy:
     runs-on: ubuntu-latest
