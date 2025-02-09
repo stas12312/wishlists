@@ -14,6 +14,7 @@ import FriendMenu from "./menu";
 import { deleteFriend, getFriends } from "@/lib/requests";
 import { IUser } from "@/lib/models/user";
 import { getUserLink } from "@/lib/label";
+import { wrapUsername } from "@/lib/user";
 
 const FriendsList = observer(() => {
   const successFunction = useRef<{ (): void }>();
@@ -55,7 +56,7 @@ const FriendsList = observer(() => {
               name: friend.name[0],
             }}
             className="cursor-pointer"
-            description={friend.username}
+            description={wrapUsername(friend.username)}
             name={friend.name}
           />
           <FriendMenu
