@@ -23,6 +23,7 @@ COPY --from=base /app/package.json ./package.json
 COPY --from=base /app/.next ./.next
 
 COPY --from=base /app/public ./public
+COPY --from=base /app/next.config.js ./next.config.js
 
 ARG version
 ARG build_time
