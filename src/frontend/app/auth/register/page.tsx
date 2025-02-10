@@ -145,7 +145,7 @@ export default function SignIn() {
         validationBehavior="native"
         onSubmit={handleSubmit}
       >
-        <h2 className="text-center text-2xl">{formTitle}</h2>
+        <h2 className="text-center text-2xl w-full">{formTitle}</h2>
 
         {step === 0 ? (
           <div className="flex flex-col gap-2 w-full">
@@ -176,6 +176,9 @@ export default function SignIn() {
               }}
               onChange={handleChange}
             />
+            <span className="text-danger text-tiny w-full text-center">
+              {errorMessages.message}
+            </span>
             <span className="text-center">
               <span>Регистрируясь, вы соглашаетесь с </span>{" "}
               <Link
@@ -186,9 +189,7 @@ export default function SignIn() {
                 пользовательским соглашением
               </Link>
             </span>
-            <span className="text-danger text-tiny">
-              {errorMessages.message}
-            </span>
+
             <Button
               fullWidth
               isLoading={isLoading}
@@ -211,10 +212,15 @@ export default function SignIn() {
               value={acceptCode}
               onValueChange={setAcceptCode}
             />
-            <span className="text-danger text-tiny">{errorMessages.Code}</span>
-            <span className="text-danger text-tiny">
-              {errorMessages.message}
-            </span>
+            <div className="flex flex-col justify-center">
+              <span className="text-danger text-tiny w-full text-center">
+                {errorMessages.Code}
+              </span>
+              <span className="text-danger text-tiny w-full text-center">
+                {errorMessages.message}
+              </span>
+            </div>
+
             <div className="flex flex-col gap-2 mt-2">
               <Button
                 fullWidth
