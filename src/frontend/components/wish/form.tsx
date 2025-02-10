@@ -1,17 +1,20 @@
 "use client";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
-import { FormEvent, useState } from "react";
+import { ClipboardEvent, FormEvent, useState } from "react";
 import { Form } from "@heroui/form";
 
 import UploadButton from "../uploadButton";
 import Desirability from "../desirability";
 import MarketIcon from "../marketIcon";
 
-import { createWish, updateWish } from "@/lib/requests";
+import { createWish, updateWish, uploadFile } from "@/lib/requests";
 import { IError } from "@/lib/models";
 import { IWish } from "@/lib/models/wish";
 import { isURL } from "@/lib/url";
+import { checkFile } from "@/lib/file";
+
+const ACCEPTED_FILE_EXTS = ["jpg", "jpeg", "png", "webp"];
 
 export default function WishForm(props: {
   onCreate: { (wish: IWish): void };
@@ -49,10 +52,35 @@ export default function WishForm(props: {
   });
 
   const [isCreating, setIsCreating] = useState(false);
+  const [imageIsLoading, setImageIsLoading] = useState(false);
 
-  function onUploadImage(url: string) {
-    setFormData({ ...formData, image: url });
+  async function handleFile(file: File) {
+    setErrorMessages({ ...errorMessages, image: "" });
+    const checkResult = checkFile(file, ACCEPTED_FILE_EXTS);
+    if (checkResult) {
+      setErrorMessages({ ...errorMessages, image: checkResult });
+      return;
+    }
+    try {
+      setImageIsLoading(true);
+      const url = await uploadFile(file);
+      setFormData({ ...formData, image: url });
+    } catch {
+      setErrorMessages({ ...errorMessages, image: "Возникла ошибка" });
+    } finally {
+      setImageIsLoading(false);
+    }
   }
+
+  const onPasteImage = async (event: ClipboardEvent<HTMLInputElement>) => {
+    const items = event.clipboardData.items;
+    for (const item of Array.from(items)) {
+      const file = item.getAsFile();
+      if (file) {
+        handleFile(file);
+      }
+    }
+  };
 
   async function onSumbitForm(e: FormEvent) {
     e.preventDefault();
@@ -105,111 +133,111 @@ export default function WishForm(props: {
   }
 
   return (
-    <Form
-      className="flex flex-col gap-3"
-      id="wish"
-      validationBehavior="native"
-      onSubmit={onSumbitForm}
-    >
-      <Input
-        isClearable
-        isRequired
-        errorMessage={errorMessages.Name}
-        label="Название"
-        name="name"
-        validate={(value) => {
-          if (value === "") {
-            return "Заполните это поле";
-          }
-          if (value.length > 50) {
-            return "Максимальна длина строки 50 символов";
-          }
-          return null;
-        }}
-        value={formData.name}
-        onChange={handlerChange}
-        onClear={() => setFormData({ ...formData, name: "" })}
-      />
-      <Input
-        isClearable
-        label="Комментарий"
-        name="comment"
-        value={formData.comment}
-        onChange={handlerChange}
-        onClear={() => setFormData({ ...formData, comment: "" })}
-      />
-      <Input
-        isClearable
-        label="Цена"
-        name="cost"
-        value={formData.cost !== 0 ? formData.cost?.toLocaleString() : ""}
-        onChange={handlerChange}
-        onClear={() => setFormData({ ...formData, cost: undefined })}
-      />
-      <div className="flex w-full gap-4">
+    <div onPaste={onPasteImage}>
+      <Form
+        className="flex flex-col gap-3"
+        id="wish"
+        validationBehavior="native"
+        onSubmit={onSumbitForm}
+      >
         <Input
           isClearable
-          label="Ссылка на товар"
-          name="link"
+          isRequired
+          errorMessage={errorMessages.Name}
+          label="Название"
+          name="name"
           validate={(value) => {
-            if (value.length > 500) {
-              return "Максимальна длина строки 500 символов";
+            if (value === "") {
+              return "Заполните это поле";
             }
-            if (value && !isURL(value)) {
-              return "Некорректная ссылка";
+            if (value.length > 50) {
+              return "Максимальна длина строки 50 символов";
             }
             return null;
           }}
-          value={formData.link}
+          value={formData.name}
           onChange={handlerChange}
-          onClear={() => setFormData({ ...formData, link: "" })}
+          onClear={() => setFormData({ ...formData, name: "" })}
         />
-        {<MarketIcon className="my-auto" link={formData.link} />}
-      </div>
-
-      <div className="flex sm:flex-row flex-col gap-4 w-full">
         <Input
           isClearable
-          label="Ссылка на картинку"
-          name="image"
-          value={formData.image}
+          label="Комментарий"
+          name="comment"
+          value={formData.comment}
           onChange={handlerChange}
-          onClear={() => setFormData({ ...formData, image: "" })}
+          onClear={() => setFormData({ ...formData, comment: "" })}
         />
-        <div className="flex flex-col">
-          <UploadButton
-            accept={["jpg", "jpeg", "png", "webp"]}
-            className="h-[140px] w-[180px] object-cover"
-            previewUrl={formData.image}
-            onError={(error) => {
-              setErrorMessages({ ...errorMessages, image: error });
+        <Input
+          isClearable
+          label="Цена"
+          name="cost"
+          value={formData.cost !== 0 ? formData.cost?.toLocaleString() : ""}
+          onChange={handlerChange}
+          onClear={() => setFormData({ ...formData, cost: undefined })}
+        />
+        <div className="flex w-full gap-4">
+          <Input
+            isClearable
+            label="Ссылка на товар"
+            name="link"
+            validate={(value) => {
+              if (value.length > 500) {
+                return "Максимальна длина строки 500 символов";
+              }
+              if (value && !isURL(value)) {
+                return "Некорректная ссылка";
+              }
+              return null;
             }}
-            onUpload={onUploadImage}
+            value={formData.link}
+            onChange={handlerChange}
+            onClear={() => setFormData({ ...formData, link: "" })}
           />
-
-          <span className="text-danger text-tiny">{errorMessages.image}</span>
+          {<MarketIcon className="my-auto" link={formData.link} />}
         </div>
-      </div>
-      <div className="flex flex-col justify-center items-center w-full">
-        <span>Желанность</span>
-        <Desirability
-          size="xl"
-          value={formData.desirability}
-          onChange={(value) => {
-            setFormData({ ...formData, desirability: value });
-          }}
-        />
-      </div>
-      {errorMessages.details ? (
-        <p className="text-danger text-tiny">{errorMessages.details}</p>
-      ) : (
-        <span />
-      )}
 
-      <Button fullWidth isLoading={isCreating} type="submit">
-        Сохранить
-      </Button>
-    </Form>
+        <div className="flex sm:flex-row flex-col gap-4 w-full">
+          <Input
+            isClearable
+            label="Ссылка на картинку"
+            name="image"
+            value={formData.image}
+            onChange={handlerChange}
+            onClear={() => setFormData({ ...formData, image: "" })}
+            onPaste={onPasteImage}
+          />
+          <div className="flex flex-col">
+            <UploadButton
+              accept={ACCEPTED_FILE_EXTS}
+              className="h-[140px] w-[180px] object-cover"
+              handleFile={handleFile}
+              isLoading={imageIsLoading}
+              previewUrl={formData.image}
+            />
+            <span className="text-danger text-tiny">{errorMessages.image}</span>
+          </div>
+        </div>
+        <div className="flex flex-col justify-center items-center w-full">
+          <span>Желанность</span>
+          <Desirability
+            size="xl"
+            value={formData.desirability}
+            onChange={(value) => {
+              setFormData({ ...formData, desirability: value });
+            }}
+          />
+        </div>
+        {errorMessages.details ? (
+          <p className="text-danger text-tiny">{errorMessages.details}</p>
+        ) : (
+          <span />
+        )}
+
+        <Button fullWidth isLoading={isCreating} type="submit">
+          Сохранить
+        </Button>
+      </Form>
+    </div>
   );
 }
 
