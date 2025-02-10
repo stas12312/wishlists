@@ -10,13 +10,22 @@ import UploadButton from "../uploadButton";
 
 import { getUserLink } from "@/lib/label";
 import { IUser } from "@/lib/models/user";
-import { getMe, getUserByUsername, updateUser } from "@/lib/requests";
+import {
+  getMe,
+  getUserByUsername,
+  updateUser,
+  uploadFile,
+} from "@/lib/requests";
 import userStore from "@/store/userStore";
+import { checkFile } from "@/lib/file";
+
+const ACCEPTED_FILE_EXTS = ["jpg", "jpeg", "png", "webp"];
 
 const ProfileForm = observer(() => {
   const [isProfileLoading, setIsProfileLoading] = useState(true);
   const [errors, setErrors] = useState({ username: "", image: "" });
   const [user, setUser] = useState<IUser>({} as IUser);
+  const [imageIsLoading, setImageIsLoading] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -25,6 +34,24 @@ const ProfileForm = observer(() => {
     }
     fetchData();
   }, []);
+
+  async function handleFile(file: File) {
+    setErrors({ ...errors, image: "" });
+    const checkResult = checkFile(file, ACCEPTED_FILE_EXTS);
+    if (checkResult) {
+      setErrors({ ...errors, image: checkResult });
+      return;
+    }
+    try {
+      setImageIsLoading(true);
+      const url = await uploadFile(file);
+      setUser({ ...user, image: url });
+    } catch {
+      setErrors({ ...errors, image: "Возникла ошибка" });
+    } finally {
+      setImageIsLoading(false);
+    }
+  }
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     setIsProfileLoading(true);
@@ -86,15 +113,11 @@ const ProfileForm = observer(() => {
       </div>
       <span className="text-sm">Изображение профиля</span>
       <UploadButton
-        accept={["jpg", "jpeg", "png", "webp"]}
+        accept={ACCEPTED_FILE_EXTS}
         className="h-[100px] w-[120px] object-cover"
+        handleFile={handleFile}
+        isLoading={imageIsLoading}
         previewUrl={user.image}
-        onError={(error) => {
-          setErrors({ ...errors, image: error });
-        }}
-        onUpload={(url) => {
-          setUser({ ...user, image: url });
-        }}
       />
       <span className="text-danger text-tiny">{errors.image}</span>
       <Button fullWidth isLoading={isProfileLoading} type="submit">

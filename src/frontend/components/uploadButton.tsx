@@ -3,57 +3,20 @@ import { Image } from "@heroui/image";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { Spinner } from "@heroui/spinner";
 
-import { uploadFile } from "@/lib/requests";
-
-const FILE_SIZE_LIMIT = 3 * 1024 * 1024; // 3 МБ
-const FILE_SIZE_NAME = "3 МБ";
-
 const UploadButton = ({
-  onUpload,
   previewUrl,
   className,
   accept,
-  onError,
+  handleFile,
+  isLoading = false,
 }: {
-  onUpload: { (url: string): void };
   previewUrl: string | undefined;
   className: string;
   accept: string[];
-  onError: { (error: string): void };
+  handleFile: { (file: File): void };
+  isLoading?: boolean;
 }) => {
   const [isOver, setIsOver] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
-  function isValidFile(file: File): boolean {
-    const ext = getFileExt(file.name);
-    return accept.indexOf(ext) !== -1;
-  }
-
-  function getFileExt(filename: string): string {
-    const parts = filename.split(".");
-    return parts[parts.length - 1];
-  }
-
-  async function handleFile(file: File) {
-    onError("");
-    if (!isValidFile(file)) {
-      onError(`Неподдерживаемый тип файла .${getFileExt(file.name)}`);
-      return;
-    }
-    if (file.size > FILE_SIZE_LIMIT) {
-      onError(`Размер файла превышает допустимый размер (${FILE_SIZE_NAME})`);
-      return;
-    }
-    try {
-      setIsLoading(true);
-      const response = await uploadFile(file);
-      onUpload(response);
-    } catch {
-      onError("Возникла ошибка");
-    } finally {
-      setIsLoading(false);
-    }
-  }
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target.files?.length) {
