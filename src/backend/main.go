@@ -55,7 +55,7 @@ func main() {
 
 	friendRepository := repository.NewFriendRepositoryPostgres(db)
 	friendService := service.NewFriendService(friendRepository, uof)
-	friendController := controller.NewFriendController(friendService)
+	friendController := controller.NewFriendController(friendService, userService)
 
 	wishlistRepository := repository.NewWishlistRepository(db)
 	wishRepository := repository.NewWishRepositoryImpl(db)

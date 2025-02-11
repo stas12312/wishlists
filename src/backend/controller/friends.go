@@ -12,12 +12,16 @@ type RequestUser struct {
 	UserId int64 `json:"user_id"`
 }
 
-func NewFriendController(service service.FriendService) *FriendController {
-	return &FriendController{service}
+func NewFriendController(
+	service service.FriendService,
+	userService service.UserService,
+) *FriendController {
+	return &FriendController{service, userService}
 }
 
 type FriendController struct {
 	service.FriendService
+	userService service.UserService
 }
 
 func (c *FriendController) AddFriend(ctx *fiber.Ctx) error {
@@ -136,9 +140,45 @@ func (c *FriendController) DeleteFriendRequest(ctx *fiber.Ctx) error {
 	return ctx.JSON(model.ResponseWithMessage{Message: "Запрос удален"})
 }
 
-func (c *FriendController) Route(router fiber.Router) {
-	group := router.Group("/friends", middleware.Protected(true))
+func (c *FriendController) GetUserFriends(ctx *fiber.Ctx) error {
+	userId := GetUserIdFromCtx(ctx)
+	forUsername := ctx.Params("username")
+	forUser, err := c.userService.GetByUsername(ctx.Context(), forUsername)
+	if err != nil {
+		return err
+	}
+	if !c.FriendService.IsFriends(userId, forUser.Id) {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Список доступен только друзьям"})
+	}
 
+	friends, err := c.FriendService.ListOfFriends(forUser.Id)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Некорректный userId", Details: err.Error()})
+	}
+	return ctx.JSON(model.Response{Data: friends})
+}
+
+func (c *FriendController) GetUserFriendsInfo(ctx *fiber.Ctx) error {
+	forUsername := ctx.Params("username")
+	forUser, err := c.userService.GetByUsername(ctx.Context(), forUsername)
+	if err != nil {
+		return err
+	}
+	counters, err := c.FriendService.GetCounters(forUser.Id)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Не удалось получить данные", Details: err.Error()})
+	}
+	counters.IncomingRequests = 0
+
+	return ctx.JSON(counters)
+}
+
+func (c *FriendController) Route(router fiber.Router) {
+
+	group := router.Group("/friends", middleware.Protected(true))
 	group.Post("/add", c.AddFriend)
 	group.Get("/:user_id/status", c.GetFriendStatus)
 	group.Post("/apply_request", c.ApplyRequest)
@@ -149,4 +189,8 @@ func (c *FriendController) Route(router fiber.Router) {
 	group.Post("/is_friends", c.IsFriends)
 	group.Post("/delete", c.DeleteFriend)
 	group.Get("/counters", c.GetCounters)
+
+	usersGroup := router.Group("/users", middleware.Protected(true))
+	usersGroup.Get("/:username/friends", c.GetUserFriends)
+	usersGroup.Get("/:username/friends/info", c.GetUserFriendsInfo)
 }

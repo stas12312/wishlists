@@ -133,6 +133,32 @@ func (_m *FriendService) GetFriendStatus(userId int64, friendId int64) model.Fri
 	return r0
 }
 
+// GetFriendsByIds provides a mock function with given fields: userId, userIds
+func (_m *FriendService) GetFriendsByIds(userId int64, userIds []int64) ([]int64, error) {
+	ret := _m.Called(userId, userIds)
+
+	var r0 []int64
+	var r1 error
+	if rf, ok := ret.Get(0).(func(int64, []int64) ([]int64, error)); ok {
+		return rf(userId, userIds)
+	}
+	if rf, ok := ret.Get(0).(func(int64, []int64) []int64); ok {
+		r0 = rf(userId, userIds)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]int64)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(int64, []int64) error); ok {
+		r1 = rf(userId, userIds)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // IsFriends provides a mock function with given fields: userId, friendId
 func (_m *FriendService) IsFriends(userId int64, friendId int64) bool {
 	ret := _m.Called(userId, friendId)
