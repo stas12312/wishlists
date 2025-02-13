@@ -1,31 +1,17 @@
 "use client";
 
-import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Chip } from "@heroui/chip";
-import {
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownSection,
-  DropdownTrigger,
-} from "@heroui/dropdown";
-import { useDisclosure } from "@heroui/modal";
 import { Skeleton } from "@heroui/skeleton";
 import { useRouter } from "next/navigation";
-import { forwardRef, Key, useState } from "react";
-import toast from "react-hot-toast";
-import { BsThreeDotsVertical } from "react-icons/bs";
-import { MdCreate, MdDelete, MdLink, MdRestoreFromTrash } from "react-icons/md";
+import { forwardRef, useState } from "react";
 
 import { VisibleStatus } from "../visibleIcon";
-import ConfirmationModal from "../confirmation";
 
-import WishlistSaveModal from "./saveModal";
+import WishlistItemMenu from "./menu";
 
 import { getLabelForCount } from "@/lib/label";
 import { IWishlist } from "@/lib/models/wishlist";
-import { deleteWishlist, restoreWishlist } from "@/lib/requests";
 
 export const WishlistItem = forwardRef(
   (
@@ -36,7 +22,7 @@ export const WishlistItem = forwardRef(
       edit = true,
     }: {
       wishlist: IWishlist;
-      onDelete: { (wishlist: IWishlist): void };
+      onDelete: { (wishlist: IWishlist): Promise<void> };
       onRestore: { (wishlist: IWishlist): void };
       edit?: boolean;
     },
@@ -127,126 +113,5 @@ export function WishlistsSkeletonItem() {
     </Card>
   );
 }
-
-export const WishlistItemMenu = ({
-  wishlist,
-  onDelete,
-  onUpdate,
-  onRestore,
-  className,
-  isEditable,
-}: {
-  wishlist: IWishlist;
-  onDelete: { (wishlist: IWishlist): void };
-  onUpdate: { (wishlist: IWishlist): void };
-  onRestore: { (wishlist: IWishlist): void };
-  className: string;
-  isEditable: boolean;
-}) => {
-  const { isOpen, onOpenChange } = useDisclosure();
-  const [isConfirm, setIsConfirm] = useState(false);
-
-  async function handleOnAction(key: Key) {
-    if (key === "delete") {
-      setIsConfirm(true);
-    }
-    if (key === "edit") {
-      onOpenChange();
-    }
-    if (key === "share") {
-      navigator.clipboard.writeText(
-        `${window.location.origin}/wishlists/${wishlist.uuid}`,
-      );
-      toast.success("Ссылка на вишлист скопирована");
-    }
-    if (key === "restore") {
-      await restoreWishlist(wishlist.uuid);
-      onRestore(wishlist);
-      toast.success("Вишлист восстановлен");
-    }
-  }
-
-  async function deleteWishlistByAction() {
-    await deleteWishlist(wishlist.uuid);
-    onDelete(wishlist);
-    setIsConfirm(false);
-  }
-
-  function onUpdateWishlist(updadedWishlist: IWishlist): void {
-    onOpenChange();
-    onUpdate(updadedWishlist);
-  }
-
-  return (
-    <span>
-      <Dropdown>
-        <DropdownTrigger>
-          <Button isIconOnly as="div" radius="lg" variant="light">
-            <BsThreeDotsVertical className={className ?? ""} />
-          </Button>
-        </DropdownTrigger>
-        <DropdownMenu aria-label="Static Actions" onAction={handleOnAction}>
-          {isEditable ? (
-            <>
-              <DropdownSection showDivider>
-                {wishlist.is_active ? (
-                  <>
-                    <DropdownItem key="edit" startContent={<MdCreate />}>
-                      Редактировать
-                    </DropdownItem>
-
-                    <DropdownItem key="share" startContent={<MdLink />}>
-                      Поделиться
-                    </DropdownItem>
-                  </>
-                ) : (
-                  <DropdownItem
-                    key="restore"
-                    className="text-primary"
-                    color="primary"
-                    startContent={<MdRestoreFromTrash />}
-                  >
-                    Восстановить
-                  </DropdownItem>
-                )}
-              </DropdownSection>
-
-              <DropdownItem
-                key="delete"
-                className="text-danger"
-                color="danger"
-                startContent={<MdDelete />}
-              >
-                {wishlist.is_active ? "Архивировать" : "Удалить"}
-              </DropdownItem>
-            </>
-          ) : (
-            <DropdownItem key="share" startContent={<MdLink />}>
-              Поделиться
-            </DropdownItem>
-          )}
-        </DropdownMenu>
-      </Dropdown>
-      <WishlistSaveModal
-        isOpen={isOpen}
-        wishlist={wishlist}
-        onOpenChange={onOpenChange}
-        onSaveWishlist={onUpdateWishlist}
-      />
-      <ConfirmationModal
-        isOpen={isConfirm}
-        message={`Вы действительно хотите ${wishlist.is_active ? "архивировать" : "удалить"} вишлист?`}
-        onConfirm={deleteWishlistByAction}
-        onDecline={() => {
-          setIsConfirm(false);
-        }}
-      />
-    </span>
-  );
-};
-
-WishlistItemMenu.defaultProps = {
-  className: "",
-};
 
 WishlistItem.displayName = "WishlistItem";

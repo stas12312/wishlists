@@ -15,7 +15,7 @@ import WishlistSaveModal from "./saveModal";
 
 import { Cursor } from "@/lib/models";
 import { IWishlist, IWishlistAction } from "@/lib/models/wishlist";
-import { getWishlists } from "@/lib/requests";
+import { deleteWishlist, getWishlists } from "@/lib/requests";
 import userStore from "@/store/userStore";
 
 export interface IWishlistFilter {
@@ -51,7 +51,8 @@ export const Wishlists = observer(
       fetchData();
     }, [filter, userStore.isLoading]);
 
-    function onDelete(wishlist: IWishlist) {
+    async function onDelete(wishlist: IWishlist) {
+      await deleteWishlist(wishlist.uuid);
       setItems(
         items.filter((value) => {
           return value.uuid != wishlist.uuid;

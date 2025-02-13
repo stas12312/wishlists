@@ -18,7 +18,7 @@ import { VisibleStatus } from "../visibleIcon";
 import { WishItem } from "../wish/card";
 import WishSaveModal from "../wish/saveModal";
 
-import { WishlistItemMenu } from "./card";
+import WishlistItemMenu from "./menu";
 
 import { IError } from "@/lib/models";
 import { IWish } from "@/lib/models/wish";
@@ -29,8 +29,8 @@ import {
   getWishlist,
   updateWishlist,
 } from "@/lib/requests";
-import userStore from "@/store/userStore";
 import { wrapUsername } from "@/lib/user";
+import userStore from "@/store/userStore";
 
 const WishlistDetail = observer(
   ({
@@ -41,7 +41,7 @@ const WishlistDetail = observer(
   }: {
     wishlist: IWishlist;
     onUpdate: { (wishlist: IWishlist): void };
-    onDelete: { (wishlist: IWishlist): void };
+    onDelete: { (wishlist: IWishlist): Promise<void> };
     isEditable: boolean;
   }) => {
     const user = wishlist.user;
