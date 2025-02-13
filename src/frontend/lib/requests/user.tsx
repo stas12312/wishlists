@@ -1,6 +1,6 @@
 "use server";
 import { IError } from "../models";
-import { AuthInfo } from "../models/user";
+import { AuthInfo, IUser } from "../models/user";
 
 import { axiosInstance } from "./base";
 
@@ -23,4 +23,14 @@ export async function changePassword(
 export async function deleteAccount(): Promise<IError> {
   const response = await axiosInstance.delete("user/");
   return response.data;
+}
+
+export async function getUserFriendsCount(username: string): Promise<number> {
+  const response = await axiosInstance.get(`users/${username}/friends/info`);
+  return response.data.friends as number;
+}
+
+export async function getUserFriends(username: string): Promise<IUser[]> {
+  const response = await axiosInstance.get(`users/${username}/friends`);
+  return response.data.data;
 }

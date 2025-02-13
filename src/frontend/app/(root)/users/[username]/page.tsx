@@ -1,7 +1,8 @@
 import { Metadata } from "next";
 
-import UserView from "@/components/userPage";
 import { getUserByUsername } from "@/lib/requests";
+import PageHeader from "@/components/pageHeader";
+import { Wishlists } from "@/components/wishlist/list";
 
 export async function generateMetadata({
   params,
@@ -30,7 +31,15 @@ const UserPage = async ({
   params: Promise<{ username: string }>;
 }) => {
   const username = (await params).username;
-  return <UserView username={username} />;
+  const user = await getUserByUsername(username);
+  return (
+    <>
+      <PageHeader>Вишлисты пользователя</PageHeader>
+      {user.id ? (
+        <Wishlists actions={{ edit: false, filter: false }} userId={user.id} />
+      ) : null}
+    </>
+  );
 };
 
 export default UserPage;
