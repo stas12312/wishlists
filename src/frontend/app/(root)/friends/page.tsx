@@ -21,7 +21,7 @@ const FriendsPage = observer(() => {
       <Tabs aria-label="friends" className="mx-auto" size="lg">
         <Tab key="my-friends" title="Мои друзья">
           <CopyLinkButton username={userStore.user.username} />
-          <FriendsList />
+          <FriendsList withMenu={true} />
         </Tab>
         <Tab
           key="reqeusts"
