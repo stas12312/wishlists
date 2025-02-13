@@ -75,7 +75,14 @@ const UserCard = observer(({ username }: { username: string }) => {
               }
               {friendStatus == FriendStatus.is_friend ||
               friendStatus == FriendStatus.is_yourself ? (
-                <Chip as={Link} href={`/users/${username}/friends`}>
+                <Chip
+                  as={Link}
+                  href={
+                    friendStatus == FriendStatus.is_friend
+                      ? `/users/${username}/friends`
+                      : `/friends`
+                  }
+                >
                   {friendsCount}{" "}
                   {getLabelForCount(friendsCount, ["друг", "друга", "друзей"])}
                 </Chip>
