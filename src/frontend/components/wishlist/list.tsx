@@ -20,13 +20,22 @@ import userStore from "@/store/userStore";
 
 export interface IWishlistFilter {
   showArchive: boolean;
-  userId: number;
+  userId?: number;
+  username?: string;
 }
 
 const COUNT = 30;
 
 export const Wishlists = observer(
-  ({ actions, userId }: { actions: IWishlistAction; userId: number }) => {
+  ({
+    actions,
+    userId,
+    username,
+  }: {
+    actions: IWishlistAction;
+    userId?: number;
+    username?: string;
+  }) => {
     const [items, setItems] = useState<IWishlist[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const lastItem = createRef<HTMLDivElement>();
@@ -37,6 +46,7 @@ export const Wishlists = observer(
     const [filter, setFilter] = useState<IWishlistFilter>({
       showArchive: false,
       userId: userId,
+      username: username,
     });
     const [cursor, setCursor] = useState(["", ""]);
 

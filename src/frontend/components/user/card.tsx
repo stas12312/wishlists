@@ -24,10 +24,15 @@ const UserCard = observer(({ username }: { username: string }) => {
 
   useEffect(() => {
     async function fetchData() {
-      const responseUser = await getUserByUsername(username);
+      const responses = await Promise.all([
+        getUserByUsername(username),
+        getUserFriendsCount(username),
+      ]);
+      const responseUser = responses[0];
+      setFriendsCount(responses[1]);
+
       setUser(responseUser);
       setFriendStatus(await getFriendStatus(responseUser.id));
-      setFriendsCount(await getUserFriendsCount(username));
       setIsLoading(false);
     }
     fetchData();
