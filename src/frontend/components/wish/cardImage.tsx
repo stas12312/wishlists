@@ -21,7 +21,7 @@ const CardImage = ({
   return (
     <div className={`relative ${className}`}>
       <div
-        className={`bg-gradient-to-br from-default-100 to-default-300 rounded-large w-full flex ${iconClassName}`}
+        className={`bg-gradient-to-br from-default to-default-100 rounded-large w-full flex ${iconClassName}`}
       >
         {wish.image ? (
           <Image
