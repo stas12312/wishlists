@@ -70,12 +70,10 @@ export function WishlistCreateForm({
   }
 
   useEffect(() => {
-    async function fetchUsers() {
+    async function fetchFriends() {
       setFriends(await getFriends());
     }
-    if (formData.visible == 3) {
-      fetchUsers();
-    }
+    fetchFriends();
   }, [formData.visible]);
 
   const handleChange = (
@@ -147,6 +145,11 @@ export function WishlistCreateForm({
         />
       </I18nProvider>
       <Select
+        disabledKeys={
+          friends.length == 0 && formData.visible_user_ids.length == 0
+            ? ["3"]
+            : undefined
+        }
         label="Кому доступен"
         name="visible"
         selectedKeys={[formData.visible.toString()]}
