@@ -33,4 +33,5 @@ type WishlistFilter struct {
 	IsActive bool  `query:"is_active"`
 	UserId   int64 `query:"user_id"`
 	IsFriend bool
+	Username string `query:"username"`
 }
