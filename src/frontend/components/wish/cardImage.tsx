@@ -20,19 +20,19 @@ const CardImage = ({
 }) => {
   return (
     <div className={`relative ${className}`}>
-      {wish.image ? (
-        <Image
-          className="z-0 object-cover h-full w-full mx-auto"
-          removeWrapper={removeWrapper}
-          src={wish.image}
-        />
-      ) : (
-        <div
-          className={`bg-default-100 rounded-large w-full flex ${iconClassName}`}
-        >
+      <div
+        className={`bg-gradient-to-br from-default-100 to-default-300 rounded-large w-full flex ${iconClassName}`}
+      >
+        {wish.image ? (
+          <Image
+            className="z-0 object-cover h-full w-full mx-auto"
+            removeWrapper={removeWrapper}
+            src={wish.image}
+          />
+        ) : (
           <AiFillGift className="text-8xl mx-auto my-auto" />
-        </div>
-      )}
+        )}
+      </div>
       <div className="absolute top-1.5 flex flex-col items-center w-full">
         <span className="mx-auto">
           <WishlistStatus size="lg" wish={wish} />
