@@ -26,11 +26,17 @@ const FriendsList = observer(
     const [isLoading, setIsLoading] = useState(true);
 
     const [isConfirm, setIsConfirm] = useState(false);
+    const [error, setError] = useState("");
 
     useEffect(() => {
       async function fetchData() {
         if (username) {
-          setFriends(await getUserFriends(username));
+          const friends = await getUserFriends(username);
+          if ("message" in friends) {
+            setError(friends.message);
+          } else {
+            setFriends(friends);
+          }
         } else {
           setFriends(await getFriends());
         }
@@ -41,6 +47,9 @@ const FriendsList = observer(
 
     if (isLoading) {
       return <PageSpinner />;
+    }
+    if (error) {
+      return <h2 className="text-2xl text-center">{error}</h2>;
     }
 
     if (!friends.length) {

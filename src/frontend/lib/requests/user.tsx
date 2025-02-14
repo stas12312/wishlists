@@ -30,7 +30,12 @@ export async function getUserFriendsCount(username: string): Promise<number> {
   return response.data.friends as number;
 }
 
-export async function getUserFriends(username: string): Promise<IUser[]> {
+export async function getUserFriends(
+  username: string,
+): Promise<IUser[] | IError> {
   const response = await axiosInstance.get(`users/${username}/friends`);
+  if (response.status != 200) {
+    return response.data as IError;
+  }
   return response.data.data;
 }
