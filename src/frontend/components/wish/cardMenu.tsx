@@ -20,7 +20,7 @@ export function WishItemMenu({
 }) {
   const menuItems = getMenuItemsByActions(wish.actions);
   return (
-    <span>
+    <span data-qa="wish-menu">
       <Dropdown>
         <DropdownTrigger>
           <Button isIconOnly as="div" radius="lg" variant="light">

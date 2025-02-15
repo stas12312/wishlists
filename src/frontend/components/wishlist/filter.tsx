@@ -13,6 +13,7 @@ const WishlistFilter = ({
       <Select
         disallowEmptySelection
         className="max-w-xs"
+        data-qa="status-filter"
         defaultSelectedKeys={["active"]}
         label="Статус"
         size="sm"
@@ -20,8 +21,12 @@ const WishlistFilter = ({
           setFilter({ ...filter, showArchive: key.currentKey == "deleted" });
         }}
       >
-        <SelectItem key="active">Активные</SelectItem>
-        <SelectItem key="deleted">Архивированные</SelectItem>
+        <SelectItem key="active" data-qa="filter-active">
+          Активные
+        </SelectItem>
+        <SelectItem key="deleted" data-qa="filter-deleted">
+          Архивированные
+        </SelectItem>
         {/* <SelectItem key="past">Прошедшие</SelectItem> */}
       </Select>
     </>

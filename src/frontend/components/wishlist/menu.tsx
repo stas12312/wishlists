@@ -69,7 +69,7 @@ export const WishlistItemMenu = ({
   }
 
   return (
-    <span>
+    <span data-qa="wishlist-menu">
       <Dropdown>
         <DropdownTrigger>
           <Button isIconOnly as="div" radius="lg" variant="light">
