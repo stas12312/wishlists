@@ -28,6 +28,7 @@ export async function getWishlists(
       user_id: filter?.userId,
       count: navigation?.count,
       cursor: navigation?.cursor,
+      username: filter?.username,
     },
   });
   return response.data;
