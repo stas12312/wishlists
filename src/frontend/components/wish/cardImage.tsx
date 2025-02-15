@@ -21,7 +21,7 @@ const CardImage = ({
   return (
     <div className={`relative ${className}`}>
       <div
-        className={`bg-gradient-to-br from-default to-default-100 rounded-large w-full flex ${iconClassName}`}
+        className={`bg-gradient-to-br from-default to-default-100 rounded-large w-full flex h-full`}
       >
         {wish.image ? (
           <Image
@@ -30,7 +30,7 @@ const CardImage = ({
             src={wish.image}
           />
         ) : (
-          <AiFillGift className="text-8xl mx-auto my-auto" />
+          <AiFillGift className={`text-8xl mx-auto my-auto ${iconClassName}`} />
         )}
       </div>
       <div className="absolute top-1.5 flex flex-col items-center w-full">
