@@ -50,12 +50,17 @@ export const WishlistItem = forwardRef(
                 <span
                   className={`flex flex-row gap-1 ${!wishlist.is_active ? "text-default-400" : ""}`}
                 >
-                  <p className="uppercase text-large">{cardWishlist.name}</p>
+                  <p className="uppercase text-large" title={cardWishlist.name}>
+                    {cardWishlist.name}
+                  </p>
                   <span className="text-small">
                     <VisibleStatus visible={cardWishlist.visible} />
                   </span>
                 </span>
-                <p className="text-default-500 text-left">
+                <p
+                  className="text-default-500 text-left"
+                  title={cardWishlist.description}
+                >
                   {cardWishlist.description}
                 </p>
               </div>

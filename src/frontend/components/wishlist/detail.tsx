@@ -71,7 +71,9 @@ const WishlistDetail = observer(
           <div className="flex justify-center md:justify-start">
             <span>
               <div className="flex flex-row gap-2 justify-center lg:justify-start">
-                <span className={"text-2xl"}>{wishlist.name}</span>
+                <span className="text-2xl" title={wishlist.name}>
+                  {wishlist.name}
+                </span>
                 <span>
                   <VisibleStatus visible={wishlist.visible} />
                 </span>
@@ -91,7 +93,9 @@ const WishlistDetail = observer(
             {wishlist.date ? (
               <Chip>{new Date(wishlist.date).toLocaleDateString()}</Chip>
             ) : null}
-            <span className="my-auto">{wishlist.description}</span>
+            <span className="my-auto" title={wishlist.description}>
+              {wishlist.description}
+            </span>
           </div>
         </PageHeader>
       </div>
