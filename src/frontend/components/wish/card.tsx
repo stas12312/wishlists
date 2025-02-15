@@ -103,8 +103,12 @@ export const WishItem = observer(
             <CardHeader className="flex-col items-start">
               <div className="flex flex-row justify-between w-full h-[40px]">
                 <p className="text-tiny font-bold my-auto flex flex-col text-left overflow-hidden text-ellipsis truncate">
-                  <span className="text-xl">{item.name}</span>
-                  <span className="text-default-500">{item.comment}</span>
+                  <span className="text-xl" title={item.name}>
+                    {item.name}
+                  </span>
+                  <span className="text-default-500" title={item.comment}>
+                    {item.comment}
+                  </span>
                 </p>
                 {showMenu(wish.actions) ? (
                   <span>
