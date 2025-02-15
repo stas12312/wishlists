@@ -58,12 +58,7 @@ func (r *WishlistRepositoryPostgres) List(
     		) AS visible_users
 		FROM wishlists
 		WHERE 
-		    user_id = (
-		        CASE
-					WHEN $8 != '' THEN (SELECT user_id FROM users WHERE username = $8)
-					ELSE $3
-		        END
-		        )
+		    user_id = $3
 			AND 
 		    	CASE 
 		    	    WHEN user_id = $1 
@@ -93,7 +88,7 @@ func (r *WishlistRepositoryPostgres) List(
 		&wishlists, q,
 		userId, filter.IsActive, filter.UserId,
 		navigation.Cursor[0], navigation.Cursor[1], navigation.Count,
-		filter.IsFriend, filter.Username,
+		filter.IsFriend,
 	)
 	return wishlists, err
 }

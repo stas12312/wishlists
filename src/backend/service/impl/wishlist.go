@@ -41,6 +41,14 @@ func (s *WishlistImpl) ListForUser(
 	filter model.WishlistFilter,
 	navigation model.Navigation,
 ) ([]model.Wishlist, error) {
+	if filter.Username != "" {
+		user, err := s.UserService.GetByUsername(context.Background(), filter.Username)
+		if err != nil {
+			filter.UserId = 0
+		} else {
+			filter.UserId = user.Id
+		}
+	}
 	filter.IsFriend = s.IsFriends(userId, filter.UserId)
 	return s.WishlistRepository.List(userId, filter, navigation)
 }
