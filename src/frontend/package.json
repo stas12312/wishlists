@@ -30,6 +30,7 @@
     "@heroui/modal": "2.2.8",
     "@heroui/navbar": "2.2.9",
     "@heroui/popover": "2.3.10",
+    "@heroui/react": "^2.7.4",
     "@heroui/select": "2.4.10",
     "@heroui/skeleton": "2.2.6",
     "@heroui/snippet": "2.2.11",
