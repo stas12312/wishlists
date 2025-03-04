@@ -22,4 +22,5 @@ type WishlistService interface {
 	ReservedList(userId int64) (*[]model.Wish, error)
 	MakeWishFull(userId int64, wishUuid string) error
 	CancelWishFull(userId int64, wishUuid string) error
+	MoveWish(userId int64, wishUuid string, wishlistUuid string) (*model.Wish, error)
 }
