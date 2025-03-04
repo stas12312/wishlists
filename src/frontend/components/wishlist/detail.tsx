@@ -23,12 +23,8 @@ import WishlistItemMenu from "./menu";
 import { IError } from "@/lib/models";
 import { IWish } from "@/lib/models/wish";
 import { IWishlist } from "@/lib/models/wishlist";
-import {
-  deleteWishlist,
-  getWishes,
-  getWishlist,
-  updateWishlist,
-} from "@/lib/requests";
+import { deleteWishlist, getWishlist, updateWishlist } from "@/lib/requests";
+import { getWishes } from "@/lib/requests/wish";
 import { wrapUsername } from "@/lib/user";
 import userStore from "@/store/userStore";
 
@@ -130,13 +126,13 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
     fetchWishlists();
   }, []);
 
-  function onDeleteWish(wish: IWish) {
+  function onDeleteWish(wish: IWish, message: string) {
     setItems(
       items.filter((value) => {
         return value.uuid !== wish.uuid;
       }),
     );
-    toast.success("Желание удалено");
+    toast.success(message);
   }
 
   async function onCreateWish(wish: IWish) {
