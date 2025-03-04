@@ -8,6 +8,7 @@ import { Key, useState } from "react";
 import toast from "react-hot-toast";
 
 import ConfirmationModal from "../confirmation";
+import SelectWishlistModal from "../wishlist/selectModal";
 
 import { WishItemMenu } from "./cardMenu";
 import WishFullCard from "./fullCard";
@@ -15,14 +16,12 @@ import WishSaveModal from "./saveModal";
 import CardImage from "./cardImage";
 
 import { IWish, IWishActions } from "@/lib/models/wish";
-import {
-  cancelReserveWish,
-  cancelWishFull,
-  deleteWish,
-  getWish,
-  makeWishFull,
-  reserveWish,
-} from "@/lib/requests";
+import { getWish } from "@/lib/requests";
+import { cancelWishFull, moveWish } from "@/lib/requests/wish";
+import { makeWishFull } from "@/lib/requests/wish";
+import { cancelReserveWish } from "@/lib/requests/wish";
+import { reserveWish } from "@/lib/requests/wish";
+import { deleteWish } from "@/lib/requests/wish";
 
 export const WishItem = observer(
   ({
@@ -31,16 +30,17 @@ export const WishItem = observer(
     withUser = false,
   }: {
     wish: IWish;
-    onDelete: { (wish: IWish): void };
+    onDelete: { (wish: IWish, message: string): void };
     withUser?: boolean;
   }) => {
     const [item, setItem] = useState<IWish>(wish);
     const [isConfirm, setIsConfirm] = useState(false);
     const { isOpen, onOpenChange } = useDisclosure();
+    const moveModal = useDisclosure();
     const FullCardDisclosure = useDisclosure();
 
     async function onDeleteWish() {
-      await onDelete(wish);
+      await onDelete(wish, "Желание удалено");
       await deleteWish(wish.uuid ?? "");
       setIsConfirm(false);
     }
@@ -48,6 +48,12 @@ export const WishItem = observer(
     async function onWishUpdate(wish: IWish) {
       onOpenChange();
       setItem(wish);
+    }
+
+    async function onMove(wishlistUUID: string) {
+      await moveWish(wish.uuid || "", wishlistUUID);
+      moveModal.onClose();
+      await onDelete(wish, "Желание перенесено");
     }
 
     async function handleOnAction(key: Key | string) {
@@ -87,6 +93,9 @@ export const WishItem = observer(
       }
       if (key === "open_wishlist") {
         window.open(`/wishlists/${wish.wishlist_uuid}`);
+      }
+      if (key === "move") {
+        moveModal.onOpenChange();
       }
     }
 
@@ -161,6 +170,13 @@ export const WishItem = observer(
           wish={item}
           withUser={withUser}
           onOpenChange={FullCardDisclosure.onOpenChange}
+        />
+        <SelectWishlistModal
+          excludeWishlists={[wish.wishlist_uuid]}
+          isOpen={moveModal.isOpen}
+          wish={wish}
+          onOpenChange={moveModal.onOpenChange}
+          onSelect={onMove}
         />
       </>
     );

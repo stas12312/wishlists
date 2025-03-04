@@ -8,7 +8,9 @@ import UploadButton from "../uploadButton";
 import Desirability from "../desirability";
 import MarketIcon from "../marketIcon";
 
-import { createWish, updateWish, uploadFile } from "@/lib/requests";
+import { uploadFile } from "@/lib/requests";
+import { updateWish } from "@/lib/requests/wish";
+import { createWish } from "@/lib/requests/wish";
 import { IError } from "@/lib/models";
 import { IWish } from "@/lib/models/wish";
 import { isURL } from "@/lib/url";

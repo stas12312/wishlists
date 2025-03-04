@@ -6,6 +6,7 @@ import {
   MdOutlineCancel,
   MdOutlineCheck,
   MdOutlineOpenInNew,
+  MdDriveFileMove,
 } from "react-icons/md";
 import { IconType } from "react-icons";
 
@@ -70,6 +71,14 @@ const ACTIONS: IWishMenuItem[] = [
     color: "danger",
     title: "Удалить",
     icon: MdDelete,
+  },
+  {
+    actionKey: "edit",
+    key: "move",
+    className: "text-primary",
+    color: "primary",
+    title: "Перенести",
+    icon: MdDriveFileMove,
   },
 ];
 

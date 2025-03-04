@@ -34,14 +34,6 @@ export async function getWishlists(
   return response.data;
 }
 
-export async function getWishes(wishlist_uuid: string): Promise<IWish[]> {
-  const response = await axiosInstance.get(
-    `/wishlists/${wishlist_uuid}/wishes`,
-  );
-
-  return response.data.data;
-}
-
 export async function getMe(): Promise<IUser> {
   const response = await axiosInstance.get("/user/me");
 
@@ -101,26 +93,6 @@ export async function updateWishlist(wishlist: IWishlist): Promise<IWishlist> {
   );
 
   return response.data.data;
-}
-
-export async function createWish(wish: IWish): Promise<IWish | IError> {
-  const response = await axiosInstance.post("/wishes", wish);
-
-  if (response.status != 200) {
-    return response.data as IError;
-  }
-
-  return response.data.data as IWish;
-}
-
-export async function updateWish(wish: IWish): Promise<IWish | IError> {
-  const response = await axiosInstance.post(`/wishes/${wish.uuid}`, wish);
-
-  return response.data;
-}
-
-export async function deleteWish(wishUUID: string) {
-  await axiosInstance.delete(`/wishes/${wishUUID}`);
 }
 
 export async function deleteWishlist(wishlistUUID: string) {
@@ -212,24 +184,6 @@ export async function restoreWishlist(wishlistUUID: string) {
   await axiosInstance.post(`wishlists/${wishlistUUID}/restore`);
 }
 
-export async function reserveWish(wishUUID: string): Promise<IError | void> {
-  const response = await axiosInstance.post(`wishes/${wishUUID}/reserve`);
-  if (response.status != 200) {
-    return response.data as IError;
-  }
-}
-
-export async function cancelReserveWish(
-  wishUUID: string,
-): Promise<IError | void> {
-  const response = await axiosInstance.post(
-    `wishes/${wishUUID}/cancel_reserve`,
-  );
-  if (response.status != 200) {
-    return response.data as IError;
-  }
-}
-
 export async function getWish(wishUUID: string): Promise<IWish> {
   const response = await axiosInstance.get(`wishes/${wishUUID}`);
   return response.data;
@@ -250,14 +204,6 @@ export async function updateUser(user: IUser): Promise<IUser | IError> {
     ...user,
   });
   return response.data;
-}
-
-export async function makeWishFull(wishUUID: string) {
-  await axiosInstance.post(`/wishes/${wishUUID}/make_full`);
-}
-
-export async function cancelWishFull(wishUUID: string) {
-  await axiosInstance.post(`/wishes/${wishUUID}/cancel_full`);
 }
 
 export async function AddFriend(userId: number): Promise<IError | null> {
