@@ -185,7 +185,7 @@ func (s *WishlistImpl) UpdateWish(userId int64, wish *model.Wish) (*model.Wish, 
 	if err != nil || existWish.UserId != userId {
 		return nil, errors.New("user can't update wish")
 	}
-
+	wish.WishlistUuid = existWish.WishlistUuid
 	updatedWish, err := s.WishRepository.Update(wish)
 	if err != nil {
 		return nil, apperror.NewError(apperror.WrongRequest, "Не удалось обновить желание")
@@ -198,7 +198,7 @@ func (s *WishlistImpl) GetWish(userId int64, wishUuid string) (*model.Wish, erro
 
 	existWish, err := s.WishRepository.Get(wishUuid)
 	if err != nil || !s.UserCanViewWishlistByUuid(userId, existWish.WishlistUuid) {
-		return nil, errors.New("user can't view wish")
+		return nil, apperror.NewError(apperror.NotFound, "Желание не найдено")
 	}
 	preparedWish := prepareWish(userId, *existWish)
 	return &preparedWish, nil
@@ -267,6 +267,25 @@ func (s *WishlistImpl) ReservedList(userId int64) (*[]model.Wish, error) {
 	}
 	prepareWishes(userId, wishes)
 	return wishes, err
+}
+
+func (s *WishlistImpl) MoveWish(userId int64, wishUuid string, wishlistUuid string) (*model.Wish, error) {
+	wish, err := s.GetWish(userId, wishUuid)
+	if err != nil || wish.UserId != userId {
+		return nil, apperror.NewError(apperror.NotFound, "Желание не найдено или недоступно для редактирования")
+	}
+
+	if !s.UserCanEditWishlist(userId, wishlistUuid) {
+		return nil, apperror.NewError(apperror.NotFound, "Вишлист не найден или недоступен")
+	}
+
+	wish.WishlistUuid = wishlistUuid
+	movedWish, err := s.WishRepository.Update(wish)
+	if err != nil {
+		return nil, apperror.NewError(apperror.WrongRequest, err.Error())
+	}
+	preparedWish := prepareWish(userId, *movedWish)
+	return &preparedWish, nil
 }
 
 func getActionsForWish(userId int64, wish model.Wish) model.WishActions {

@@ -287,6 +287,20 @@ func (c *WishlistController) MakeCancelFullHandler(ctx *fiber.Ctx) error {
 
 }
 
+func (c *WishlistController) MoveWishHandler(ctx *fiber.Ctx) error {
+	userId := GetUserIdFromCtx(ctx)
+	wishUuid := ctx.Params("uuid")
+	wishlist := &model.Wishlist{}
+	if err := ctx.BodyParser(wishlist); err != nil {
+		return ctx.JSON(model.ErrorResponse{Message: "Некорректные данные", Details: err.Error()})
+	}
+	wish, err := c.MoveWish(userId, wishUuid, wishlist.Uuid)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(model.Response{Data: wish})
+}
+
 func (c *WishlistController) Route(router fiber.Router) {
 
 	wishlistGroup := router.Group("/wishlists")
@@ -312,4 +326,5 @@ func (c *WishlistController) Route(router fiber.Router) {
 
 	wishGroup.Post("/:uuid/make_full", middleware.Protected(true), c.MakeWishFullHandler)
 	wishGroup.Post("/:uuid/cancel_full", middleware.Protected(true), c.MakeCancelFullHandler)
+	wishGroup.Post("/:uuid/move", middleware.Protected(true), c.MoveWishHandler)
 }
