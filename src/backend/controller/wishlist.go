@@ -87,7 +87,10 @@ func (c *WishlistController) GetWishlist(ctx *fiber.Ctx) error {
 	wishlist, err := c.GetForUserByUUID(userId, wishlistId)
 	if err != nil {
 		return ctx.Status(fiber.StatusNotFound).
-			JSON(model.ErrorResponse{Message: "Запись не найдена", Details: err.Error()})
+			JSON(model.ErrorResponse{
+				Message: "Вишлист не найден или скрыт настройками приватности",
+				Details: err.Error(),
+			})
 	}
 
 	return ctx.JSON(model.Response{Data: wishlist})
@@ -110,7 +113,10 @@ func (c *WishlistController) Update(ctx *fiber.Ctx) error {
 	updatedWishlist, err := c.UpdateForUser(userId, wishlist)
 	if err != nil {
 		return ctx.Status(fiber.StatusNotFound).
-			JSON(model.ErrorResponse{Message: "Запись не найдена", Details: err.Error()})
+			JSON(model.ErrorResponse{
+				Message: "Вишлист не найден или скрыт настройками приватности",
+				Details: err.Error(),
+			})
 	}
 
 	return ctx.JSON(model.Response{Data: updatedWishlist})
