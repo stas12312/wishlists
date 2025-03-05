@@ -25,7 +25,7 @@ const SelectWishlistModal = observer(
     return (
       <Modal
         backdrop="blur"
-        className="h-64"
+        className="min-h-32"
         isOpen={isOpen}
         placement="top-center"
         size="3xl"
@@ -89,27 +89,34 @@ const WishlistSelector = observer(
     if (!wishlists) {
     }
     const items = wishlists.map((wishlist) => {
-      return <ListboxItem key={wishlist.uuid}>{wishlist.name}</ListboxItem>;
+      return (
+        <ListboxItem key={wishlist.uuid} className="p-1">
+          <p className="text-lg">{wishlist.name}</p>
+        </ListboxItem>
+      );
     });
 
-    if (isLoading) {
-      return <Spinner className="h-full mt-auto" />;
-    }
-
     return (
-      <Listbox
-        aria-label="Move wish"
-        className="text-center overflow-y-scroll h-40"
-        disabledKeys={excludeWishlists}
-        emptyContent={<p>Вишлистов нет</p>}
-        onAction={async (key) => {
-          setIsLoading(true);
-          await onSelect(key.toString());
-          setIsLoading(false);
-        }}
-      >
-        {items}
-      </Listbox>
+      <>
+        <div className="relative">
+          {isLoading ? (
+            <Spinner className="h-full mt-auto absolute z-20 bg-content1 w-full opacity-80" />
+          ) : null}
+          <Listbox
+            aria-label="Move wish"
+            className="text-center"
+            disabledKeys={excludeWishlists}
+            emptyContent={<p className="text-center">Вишлистов нет</p>}
+            onAction={async (key) => {
+              setIsLoading(true);
+              await onSelect(key.toString());
+              setIsLoading(false);
+            }}
+          >
+            {items}
+          </Listbox>
+        </div>
+      </>
     );
   },
 );
