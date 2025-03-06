@@ -3,9 +3,9 @@ import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { redirect } from "next/navigation";
-import toast from "react-hot-toast";
 import { Link } from "@heroui/link";
 import { Form } from "@heroui/form";
+import { addToast } from "@heroui/toast";
 
 import CodeInput from "@/components/codeInput";
 import PasswordInput from "@/components/passwordInput";
@@ -230,9 +230,9 @@ export default function SignIn() {
                 onPress={async () => {
                   setRetryIsLoading(true);
                   await sendDataForRegister();
-                  toast.success(
-                    `Подтверждение было повторно отправлено на ${formData.email}`,
-                  );
+                  addToast({
+                    title: `Подтверждение было повторно отправлено на ${formData.email}`,
+                  });
                   setRetryIsLoading(false);
                 }}
               >

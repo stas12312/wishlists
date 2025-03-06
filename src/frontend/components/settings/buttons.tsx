@@ -2,8 +2,8 @@ import { Button } from "@heroui/button";
 import { observer } from "mobx-react-lite";
 import { MdDelete, MdOutlineExitToApp } from "react-icons/md";
 import { useState } from "react";
-import toast from "react-hot-toast";
 import { Divider } from "@heroui/divider";
+import { addToast } from "@heroui/toast";
 
 import ConfirmationModal from "../confirmation";
 
@@ -56,10 +56,15 @@ export const DeleteAccountButton = observer(() => {
         onConfirm={async () => {
           const result = await deleteAccount();
           if ("message" in result) {
-            toast.error(result.message);
+            addToast({
+              title: result.message,
+              color: "danger",
+            });
           } else {
             userStore.logout();
-            toast.success("Аккаунт удален");
+            addToast({
+              title: "Аккаунт удален",
+            });
             await logout();
           }
         }}

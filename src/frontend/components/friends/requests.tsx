@@ -4,7 +4,7 @@ import { User } from "@heroui/user";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { addToast } from "@heroui/toast";
 
 import { PageSpinner } from "../pageSpinner";
 
@@ -57,11 +57,16 @@ const FriendRequestsItems = observer(() => {
         onPress={async () => {
           const result = await applyFriendRequest(r.from_user.id);
           if (result && "code" in result) {
-            toast.error(result.message);
+            addToast({
+              color: "danger",
+              title: result.message,
+            });
           } else {
             setRequests(await getFriendRequests());
             countersStore.getCounters();
-            toast.success("Завка принята");
+            addToast({
+              title: "Заявка принята",
+            });
           }
         }}
       >
@@ -73,11 +78,16 @@ const FriendRequestsItems = observer(() => {
         onPress={async () => {
           const result = await declineFriendRequest(r.from_user.id);
           if (result && "code" in result) {
-            toast.error(result.message);
+            addToast({
+              title: result.message,
+              color: "danger",
+            });
           } else {
             setRequests(await getFriendRequests());
             countersStore.getCounters();
-            toast.success("Заявка отклонена");
+            addToast({
+              title: "Заявка отклонена",
+            });
           }
         }}
       >
@@ -94,11 +104,16 @@ const FriendRequestsItems = observer(() => {
         onPress={async () => {
           const result = await deleteFriendRequest(r.to_user.id);
           if (result && "code" in result) {
-            toast.error(result.message);
+            addToast({
+              title: result.message,
+              color: "danger",
+            });
           } else {
             setRequests(await getFriendRequests());
             countersStore.getCounters();
-            toast.success("Заявка отменена");
+            addToast({
+              title: "Заявка отменена",
+            });
           }
         }}
       >
