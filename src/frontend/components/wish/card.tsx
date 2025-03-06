@@ -12,8 +12,8 @@ import SelectWishlistModal from "../wishlist/selectModal";
 
 import { WishItemMenu } from "./cardMenu";
 import WishFullCard from "./fullCard";
-import WishSaveModal from "./saveModal";
 import CardImage from "./cardImage";
+import WishSaveModal from "./saveModal";
 
 import { IWish, IWishActions } from "@/lib/models/wish";
 import { getWish } from "@/lib/requests";
@@ -35,9 +35,9 @@ export const WishItem = observer(
   }) => {
     const [item, setItem] = useState<IWish>(wish);
     const [isConfirm, setIsConfirm] = useState(false);
-    const { isOpen, onOpenChange } = useDisclosure();
+    const editModal = useDisclosure();
     const moveModal = useDisclosure();
-    const FullCardDisclosure = useDisclosure();
+    const fullCardDrawer = useDisclosure();
 
     async function onDeleteWish() {
       await onDelete(wish, "Желание удалено");
@@ -46,7 +46,7 @@ export const WishItem = observer(
     }
 
     async function onWishUpdate(wish: IWish) {
-      onOpenChange();
+      editModal.onOpenChange();
       setItem(wish);
     }
 
@@ -63,7 +63,7 @@ export const WishItem = observer(
         setIsConfirm(true);
       }
       if (key === "edit") {
-        onOpenChange();
+        editModal.onOpen();
       }
       if (key === "reserve") {
         const result = await reserveWish(wishUUID);
@@ -105,7 +105,7 @@ export const WishItem = observer(
         window.open(`/wishlists/${wish.wishlist_uuid}`);
       }
       if (key === "move") {
-        moveModal.onOpenChange();
+        moveModal.onOpen();
       }
     }
 
@@ -116,7 +116,7 @@ export const WishItem = observer(
             className={`flex-col ${withUser ? "h-[340px]" : "h-[300px]"} w-full`}
             isPressable={true}
             onPress={() => {
-              FullCardDisclosure.onOpen();
+              fullCardDrawer.onOpen();
             }}
           >
             <CardHeader className="flex-col items-start">
@@ -167,24 +167,24 @@ export const WishItem = observer(
             setIsConfirm(false);
           }}
         />
-        <WishSaveModal
-          isOpen={isOpen}
-          wish={item}
-          wishlistUUID={wish.wishlist_uuid}
-          onOpenChange={onOpenChange}
-          onUpdate={onWishUpdate}
-        />
+
         <WishFullCard
           handeAction={handleOnAction}
-          isOpen={FullCardDisclosure.isOpen}
+          isOpen={fullCardDrawer.isOpen}
           wish={item}
           withUser={withUser}
-          onOpenChange={FullCardDisclosure.onOpenChange}
+          onOpenChange={fullCardDrawer.onOpenChange}
+        />
+        <WishSaveModal
+          isOpen={editModal.isOpen}
+          wish={item}
+          wishlistUUID={wish.wishlist_uuid}
+          onOpenChange={editModal.onOpenChange}
+          onUpdate={onWishUpdate}
         />
         <SelectWishlistModal
           excludeWishlists={[wish.wishlist_uuid]}
           isOpen={moveModal.isOpen}
-          wish={wish}
           onOpenChange={moveModal.onOpenChange}
           onSelect={onMove}
         />
