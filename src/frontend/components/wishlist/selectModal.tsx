@@ -7,7 +7,6 @@ import { Spinner } from "@heroui/spinner";
 import { IWishlist } from "@/lib/models/wishlist";
 import { getWishlists } from "@/lib/requests";
 import userStore from "@/store/userStore";
-import { IWish } from "@/lib/models/wish";
 
 const SelectWishlistModal = observer(
   ({
@@ -17,7 +16,6 @@ const SelectWishlistModal = observer(
     excludeWishlists = [],
   }: {
     isOpen: boolean;
-    wish: IWish;
     onOpenChange: { (): void };
     onSelect: { (wishlistUUID: string): Promise<void> };
     excludeWishlists?: string[];
