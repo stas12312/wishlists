@@ -2,6 +2,7 @@
 import { User } from "@heroui/user";
 import { observer } from "mobx-react-lite";
 import { Key, useEffect } from "react";
+import { addToast } from "@heroui/toast";
 import {
   Dropdown,
   DropdownItem,
@@ -9,7 +10,6 @@ import {
   DropdownTrigger,
 } from "@heroui/dropdown";
 import { MdLink, MdOutlineExitToApp } from "react-icons/md";
-import toast from "react-hot-toast";
 
 import userStore from "@/store/userStore";
 import { logout } from "@/lib/auth";
@@ -27,7 +27,9 @@ export const UserItem = observer(() => {
   function onHandleAction(key: Key) {
     if (key == "share") {
       navigator.clipboard.writeText(profileLink);
-      toast.success("Ссылка на профиль скопирована");
+      addToast({
+        title: "Ссылка на профиль скопирована",
+      });
     }
   }
 

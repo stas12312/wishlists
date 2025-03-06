@@ -2,7 +2,7 @@ import { Button } from "@heroui/button";
 import { Form } from "@heroui/form";
 import { Spinner } from "@heroui/spinner";
 import { FormEvent, useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { addToast } from "@heroui/toast";
 
 import PasswordInput from "../passwordInput";
 
@@ -45,7 +45,9 @@ const SecuritySection = () => {
       }
     } else {
       setErrors({});
-      toast.success("Пароль успшено изменен");
+      addToast({
+        title: "Пароль успешно изменен",
+      });
       setOldPassword("");
       setNewPassword("");
       setHasPassword(true);

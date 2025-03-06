@@ -4,8 +4,8 @@ import { Button } from "@heroui/button";
 import { useDisclosure } from "@heroui/modal";
 import { observer } from "mobx-react-lite";
 import { createRef, useEffect, useRef, useState } from "react";
-import toast from "react-hot-toast";
 import { IoMdAdd } from "react-icons/io";
+import { addToast } from "@heroui/toast";
 
 import AddCardButton from "../addCardButton";
 
@@ -68,7 +68,9 @@ export const Wishlists = observer(
           return value.uuid != wishlist.uuid;
         }),
       );
-      toast.success(`Вишлист ${wishlist.is_active ? "архивирован" : "удален"}`);
+      addToast({
+        title: `Вишлист ${wishlist.is_active ? "архивирован" : "удален"}`,
+      });
     }
 
     async function fetchWishlists(

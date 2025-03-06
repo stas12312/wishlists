@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@heroui/button";
-import toast from "react-hot-toast";
 import { Chip } from "@heroui/chip";
+import { addToast } from "@heroui/toast";
 
 import { FriendStatus } from "@/lib/models";
 import { AddFriend } from "@/lib/requests";
@@ -24,9 +24,14 @@ const UserStatus = ({
           onPress={async () => {
             const result = await AddFriend(userId);
             if (result && "code" in result) {
-              toast.error(result.message);
+              addToast({
+                title: result.message,
+                color: "danger",
+              });
             } else {
-              toast.success("Заявка отправлена");
+              addToast({
+                title: "Заяка отправлена",
+              });
               setFriendStatus(FriendStatus.has_outcoming_request);
             }
           }}

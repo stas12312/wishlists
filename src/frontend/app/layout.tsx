@@ -1,7 +1,6 @@
 import "@/styles/globals.css";
 import clsx from "clsx";
 import { Metadata, Viewport } from "next";
-import { Toaster } from "react-hot-toast";
 import { Suspense } from "react";
 
 import { Providers } from "./providers";
@@ -63,16 +62,7 @@ export default async function RootLayout({
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
-          <>
-            {children}
-            <Toaster
-              containerClassName="mb-20 md:mb-0"
-              position="bottom-right"
-              toastOptions={{
-                className: "!bg-content1 dark:!text-white !text-base-content",
-              }}
-            />
-          </>
+          <>{children}</>
         </Providers>
         <Suspense>
           <Metrika />

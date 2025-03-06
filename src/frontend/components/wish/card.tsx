@@ -5,7 +5,7 @@ import { Chip } from "@heroui/chip";
 import { useDisclosure } from "@heroui/modal";
 import { observer } from "mobx-react-lite";
 import { Key, useState } from "react";
-import toast from "react-hot-toast";
+import { addToast } from "@heroui/toast";
 
 import ConfirmationModal from "../confirmation";
 import SelectWishlistModal from "../wishlist/selectModal";
@@ -68,19 +68,29 @@ export const WishItem = observer(
       if (key === "reserve") {
         const result = await reserveWish(wishUUID);
         if (result) {
-          toast.error(result.message);
+          addToast({
+            title: result.message,
+            color: "danger",
+          });
         } else {
           setItem(await getWish(wishUUID));
-          toast.success("Желание забронировано");
+          addToast({
+            title: "Желание забронировано",
+          });
         }
       }
       if (key === "cancel_reserve") {
         const result = await cancelReserveWish(wishUUID);
         if (result) {
-          toast.error(result.message);
+          addToast({
+            title: result.message,
+            color: "danger",
+          });
         } else {
           setItem(await getWish(wishUUID));
-          toast.success("Бронь отменена");
+          addToast({
+            title: "Бронь отменена",
+          });
         }
       }
       if (key === "make_full") {

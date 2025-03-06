@@ -3,8 +3,8 @@ import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 import { Tab, Tabs } from "@heroui/tabs";
 import { observer } from "mobx-react-lite";
-import toast from "react-hot-toast";
 import { IoMdLink } from "react-icons/io";
+import { addToast } from "@heroui/toast";
 
 import userStore from "@/store/userStore";
 import countersStore from "@/store/counterStore";
@@ -55,7 +55,9 @@ const CopyLinkButton = ({ username }: { username: string }) => {
         variant="flat"
         onPress={() => {
           navigator.clipboard.writeText(getUserLink(username));
-          toast.success("Ссылка скопирована");
+          addToast({
+            title: "Ссылка скопирована",
+          });
         }}
       >
         Скопировать ссылку для друзей

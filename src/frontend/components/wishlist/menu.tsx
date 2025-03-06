@@ -9,9 +9,9 @@ import {
 } from "@heroui/dropdown";
 import { useDisclosure } from "@heroui/modal";
 import { useState } from "react";
-import toast from "react-hot-toast";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { MdCreate, MdLink, MdRestoreFromTrash, MdDelete } from "react-icons/md";
+import { addToast } from "@heroui/toast";
 
 import ConfirmationModal from "../confirmation";
 
@@ -49,12 +49,16 @@ export const WishlistItemMenu = ({
       navigator.clipboard.writeText(
         `${window.location.origin}/wishlists/${wishlist.uuid}`,
       );
-      toast.success("Ссылка на вишлист скопирована");
+      addToast({
+        title: "Ссылка на вишлист скопирована",
+      });
     }
     if (key === "restore") {
       await restoreWishlist(wishlist.uuid);
       onRestore(wishlist);
-      toast.success("Вишлист восстановлен");
+      addToast({
+        title: "Вишлист восстановлен",
+      });
     }
   }
 

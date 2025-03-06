@@ -3,8 +3,8 @@ import { Form } from "@heroui/form";
 import { Input } from "@heroui/input";
 import { observer } from "mobx-react-lite";
 import { FormEvent, useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import { MdContentCopy, MdLink } from "react-icons/md";
+import { addToast } from "@heroui/toast";
 
 import UploadButton from "../uploadButton";
 
@@ -65,11 +65,16 @@ const ProfileForm = observer(() => {
 
     const updatedUser = await updateUser(user);
     if ("message" in updatedUser) {
-      toast.error(updatedUser.message);
+      addToast({
+        title: updatedUser.message,
+        color: "danger",
+      });
     } else {
       setUser(updatedUser);
       userStore.reloadMe();
-      toast.success("Профиль обновлен");
+      addToast({
+        title: "Профиль обновлен",
+      });
     }
     setIsProfileLoading(false);
   }
@@ -156,7 +161,9 @@ const ProfileLink = observer(() => {
           startContent={<MdContentCopy />}
           onPress={() => {
             navigator.clipboard.writeText(profileLink);
-            toast.success("Ссылка на профиль скопирована");
+            addToast({
+              title: "Ссылка на профиль скопирована",
+            });
           }}
         >
           Скопировать

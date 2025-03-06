@@ -9,7 +9,7 @@ import { User } from "@heroui/user";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { addToast } from "@heroui/toast";
 
 import AddCardButton from "../addCardButton";
 import PageHeader from "../pageHeader";
@@ -132,7 +132,9 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
         return value.uuid !== wish.uuid;
       }),
     );
-    toast.success(message);
+    addToast({
+      title: message,
+    });
   }
 
   async function onCreateWish(wish: IWish) {
@@ -142,7 +144,9 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
 
   async function onDeleteWishlist(wishlist: IWishlist) {
     await deleteWishlist(wishlist.uuid);
-    toast.success("Вишлист удален");
+    addToast({
+      title: "Вишлист удален",
+    });
     router.push("/");
   }
 
