@@ -159,6 +159,13 @@ export const WishItem = observer(
             ) : null}
           </Card>
         </div>
+        <WishFullCard
+          handeAction={handleOnAction}
+          isOpen={fullCardDrawer.isOpen}
+          wish={item}
+          withUser={withUser}
+          onOpenChange={fullCardDrawer.onOpenChange}
+        />
         <ConfirmationModal
           isOpen={isConfirm}
           message="Вы действительно хотите удалить желание?"
@@ -166,14 +173,6 @@ export const WishItem = observer(
           onDecline={() => {
             setIsConfirm(false);
           }}
-        />
-
-        <WishFullCard
-          handeAction={handleOnAction}
-          isOpen={fullCardDrawer.isOpen}
-          wish={item}
-          withUser={withUser}
-          onOpenChange={fullCardDrawer.onOpenChange}
         />
         <WishSaveModal
           isOpen={editModal.isOpen}
