@@ -1,8 +1,8 @@
 import { Modal, ModalBody, ModalContent, ModalHeader } from "@heroui/modal";
 import { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { Listbox, ListboxItem } from "@heroui/listbox";
 import { Spinner } from "@heroui/spinner";
+import { Listbox, ListboxItem } from "@heroui/listbox";
 
 import { IWishlist } from "@/lib/models/wishlist";
 import { getWishlists } from "@/lib/requests";
@@ -70,7 +70,7 @@ const WishlistSelector = observer(
             userId: userStore.user.id,
           },
           {
-            count: 30,
+            count: 100,
             cursor: ["", ""],
           },
         );
@@ -88,8 +88,16 @@ const WishlistSelector = observer(
     }
     const items = wishlists.map((wishlist) => {
       return (
-        <ListboxItem key={wishlist.uuid} className="p-1">
-          <p className="text-lg">{wishlist.name}</p>
+        <ListboxItem
+          key={wishlist.uuid}
+          className="p-2 border-default-200 box-border my-0.5 border-1"
+        >
+          <p className="text-lg text-ellipsis truncate overflow-hidden">
+            {wishlist.name}
+          </p>
+          <small className="text-tiny text-default-500">
+            {wishlist.description}
+          </small>
         </ListboxItem>
       );
     });
