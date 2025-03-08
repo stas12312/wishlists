@@ -13,23 +13,9 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#000000",
     icons: [
       {
-        src: "/icon",
+        src: "/icon.png",
         sizes: "144x144",
         type: "image/png",
-      },
-    ],
-    screenshots: [
-      {
-        form_factor: "wide",
-        label: "Главная страница",
-        src: "https://files.mywishlists.ru/static/pc_image.png",
-        sizes: "1881x1287",
-      },
-      {
-        form_factor: "narrow",
-        label: "Главная страница",
-        src: "https://files.mywishlists.ru/static/phone_image.png",
-        sizes: "387x838",
       },
     ],
   };
