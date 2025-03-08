@@ -12,6 +12,9 @@ const ICON_BY_DOMAIN = new Map<string, string>([
   ["dns-shop", getIconUrl(STATIC_URL, "dns.png")],
   ["goldapple", getIconUrl(STATIC_URL, "goldapple.png")],
   ["afisha.yandex", getIconUrl(STATIC_URL, "yandex-afisha.ico")],
+  ["aliexpress", getIconUrl(STATIC_URL, "aliexpress.png")],
+  ["vk", getIconUrl(STATIC_URL, "vk.png")],
+  ["chitai-gorod", getIconUrl(STATIC_URL, "chitai-gorod.png")],
 ]);
 const MarketIcon = ({
   link,
