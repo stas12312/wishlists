@@ -18,7 +18,13 @@ export function Providers({ children }: ProvidersProps) {
 
   return (
     <HeroUIProvider navigate={router.push}>
-      <ToastProvider />
+      <ToastProvider
+        toastProps={{
+          classNames: {
+            base: "bottom-20 md:bottom-2",
+          },
+        }}
+      />
       <NextThemesProvider attribute="class" defaultTheme="light">
         {children}
       </NextThemesProvider>

@@ -40,7 +40,7 @@
     "@heroui/system": "^2.4.11",
     "@heroui/tabs": "^2.2.11",
     "@heroui/theme": "^2.4.11",
-    "@heroui/toast": "^2.0.5",
+    "@heroui/toast": "^2.0.6",
     "@heroui/tooltip": "^2.2.11",
     "@heroui/user": "^2.2.10",
     "@internationalized/date": "^3.5.6",
