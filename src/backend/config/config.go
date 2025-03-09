@@ -78,6 +78,18 @@ type RedisConfig struct {
 	Address string
 }
 
+type Features struct {
+	ConvertImageToWebp bool
+}
+
+func NewAppFeatures() Features {
+	convertImageToWebp, _ := strconv.ParseBool(os.Getenv("CONVERT_IMAGE_TO_WEBP"))
+
+	return Features{
+		ConvertImageToWebp: convertImageToWebp,
+	}
+}
+
 type Config struct {
 	JWT         JWTConfig
 	S3          S3Config
@@ -86,9 +98,11 @@ type Config struct {
 	Redis       RedisConfig
 	SMTP        SMTPConfig
 	BaseUrl     string
+	Feature     Features
 }
 
 func (c Config) IsTest() bool {
+
 	return c.Environment == "test"
 }
 
@@ -130,6 +144,7 @@ func NewConfig() *Config {
 			Password: os.Getenv("SMTP_PASSWORD"),
 			From:     os.Getenv("SMTP_FROM"),
 		},
+		Feature: NewAppFeatures(),
 	}
 
 }

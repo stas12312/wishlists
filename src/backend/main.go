@@ -63,7 +63,7 @@ func main() {
 	wishlistController := controller.NewWishlistController(&wishlistService, appConfig)
 
 	imageRepository := repository.NewS3ImageRepository(&appConfig.S3)
-	imageService := service.NewImageService(imageRepository, uuid.NewString)
+	imageService := service.NewImageService(imageRepository, uuid.NewString, appConfig.Feature)
 	imageController := controller.NewImageController(imageService)
 
 	api := app.Group("/api")
