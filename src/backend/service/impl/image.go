@@ -19,7 +19,7 @@ func NewImageService(
 	features config.Features,
 ) *ImageServiceImpl {
 
-	return &ImageServiceImpl{repository, generator, appConfig}
+	return &ImageServiceImpl{repository, generator, features}
 }
 
 type ImageServiceImpl struct {
