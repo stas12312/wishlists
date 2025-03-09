@@ -3,6 +3,7 @@ package impl
 import (
 	"bytes"
 	"io"
+	"main/config"
 	"main/repository/mocks"
 	"testing"
 )
@@ -61,7 +62,9 @@ func TestNewImageService(t *testing.T) {
 		imageRepository := mocks.NewImageRepository(t)
 		service := NewImageService(imageRepository, func() string {
 			return "0"
-		})
+		},
+			config.Features{ConvertImageToWebp: false},
+		)
 
 		if service.ImageRepository != imageRepository {
 			t.Errorf("Incorrect image service")

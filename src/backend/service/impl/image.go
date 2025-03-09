@@ -16,7 +16,7 @@ type UUIDGenerator func() string
 func NewImageService(
 	repository repository.ImageRepository,
 	generator UUIDGenerator,
-	appConfig config.Features,
+	features config.Features,
 ) *ImageServiceImpl {
 
 	return &ImageServiceImpl{repository, generator, appConfig}
