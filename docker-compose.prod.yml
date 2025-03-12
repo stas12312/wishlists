@@ -17,6 +17,9 @@ services:
   backend:
     image: ghcr.io/stas12312/wishlists/backend:release
     restart: always
+    networks:
+      - default
+      - my_wishlists
     env_file:
       - .env
     ports:
@@ -35,3 +38,9 @@ services:
 volumes:
   postgres_data:
   redis_data:
+
+networks:
+  my_wishlists:
+    external:
+      name: my_wishlists_network
+

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"main/config"
 	"main/middleware"
@@ -307,6 +308,39 @@ func (c *WishlistController) MoveWishHandler(ctx *fiber.Ctx) error {
 	return ctx.JSON(model.Response{Data: wish})
 }
 
+func (c *WishlistController) ParseShopUrl(ctx *fiber.Ctx) error {
+	agent := fiber.Post(fmt.Sprintf("%s/parse", c.Config.ParseServiceUrl))
+	agent.ContentType("application/json")
+	agent.Body(ctx.Body())
+	statusCode, body, errs := agent.Bytes()
+
+	if len(errs) > 0 {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"errs": errs,
+		})
+	}
+	ctx.Set("Content-Type", "application/json")
+	return ctx.Status(statusCode).Send(body)
+
+}
+
+func (c *WishlistController) GetParseStatus(ctx *fiber.Ctx) error {
+
+	taskId := ctx.Params("task_id")
+
+	agent := fiber.Get(fmt.Sprintf("%s/parse/%s/status", c.Config.ParseServiceUrl, taskId))
+	agent.ContentType("application/json")
+	agent.Body(ctx.Body())
+	statusCode, body, errs := agent.Bytes()
+
+	if len(errs) > 0 {
+		return ctx.Status(fiber.StatusInternalServerError).
+			JSON(model.ErrorResponse{Message: "Сервис времменно недоступен"})
+	}
+	ctx.Set("Content-Type", "application/json")
+	return ctx.Status(statusCode).Send(body)
+}
+
 func (c *WishlistController) Route(router fiber.Router) {
 
 	wishlistGroup := router.Group("/wishlists")
@@ -333,4 +367,8 @@ func (c *WishlistController) Route(router fiber.Router) {
 	wishGroup.Post("/:uuid/make_full", middleware.Protected(true), c.MakeWishFullHandler)
 	wishGroup.Post("/:uuid/cancel_full", middleware.Protected(true), c.MakeCancelFullHandler)
 	wishGroup.Post("/:uuid/move", middleware.Protected(true), c.MoveWishHandler)
+
+	parseGroup := router.Group("/parse")
+	parseGroup.Post("/", middleware.Protected(true), c.ParseShopUrl)
+	parseGroup.Get("/:task_id/status", middleware.Protected(true), c.GetParseStatus)
 }

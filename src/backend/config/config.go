@@ -91,14 +91,15 @@ func NewAppFeatures() Features {
 }
 
 type Config struct {
-	JWT         JWTConfig
-	S3          S3Config
-	Postgres    PostgresConfig
-	Environment string
-	Redis       RedisConfig
-	SMTP        SMTPConfig
-	BaseUrl     string
-	Feature     Features
+	JWT             JWTConfig
+	S3              S3Config
+	Postgres        PostgresConfig
+	Environment     string
+	Redis           RedisConfig
+	SMTP            SMTPConfig
+	BaseUrl         string
+	Feature         Features
+	ParseServiceUrl string
 }
 
 func (c Config) IsTest() bool {
@@ -144,7 +145,8 @@ func NewConfig() *Config {
 			Password: os.Getenv("SMTP_PASSWORD"),
 			From:     os.Getenv("SMTP_FROM"),
 		},
-		Feature: NewAppFeatures(),
+		Feature:         NewAppFeatures(),
+		ParseServiceUrl: os.Getenv("PARSE_SERVICE_URL"),
 	}
 
 }
