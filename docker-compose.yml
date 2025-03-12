@@ -19,6 +19,9 @@ services:
       context: src/backend
     restart: always
     container_name: backend
+    networks:
+      - default
+      - my_wishlists
     env_file:
       - .env
     ports:
@@ -39,3 +42,8 @@ services:
 volumes:
   postgres_data:
   redis_data:
+
+networks:
+  my_wishlists:
+    external: true
+    name: my_wishlists_network

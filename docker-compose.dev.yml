@@ -23,6 +23,9 @@ services:
       context: src/backend
       target: dev
     container_name: backend
+    networks:
+      - default
+      - my_wishlists
     env_file:
       - .env
     ports:
@@ -41,3 +44,8 @@ services:
       - ${UI_PORT}:3000
     env_file:
       - .env
+
+networks:
+  my_wishlists:
+    external:
+      name: my_wishlists_network
