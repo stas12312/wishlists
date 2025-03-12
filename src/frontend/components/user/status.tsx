@@ -53,7 +53,7 @@ const UserStatus = ({
       item = <Chip color="success">Вы</Chip>;
   }
 
-  return item;
+  return <div className="h-10">{item}</div>;
 };
 
 export default UserStatus;

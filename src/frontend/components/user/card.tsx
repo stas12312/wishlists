@@ -52,7 +52,7 @@ const UserCard = observer(({ username }: { username: string }) => {
                 <Skeleton className="h-5 w-5/5 rounded-full" />
               </div>
             </div>
-            <div className="mx-auto justify-center mb-4 w-2/5 flex gap-1">
+            <div className="mx-auto justify-center mb-4 w-2/5 flex gap-1 h-10">
               <Skeleton className="h-7 w-1/5 rounded-full" />
               <Skeleton className="h-7 w-1/5 rounded-full" />
             </div>
