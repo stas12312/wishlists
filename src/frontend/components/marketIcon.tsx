@@ -4,7 +4,7 @@ import { getDomainFromUrl } from "@/lib/url";
 
 const STATIC_URL = `${process.env.NEXT_PUBLIC_STATIC_URL}/static/icons`;
 
-const ICON_BY_DOMAIN = new Map<string, string>([
+export const ICON_BY_DOMAIN = new Map<string, string>([
   ["ozon", getIconUrl(STATIC_URL, "ozon.ico")],
   ["wildberries", getIconUrl(STATIC_URL, "wildberries.ico")],
   ["market.yandex", getIconUrl(STATIC_URL, "yandex-market.png")],
