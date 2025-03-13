@@ -13,3 +13,10 @@ export function getDomainFromUrl(url: string): string {
   );
   return match ? match[1] : "";
 }
+
+export function extractLink(rawUrl: string): string {
+  const match = rawUrl.match(
+    /(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=\/]*)/im,
+  );
+  return match ? match[1] : "";
+}

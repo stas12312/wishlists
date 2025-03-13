@@ -315,9 +315,8 @@ func (c *WishlistController) ParseShopUrl(ctx *fiber.Ctx) error {
 	statusCode, body, errs := agent.Bytes()
 
 	if len(errs) > 0 {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"errs": errs,
-		})
+		return ctx.Status(fiber.StatusInternalServerError).
+			JSON(model.ErrorResponse{Message: "Сервис времменно недоступен"})
 	}
 	ctx.Set("Content-Type", "application/json")
 	return ctx.Status(statusCode).Send(body)
