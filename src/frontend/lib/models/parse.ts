@@ -6,10 +6,14 @@ export interface ParseResult {
 
 export interface ParseStatus {
   result: ParseResult;
-  status: "FINISHED" | "ERROR" | "WAITING" | "RUNNING";
+  status: "FINISHED" | "FAILED" | "WAITING" | "RUNNING";
 }
 
 export interface ParseStartInfo {
   status: string;
   task_id: string;
+}
+
+export interface ParseError {
+  detail: string;
 }

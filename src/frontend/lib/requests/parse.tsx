@@ -1,9 +1,9 @@
 "use server";
-import { ParseStartInfo, ParseStatus } from "../models/parse";
+import { ParseError, ParseStartInfo, ParseStatus } from "../models/parse";
 
 import { axiosInstance } from "./base";
 
-export async function parse(url: string): Promise<ParseStartInfo> {
+export async function parse(url: string): Promise<ParseStartInfo | ParseError> {
   const response = await axiosInstance.post("parse", {
     url: url,
   });

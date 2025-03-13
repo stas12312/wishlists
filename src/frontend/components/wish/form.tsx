@@ -163,7 +163,7 @@ export default function WishForm(props: {
               endContent={
                 <div className="flex gap-1">
                   <MarketIcon link={"ozon.ru"} />
-                  <MarketIcon link={"wildberries.ru"} />
+                  <MarketIcon className="-ms-4" link={"wildberries.ru"} />
                 </div>
               }
               startContent={<MdOutlineFileDownload />}
