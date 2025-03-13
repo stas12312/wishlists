@@ -78,6 +78,11 @@ const Landing = () => {
             🌑 Темная тема
           </CardHeader>
         </Card>
+        <Card className="col-span-full">
+          <CardHeader className="text-3xl flex justify-center">
+            ⬇️ Автозаполнение для желаний из ozon и wildberries
+          </CardHeader>
+        </Card>
       </div>
       <Button
         as={Link}
