@@ -137,7 +137,7 @@ export default function WishForm(props: {
       }
       setFormData({ ...formData, [name]: valueForSave });
     } else {
-      setFormData({ ...formData, [name]: value });
+      setFormData({ ...formData, [name]: value.trimStart() });
     }
   }
 
