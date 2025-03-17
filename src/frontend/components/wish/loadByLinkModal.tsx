@@ -47,18 +47,18 @@ const LoadByLinkModal = ({
     }
 
     setTaskId(data.task_id);
-    await updateStatus(data.task_id);
+    await updateStatus(data.task_id, url);
     timer.current = setInterval(() => {
-      updateStatus(data.task_id);
+      updateStatus(data.task_id, url);
     }, 500);
   }
 
-  async function updateStatus(taskId: string) {
+  async function updateStatus(taskId: string, url: string) {
     const status = await getParseStatus(taskId);
 
     setStatus(status.status);
     if (status.status == "FINISHED") {
-      onLinkLoad(status.result, link);
+      onLinkLoad(status.result, url);
       onOpenChange();
       clearInterval(timer.current);
       setIsLoading(false);
@@ -83,21 +83,22 @@ const LoadByLinkModal = ({
     <Modal
       backdrop="blur"
       isOpen={isOpen}
+      placement="center"
       size="3xl"
       onOpenChange={onOpenChange}
     >
       <ModalContent>
         {() => (
           <>
-            <ModalHeader className="mx-auto">Загрузка по ссылке</ModalHeader>
+            <ModalHeader className="mx-auto">Автозаполнение</ModalHeader>
             <ModalBody>
               <>
                 <Alert
                   color="primary"
                   title={
                     <p>
-                      На данный момент поддерживается загрузка из <b>ozon</b> и
-                      <b> wildberries</b>
+                      На данный момент поддерживается заполнение из <b>ozon</b>{" "}
+                      и<b> wildberries</b>
                     </p>
                   }
                 />
@@ -112,6 +113,7 @@ const LoadByLinkModal = ({
                   <div className=" w-full flex gap-4">
                     <Input
                       isRequired
+                      isDisabled={isLoading}
                       label="Ссылка на товар"
                       validate={(value) => {
                         if (value === "") {
@@ -123,11 +125,16 @@ const LoadByLinkModal = ({
                         return null;
                       }}
                       value={link}
-                      onPaste={(event: ClipboardEvent<HTMLInputElement>) => {
+                      onPaste={async (
+                        event: ClipboardEvent<HTMLInputElement>,
+                      ) => {
                         event.preventDefault();
-                        setLink(
-                          extractLink(event.clipboardData.getData("Text")),
+                        const link = extractLink(
+                          event.clipboardData.getData("Text"),
                         );
+                        setLink(link);
+
+                        await parseByUrl(link);
                       }}
                       onValueChange={setLink}
                     />
