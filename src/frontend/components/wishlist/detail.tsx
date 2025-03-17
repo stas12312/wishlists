@@ -139,7 +139,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
 
   async function onCreateWish(wish: IWish) {
     onOpenChange();
-    items.push(wish);
+    items.unshift(wish);
   }
 
   async function onDeleteWishlist(wishlist: IWishlist) {
