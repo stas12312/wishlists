@@ -172,12 +172,12 @@ export default function WishForm(props: {
                 loadByLinkDisclosure.onOpen();
               }}
             >
-              Загрузить по ссылке
+              Заполнить автоматически
             </Button>
             <span className="grid grid-cols-5 md:grid-cols-4 my-3">
               <Divider className="my-auto col-span-1" />
               <span className="text-center col-span-3 md:col-span-2">
-                или заполнить вручную
+                или вручную
               </span>
               <Divider className="my-auto col-span-1" />
             </span>
