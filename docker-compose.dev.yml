@@ -48,4 +48,4 @@ services:
 networks:
   my_wishlists:
     external:
-      name: my_wishlists_network
+      name: my_wishlists_dev_network
