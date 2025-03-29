@@ -1,6 +1,7 @@
 package impl
 
 import (
+	"github.com/gofiber/fiber/v2/log"
 	"main/db"
 	"main/model"
 )
@@ -18,14 +19,15 @@ func (r *WishRepositoryPostgres) Create(wish *model.Wish) (*model.Wish, error) {
 
 	query := `
 	INSERT INTO wishes
-	(name, comment, link, wishlist_uuid, image, desirability, cost)
-	VALUES ($1, $2, $3, $4, $5, $6, $7)
+	(name, comment, link, wishlist_uuid, image, desirability, cost, currency)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 	RETURNING *
 `
 
 	err := r.Connection.Get(
 		createdWish, query, wish.Name, wish.Comment, wish.Link,
 		wish.WishlistUuid, wish.Image, wish.Desirability, wish.Cost,
+		wish.Currency,
 	)
 
 	return createdWish, err
@@ -45,7 +47,8 @@ func (r *WishRepositoryPostgres) Update(wish *model.Wish) (*model.Wish, error) {
 		  	image = $5,
 		  	desirability = $6,
 		  	cost = $7,
-			wishlist_uuid = $8
+			wishlist_uuid = $8,
+			currency = $9
 		WHERE wishes.wish_uuid = $1
 		RETURNING *
 	)
@@ -67,7 +70,11 @@ func (r *WishRepositoryPostgres) Update(wish *model.Wish) (*model.Wish, error) {
 		wish.Desirability,
 		wish.Cost,
 		wish.WishlistUuid,
+		wish.Currency,
 	)
+	if err != nil {
+		log.Error(err.Error())
+	}
 	return updatedWish, err
 }
 

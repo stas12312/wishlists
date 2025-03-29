@@ -18,6 +18,7 @@ type Wish struct {
 	Actions      WishActions   `json:"actions" db:"actions"`
 	User         User          `json:"user" db:"user"`
 	Wishlist     WishlistShort `json:"wishlist" db:"wishlist"`
+	Currency     string        `json:"currency" db:"currency" validate:"required"`
 }
 
 type WishActions struct {
