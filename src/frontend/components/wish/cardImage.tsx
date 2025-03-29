@@ -7,6 +7,7 @@ import Desirability from "../desirability";
 import WishlistStatus from "./wishlistStatus";
 
 import { IWish } from "@/lib/models/wish";
+import { CURRENCY_BY_CODE } from "@/lib/currency";
 const CardImage = ({
   wish,
   removeWrapper,
@@ -46,7 +47,8 @@ const CardImage = ({
         ) : null}
         {wish.cost ? (
           <Chip className="ml-auto mr-0">
-            {wish.cost.toLocaleString() + " ₽"}
+            {wish.cost.toLocaleString() +
+              ` ${CURRENCY_BY_CODE.get(wish.currency)?.symbol || CURRENCY_BY_CODE.get("RUB")?.symbol}`}
           </Chip>
         ) : null}
       </div>
