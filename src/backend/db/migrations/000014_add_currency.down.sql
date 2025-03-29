@@ -1,0 +1,1 @@
+ALTER TABLE wishes DROP COLUMN currency
