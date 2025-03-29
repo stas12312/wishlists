@@ -2,6 +2,7 @@ export interface ParseResult {
   title: string;
   cost: number;
   image: string;
+  currency: string;
 }
 
 export interface ParseStatus {

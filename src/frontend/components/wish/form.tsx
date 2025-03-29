@@ -46,7 +46,7 @@ export default function WishForm(props: {
   }>({
     name: existsWish?.name || "",
     comment: existsWish?.comment || "",
-    cost: existsWish?.cost,
+    cost: existsWish?.cost || undefined,
     link: existsWish?.link || "",
     image: existsWish?.image || "",
     wishlist_uuid: props.wishlistUUID,
@@ -150,6 +150,7 @@ export default function WishForm(props: {
     setFormData({
       ...formData,
       link: link,
+      currency: result.currency,
       name: result.title,
       image: result.image,
       cost: result.cost,
@@ -242,7 +243,6 @@ export default function WishForm(props: {
             <Select
               disallowEmptySelection
               className="w-72"
-              defaultSelectedKeys={[formData.currency]}
               items={CURRENCIES}
               label="Валюта"
               renderValue={(items) => {
@@ -255,7 +255,7 @@ export default function WishForm(props: {
                   </div>
                 ));
               }}
-              value={formData.currency}
+              selectedKeys={[formData.currency]}
               onChange={(e) => {
                 setFormData({ ...formData, currency: e.target.value });
               }}
