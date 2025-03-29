@@ -1,11 +1,13 @@
 "use client";
 import { Button } from "@heroui/button";
+import { NumberInput } from "@heroui/number-input";
 import { Input } from "@heroui/input";
 import { ClipboardEvent, FormEvent, useState } from "react";
 import { Form } from "@heroui/form";
 import { MdOutlineFileDownload } from "react-icons/md";
 import { useDisclosure } from "@heroui/modal";
 import { Divider } from "@heroui/divider";
+import { Select, SelectItem } from "@heroui/select";
 
 import UploadButton from "../uploadButton";
 import Desirability from "../desirability";
@@ -19,6 +21,7 @@ import { createWish } from "@/lib/requests/wish";
 import { IError } from "@/lib/models";
 import { IWish } from "@/lib/models/wish";
 import { isURL } from "@/lib/url";
+import { CURRENCIES } from "@/lib/currency";
 import { checkFile } from "@/lib/file";
 import { ParseResult } from "@/lib/models/parse";
 
@@ -39,6 +42,7 @@ export default function WishForm(props: {
     wishlist_uuid: string;
     uuid: string | undefined;
     desirability: number;
+    currency: string;
   }>({
     name: existsWish?.name || "",
     comment: existsWish?.comment || "",
@@ -48,6 +52,7 @@ export default function WishForm(props: {
     wishlist_uuid: props.wishlistUUID,
     uuid: existsWish?.uuid,
     desirability: existsWish?.desirability || 1,
+    currency: existsWish?.currency || "RUB",
   });
 
   const [errorMessages, setErrorMessages] = useState({
@@ -216,14 +221,57 @@ export default function WishForm(props: {
             onChange={handlerChange}
             onClear={() => setFormData({ ...formData, comment: "" })}
           />
-          <Input
-            isClearable
-            label="Цена"
-            name="cost"
-            value={formData.cost !== 0 ? formData.cost?.toLocaleString() : ""}
-            onChange={handlerChange}
-            onClear={() => setFormData({ ...formData, cost: undefined })}
-          />
+          <div className="flex gap-4 w-full">
+            <NumberInput
+              fullWidth
+              hideStepper
+              isClearable
+              formatOptions={{
+                currencySign: "standard",
+                currency: formData.currency,
+              }}
+              label="Цена"
+              minValue={0}
+              name="cost"
+              value={formData.cost}
+              onClear={() => setFormData({ ...formData, cost: undefined })}
+              onValueChange={(value) => {
+                setFormData({ ...formData, cost: value });
+              }}
+            />
+            <Select
+              disallowEmptySelection
+              className="w-72"
+              defaultSelectedKeys={[formData.currency]}
+              items={CURRENCIES}
+              label="Валюта"
+              renderValue={(items) => {
+                return items.map((item) => (
+                  <div key={item.key} className="flex flex-wrap gap-1">
+                    {item.data?.icon ? (
+                      <item.data.icon className="rounded my-auto" height={14} />
+                    ) : null}
+                    {item.data?.code}
+                  </div>
+                ));
+              }}
+              value={formData.currency}
+              onChange={(e) => {
+                setFormData({ ...formData, currency: e.target.value });
+              }}
+            >
+              {(currency) => (
+                <SelectItem
+                  key={currency.code}
+                  startContent={
+                    <currency.icon className="rounded" height={14} />
+                  }
+                >
+                  {`${currency.symbol} ${currency.code}`}
+                </SelectItem>
+              )}
+            </Select>
+          </div>
           <div className="flex w-full gap-4">
             <Input
               isClearable

@@ -18,6 +18,7 @@ export interface IWish {
   actions: IWishActions;
   user: IUser;
   wishlist: IWishlist;
+  currency: string;
 }
 export interface IWishActions {
   edit: boolean;
