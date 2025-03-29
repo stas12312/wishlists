@@ -9,6 +9,7 @@ import (
 	"main/middleware"
 	"main/model"
 	"main/service"
+	"strings"
 	"time"
 )
 
@@ -48,6 +49,9 @@ func (c *UserController) Register(ctx *fiber.Ctx) error {
 			JSON(model.ValidateErrorResponse{Message: "Некорректно заполнены поля", Fields: errs})
 	}
 
+	register.Email = strings.TrimSpace(register.Email)
+	register.Name = strings.TrimSpace(register.Name)
+
 	_, confirmCode, err := c.UserService.Register(ctx.UserContext(), register.Email, register.Password, register.Name)
 	if err != nil {
 		return err
@@ -74,6 +78,8 @@ func (c *UserController) Auth(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).
 			JSON(model.ErrorResponse{Message: "Некорректные данные", Details: err.Error()})
 	}
+
+	auth.Email = strings.TrimSpace(auth.Email)
 
 	user, err := c.Login(ctx.UserContext(), auth.Email, auth.Password)
 	if err != nil {
@@ -151,6 +157,8 @@ func (c *UserController) Restore(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusUnprocessableEntity).
 			JSON(model.ErrorResponse{Message: "Некоректные данные"})
 	}
+
+	request.Email = strings.TrimSpace(request.Email)
 
 	code, err := c.UserService.Restore(ctx.UserContext(), request.Email)
 	if err != nil {
@@ -313,6 +321,8 @@ func (c *UserController) UpdateProfile(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).
 			JSON(model.ValidateErrorResponse{Message: "Некорректно заполнены поля", Fields: errs})
 	}
+
+	user.Name = strings.TrimSpace(user.Name)
 
 	updatedUser, err := c.UserService.Update(ctx.UserContext(), user)
 	if err != nil {
