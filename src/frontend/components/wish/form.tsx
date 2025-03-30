@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@heroui/button";
 import { NumberInput } from "@heroui/number-input";
-import { Input } from "@heroui/input";
+import { Input, Textarea } from "@heroui/input";
 import { ClipboardEvent, FormEvent, useState } from "react";
 import { Form } from "@heroui/form";
 import { MdOutlineFileDownload } from "react-icons/md";
@@ -214,7 +214,7 @@ export default function WishForm(props: {
             onChange={handlerChange}
             onClear={() => setFormData({ ...formData, name: "" })}
           />
-          <Input
+          <Textarea
             isClearable
             label="Комментарий"
             name="comment"

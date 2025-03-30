@@ -3,7 +3,7 @@
 import { CalendarDate, getLocalTimeZone } from "@internationalized/date";
 import { Button } from "@heroui/button";
 import { DatePicker } from "@heroui/date-picker";
-import { Input } from "@heroui/input";
+import { Input, Textarea } from "@heroui/input";
 import { Select, SelectItem } from "@heroui/select";
 import { I18nProvider } from "@react-aria/i18n";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
@@ -125,7 +125,7 @@ export function WishlistCreateForm({
         onChange={handleChange}
         onClear={() => setFormData({ ...formData, name: "" })}
       />
-      <Input
+      <Textarea
         fullWidth
         isClearable
         label="Описание"
