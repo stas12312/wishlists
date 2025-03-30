@@ -12,6 +12,7 @@ import { Select, SelectItem } from "@heroui/select";
 import UploadButton from "../uploadButton";
 import Desirability from "../desirability";
 import MarketIcon from "../marketIcon";
+import IconsGroup from "../iconsGroup";
 
 import LoadByLinkModal from "./loadByLinkModal";
 
@@ -168,8 +169,9 @@ export default function WishForm(props: {
               color="primary"
               endContent={
                 <div className="flex gap-1">
-                  <MarketIcon link={"ozon.ru"} />
-                  <MarketIcon className="-ms-4" link={"wildberries.ru"} />
+                  <IconsGroup
+                    sites={["dns-shop.ru", "ozon.ru", "wildberries.ru"]}
+                  />
                 </div>
               }
               startContent={<MdOutlineFileDownload />}

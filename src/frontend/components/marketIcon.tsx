@@ -22,9 +22,11 @@ export const ICON_BY_DOMAIN = new Map<string, string>([
 const MarketIcon = ({
   link,
   className = "",
+  height = 32,
 }: {
   link?: string;
   className?: string;
+  height?: number;
 }) => {
   if (!link) {
     return;
@@ -39,7 +41,7 @@ const MarketIcon = ({
     <Image
       removeWrapper
       className={className}
-      height={32}
+      height={height}
       src={ICON_BY_DOMAIN.get(domain) as string}
     />
   );
