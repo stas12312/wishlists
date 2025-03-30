@@ -7,6 +7,7 @@ const STATIC_URL = `${process.env.NEXT_PUBLIC_STATIC_URL}/static/icons`;
 export const ICON_BY_DOMAIN = new Map<string, string>([
   ["ozon", getIconUrl(STATIC_URL, "ozon.ico")],
   ["wildberries", getIconUrl(STATIC_URL, "wildberries.ico")],
+  ["global.wildberries", getIconUrl(STATIC_URL, "wildberries.ico")],
   ["market.yandex", getIconUrl(STATIC_URL, "yandex-market.png")],
   ["store.steampowered", getIconUrl(STATIC_URL, "steam.ico")],
   ["dns-shop", getIconUrl(STATIC_URL, "dns.png")],
@@ -15,6 +16,8 @@ export const ICON_BY_DOMAIN = new Map<string, string>([
   ["aliexpress", getIconUrl(STATIC_URL, "aliexpress.png")],
   ["vk", getIconUrl(STATIC_URL, "vk.png")],
   ["chitai-gorod", getIconUrl(STATIC_URL, "chitai-gorod.png")],
+  ["instagram", getIconUrl(STATIC_URL, "instagram.png")],
+  ["randewoo", getIconUrl(STATIC_URL, "randewoo.png")],
 ]);
 const MarketIcon = ({
   link,
