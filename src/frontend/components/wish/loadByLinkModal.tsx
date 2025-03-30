@@ -5,6 +5,7 @@ import { Input } from "@heroui/input";
 import { Modal, ModalBody, ModalContent, ModalHeader } from "@heroui/modal";
 import { useEffect, useRef, useState, ClipboardEvent } from "react";
 import { Alert } from "@heroui/alert";
+import { Chip } from "@heroui/chip";
 
 import MarketIcon from "../marketIcon";
 
@@ -33,7 +34,7 @@ const LoadByLinkModal = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const [taskId, setTaskId] = useState("");
-  const [status, setStatus] = useState("12341423");
+  const [status, setStatus] = useState("");
   const [error, setError] = useState("");
 
   async function parseByUrl(url: string) {
@@ -96,10 +97,35 @@ const LoadByLinkModal = ({
                 <Alert
                   color="primary"
                   title={
-                    <p>
-                      На данный момент поддерживается заполнение из <b>ozon</b>{" "}
-                      и<b> wildberries</b>
-                    </p>
+                    <div>
+                      <p>На данный момент поддерживается заполнение из</p>
+                      <div className="flex gap-1 mt-2">
+                        <Chip
+                          startContent={
+                            <MarketIcon height={22} link="ozon.ru" />
+                          }
+                          variant="flat"
+                        >
+                          OZON
+                        </Chip>
+                        <Chip
+                          startContent={
+                            <MarketIcon height={22} link="wildberries.ru" />
+                          }
+                          variant="flat"
+                        >
+                          Wildberries
+                        </Chip>
+                        <Chip
+                          startContent={
+                            <MarketIcon height={22} link="dns-shop.ru" />
+                          }
+                          variant="flat"
+                        >
+                          DNS
+                        </Chip>
+                      </div>
+                    </div>
                   }
                 />
 
