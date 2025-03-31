@@ -99,7 +99,15 @@ const LoadByLinkModal = ({
                   title={
                     <div>
                       <p>На данный момент поддерживается заполнение из</p>
-                      <div className="flex gap-1 mt-2">
+                      <div className="flex gap-1 mt-2 flex-wrap">
+                        <Chip
+                          startContent={
+                            <MarketIcon height={22} link="dns-shop.ru" />
+                          }
+                          variant="flat"
+                        >
+                          DNS
+                        </Chip>
                         <Chip
                           startContent={
                             <MarketIcon height={22} link="ozon.ru" />
@@ -115,14 +123,6 @@ const LoadByLinkModal = ({
                           variant="flat"
                         >
                           Wildberries
-                        </Chip>
-                        <Chip
-                          startContent={
-                            <MarketIcon height={22} link="dns-shop.ru" />
-                          }
-                          variant="flat"
-                        >
-                          DNS
                         </Chip>
                       </div>
                     </div>
