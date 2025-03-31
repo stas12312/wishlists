@@ -56,7 +56,9 @@ const WishFullCard = ({
                 </div>
               ) : null}
 
-              <span className="text-default-500">{wish.comment}</span>
+              <span className="text-default-500 whitespace-pre-wrap">
+                {wish.comment}
+              </span>
 
               {wish.link ? (
                 <Link
