@@ -22,7 +22,7 @@ jobs:
               - 'src/backend/**'
       - name: Install vips
         if: steps.changes.outputs.backend == 'true'
-        run: sudo apt install -y libvips libvips-dev
+        run: sudo apt update && sudo apt install -y libvips libvips-dev
 
       - name: Set up Go
         if: steps.changes.outputs.backend == 'true'
