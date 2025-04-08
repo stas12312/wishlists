@@ -48,13 +48,16 @@ func main() {
 	postgresDB := sqlx_db.NewSqlDB(db)
 	uof := impl2.NewUnitOfWorkPostgres(postgresDB, impl2.StoreFactory)
 
+	websocketService := service.NewWsImpl()
+	websocketController := controller.NewWebSocketController(websocketService)
+
 	codeRepository := repository.NewConfirmCodeRedis(redisClient, 60*time.Minute)
 	mailClient := impl.NewSMPTClient(&appConfig.SMTP)
 	userService := service.NewUserService(uof, codeRepository, mailClient, appConfig, oAuthManager)
 	userController := controller.NewUserController(&userService, appConfig)
 
 	friendRepository := repository.NewFriendRepositoryPostgres(db)
-	friendService := service.NewFriendService(friendRepository, uof)
+	friendService := service.NewFriendService(friendRepository, uof, websocketService)
 	friendController := controller.NewFriendController(friendService, userService)
 
 	wishlistRepository := repository.NewWishlistRepository(db)
@@ -68,6 +71,7 @@ func main() {
 
 	api := app.Group("/api")
 
+	websocketController.Route(app)
 	userController.Route(api)
 	wishlistController.Route(api)
 	imageController.Route(api)

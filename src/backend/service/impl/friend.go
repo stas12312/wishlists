@@ -5,19 +5,26 @@ import (
 	apperror "main/error"
 	"main/model"
 	"main/repository"
+	"main/service"
 	"main/uof"
 )
 
-func NewFriendService(repository repository.FriendRepository, uof uof.UnitOfWork) *FriendServiceImpl {
+func NewFriendService(
+	repository repository.FriendRepository,
+	uof uof.UnitOfWork,
+	ws service.WS,
+) *FriendServiceImpl {
 	return &FriendServiceImpl{
 		repository,
 		uof,
+		ws,
 	}
 }
 
 type FriendServiceImpl struct {
 	repository.FriendRepository
 	uof.UnitOfWork
+	service.WS
 }
 
 func (s *FriendServiceImpl) ListOfFriends(userId int64) (*[]model.User, error) {
@@ -42,6 +49,11 @@ func (s *FriendServiceImpl) AddFriend(userId int64, friendId int64) error {
 	if existsRequest.FromUserId != 0 {
 		return apperror.NewError(apperror.WrongRequest, "Приглашение уже было отправлено")
 	}
+
+	s.SendMessage(
+		friendId,
+		model.WSMessage{Event: service.ChangeIncomingFriendsRequests, Data: ""},
+	)
 	return s.CreateFriendRequest(userId, friendId)
 }
 
@@ -62,6 +74,10 @@ func (s *FriendServiceImpl) ApplyRequest(userId int64, fromUserId int64) error {
 		if err = s.UpdateFriendRequest(fromUserId, userId, 1); err != nil {
 			return err
 		}
+		s.SendMessage(
+			userId,
+			model.WSMessage{Event: service.ChangeIncomingFriendsRequests, Data: ""},
+		)
 		return s.CreateFriend(fromUserId, userId)
 	})
 	return err
@@ -78,6 +94,10 @@ func (s *FriendServiceImpl) DeclineRequest(userId int64, fromUserId int64) error
 		if existsRequest.ToUserId != userId {
 			return apperror.NewError(apperror.WrongRequest, "Вы не можете отклонить заявку")
 		}
+		s.SendMessage(
+			userId,
+			model.WSMessage{Event: service.ChangeIncomingFriendsRequests, Data: ""},
+		)
 		return s.UpdateFriendRequest(fromUserId, userId, 2)
 	})
 	return err
@@ -114,5 +134,9 @@ func (s *FriendServiceImpl) GetCounters(userId int64) (model.Counters, error) {
 }
 
 func (s *FriendServiceImpl) DeleteRequest(fromUserId int64, toUserId int64) error {
+	s.SendMessage(
+		toUserId,
+		model.WSMessage{Event: service.ChangeIncomingFriendsRequests, Data: ""},
+	)
 	return s.FriendRepository.DeleteFriendRequest(fromUserId, toUserId)
 }
