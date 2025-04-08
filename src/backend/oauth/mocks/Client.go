@@ -85,7 +85,7 @@ func (_m *Client) GetProvider() string {
 	return r0
 }
 
-// GetUserInfo provides a mock function with given fields: token
+// GetUserInfo provides a mock function with given fields: jwt_token
 func (_m *Client) GetUserInfo(token string) (*oauth.User, error) {
 	ret := _m.Called(token)
 
