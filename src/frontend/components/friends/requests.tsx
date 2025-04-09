@@ -5,6 +5,7 @@ import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
 import { addToast } from "@heroui/toast";
+import useWebSocket from "react-use-websocket";
 
 import { PageSpinner } from "../pageSpinner";
 
@@ -19,6 +20,7 @@ import {
 import { IFriendRequest } from "@/lib/models";
 import { IUser } from "@/lib/models/user";
 import { getUserLink } from "@/lib/label";
+import { getWebsocketUrl, isEvent, WSEvent } from "@/lib/socket";
 
 const FriendRequestsItems = observer(() => {
   const [requests, setRequests] = useState<IFriendRequest[]>([]);
@@ -26,13 +28,20 @@ const FriendRequestsItems = observer(() => {
 
   const user_id = userStore.user.id;
 
+  const { lastJsonMessage } = useWebSocket(getWebsocketUrl, {
+    share: true,
+    filter: (message) => {
+      return isEvent(message, WSEvent.ChangeIncomingFriendsRequests);
+    },
+  });
+
   useEffect(() => {
     async function fetchData() {
       setRequests(await getFriendRequests());
       setIsLoading(false);
     }
     fetchData();
-  }, []);
+  }, [lastJsonMessage]);
 
   if (isLoading) {
     return <PageSpinner />;
