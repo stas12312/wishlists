@@ -4,6 +4,7 @@ import { Chip } from "@heroui/chip";
 import { Link } from "@heroui/link";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
+import useWebSocket from "react-use-websocket";
 import {
   MdAutoAwesome,
   MdOutlineExitToApp,
@@ -17,6 +18,7 @@ import { Divider } from "@heroui/divider";
 import countersStore from "@/store/counterStore";
 import userStore from "@/store/userStore";
 import { logout } from "@/lib/auth";
+import { getWebsocketUrl, isEvent, WSEvent } from "@/lib/socket";
 
 const ITEMS: {
   icon: React.ReactNode;
@@ -58,13 +60,20 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
     new Map<string, number>(),
   );
 
+  const { lastJsonMessage } = useWebSocket(getWebsocketUrl, {
+    share: true,
+    filter: (message) => {
+      return isEvent(message, WSEvent.ChangeIncomingFriendsRequests);
+    },
+  });
+
   const pathname = usePathname();
   useEffect(() => {
     async function fetchData() {
       countersStore.getCounters();
     }
     fetchData();
-  }, []);
+  }, [lastJsonMessage]);
 
   useEffect(() => {
     setCounterValues(
