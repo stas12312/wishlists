@@ -12,7 +12,7 @@ import (
 func NewFriendService(
 	repository repository.FriendRepository,
 	uof uof.UnitOfWork,
-	ws service.WS,
+	ws service.WSService,
 ) *FriendServiceImpl {
 	return &FriendServiceImpl{
 		repository,
@@ -24,7 +24,7 @@ func NewFriendService(
 type FriendServiceImpl struct {
 	repository.FriendRepository
 	uof.UnitOfWork
-	service.WS
+	service.WSService
 }
 
 func (s *FriendServiceImpl) ListOfFriends(userId int64) (*[]model.User, error) {
