@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	apperror "main/error"
 	"main/model"
 	"main/repository"
@@ -16,12 +17,14 @@ func NewWishlistService(
 	wRepository repository.WishRepository,
 	uService service.UserService,
 	fService service.FriendService,
+	wsService service.WSService,
 ) service.WishlistService {
 	return &WishlistImpl{
 		wlRepository,
 		wRepository,
 		uService,
 		fService,
+		wsService,
 	}
 }
 
@@ -30,6 +33,7 @@ type WishlistImpl struct {
 	repository.WishRepository
 	service.UserService
 	service.FriendService
+	service.WSService
 }
 
 func (s *WishlistImpl) Create(wishlist *model.Wishlist) (*model.Wishlist, error) {
@@ -110,7 +114,8 @@ func (s *WishlistImpl) AddWish(userId int64, wish *model.Wish) (*model.Wish, err
 	}
 	wish.UserId = userId
 	preparedWish := prepareWish(userId, *wish)
-	return &preparedWish, err
+	s.WSService.SendMessageToChannel(getChannelNameForWishlist(wish.WishlistUuid), model.WSMessage{Event: service.Update})
+	return &preparedWish, nil
 }
 
 func (s *WishlistImpl) ListWishesForWishlist(userId int64, wishlistUuid string) (*[]model.Wish, error) {
@@ -168,7 +173,12 @@ func (s *WishlistImpl) DeleteWish(userId int64, wishUuid string) error {
 		return errors.New("user can't get access to the wishlist")
 	}
 
-	return s.WishRepository.Delete(wishUuid)
+	err = s.WishRepository.Delete(wishUuid)
+	if err != nil {
+		return err
+	}
+	s.WSService.SendMessageToChannel(getChannelNameForWishlist(wish.WishlistUuid), model.WSMessage{Event: service.Update})
+	return nil
 }
 
 func (s *WishlistImpl) RestoreWish(userId int64, wishUuid string) error {
@@ -191,6 +201,7 @@ func (s *WishlistImpl) UpdateWish(userId int64, wish *model.Wish) (*model.Wish, 
 		return nil, apperror.NewError(apperror.WrongRequest, "Не удалось обновить желание")
 	}
 	preparedWish := prepareWish(userId, *updatedWish)
+	s.WSService.SendMessageToChannel(getChannelNameForWishlist(existWish.WishlistUuid), model.WSMessage{Event: service.Update})
 	return &preparedWish, nil
 }
 
@@ -220,7 +231,12 @@ func (s *WishlistImpl) ReserveWish(userId int64, wishUuid string) error {
 		return apperror.NewError(apperror.WrongRequest, "Желание уже забронировано")
 	}
 
-	return s.WishRepository.SetPresenter(wishUuid, model.NullInt64{NullInt64: sql.NullInt64{Int64: userId, Valid: true}})
+	err = s.WishRepository.SetPresenter(wishUuid, model.NullInt64{NullInt64: sql.NullInt64{Int64: userId, Valid: true}})
+	if err != nil {
+		return err
+	}
+	s.WSService.SendMessageToChannel(getChannelNameForWishlist(existWish.WishlistUuid), model.WSMessage{Event: service.Update})
+	return nil
 }
 
 func (s *WishlistImpl) CancelWishReservation(userId int64, wishUuid string) error {
@@ -232,7 +248,12 @@ func (s *WishlistImpl) CancelWishReservation(userId int64, wishUuid string) erro
 		return apperror.NewError(apperror.WrongRequest, "Невозможно отменить бронь")
 	}
 
-	return s.WishRepository.SetPresenter(wishUuid, model.NullInt64{NullInt64: sql.NullInt64{}})
+	err = s.WishRepository.SetPresenter(wishUuid, model.NullInt64{NullInt64: sql.NullInt64{}})
+	if err != nil {
+		return err
+	}
+	s.WSService.SendMessageToChannel(getChannelNameForWishlist(existWish.WishlistUuid), model.WSMessage{Event: service.Update})
+	return nil
 }
 
 func (s *WishlistImpl) MakeWishFull(userId int64, wishUuid string) error {
@@ -243,10 +264,15 @@ func (s *WishlistImpl) MakeWishFull(userId int64, wishUuid string) error {
 	if existWish.UserId != userId || existWish.FulfilledAt.Valid {
 		return apperror.NewError(apperror.WrongRequest, "Невозможно отметить желание исполненным")
 	}
-	return s.WishRepository.SetFulfilledAt(
+	err = s.WishRepository.SetFulfilledAt(
 		wishUuid,
 		model.NullTime{NullTime: sql.NullTime{Time: time.Now().UTC(), Valid: true}},
 	)
+	if err != nil {
+		return err
+	}
+	s.WSService.SendMessageToChannel(getChannelNameForWishlist(existWish.WishlistUuid), model.WSMessage{Event: service.Update})
+	return nil
 }
 
 func (s *WishlistImpl) CancelWishFull(userId int64, wishUuid string) error {
@@ -257,7 +283,12 @@ func (s *WishlistImpl) CancelWishFull(userId int64, wishUuid string) error {
 	if existWish.UserId != userId || !existWish.FulfilledAt.Valid {
 		return apperror.NewError(apperror.WrongRequest, "Невозможно отметить желание исполненным")
 	}
-	return s.WishRepository.SetFulfilledAt(wishUuid, model.NullTime{})
+	err = s.WishRepository.SetFulfilledAt(wishUuid, model.NullTime{})
+	if err != nil {
+		return err
+	}
+	s.WSService.SendMessageToChannel(getChannelNameForWishlist(existWish.WishlistUuid), model.WSMessage{Event: service.Update})
+	return nil
 }
 
 func (s *WishlistImpl) ReservedList(userId int64) (*[]model.Wish, error) {
@@ -278,13 +309,14 @@ func (s *WishlistImpl) MoveWish(userId int64, wishUuid string, wishlistUuid stri
 	if !s.UserCanEditWishlist(userId, wishlistUuid) {
 		return nil, apperror.NewError(apperror.NotFound, "Вишлист не найден или недоступен")
 	}
-
+	oldWishlistUuid := wish.WishlistUuid
 	wish.WishlistUuid = wishlistUuid
 	movedWish, err := s.WishRepository.Update(wish)
 	if err != nil {
 		return nil, apperror.NewError(apperror.WrongRequest, err.Error())
 	}
 	preparedWish := prepareWish(userId, *movedWish)
+	s.WSService.SendMessageToChannel(getChannelNameForWishlist(oldWishlistUuid), model.WSMessage{Event: "update"})
 	return &preparedWish, nil
 }
 
@@ -322,4 +354,8 @@ func userHasAccess(userId int64, userIds model.Int64Array) bool {
 	}
 
 	return false
+}
+
+func getChannelNameForWishlist(wishlistUuid string) string {
+	return fmt.Sprintf("wishlist_%s", wishlistUuid)
 }
