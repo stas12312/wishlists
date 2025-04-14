@@ -1,9 +1,12 @@
 package impl
 
 import (
+	"fmt"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
 	"main/model"
 	"main/repository/mocks"
+	"main/service"
 	mocks2 "main/service/mocks"
 	"reflect"
 	"testing"
@@ -16,9 +19,10 @@ func TestNewWishlistService(t *testing.T) {
 		wRepository := mocks.NewWishRepository(t)
 		uService := mocks2.NewUserService(t)
 		fService := mocks2.NewFriendService(t)
-		want := NewWishlistService(wlRepository, wRepository, uService, fService)
+		wsService := mocks2.NewWSService(t)
+		want := NewWishlistService(wlRepository, wRepository, uService, fService, wsService)
 
-		if got := NewWishlistService(wlRepository, wRepository, uService, fService); !reflect.DeepEqual(got, want) {
+		if got := NewWishlistService(wlRepository, wRepository, uService, fService, wsService); !reflect.DeepEqual(got, want) {
 			t.Errorf("NewWishlistService() = %v, want %v", got, want)
 		}
 	})
@@ -35,7 +39,7 @@ func TestWishlistImpl_AddWish(t *testing.T) {
 		args           args
 		want           *model.Wish
 		wantErr        bool
-		mocksBehaviour func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository)
+		mocksBehaviour func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository, wsMock *mocks2.WSService)
 	}{
 		{
 			name: "OK",
@@ -54,7 +58,7 @@ func TestWishlistImpl_AddWish(t *testing.T) {
 				},
 			},
 			wantErr: false,
-			mocksBehaviour: func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository) {
+			mocksBehaviour: func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository, wsMock *mocks2.WSService) {
 				wlMock.
 					On("GetByUUID", "0").
 					Once().
@@ -72,6 +76,14 @@ func TestWishlistImpl_AddWish(t *testing.T) {
 					On("Create", wish).
 					Once().
 					Return(&createdWish, nil)
+
+				wsMock.
+					On("SendMessageToChannel",
+						"wishlist_0",
+						model.WSMessage{Event: service.Update},
+					).
+					Once().
+					Return()
 			},
 		},
 		{
@@ -81,7 +93,7 @@ func TestWishlistImpl_AddWish(t *testing.T) {
 				wish:   &model.Wish{WishlistUuid: "0"},
 			},
 			wantErr: true,
-			mocksBehaviour: func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository) {
+			mocksBehaviour: func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository, wsMock *mocks2.WSService) {
 				wlMock.
 					On("GetByUUID", "0").
 					Once().
@@ -94,11 +106,13 @@ func TestWishlistImpl_AddWish(t *testing.T) {
 
 			wlRepository := mocks.NewWishlistRepository(t)
 			wRepository := mocks.NewWishRepository(t)
-			tt.mocksBehaviour(wlRepository, wRepository)
+			wsService := mocks2.NewWSService(t)
+			tt.mocksBehaviour(wlRepository, wRepository, wsService)
 
 			s := &WishlistImpl{
 				WishlistRepository: wlRepository,
 				WishRepository:     wRepository,
+				WSService:          wsService,
 			}
 
 			got, err := s.AddWish(tt.args.userId, tt.args.wish)
@@ -172,7 +186,7 @@ func TestWishlistImpl_DeleteWish(t *testing.T) {
 		name           string
 		args           args
 		wantErr        bool
-		mocksBehaviour func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository)
+		mocksBehaviour func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository, wsMock *mocks2.WSService)
 	}{
 		{
 			name: "OK",
@@ -181,16 +195,25 @@ func TestWishlistImpl_DeleteWish(t *testing.T) {
 				wishUuid: "0",
 			},
 			wantErr: false,
-			mocksBehaviour: func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository) {
+			mocksBehaviour: func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository, wsMock *mocks2.WSService) {
+				fakeUuid, _ := uuid.NewUUID()
 				wMock.
 					On("Get", "0").
 					Once().
-					Return(&model.Wish{UserId: 1}, nil)
+					Return(&model.Wish{UserId: 1, WishlistUuid: fakeUuid.String()}, nil)
 
 				wMock.
 					On("Delete", "0").
 					Once().
 					Return(nil)
+
+				wsMock.
+					On("SendMessageToChannel",
+						fmt.Sprintf("wishlist_%s", fakeUuid.String()),
+						model.WSMessage{Event: service.Update},
+					).
+					Once().
+					Return()
 			},
 		},
 		{
@@ -200,7 +223,7 @@ func TestWishlistImpl_DeleteWish(t *testing.T) {
 				wishUuid: "0",
 			},
 			wantErr: true,
-			mocksBehaviour: func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository) {
+			mocksBehaviour: func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository, wsMock *mocks2.WSService) {
 				wMock.
 					On("Get", "0").
 					Once().
@@ -212,11 +235,13 @@ func TestWishlistImpl_DeleteWish(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			wlRepository := mocks.NewWishlistRepository(t)
 			wRepository := mocks.NewWishRepository(t)
-			tt.mocksBehaviour(wlRepository, wRepository)
+			wsService := mocks2.NewWSService(t)
+			tt.mocksBehaviour(wlRepository, wRepository, wsService)
 
 			s := &WishlistImpl{
 				WishlistRepository: wlRepository,
 				WishRepository:     wRepository,
+				WSService:          wsService,
 			}
 			if err := s.DeleteWish(tt.args.userId, tt.args.wishUuid); (err != nil) != tt.wantErr {
 				t.Errorf("DeleteWish() error = %v, wantErr %v", err, tt.wantErr)
@@ -518,6 +543,7 @@ func TestWishlistImpl_UpdateForUser(t *testing.T) {
 					On("Update", &model.Wishlist{Uuid: "0", UserId: 1}).
 					Once().
 					Return(&model.Wishlist{Uuid: "0", UserId: 1}, nil)
+
 			},
 			want: &model.Wishlist{UserId: 1, Uuid: "0"},
 		},
@@ -564,7 +590,7 @@ func TestWishlistImpl_UpdateWish(t *testing.T) {
 	}
 	tests := []struct {
 		name           string
-		mocksBehaviour func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository)
+		mocksBehaviour func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository, wsMock *mocks2.WSService)
 
 		args    args
 		want    *model.Wish
@@ -576,24 +602,32 @@ func TestWishlistImpl_UpdateWish(t *testing.T) {
 				userId: 1,
 				wish:   &model.Wish{UserId: 1, Name: "Wish", Uuid: "0"},
 			},
-			mocksBehaviour: func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository) {
+			mocksBehaviour: func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository, wsMock *mocks2.WSService) {
+				wish := &model.Wish{UserId: 1, Name: "Wish", Uuid: "0", WishlistUuid: "0000"}
 
-				wish := &model.Wish{UserId: 1, Name: "Wish", Uuid: "0"}
 				wMock.
 					On("Update", wish).
 					Once().
 					Return(wish, nil)
+
+				wsMock.
+					On("SendMessageToChannel",
+						"wishlist_0000",
+						model.WSMessage{Event: service.Update}).
+					Once().
+					Return()
 			},
 			want: &model.Wish{
-				UserId:  1,
-				Name:    "Wish",
-				Uuid:    "0",
-				Actions: model.WishActions{Edit: true, MakeFull: true},
+				UserId:       1,
+				Name:         "Wish",
+				Uuid:         "0",
+				Actions:      model.WishActions{Edit: true, MakeFull: true},
+				WishlistUuid: "0000",
 			},
 		},
 		{
 			name: "User can't edit wish",
-			mocksBehaviour: func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository) {
+			mocksBehaviour: func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository, wsMock *mocks2.WSService) {
 
 			},
 			args: args{
@@ -611,12 +645,14 @@ func TestWishlistImpl_UpdateWish(t *testing.T) {
 			wRepository.
 				On("Get", "0").
 				Once().
-				Return(&model.Wish{UserId: 1}, nil)
+				Return(&model.Wish{UserId: 1, WishlistUuid: "0000"}, nil)
+			wsService := mocks2.NewWSService(t)
 
-			tt.mocksBehaviour(wlRepository, wRepository)
+			tt.mocksBehaviour(wlRepository, wRepository, wsService)
 			s := &WishlistImpl{
 				WishlistRepository: wlRepository,
 				WishRepository:     wRepository,
+				WSService:          wsService,
 			}
 			got, err := s.UpdateWish(tt.args.userId, tt.args.wish)
 			if (err != nil) != tt.wantErr {

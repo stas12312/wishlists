@@ -44,7 +44,7 @@ jobs:
         run: go test -json -v ./... -json > TestResults.json
 
       - name: Upload Go test results
-        if: steps.changes.outputs.backend == 'true'
+        if: steps.changes.outputs.backend == 'true' && (success() || failure())
         uses: actions/upload-artifact@v4
         with:
           name: Go-results
