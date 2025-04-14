@@ -10,10 +10,24 @@ export function getWebsocketUrl(): string {
 
 export enum WSEvent {
   ChangeIncomingFriendsRequests = "ChangeIncomingFriendsRequests",
+  Update = "Update",
+  Subscribe = "Subscribe",
+  Unsubscribe = "Unsubscribe",
 }
 
-export function isEvent(message: MessageEvent, event: string): boolean {
-  const data = JSON.parse(message.data);
+export interface WSMessage {
+  channel: string;
+  data: any;
+  event: WSEvent;
+}
 
-  return data?.event === event;
+export function isEvent(
+  message: MessageEvent,
+  event: string,
+  channel?: string,
+): boolean {
+  const data: WSMessage = JSON.parse(message.data);
+  return (
+    data?.event === event && (channel === undefined || channel == data?.channel)
+  );
 }

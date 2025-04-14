@@ -34,6 +34,9 @@ export const WishItem = observer(
     withUser?: boolean;
   }) => {
     const [item, setItem] = useState<IWish>(wish);
+    if (wish != item) {
+      setItem(wish);
+    }
     const [isConfirm, setIsConfirm] = useState(false);
     const editModal = useDisclosure();
     const moveModal = useDisclosure();
