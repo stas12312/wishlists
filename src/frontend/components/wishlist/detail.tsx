@@ -10,6 +10,7 @@ import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { addToast } from "@heroui/toast";
+import useWebSocket from "react-use-websocket";
 
 import AddCardButton from "../addCardButton";
 import PageHeader from "../pageHeader";
@@ -27,6 +28,11 @@ import { deleteWishlist, getWishlist, updateWishlist } from "@/lib/requests";
 import { getWishes } from "@/lib/requests/wish";
 import { wrapUsername } from "@/lib/user";
 import userStore from "@/store/userStore";
+import { getWebsocketUrl, isEvent, WSEvent } from "@/lib/socket";
+
+function getChannelName(wishlistUUID: string): string {
+  return `wishlist_${wishlistUUID}`;
+}
 
 const WishlistDetail = observer(
   ({
@@ -109,6 +115,13 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
+  const { lastJsonMessage, sendJsonMessage } = useWebSocket(getWebsocketUrl, {
+    share: true,
+    filter: (message) => {
+      return isEvent(message, WSEvent.Update, getChannelName(wishlistUUID));
+    },
+  });
+
   useEffect(() => {
     async function fetchWishlists() {
       const response = await Promise.all([
@@ -124,7 +137,26 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
       }
     }
     fetchWishlists();
+    sendJsonMessage({
+      event: WSEvent.Subscribe,
+      channel: getChannelName(wishlistUUID),
+    });
+
+    return () => {
+      sendJsonMessage({
+        event: WSEvent.Unsubscribe,
+        channel: getChannelName(wishlistUUID),
+      });
+    };
   }, []);
+
+  useEffect(() => {
+    async function fetchWishes() {
+      const wishes = await getWishes(wishlistUUID);
+      setItems(wishes);
+    }
+    fetchWishes();
+  }, [lastJsonMessage]);
 
   function onDeleteWish(wish: IWish, message: string) {
     setItems(
@@ -162,7 +194,6 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
       </div>
     );
   }
-
   const components = items.map((wish: IWish) => (
     <div key={wish.uuid}>
       <WishItem wish={wish} onDelete={onDeleteWish} />
