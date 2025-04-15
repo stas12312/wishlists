@@ -22,12 +22,20 @@ export const ReservedWishes = observer(() => {
     fetchData();
   }, []);
 
+  function onUpdate(wish: IWish) {
+    const newWishes = [...wishes];
+    const index = newWishes.findIndex((i) => i.uuid == wish.uuid);
+    newWishes[index] = wish;
+    setWishes(newWishes);
+  }
+
   const components = wishes.map((wish: IWish) => (
     <div key={wish.uuid}>
       <WishItem
         wish={{ ...wish, actions: { ...wish.actions, open_wishlist: true } }}
         withUser={true}
         onDelete={() => {}}
+        onUpdate={onUpdate}
       />
     </div>
   ));
