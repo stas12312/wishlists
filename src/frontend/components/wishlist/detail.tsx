@@ -187,6 +187,13 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
     setWishlist(updatedWishlist);
   }
 
+  function onUpdate(wish: IWish) {
+    const newWishes = [...items];
+    const index = newWishes.findIndex((i) => i.uuid == wish.uuid);
+    newWishes[index] = wish;
+    setItems(newWishes);
+  }
+
   if (error?.message) {
     return (
       <div className="flex justify-center">
@@ -196,7 +203,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
   }
   const components = items.map((wish: IWish) => (
     <div key={wish.uuid}>
-      <WishItem wish={wish} onDelete={onDeleteWish} />
+      <WishItem wish={wish} onDelete={onDeleteWish} onUpdate={onUpdate} />
     </div>
   ));
 

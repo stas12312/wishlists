@@ -27,16 +27,14 @@ export const WishItem = observer(
   ({
     wish,
     onDelete,
+    onUpdate,
     withUser = false,
   }: {
     wish: IWish;
     onDelete: { (wish: IWish, message: string): void };
+    onUpdate: { (wish: IWish): void };
     withUser?: boolean;
   }) => {
-    const [item, setItem] = useState<IWish>(wish);
-    if (wish != item) {
-      setItem(wish);
-    }
     const [isConfirm, setIsConfirm] = useState(false);
     const editModal = useDisclosure();
     const moveModal = useDisclosure();
@@ -50,7 +48,7 @@ export const WishItem = observer(
 
     async function onWishUpdate(wish: IWish) {
       editModal.onOpenChange();
-      setItem(wish);
+      onUpdate(wish);
     }
 
     async function onMove(wishlistUUID: string) {
@@ -76,7 +74,7 @@ export const WishItem = observer(
             color: "danger",
           });
         } else {
-          setItem(await getWish(wishUUID));
+          onUpdate(await getWish(wishUUID));
           addToast({
             title: "Желание забронировано",
           });
@@ -90,7 +88,7 @@ export const WishItem = observer(
             color: "danger",
           });
         } else {
-          setItem(await getWish(wishUUID));
+          onUpdate(await getWish(wishUUID));
           addToast({
             title: "Бронь отменена",
           });
@@ -98,11 +96,11 @@ export const WishItem = observer(
       }
       if (key === "make_full") {
         await makeWishFull(wishUUID);
-        setItem(await getWish(wishUUID));
+        onUpdate(await getWish(wishUUID));
       }
       if (key === "cancel_full") {
         await cancelWishFull(wishUUID);
-        setItem(await getWish(wishUUID));
+        onUpdate(await getWish(wishUUID));
       }
       if (key === "open_wishlist") {
         window.open(`/wishlists/${wish.wishlist_uuid}`);
@@ -125,16 +123,16 @@ export const WishItem = observer(
             <CardHeader className="flex-col items-start">
               <div className="flex flex-row justify-between w-full h-[40px]">
                 <p className="text-tiny font-bold my-auto flex flex-col text-left overflow-hidden text-ellipsis truncate">
-                  <span className="text-xl" title={item.name}>
-                    {item.name}
+                  <span className="text-xl" title={wish.name}>
+                    {wish.name}
                   </span>
-                  <span className="text-default-500" title={item.comment}>
-                    {item.comment}
+                  <span className="text-default-500" title={wish.comment}>
+                    {wish.comment}
                   </span>
                 </p>
                 {showMenu(wish.actions) ? (
                   <span>
-                    <WishItemMenu handeAction={handleOnAction} wish={item} />
+                    <WishItemMenu handeAction={handleOnAction} wish={wish} />
                   </span>
                 ) : null}
               </div>
@@ -144,18 +142,18 @@ export const WishItem = observer(
                 removeWrapper
                 className="h-full"
                 iconClassName="h-full"
-                wish={item}
+                wish={wish}
               />
             </CardBody>
             {withUser ? (
               <CardFooter className="flex justify-between">
-                <Chip avatar={<Avatar src={item.user.image} />}>
-                  {item.user.name}
+                <Chip avatar={<Avatar src={wish.user.image} />}>
+                  {wish.user.name}
                 </Chip>
 
-                {item.wishlist.date ? (
+                {wish.wishlist.date ? (
                   <Chip color="warning">
-                    {new Date(item.wishlist.date).toLocaleDateString()}
+                    {new Date(wish.wishlist.date).toLocaleDateString()}
                   </Chip>
                 ) : null}
               </CardFooter>
@@ -165,7 +163,7 @@ export const WishItem = observer(
         <WishFullCard
           handeAction={handleOnAction}
           isOpen={fullCardDrawer.isOpen}
-          wish={item}
+          wish={wish}
           withUser={withUser}
           onOpenChange={fullCardDrawer.onOpenChange}
         />
@@ -179,7 +177,7 @@ export const WishItem = observer(
         />
         <WishSaveModal
           isOpen={editModal.isOpen}
-          wish={item}
+          wish={wish}
           wishlistUUID={wish.wishlist_uuid}
           onOpenChange={editModal.onOpenChange}
           onUpdate={onWishUpdate}
