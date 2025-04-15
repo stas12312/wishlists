@@ -12,13 +12,15 @@ import { Avatar } from "@heroui/avatar";
 import { Chip } from "@heroui/chip";
 import { Form } from "@heroui/form";
 
+import { Visible } from "../visibleIcon";
+
 import { createWishList, getFriends, updateWishlist } from "@/lib/requests";
 import { IWishlist } from "@/lib/models/wishlist";
 import { IUser } from "@/lib/models/user";
 
 const visibleItems = [
+  { key: "1", label: "Всем по ссылке", icon: <MdOutlinePublic /> },
   { key: "0", label: "Только мне", icon: <MdOutlinePublicOff /> },
-  { key: "1", label: "Всем", icon: <MdOutlinePublic /> },
   { key: "2", label: "Друзьям", icon: <MdPerson /> },
   { key: "3", label: "Указанным друзьям", icon: <MdPerson /> },
 ];
@@ -41,7 +43,7 @@ export function WishlistCreateForm({
     name: wishlist?.name || "",
     description: wishlist?.description || "",
     date: wishlist?.date || null,
-    visible: wishlist?.visible || 0,
+    visible: wishlist?.visible || Visible.all,
     uuid: wishlist?.uuid || "",
     visible_user_ids: wishlist?.visible_user_ids || [],
   });
