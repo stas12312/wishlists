@@ -1,26 +1,33 @@
 import { Tooltip } from "@heroui/tooltip";
 import { MdOutlinePublic, MdOutlinePublicOff, MdPerson } from "react-icons/md";
 
-const visibleData = {
-  0: {
+export const enum Visible {
+  private = 0,
+  all = 1,
+  friends = 2,
+  selected_users = 3,
+}
+
+const visibleData = [
+  {
     text: "Доступен только мне",
     icon: <MdOutlinePublicOff />,
   },
-  1: {
+  {
     text: "Доступен всем",
     icon: <MdOutlinePublic />,
   },
-  2: {
+  {
     text: "Доступен друзьям",
     icon: <MdPerson />,
   },
-  3: {
+  {
     text: "Доступен указанным друзьям",
     icon: <MdPerson />,
   },
-};
+];
 
-export function VisibleStatus({ visible }: { visible: 0 | 1 | 2 | 3 }) {
+export function VisibleStatus({ visible }: { visible: Visible }) {
   const data = visibleData[visible];
 
   return (
