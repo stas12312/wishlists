@@ -316,7 +316,7 @@ func (s *WishlistImpl) MoveWish(userId int64, wishUuid string, wishlistUuid stri
 		return nil, apperror.NewError(apperror.WrongRequest, err.Error())
 	}
 	preparedWish := prepareWish(userId, *movedWish)
-	s.WSService.SendMessageToChannel(getChannelNameForWishlist(oldWishlistUuid), model.WSMessage{Event: "update"})
+	s.WSService.SendMessageToChannel(getChannelNameForWishlist(oldWishlistUuid), model.WSMessage{Event: service.Update})
 	return &preparedWish, nil
 }
 
