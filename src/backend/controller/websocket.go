@@ -59,7 +59,15 @@ func (c *WebSocketController) Connect() fiber.Handler {
 					c.RemoveFromChannel(wsMessage.Channel, conn)
 				}
 
-				if err = conn.WriteMessage(mt, msg); err != nil {
+				response := &model.WSMessage{}
+				if wsMessage.Event == service.Ping {
+					response.Event = service.Pong
+				} else {
+					response.Data = "OK"
+				}
+
+				jsonResponse, _ := json.Marshal(response)
+				if err = conn.WriteMessage(mt, jsonResponse); err != nil {
 					break
 				}
 			}

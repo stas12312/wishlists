@@ -12,6 +12,8 @@ const (
 	Unsubscribe = "Unsubscribe"
 
 	Update = "Update"
+	Ping   = "Ping"
+	Pong   = "Pong"
 )
 
 //go:generate mockery --name WSService
