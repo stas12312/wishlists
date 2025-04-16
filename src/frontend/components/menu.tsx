@@ -18,7 +18,7 @@ import { Divider } from "@heroui/divider";
 import countersStore from "@/store/counterStore";
 import userStore from "@/store/userStore";
 import { logout } from "@/lib/auth";
-import { getWebsocketUrl, isEvent, WSEvent } from "@/lib/socket";
+import { defaultParams, getWebsocketUrl, isEvent, WSEvent } from "@/lib/socket";
 
 const ITEMS: {
   icon: React.ReactNode;
@@ -61,7 +61,7 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
   );
 
   const { lastJsonMessage } = useWebSocket(getWebsocketUrl, {
-    share: true,
+    ...defaultParams,
     filter: (message) => {
       return isEvent(message, WSEvent.ChangeIncomingFriendsRequests);
     },

@@ -28,7 +28,7 @@ import { deleteWishlist, getWishlist, updateWishlist } from "@/lib/requests";
 import { getWishes } from "@/lib/requests/wish";
 import { wrapUsername } from "@/lib/user";
 import userStore from "@/store/userStore";
-import { getWebsocketUrl, isEvent, WSEvent } from "@/lib/socket";
+import { defaultParams, getWebsocketUrl, isEvent, WSEvent } from "@/lib/socket";
 
 function getChannelName(wishlistUUID: string): string {
   return `wishlist_${wishlistUUID}`;
@@ -116,10 +116,10 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const { lastJsonMessage, sendJsonMessage } = useWebSocket(getWebsocketUrl, {
-    share: true,
     filter: (message) => {
       return isEvent(message, WSEvent.Update, getChannelName(wishlistUUID));
     },
+    ...defaultParams,
   });
 
   useEffect(() => {
@@ -134,13 +134,13 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
         setItems(response[0]);
         setWishlist(response[1]);
         setIsLoading(false);
+        sendJsonMessage({
+          event: WSEvent.Subscribe,
+          channel: getChannelName(wishlistUUID),
+        });
       }
     }
     fetchWishlists();
-    sendJsonMessage({
-      event: WSEvent.Subscribe,
-      channel: getChannelName(wishlistUUID),
-    });
 
     return () => {
       sendJsonMessage({
