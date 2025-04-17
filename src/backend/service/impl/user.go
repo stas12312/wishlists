@@ -410,6 +410,7 @@ func (u *userServiceImpl) Update(ctx context.Context, user *model.UserForUpdate)
 		dbUser.Image = user.Image
 		dbUser.Username = user.Username
 		dbUser.Name = user.Name
+		dbUser.Birthday = user.Birthday
 		updatedUser, err = store.UserRepository().Update(dbUser)
 		return err
 	})

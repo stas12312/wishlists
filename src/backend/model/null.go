@@ -42,6 +42,37 @@ func (nt *NullTime) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+type NullDate struct {
+	sql.NullTime
+}
+
+func (nt *NullDate) MarshalJSON() ([]byte, error) {
+	if !nt.Valid {
+		return []byte("null"), nil
+	}
+	val := fmt.Sprintf("\"%s\"", nt.Time.Format(time.DateOnly))
+	return []byte(val), nil
+}
+
+func (nt *NullDate) UnmarshalJSON(b []byte) error {
+	s := strings.ReplaceAll(string(b), "\"", "")
+
+	if s == "null" {
+		nt.Valid = false
+		return nil
+	}
+
+	x, err := time.Parse(time.DateOnly, s)
+	if err != nil {
+		nt.Valid = false
+		return err
+	}
+
+	nt.Time = x
+	nt.Valid = true
+	return nil
+}
+
 type NullString struct {
 	sql.NullString
 }
