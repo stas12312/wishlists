@@ -95,9 +95,15 @@ const SignInForm = ({ providers }: { providers: IOAuthProvider[] }) => {
           {providers.map((provider) => {
             return (
               <div key={provider.name} className="p-1 rounded-full">
-                <a className="h-10 text-5xl font-bold" href={provider.url}>
+                <Button
+                  isIconOnly
+                  className="h-10 text-5xl font-bold rounded-full"
+                  onPress={() => {
+                    window.open(provider.url, "OAuth", "location=0,status=0");
+                  }}
+                >
                   {provider.icon}
-                </a>
+                </Button>
               </div>
             );
           })}
