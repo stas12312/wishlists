@@ -5,6 +5,9 @@ import { observer } from "mobx-react-lite";
 import { FormEvent, useEffect, useState } from "react";
 import { MdContentCopy, MdLink } from "react-icons/md";
 import { addToast } from "@heroui/toast";
+import { I18nProvider } from "@react-aria/i18n";
+import { DatePicker } from "@heroui/date-picker";
+import { getLocalTimeZone, today } from "@internationalized/date";
 
 import UploadButton from "../uploadButton";
 
@@ -18,6 +21,7 @@ import {
 } from "@/lib/requests";
 import userStore from "@/store/userStore";
 import { checkFile } from "@/lib/file";
+import { dateStringToCalendarDate } from "@/lib/date";
 
 const ACCEPTED_FILE_EXTS = ["jpg", "jpeg", "png", "webp"];
 
@@ -115,6 +119,21 @@ const ProfileForm = observer(() => {
             setUser({ ...user, name: value });
           }}
         />
+        <I18nProvider locale="ru-RU">
+          <DatePicker
+            fullWidth
+            showMonthAndYearPickers
+            calendarWidth={300}
+            className="text-left"
+            label="День рождения"
+            maxValue={today(getLocalTimeZone())}
+            name="date"
+            value={dateStringToCalendarDate(user.birthday || "")}
+            onChange={(date) => {
+              setUser({ ...user, birthday: date?.toString() });
+            }}
+          />
+        </I18nProvider>
       </div>
       <span className="text-sm">Изображение профиля</span>
       <UploadButton
