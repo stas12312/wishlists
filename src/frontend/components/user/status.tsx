@@ -20,6 +20,8 @@ const UserStatus = ({
     case FriendStatus.no_friend:
       item = (
         <Button
+          className="h-7"
+          color="primary"
           variant="ghost"
           onPress={async () => {
             const result = await AddFriend(userId);
