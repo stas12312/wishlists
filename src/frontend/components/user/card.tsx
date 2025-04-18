@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Chip } from "@heroui/chip";
 import { observer } from "mobx-react-lite";
 import { Link } from "@heroui/link";
+import { MdCake } from "react-icons/md";
 
 import UserStatus from "./status";
 
@@ -71,6 +72,15 @@ const UserCard = observer(({ username }: { username: string }) => {
               name={<span className="text-2xl">{user.name}</span>}
             />
             <div className="mx-auto flex gap-1">
+              {user.birthday ? (
+                <Chip
+                  color="secondary"
+                  startContent={<MdCake />}
+                  title={`День рождение ${new Date(user.birthday).toLocaleDateString()}`}
+                >
+                  {new Date(user.birthday).toLocaleDateString()}
+                </Chip>
+              ) : null}
               {
                 <UserStatus
                   friendStatus={friendStatus}
