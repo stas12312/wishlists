@@ -12,12 +12,14 @@ const WindowReload = ({
 }) => {
   useEffect(() => {
     async function loginAndReload() {
+      const href = localStorage.getItem("path") || "/";
+      localStorage.removeItem("path");
       await login(oAuthType, token);
       if (window.opener) {
-        window.opener.location = "/";
+        window.opener.location = href;
         window.close();
       } else {
-        window.location.href = "/";
+        window.location.href = href;
       }
     }
     loginAndReload();

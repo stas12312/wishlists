@@ -2,7 +2,7 @@
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { FormEvent, useEffect, useRef, useState } from "react";
-import { redirect } from "next/navigation";
+import { redirect, useSearchParams } from "next/navigation";
 import { Link } from "@heroui/link";
 import { Form } from "@heroui/form";
 import { addToast } from "@heroui/toast";
@@ -24,6 +24,9 @@ export default function SignIn() {
     password_2: "",
     name: "",
   });
+
+  const searchParams = useSearchParams();
+  const ret = searchParams.get("ret") || "/";
 
   const [acceptCode, setAcceptCode] = useState("");
   const [formTitle, setFormTitle] = useState("Регистрация");
@@ -110,7 +113,7 @@ export default function SignIn() {
         setErrorMessages({ ...errorMessages, Code: result.message });
       } else {
         await setTokens(result);
-        redirect("/");
+        redirect(ret);
       }
     }
     setIsLoading(false);
@@ -256,7 +259,7 @@ export default function SignIn() {
         ) : null}
       </Form>
       <div className="text-center mt-4">
-        Уже есть аккаунт? <Link href="/auth/login">Войти</Link>
+        Уже есть аккаунт? <Link href={`/auth/login?ret=${ret}`}>Войти</Link>
       </div>
     </>
   );
