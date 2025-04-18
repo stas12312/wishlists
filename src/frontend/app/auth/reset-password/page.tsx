@@ -75,7 +75,7 @@ const RestorePassword = observer(() => {
   }
 
   return (
-    <>
+    <Suspense>
       <form
         className="gap-2 flex flex-col bg-content1 rounded-xl box-border shadow-medium p-4"
         id="reset-password"
@@ -147,7 +147,7 @@ const RestorePassword = observer(() => {
           Войти
         </Link>
       </div>
-    </>
+    </Suspense>
   );
 });
 

@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, Suspense, useEffect, useRef, useState } from "react";
 import { redirect, useSearchParams } from "next/navigation";
 import { Link } from "@heroui/link";
 import { Form } from "@heroui/form";
@@ -141,7 +141,7 @@ export default function SignIn() {
   }, [countDownDate]);
 
   return (
-    <>
+    <Suspense>
       <Form
         className="flex flex-col gap-2 bg-content1 p-4 rounded-xl box-border shadow-medium"
         id="register"
@@ -261,6 +261,6 @@ export default function SignIn() {
       <div className="text-center mt-4">
         Уже есть аккаунт? <Link href={`/auth/login?ret=${ret}`}>Войти</Link>
       </div>
-    </>
+    </Suspense>
   );
 }
