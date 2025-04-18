@@ -1,8 +1,6 @@
 "use client";
 import { Alert } from "@heroui/alert";
-import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
-import { Link } from "@heroui/link";
 import { useDisclosure } from "@heroui/modal";
 import { Skeleton } from "@heroui/skeleton";
 import { User } from "@heroui/user";
@@ -18,6 +16,7 @@ import { PageSpinner } from "../pageSpinner";
 import { VisibleStatus } from "../visibleIcon";
 import { WishItem } from "../wish/card";
 import WishSaveModal from "../wish/saveModal";
+import { LoginButton } from "../login";
 
 import WishlistItemMenu from "./menu";
 
@@ -242,17 +241,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
                   className="mx-auto"
                   color="warning"
                   description="Для отображения забронированных желаний войдите в свой аккаунт"
-                  endContent={
-                    <Button
-                      as={Link}
-                      className="ml-4"
-                      color="warning"
-                      href="/auth/login"
-                      variant="bordered"
-                    >
-                      Войти
-                    </Button>
-                  }
+                  endContent={<LoginButton className="ml-4" />}
                   title="Некоторые из желаний могут быть забронированы"
                 />
               </div>

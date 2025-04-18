@@ -3,7 +3,7 @@ import { Button } from "@heroui/button";
 import { Divider } from "@heroui/divider";
 import { Input } from "@heroui/input";
 import { Link } from "@heroui/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, FormEvent } from "react";
 
 import { IOAuthProvider } from "@/lib/models/auth";
@@ -18,6 +18,9 @@ const SignInForm = ({ providers }: { providers: IOAuthProvider[] }) => {
     password: "",
   });
 
+  const searchParams = useSearchParams();
+  const ret = searchParams.get("ret");
+
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   async function handleSubmit(e: FormEvent) {
@@ -28,7 +31,7 @@ const SignInForm = ({ providers }: { providers: IOAuthProvider[] }) => {
     if ("message" in result) {
       setErrorMessage(result.message);
     } else {
-      router.push("/");
+      router.push(ret || "/");
     }
     setIsLoading(false);
   }
@@ -99,7 +102,12 @@ const SignInForm = ({ providers }: { providers: IOAuthProvider[] }) => {
                   isIconOnly
                   className="h-10 text-5xl font-bold rounded-full"
                   onPress={() => {
-                    window.open(provider.url, "OAuth", "location=0,status=0");
+                    localStorage.setItem("path", ret || "/");
+                    window.open(
+                      provider.url,
+                      provider.name,
+                      "status=no,location=no,toolbar=no,menubar=no,titlebar=no",
+                    );
                   }}
                 >
                   {provider.icon}

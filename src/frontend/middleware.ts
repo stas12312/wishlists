@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { refreshTokenIfNeed } from "./lib/auth";
 
 export default async function middleware(request: NextRequest) {
+  const requestedUrl = request.nextUrl.pathname;
+  const authUrl = new URL(`/auth/login?ret=${requestedUrl}`, request.url);
+
   if (
     (!request.cookies.has("access_token") ||
       !request.cookies.has("refresh_token")) &&
@@ -13,7 +16,7 @@ export default async function middleware(request: NextRequest) {
     request.cookies.delete("access_token");
     request.cookies.delete("refresh_token");
 
-    return NextResponse.redirect(new URL("/auth/login", request.url));
+    return NextResponse.redirect(authUrl);
   }
   if (request.cookies.get("refresh_token")?.value) {
     try {
@@ -22,7 +25,7 @@ export default async function middleware(request: NextRequest) {
         request.cookies.set("access_token", accessToken);
       }
     } catch {
-      return NextResponse.redirect(new URL("/auth/login", request.url));
+      return NextResponse.redirect(authUrl);
     }
   }
 
