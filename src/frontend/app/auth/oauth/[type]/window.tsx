@@ -13,8 +13,12 @@ const WindowReload = ({
   useEffect(() => {
     async function loginAndReload() {
       await login(oAuthType, token);
-      window.opener.location = "/";
-      window.close();
+      if (window.opener) {
+        window.opener.location = "/";
+        window.close();
+      } else {
+        window.location.href = "/";
+      }
     }
     loginAndReload();
   }, []);
