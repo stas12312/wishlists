@@ -15,7 +15,15 @@ import { confirmEmail, register } from "@/lib/requests";
 
 const COUNT_DOWN_DURATION = 1000 * 30 + 500;
 
-export default function SignIn() {
+export default function Page() {
+  return (
+    <Suspense>
+      <SignInForm />
+    </Suspense>
+  );
+}
+
+function SignInForm() {
   const timer = useRef<NodeJS.Timeout | undefined>();
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState({
@@ -141,7 +149,7 @@ export default function SignIn() {
   }, [countDownDate]);
 
   return (
-    <Suspense>
+    <>
       <Form
         className="flex flex-col gap-2 bg-content1 p-4 rounded-xl box-border shadow-medium"
         id="register"
@@ -261,6 +269,6 @@ export default function SignIn() {
       <div className="text-center mt-4">
         Уже есть аккаунт? <Link href={`/auth/login?ret=${ret}`}>Войти</Link>
       </div>
-    </Suspense>
+    </>
   );
 }
