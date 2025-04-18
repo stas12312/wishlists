@@ -17,6 +17,7 @@ import { Visible } from "../visibleIcon";
 import { createWishList, getFriends, updateWishlist } from "@/lib/requests";
 import { IWishlist } from "@/lib/models/wishlist";
 import { IUser } from "@/lib/models/user";
+import { dateStringToCalendarDate } from "@/lib/date";
 
 const visibleItems = [
   { key: "1", label: "Всем по ссылке", icon: <MdOutlinePublic /> },
@@ -230,20 +231,5 @@ export function WishlistCreateForm({
         Сохранить
       </Button>
     </Form>
-  );
-}
-
-function dateStringToCalendarDate(
-  dateString: string | null,
-): CalendarDate | null {
-  if (!dateString) {
-    return null;
-  }
-  const date = new Date(dateString);
-
-  return new CalendarDate(
-    date.getFullYear(),
-    date.getMonth() + 1,
-    date.getDate(),
   );
 }

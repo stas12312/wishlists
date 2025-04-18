@@ -4,6 +4,7 @@ export interface IUser {
   email: string;
   username: string;
   image: string;
+  birthday?: string;
 }
 
 export interface AuthInfo {
