@@ -1,5 +1,20 @@
 import { CalendarDate } from "@internationalized/date";
 
+const MONTHS = [
+  "января",
+  "февраля",
+  "марта",
+  "апреля",
+  "мая",
+  "июня",
+  "июля",
+  "августа",
+  "сентября",
+  "октября",
+  "ноября",
+  "декабря",
+];
+
 export function dateStringToCalendarDate(
   dateString: string | null,
 ): CalendarDate | null {
@@ -13,4 +28,13 @@ export function dateStringToCalendarDate(
     date.getMonth() + 1,
     date.getDate(),
   );
+}
+
+export function getDisplayDate(rawDate?: string): string {
+  if (!rawDate) {
+    return "";
+  }
+
+  const date = new Date(rawDate);
+  return `${date.getDay()} ${MONTHS[date.getMonth()]}`;
 }
