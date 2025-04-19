@@ -18,3 +18,8 @@ export interface ParseStartInfo {
 export interface ParseError {
   detail: string;
 }
+
+export interface ShopParam {
+  url: string;
+  name: string;
+}
