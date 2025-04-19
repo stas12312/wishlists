@@ -341,7 +341,7 @@ func (c *WishlistController) GetParseStatus(ctx *fiber.Ctx) error {
 }
 
 func (c *WishlistController) GetAvailableParsers(ctx *fiber.Ctx) error {
-	agent := fiber.Get(fmt.Sprintf("%s/parser/available", c.Config.ParseServiceUrl))
+	agent := fiber.Get(fmt.Sprintf("%s/parsers", c.Config.ParseServiceUrl))
 	agent.ContentType("application/json")
 	agent.Body(ctx.Body())
 	statusCode, body, errs := agent.Bytes()
