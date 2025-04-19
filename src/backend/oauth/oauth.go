@@ -1,10 +1,13 @@
 package oauth
 
+import "main/model"
+
 type User struct {
-	Id    string
-	Email string
-	Name  string
-	Image string
+	Id       string
+	Email    string
+	Name     string
+	Image    string
+	Birthday model.NullDate
 }
 
 type Config struct {

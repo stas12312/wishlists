@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/gofiber/fiber/v2/log"
+	"main/model"
 	"main/oauth"
 	"net/http"
 	"net/url"
@@ -19,11 +21,12 @@ const TokenUrl = "https://oauth.yandex.ru/token"
 const AuthUrl = "https://oauth.yandex.ru/authorize"
 
 type User struct {
-	Id        string `json:"id"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Email     string `json:"default_email"`
-	AvatarId  string `json:"default_avatar_id"`
+	Id        string         `json:"id"`
+	FirstName string         `json:"first_name"`
+	LastName  string         `json:"last_name"`
+	Email     string         `json:"default_email"`
+	AvatarId  string         `json:"default_avatar_id"`
+	Birthday  model.NullDate `json:"birthday"`
 }
 
 type Token struct {
@@ -73,12 +76,15 @@ func (c Client) GetUserInfo(token string) (*oauth.User, error) {
 	yandexUser := &User{}
 	err = json.NewDecoder(response.Body).Decode(yandexUser)
 	if err != nil {
+		log.Error(err.Error())
 		return user, err
 	}
 
 	user.Id = yandexUser.Id
 	user.Name = fmt.Sprintf("%s %s", yandexUser.FirstName, yandexUser.LastName)
 	user.Email = yandexUser.Email
+	user.Birthday = yandexUser.Birthday
+
 	if yandexUser.AvatarId != "" {
 		user.Image = fmt.Sprintf("https://avatars.yandex.net/get-yapic/%s/islands-200", yandexUser.AvatarId)
 	}

@@ -57,7 +57,7 @@ func (nt *NullDate) MarshalJSON() ([]byte, error) {
 func (nt *NullDate) UnmarshalJSON(b []byte) error {
 	s := strings.ReplaceAll(string(b), "\"", "")
 
-	if s == "null" {
+	if s == "null" || s == "" {
 		nt.Valid = false
 		return nil
 	}
