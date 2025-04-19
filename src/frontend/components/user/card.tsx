@@ -15,6 +15,7 @@ import { getFriendStatus, getUserByUsername } from "@/lib/requests";
 import { IUser } from "@/lib/models/user";
 import { wrapUsername } from "@/lib/user";
 import { getLabelForCount } from "@/lib/label";
+import { getDisplayDate } from "@/lib/date";
 
 const UserCard = observer(({ username }: { username: string }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -76,9 +77,9 @@ const UserCard = observer(({ username }: { username: string }) => {
                 <Chip
                   color="secondary"
                   startContent={<MdCake />}
-                  title={`День рождение ${new Date(user.birthday).toLocaleDateString()}`}
+                  title={`День рождение ${getDisplayDate(user.birthday)}`}
                 >
-                  {new Date(user.birthday).toLocaleDateString()}
+                  {getDisplayDate(user.birthday)}
                 </Chip>
               ) : null}
               {
