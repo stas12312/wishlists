@@ -6,11 +6,16 @@ import { Modal, ModalBody, ModalContent, ModalHeader } from "@heroui/modal";
 import { useEffect, useRef, useState, ClipboardEvent } from "react";
 import { Alert } from "@heroui/alert";
 import { Chip } from "@heroui/chip";
+import { Skeleton } from "@heroui/skeleton";
 
 import MarketIcon from "../marketIcon";
 
-import { parse, getParseStatus } from "@/lib/requests/parse";
-import { ParseResult } from "@/lib/models/parse";
+import {
+  parse,
+  getParseStatus,
+  getAvailableParser,
+} from "@/lib/requests/parse";
+import { ParseResult, ShopParam } from "@/lib/models/parse";
 import { extractLink, isURL } from "@/lib/url";
 
 const TEXT_BY_STATUS = new Map<string, string>([
@@ -80,6 +85,7 @@ const LoadByLinkModal = ({
       }
     };
   }, []);
+
   return (
     <Modal
       backdrop="blur"
@@ -100,30 +106,7 @@ const LoadByLinkModal = ({
                     <div>
                       <p>На данный момент поддерживается заполнение из</p>
                       <div className="flex gap-1 mt-2 flex-wrap">
-                        <Chip
-                          startContent={
-                            <MarketIcon height={22} link="dns-shop.ru" />
-                          }
-                          variant="flat"
-                        >
-                          DNS
-                        </Chip>
-                        <Chip
-                          startContent={
-                            <MarketIcon height={22} link="ozon.ru" />
-                          }
-                          variant="flat"
-                        >
-                          OZON
-                        </Chip>
-                        <Chip
-                          startContent={
-                            <MarketIcon height={22} link="wildberries.ru" />
-                          }
-                          variant="flat"
-                        >
-                          Wildberries
-                        </Chip>
+                        <AvailableShops />
                       </div>
                     </div>
                   }
@@ -179,6 +162,49 @@ const LoadByLinkModal = ({
       </ModalContent>
     </Modal>
   );
+};
+
+const AvailableShops = () => {
+  const [availableParser, setAvailableParser] = useState<ShopParam[]>([]);
+  const [listIsLoading, setListIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      const parsers = await getAvailableParser();
+      setAvailableParser(parsers);
+      setListIsLoading(false);
+    }
+    fetchData();
+  }, []);
+
+  if (listIsLoading) {
+    return (
+      <>
+        <Skeleton className="w-32 rounded-full">
+          <div className="h-7 w-1/5 rounded-full bg-default-300" />
+        </Skeleton>
+        <Skeleton className="w-24 rounded-full">
+          <div className="h-7 w-1/5 rounded-full bg-default-300" />
+        </Skeleton>
+        <Skeleton className="w-36 rounded-full">
+          <div className="h-7 w-1/5 rounded-full bg-default-300" />
+        </Skeleton>
+      </>
+    );
+  }
+
+  return availableParser.map((value) => {
+    return (
+      <Chip
+        key={value.name}
+        startContent={<MarketIcon height={22} link={value.url} />}
+        title={value.name}
+        variant="flat"
+      >
+        {value.name}
+      </Chip>
+    );
+  });
 };
 
 export default LoadByLinkModal;
