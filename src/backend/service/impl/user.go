@@ -57,7 +57,7 @@ func (u *userServiceImpl) Register(ctx context.Context, email, password, name st
 				"Пользователь с указанным email уже зарегистрирован",
 			)
 		}
-		user, err = store.UserRepository().Create(email, hash, name, false, "")
+		user, err = store.UserRepository().Create(email, hash, name, false, "", model.NullDate{})
 		if err != nil {
 			return err
 		}
@@ -361,7 +361,8 @@ func (u *userServiceImpl) OAuthAuth(
 			oAuthUser.UserId = existsUser.Id
 		} else {
 			user, err = store.UserRepository().Create(
-				userFromOAuth.Email, "", userFromOAuth.Name, true, userFromOAuth.Image,
+				userFromOAuth.Email, "", userFromOAuth.Name,
+				true, userFromOAuth.Image, userFromOAuth.Birthday,
 			)
 			if err != nil {
 				return apperror.NewError(apperror.OAuthError, "Ошибка при авторизации через OAuth")

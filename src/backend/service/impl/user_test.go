@@ -405,6 +405,7 @@ func Test_userServiceImpl_Register(t *testing.T) {
 					"name",
 					false,
 					"",
+					model.NullDate{},
 				).
 					Once().
 					Return(&model.User{Name: "name", Email: "email", Id: 1}, nil)
@@ -467,6 +468,7 @@ func Test_userServiceImpl_Register(t *testing.T) {
 					"name",
 					false,
 					"",
+					model.NullDate{},
 				).
 					Once().
 					Return(&model.User{}, errors.New("error"))
@@ -496,6 +498,7 @@ func Test_userServiceImpl_Register(t *testing.T) {
 					"name",
 					false,
 					"",
+					model.NullDate{},
 				).
 					Once().
 					Return(&model.User{}, nil)
@@ -534,6 +537,7 @@ func Test_userServiceImpl_Register(t *testing.T) {
 					"name",
 					false,
 					"",
+					model.NullDate{},
 				).
 					Once().
 					Return(&model.User{}, nil)
@@ -574,6 +578,7 @@ func Test_userServiceImpl_Register(t *testing.T) {
 					"name",
 					false,
 					"",
+					model.NullDate{},
 				).
 					Once().
 					Return(&model.User{}, nil)
@@ -1423,7 +1428,7 @@ func Test_userServiceImpl_OAuthAuth(t *testing.T) {
 					Return(&model.User{}, nil)
 
 				userMock.
-					On("Create", "email", "", "Name", true, "").
+					On("Create", "email", "", "Name", true, "", model.NullDate{}).
 					Once().
 					Return(
 						&model.User{Id: int64(1000), Email: "email", Name: "Name", Password: "", IsActive: true},

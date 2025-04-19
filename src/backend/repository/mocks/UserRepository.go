@@ -13,25 +13,25 @@ type UserRepository struct {
 	mock.Mock
 }
 
-// Create provides a mock function with given fields: email, hash, name, isActive, image
-func (_m *UserRepository) Create(email string, hash string, name string, isActive bool, image string) (*model.User, error) {
-	ret := _m.Called(email, hash, name, isActive, image)
+// Create provides a mock function with given fields: email, hash, name, isActive, image, birthday
+func (_m *UserRepository) Create(email string, hash string, name string, isActive bool, image string, birthday model.NullDate) (*model.User, error) {
+	ret := _m.Called(email, hash, name, isActive, image, birthday)
 
 	var r0 *model.User
 	var r1 error
-	if rf, ok := ret.Get(0).(func(string, string, string, bool, string) (*model.User, error)); ok {
-		return rf(email, hash, name, isActive, image)
+	if rf, ok := ret.Get(0).(func(string, string, string, bool, string, model.NullDate) (*model.User, error)); ok {
+		return rf(email, hash, name, isActive, image, birthday)
 	}
-	if rf, ok := ret.Get(0).(func(string, string, string, bool, string) *model.User); ok {
-		r0 = rf(email, hash, name, isActive, image)
+	if rf, ok := ret.Get(0).(func(string, string, string, bool, string, model.NullDate) *model.User); ok {
+		r0 = rf(email, hash, name, isActive, image, birthday)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*model.User)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(string, string, string, bool, string) error); ok {
-		r1 = rf(email, hash, name, isActive, image)
+	if rf, ok := ret.Get(1).(func(string, string, string, bool, string, model.NullDate) error); ok {
+		r1 = rf(email, hash, name, isActive, image, birthday)
 	} else {
 		r1 = ret.Error(1)
 	}

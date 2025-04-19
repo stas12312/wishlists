@@ -55,12 +55,12 @@ WHERE
 }
 
 func (r *UserRepositoryPostgres) Create(
-	email string, hash string, name string, isActive bool, image string,
+	email string, hash string, name string, isActive bool, image string, birthday model.NullDate,
 ) (*model.User, error) {
 
 	query := `
-INSERT INTO users (email, password, name, is_active, image) 
-VALUES ($1, $2, $3, $4, $5)
+INSERT INTO users (email, password, name, is_active, image, birthday) 
+VALUES ($1, $2, $3, $4, $5, $6)
 ON CONFLICT (lower(email))
     DO UPDATE 
 	SET 
@@ -68,12 +68,13 @@ ON CONFLICT (lower(email))
 		password = $2,
 		name = $3,
 		is_active = $4,
-		image = $5
+		image = $5,
+		birthday = $6
 RETURNING *
 `
 	user := &model.User{}
 
-	err := r.Get(user, query, email, hash, name, isActive, image)
+	err := r.Get(user, query, email, hash, name, isActive, image, birthday)
 	return user, err
 }
 
