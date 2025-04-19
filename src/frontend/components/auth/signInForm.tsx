@@ -19,7 +19,7 @@ const SignInForm = ({ providers }: { providers: IOAuthProvider[] }) => {
   });
 
   const searchParams = useSearchParams();
-  const ret = searchParams.get("ret");
+  const ret = searchParams.get("ret") || "/";
 
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -70,7 +70,7 @@ const SignInForm = ({ providers }: { providers: IOAuthProvider[] }) => {
             onChange={handleChange}
           />
           <small>
-            <Link className="text-sm" href="/auth/reset-password">
+            <Link className="text-sm" href={`/auth/reset-password?ret=${ret}`}>
               Забыли пароль?
             </Link>
           </small>
@@ -118,7 +118,8 @@ const SignInForm = ({ providers }: { providers: IOAuthProvider[] }) => {
         </div>
       </form>
       <p className="text-center mt-4">
-        Нет аккаунта? <Link href="/auth/register">Зарегистрироваться</Link>
+        Нет аккаунта?{" "}
+        <Link href={`/auth/register?ret=${ret}`}>Зарегистрироваться</Link>
       </p>
     </>
   );

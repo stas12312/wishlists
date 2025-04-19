@@ -29,6 +29,8 @@ const RestorePassword = observer(() => {
     key: searchParams.get("key") ?? "",
   });
 
+  const ret = searchParams.get("ret") || "/";
+
   useEffect(() => {
     if (code.length == 6) {
       processRestore();
@@ -69,7 +71,7 @@ const RestorePassword = observer(() => {
         return;
       }
       await setTokens(response as ITokens);
-      redirect("/");
+      redirect(ret);
     }
     setIsLoading(false);
   }
@@ -143,7 +145,7 @@ const RestorePassword = observer(() => {
       </form>
       <div className="text-center mt-4">
         Вспомнили пароль?{" "}
-        <Link className="w" href="/auth/login">
+        <Link className="w" href={`/auth/login?ret=${ret}`}>
           Войти
         </Link>
       </div>
