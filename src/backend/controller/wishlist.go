@@ -383,6 +383,6 @@ func (c *WishlistController) Route(router fiber.Router) {
 
 	parseGroup := router.Group("/parse")
 	parseGroup.Post("/", middleware.Protected(true), c.ParseShopUrl)
-	parseGroup.Post("/available", middleware.Protected(true), c.GetAvailableParsers)
+	parseGroup.Get("/available", middleware.Protected(true), c.GetAvailableParsers)
 	parseGroup.Get("/:task_id/status", middleware.Protected(true), c.GetParseStatus)
 }
