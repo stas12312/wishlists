@@ -36,5 +36,5 @@ export function getDisplayDate(rawDate?: string): string {
   }
 
   const date = new Date(rawDate);
-  return `${date.getDay()} ${MONTHS[date.getMonth()]}`;
+  return `${date.getDate()} ${MONTHS[date.getMonth()]}`;
 }
