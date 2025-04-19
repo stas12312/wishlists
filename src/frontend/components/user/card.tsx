@@ -77,7 +77,7 @@ const UserCard = observer(({ username }: { username: string }) => {
                 <Chip
                   color="secondary"
                   startContent={<MdCake />}
-                  title={`День рождение ${getDisplayDate(user.birthday)}`}
+                  title={`День рождения ${getDisplayDate(user.birthday)}`}
                 >
                   {getDisplayDate(user.birthday)}
                 </Chip>
