@@ -340,6 +340,20 @@ func (c *WishlistController) GetParseStatus(ctx *fiber.Ctx) error {
 	return ctx.Status(statusCode).Send(body)
 }
 
+func (c *WishlistController) GetAvailableParsers(ctx *fiber.Ctx) error {
+	agent := fiber.Get(fmt.Sprintf("%s/parser/available", c.Config.ParseServiceUrl))
+	agent.ContentType("application/json")
+	agent.Body(ctx.Body())
+	statusCode, body, errs := agent.Bytes()
+
+	if len(errs) > 0 {
+		return ctx.Status(fiber.StatusInternalServerError).
+			JSON(model.ErrorResponse{Message: "Сервис времменно недоступен"})
+	}
+	ctx.Set("Content-Type", "application/json")
+	return ctx.Status(statusCode).Send(body)
+}
+
 func (c *WishlistController) Route(router fiber.Router) {
 
 	wishlistGroup := router.Group("/wishlists")
@@ -369,5 +383,6 @@ func (c *WishlistController) Route(router fiber.Router) {
 
 	parseGroup := router.Group("/parse")
 	parseGroup.Post("/", middleware.Protected(true), c.ParseShopUrl)
+	parseGroup.Post("/available", middleware.Protected(true), c.GetAvailableParsers)
 	parseGroup.Get("/:task_id/status", middleware.Protected(true), c.GetParseStatus)
 }
