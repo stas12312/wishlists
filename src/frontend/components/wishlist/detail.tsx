@@ -17,6 +17,8 @@ import { VisibleStatus } from "../visibleIcon";
 import { WishItem } from "../wish/card";
 import WishSaveModal from "../wish/saveModal";
 import { LoginButton } from "../login";
+import { ISorting, SortingSelector } from "../wish/sortingSelector";
+import { IWishFilter, WishFilter } from "../wish/filter";
 
 import WishlistItemMenu from "./menu";
 
@@ -107,6 +109,15 @@ const WishlistDetail = observer(
 const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
   const router = useRouter();
   const [items, setItems] = useState<IWish[]>([]);
+  const [visibleItems, setVisibleItems] = useState<IWish[]>([]);
+  const [sorting, setSorting] = useState<ISorting>({
+    field: "created_at",
+    desc: true,
+  });
+  const [filters, setFilters] = useState<IWishFilter>({
+    fullfiled: "all",
+    reserved: "all",
+  });
   const [wishlist, setWishlist] = useState<IWishlist>({} as IWishlist);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState({} as IError);
@@ -122,6 +133,13 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
   });
 
   useEffect(() => {
+    const filteredWishes = filterWishes(items, filters);
+    const sortedWishes = sortWishes(filteredWishes, sorting);
+
+    setVisibleItems(sortedWishes);
+  }, [items, sorting, filters]);
+
+  useEffect(() => {
     async function fetchWishlists() {
       const response = await Promise.all([
         getWishes(wishlistUUID),
@@ -131,6 +149,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
         setError(response[1]);
       } else {
         setItems(response[0]);
+        setVisibleItems(response[0]);
         setWishlist(response[1]);
         setIsLoading(false);
         sendJsonMessage({
@@ -200,7 +219,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
       </div>
     );
   }
-  const components = items.map((wish: IWish) => (
+  const components = visibleItems.map((wish: IWish) => (
     <div key={wish.uuid}>
       <WishItem wish={wish} onDelete={onDeleteWish} onUpdate={onUpdate} />
     </div>
@@ -247,6 +266,19 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
               </div>
             </div>
           ) : null}
+          <div className="col-span-full flex gap-4">
+            <WishFilter
+              hidedFilters={
+                isEditable || !userStore.user.id ? ["reserved"] : undefined
+              }
+              onChangeFilter={setFilters}
+            />
+            <SortingSelector
+              defaultField="created_at"
+              onChangeSorting={setSorting}
+            />
+          </div>
+
           <WishSaveModal
             isOpen={isOpen}
             wishlistUUID={wishlistUUID}
@@ -268,3 +300,52 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
 });
 
 export default Wishes;
+
+function sortWishes(items: IWish[], sorting: ISorting): IWish[] {
+  return [
+    ...items.sort((a, b) => {
+      const aProp = a[sorting.field as keyof IWish];
+      const bProp = b[sorting.field as keyof IWish];
+      if (aProp === undefined || bProp === undefined) return 0;
+      if (!sorting.desc) {
+        return aProp < bProp ? -1 : bProp < aProp ? 1 : 0;
+      }
+      return aProp > bProp ? -1 : bProp > aProp ? 1 : 0;
+    }),
+  ];
+}
+
+function filterWishes(items: IWish[], filters: IWishFilter) {
+  const result: IWish[] = [];
+  for (let item of items) {
+    if (
+      isFilterByFullfiled(filters.fullfiled, item) &&
+      isFilterByReserved(filters.reserved, item)
+    ) {
+      result.push(item);
+    }
+  }
+  return result;
+}
+
+function isFilterByFullfiled(
+  fullfiledFilter: "all" | "true" | "false",
+  item: IWish,
+) {
+  return (
+    fullfiledFilter === "all" ||
+    (fullfiledFilter === "true" && item.fulfilled_at) ||
+    (fullfiledFilter === "false" && !item.fulfilled_at)
+  );
+}
+
+function isFilterByReserved(
+  reservedFilter: "all" | "true" | "false",
+  item: IWish,
+) {
+  return (
+    reservedFilter === "all" ||
+    (reservedFilter === "true" && !item.actions.reserve) ||
+    (reservedFilter === "false" && item.actions.reserve)
+  );
+}
