@@ -7,14 +7,16 @@ import { getOgImageUrl } from "@/lib/label";
 import { getOAuthProviders } from "@/lib/requests";
 
 export const dynamic = "force-dynamic";
+const DESCRIPTION =
+  "Вход в бесплатный сервис для составления вишлистов - Mywishlists";
 
 export const metadata: Metadata = {
   title: "Mywishlists - Вход",
+  description: DESCRIPTION,
   openGraph: {
     images: [getOgImageUrl("MyWishlists", "Вход")],
     title: "Mywishlists - Вход",
-    description:
-      "Вход в бесплатный сервис для составления вишлистов - Mywishlists",
+    description: DESCRIPTION,
   },
 };
 
