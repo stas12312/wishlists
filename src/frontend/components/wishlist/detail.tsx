@@ -3,7 +3,6 @@ import { Alert } from "@heroui/alert";
 import { Chip } from "@heroui/chip";
 import { useDisclosure } from "@heroui/modal";
 import { Skeleton } from "@heroui/skeleton";
-import { User } from "@heroui/user";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -17,6 +16,7 @@ import { VisibleStatus } from "../visibleIcon";
 import { WishItem } from "../wish/card";
 import WishSaveModal from "../wish/saveModal";
 import { LoginButton } from "../login";
+import UserCard from "../user/card";
 import { ISorting, SortingSelector } from "../wish/sortingSelector";
 import { IWishFilter, WishFilter } from "../wish/filter";
 
@@ -27,7 +27,6 @@ import { IWish } from "@/lib/models/wish";
 import { IWishlist } from "@/lib/models/wishlist";
 import { deleteWishlist, getWishlist, updateWishlist } from "@/lib/requests";
 import { getWishes } from "@/lib/requests/wish";
-import { wrapUsername } from "@/lib/user";
 import userStore from "@/store/userStore";
 import { defaultParams, getWebsocketUrl, isEvent, WSEvent } from "@/lib/socket";
 
@@ -48,27 +47,10 @@ const WishlistDetail = observer(
     isEditable: boolean;
   }) => {
     const user = wishlist.user;
-    const router = useRouter();
     return (
       <div className="flex flex-col">
         {user && user.id != userStore.user.id ? (
-          <div className="mx-auto mt-4">
-            <User
-              as="button"
-              avatarProps={{
-                name: user.name?.length ? user.name[0] : "",
-                src: user.image,
-                size: "lg",
-              }}
-              description={
-                <span className="text-lg">{wrapUsername(user.username)}</span>
-              }
-              name={<span className="text-2xl">{user.name}</span>}
-              onClick={() => {
-                router.push(`/users/${user.username}`);
-              }}
-            />
-          </div>
+          <UserCard isShowProfileLink username={user.username} />
         ) : null}
         <PageHeader>
           <div className="flex justify-center md:justify-start">
