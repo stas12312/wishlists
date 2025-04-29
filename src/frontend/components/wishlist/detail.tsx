@@ -115,6 +115,9 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
   });
 
   useEffect(() => {
+    if (!items) {
+      return;
+    }
     const filteredWishes = filterWishes(items, filters);
     const sortedWishes = sortWishes(filteredWishes, sorting);
 
