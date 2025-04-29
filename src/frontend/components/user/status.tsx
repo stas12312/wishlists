@@ -10,10 +10,12 @@ const UserStatus = ({
   friendStatus,
   userId,
   setFriendStatus,
+  className,
 }: {
   friendStatus: FriendStatus;
   userId: number;
   setFriendStatus: { (status: FriendStatus): void };
+  className?: string;
 }) => {
   let item;
   switch (friendStatus) {
@@ -54,8 +56,7 @@ const UserStatus = ({
     case FriendStatus.is_yourself:
       item = <Chip color="success">Вы</Chip>;
   }
-
-  return <div className="h-10">{item}</div>;
+  return <div className={className}>{item}</div>;
 };
 
 export default UserStatus;

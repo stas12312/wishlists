@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { addToast } from "@heroui/toast";
 import useWebSocket from "react-use-websocket";
+import { Divider } from "@heroui/divider";
 
 import AddCardButton from "../addCardButton";
 import PageHeader from "../pageHeader";
@@ -58,7 +59,7 @@ const WishlistDetail = observer(
     return (
       <div className="flex flex-col">
         {user && user.id != userStore.user.id ? (
-          <UserCard isShowProfileLink username={user.username} />
+          <UserCard username={user.username} />
         ) : null}
         <PageHeader>
           <div className="flex justify-center md:justify-start">
