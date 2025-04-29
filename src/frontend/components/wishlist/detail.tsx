@@ -34,17 +34,25 @@ function getChannelName(wishlistUUID: string): string {
   return `wishlist_${wishlistUUID}`;
 }
 
+interface IStatistic {
+  totalSum: number;
+  fullfiledCount: number;
+  totalCount: number;
+}
+
 const WishlistDetail = observer(
   ({
     wishlist,
     onUpdate,
     onDelete,
     isEditable,
+    statistic,
   }: {
     wishlist: IWishlist;
     onUpdate: { (wishlist: IWishlist): void };
     onDelete: { (wishlist: IWishlist): Promise<void> };
     isEditable: boolean;
+    statistic?: IStatistic;
   }) => {
     const user = wishlist.user;
     return (
@@ -74,10 +82,28 @@ const WishlistDetail = observer(
               />
             </span>
           </div>
-          <div className="text-small text-default-500 flex gap-2 justify-center md:justify-start">
+          <div className="text-small text-default-500 flex gap-2 justify-center md:justify-start flex-wrap">
             {wishlist.date ? (
-              <Chip>{new Date(wishlist.date).toLocaleDateString()}</Chip>
+              <Chip>
+                Дата события: {new Date(wishlist.date).toLocaleDateString()}
+              </Chip>
             ) : null}
+            {user && user.id === userStore.user.id ? (
+              <>
+                {statistic?.totalSum ? (
+                  <Chip color="warning">
+                    Общая сумма: {statistic?.totalSum.toLocaleString()}
+                  </Chip>
+                ) : null}
+                {statistic?.totalCount ? (
+                  <Chip color="primary">
+                    Исполнено: {statistic.fullfiledCount} из{" "}
+                    {statistic.totalCount}
+                  </Chip>
+                ) : null}
+              </>
+            ) : null}
+
             <span className="my-auto" title={wishlist.description}>
               {wishlist.description}
             </span>
@@ -92,6 +118,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
   const router = useRouter();
   const [items, setItems] = useState<IWish[]>([]);
   const [visibleItems, setVisibleItems] = useState<IWish[]>([]);
+  const [statistic, setStatistic] = useState<IStatistic>();
   const [sorting, setSorting] = useState<ISorting>({
     field: "created_at",
     desc: true,
@@ -118,6 +145,8 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
     if (!items) {
       return;
     }
+
+    setStatistic(calcStatistic(items));
     const filteredWishes = filterWishes(items, filters);
     const sortedWishes = sortWishes(filteredWishes, sorting);
 
@@ -133,8 +162,9 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
       if ("message" in response[1]) {
         setError(response[1]);
       } else {
-        setItems(response[0]);
-        setVisibleItems(response[0]);
+        const responseWishes = response[0];
+        setItems(responseWishes);
+        setVisibleItems(responseWishes);
         setWishlist(response[1]);
         setIsLoading(false);
         sendJsonMessage({
@@ -225,6 +255,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
         ) : (
           <WishlistDetail
             isEditable={isEditable}
+            statistic={statistic}
             wishlist={wishlist}
             onDelete={onDeleteWishlist}
             onUpdate={onUpdateWishlist}
@@ -333,4 +364,23 @@ function isFilterByReserved(
     (reservedFilter === "true" && !item.actions.reserve) ||
     (reservedFilter === "false" && item.actions.reserve)
   );
+}
+
+function calcStatistic(wishes: IWish[]): IStatistic {
+  const statistic = {
+    totalSum: 0,
+    fullfiledCount: 0,
+    totalCount: 0,
+  };
+
+  for (const wish of wishes) {
+    if (wish.fulfilled_at) {
+      statistic.fullfiledCount += 1;
+    }
+    if (wish.cost) {
+      statistic.totalSum += wish.cost;
+    }
+    statistic.totalCount += 1;
+  }
+  return statistic;
 }
