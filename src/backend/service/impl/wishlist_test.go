@@ -524,7 +524,7 @@ func TestWishlistImpl_UpdateForUser(t *testing.T) {
 	tests := []struct {
 		name           string
 		args           args
-		mocksBehaviour func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository)
+		mocksBehaviour func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository, uMock *mocks2.UserService)
 		want           *model.Wishlist
 		wantErr        bool
 	}{
@@ -534,7 +534,15 @@ func TestWishlistImpl_UpdateForUser(t *testing.T) {
 				userId:   1,
 				wishlist: &model.Wishlist{Uuid: "0", UserId: 1},
 			},
-			mocksBehaviour: func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository) {
+			mocksBehaviour: func(
+				wlMock *mocks.WishlistRepository,
+				wMock *mocks.WishRepository,
+				uMock *mocks2.UserService,
+			) {
+				uMock.
+					On("GetById", mock.Anything, int64(1)).
+					Return(&model.User{Id: 1, Email: "email"}, nil)
+
 				wlMock.
 					On("GetByUUID", "0").
 					Return(&model.Wishlist{UserId: 1, Uuid: "0"}, nil)
@@ -545,7 +553,7 @@ func TestWishlistImpl_UpdateForUser(t *testing.T) {
 					Return(&model.Wishlist{Uuid: "0", UserId: 1}, nil)
 
 			},
-			want: &model.Wishlist{UserId: 1, Uuid: "0"},
+			want: &model.Wishlist{UserId: 1, Uuid: "0", User: &model.User{Id: 1, Email: ""}},
 		},
 		{
 			name: "User isn't wishlist owner",
@@ -553,7 +561,11 @@ func TestWishlistImpl_UpdateForUser(t *testing.T) {
 				userId:   2,
 				wishlist: &model.Wishlist{Uuid: "0", UserId: 2},
 			},
-			mocksBehaviour: func(wlMock *mocks.WishlistRepository, wMock *mocks.WishRepository) {
+			mocksBehaviour: func(
+				wlMock *mocks.WishlistRepository,
+				wMock *mocks.WishRepository,
+				uMock *mocks2.UserService,
+			) {
 				wlMock.
 					On("GetByUUID", "0").
 					Return(&model.Wishlist{UserId: 1, Uuid: "0"}, nil)
@@ -565,10 +577,12 @@ func TestWishlistImpl_UpdateForUser(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			wlRepository := mocks.NewWishlistRepository(t)
 			wRepository := mocks.NewWishRepository(t)
-			tt.mocksBehaviour(wlRepository, wRepository)
+			uService := mocks2.NewUserService(t)
+			tt.mocksBehaviour(wlRepository, wRepository, uService)
 			s := &WishlistImpl{
 				WishlistRepository: wlRepository,
 				WishRepository:     wRepository,
+				UserService:        uService,
 			}
 			got, err := s.UpdateForUser(tt.args.userId, tt.args.wishlist)
 			if (err != nil) != tt.wantErr {

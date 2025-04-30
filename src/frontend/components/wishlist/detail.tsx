@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { addToast } from "@heroui/toast";
 import useWebSocket from "react-use-websocket";
-import { Divider } from "@heroui/divider";
 
 import AddCardButton from "../addCardButton";
 import PageHeader from "../pageHeader";
@@ -83,7 +82,14 @@ const WishlistDetail = observer(
               />
             </span>
           </div>
-          <div className="text-small text-default-500 flex gap-2 justify-center md:justify-start flex-wrap">
+
+          <span
+            className="flex justify-center md:justify-start text-small text-default-500"
+            title={wishlist.description}
+          >
+            {wishlist.description}
+          </span>
+          <div className="flex gap-2 justify-center md:justify-start flex-wrap mt-2">
             {wishlist.date ? (
               <Chip>
                 Дата события: {new Date(wishlist.date).toLocaleDateString()}
@@ -104,10 +110,6 @@ const WishlistDetail = observer(
                 ) : null}
               </>
             ) : null}
-
-            <span className="my-auto" title={wishlist.description}>
-              {wishlist.description}
-            </span>
           </div>
         </PageHeader>
       </div>
@@ -119,7 +121,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
   const router = useRouter();
   const [items, setItems] = useState<IWish[]>([]);
   const [visibleItems, setVisibleItems] = useState<IWish[]>([]);
-  const [statistic, setStatistic] = useState<IStatistic>();
+  const [statistic, setStatistic] = useState<IStatistic>({} as IStatistic);
   const [sorting, setSorting] = useState<ISorting>({
     field: "created_at",
     desc: true,
