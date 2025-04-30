@@ -83,7 +83,7 @@ func (s *WishlistImpl) UpdateForUser(userId int64, wishlist *model.Wishlist) (*m
 	if err != nil {
 		return nil, err
 	}
-	return s.WishlistRepository.GetByUUID(wishlist.Uuid)
+	return s.GetForUserByUUID(userId, wishlist.Uuid)
 }
 
 func (s *WishlistImpl) DeleteWishlist(userId int64, wishlistUuid string) error {
