@@ -39,10 +39,10 @@ export const WishFilter = ({
       }}
       isShowBadge={!(fullfiledValue === "all" && reservedValue === "all")}
     >
-      <div className="flex flex-wrap flex-col gap-4 p-4">
+      <div className="flex flex-wrap flex-col gap-2">
         <Tabs
           key="filter1"
-          aria-label="Tabs sizes"
+          aria-label="Переключатель фильтра исполненных"
           disabledKeys={
             reservedValue === "false" || reservedValue === "true"
               ? ["all", "true"]
@@ -59,7 +59,7 @@ export const WishFilter = ({
         {!hidedFilters.includes("reserved") ? (
           <Tabs
             key="filter2"
-            aria-label="Tabs sizes"
+            aria-label="Переключатель фильтра заброинрованных"
             disabledKeys={
               fullfiledValue === "true" ? ["true", "false"] : undefined
             }
