@@ -1,4 +1,8 @@
-import { Select, SelectItem } from "@heroui/select";
+import { Tabs, Tab } from "@heroui/tabs";
+import { useState } from "react";
+import { Key } from "@react-types/shared";
+
+import Filter from "../filter";
 
 import { IWishlistFilter } from "./list";
 const WishlistFilter = ({
@@ -8,28 +12,30 @@ const WishlistFilter = ({
   filter: IWishlistFilter;
   setFilter: { (filter: IWishlistFilter): void };
 }) => {
+  const [activeValue, setActivaValue] = useState<Key>(
+    filter.showArchive ? "false" : "true",
+  );
+
   return (
-    <>
-      <Select
-        disallowEmptySelection
-        className="max-w-xs"
-        data-qa="status-filter"
-        defaultSelectedKeys={["active"]}
-        label="Статус"
-        size="sm"
-        onSelectionChange={(key) => {
-          setFilter({ ...filter, showArchive: key.currentKey == "deleted" });
-        }}
-      >
-        <SelectItem key="active" data-qa="filter-active">
-          Активные
-        </SelectItem>
-        <SelectItem key="deleted" data-qa="filter-deleted">
-          Архивированные
-        </SelectItem>
-        {/* <SelectItem key="past">Прошедшие</SelectItem> */}
-      </Select>
-    </>
+    <Filter
+      applyFilter={() => {
+        setFilter({ ...filter, showArchive: activeValue === "false" });
+      }}
+      isShowBadge={activeValue === "false"}
+    >
+      <div className="flex flex-wrap flex-col gap-4 p-4">
+        <Tabs
+          key="filter1"
+          aria-label="Tabs sizes"
+          selectedKey={activeValue}
+          size="sm"
+          onSelectionChange={setActivaValue}
+        >
+          <Tab key="true" title="Активные" />
+          <Tab key="false" title="Архивные" />
+        </Tabs>
+      </div>
+    </Filter>
   );
 };
 
