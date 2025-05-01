@@ -1,7 +1,6 @@
 import { Tab, Tabs } from "@heroui/tabs";
 import { useEffect, useState } from "react";
 import { Key } from "@react-types/shared";
-import { useDisclosure } from "@heroui/modal";
 
 import Filter from "../filter";
 
@@ -21,7 +20,6 @@ export const WishFilter = ({
 }) => {
   const [fullfiledValue, setFullfiledValue] = useState<Key>("all");
   const [reservedValue, setReservedValue] = useState<Key>("all");
-  const { isOpen, onOpenChange } = useDisclosure();
 
   useEffect(() => {
     if (fullfiledValue === "true") {
