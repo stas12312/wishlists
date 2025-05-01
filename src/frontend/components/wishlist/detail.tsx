@@ -285,18 +285,20 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
               </div>
             </div>
           ) : null}
-          <div className="col-span-full flex gap-4">
-            <WishFilter
-              hidedFilters={
-                isEditable || !userStore.user.id ? ["reserved"] : undefined
-              }
-              onChangeFilter={setFilters}
-            />
-            <SortingSelector
-              defaultField="created_at"
-              onChangeSorting={setSorting}
-            />
-          </div>
+          {items.length ? (
+            <div className="col-span-full flex gap-4">
+              <WishFilter
+                hidedFilters={
+                  isEditable || !userStore.user.id ? ["reserved"] : undefined
+                }
+                onChangeFilter={setFilters}
+              />
+              <SortingSelector
+                defaultField="created_at"
+                onChangeSorting={setSorting}
+              />
+            </div>
+          ) : null}
 
           <WishSaveModal
             isOpen={isOpen}
