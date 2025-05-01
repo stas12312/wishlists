@@ -23,7 +23,7 @@ const Filter = ({
       offset={20}
       placement="bottom"
       onClose={() => {
-        applyFilter;
+        applyFilter();
       }}
       onOpenChange={onOpenChange}
     >
