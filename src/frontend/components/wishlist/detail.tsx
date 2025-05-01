@@ -29,6 +29,7 @@ import { deleteWishlist, getWishlist, updateWishlist } from "@/lib/requests";
 import { getWishes } from "@/lib/requests/wish";
 import userStore from "@/store/userStore";
 import { defaultParams, getWebsocketUrl, isEvent, WSEvent } from "@/lib/socket";
+import { isEqual } from "@/lib/compare";
 
 function getChannelName(wishlistUUID: string): string {
   return `wishlist_${wishlistUUID}`;
@@ -291,7 +292,9 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
                 hidedFilters={
                   isEditable || !userStore.user.id ? ["reserved"] : undefined
                 }
-                onChangeFilter={setFilters}
+                onChangeFilter={(newFilter: IWishFilter) => {
+                  if (!isEqual(newFilter, filters)) setFilters(newFilter);
+                }}
               />
               <SortingSelector
                 defaultField="created_at"
