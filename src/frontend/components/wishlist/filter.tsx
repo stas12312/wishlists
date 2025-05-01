@@ -12,14 +12,16 @@ const WishlistFilter = ({
   filter: IWishlistFilter;
   setFilter: { (filter: IWishlistFilter): void };
 }) => {
-  const [activeValue, setActivaValue] = useState<Key>(
+  const [activeValue, setActiveValue] = useState<Key>(
     filter.showArchive ? "false" : "true",
   );
 
   return (
     <Filter
       applyFilter={() => {
-        setFilter({ ...filter, showArchive: activeValue === "false" });
+        if (filter.showArchive != (activeValue === "false")) {
+          setFilter({ ...filter, showArchive: activeValue === "false" });
+        }
       }}
       isShowBadge={activeValue === "false"}
     >
@@ -29,7 +31,7 @@ const WishlistFilter = ({
           aria-label="Tabs sizes"
           selectedKey={activeValue}
           size="sm"
-          onSelectionChange={setActivaValue}
+          onSelectionChange={setActiveValue}
         >
           <Tab key="true" title="Активные" />
           <Tab key="false" title="Архивные" />
