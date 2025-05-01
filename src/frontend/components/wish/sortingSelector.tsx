@@ -7,7 +7,7 @@ import {
 } from "@heroui/dropdown";
 import { useEffect, useState } from "react";
 import { MdArrowDownward, MdArrowUpward, MdCheck } from "react-icons/md";
-
+import { MdSort } from "react-icons/md";
 export interface ISorting {
   field: string;
   desc: boolean;
@@ -56,7 +56,8 @@ export const SortingSelector = ({
     <Dropdown>
       <DropdownTrigger>
         <Button
-          startContent={desc ? <MdArrowDownward /> : <MdArrowUpward />}
+          endContent={desc ? <MdArrowDownward /> : <MdArrowUpward />}
+          startContent={<MdSort />}
           variant="flat"
         >
           {
