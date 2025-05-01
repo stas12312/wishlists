@@ -21,7 +21,7 @@ const Filter = ({
       showArrow
       isOpen={isOpen}
       offset={20}
-      placement="bottom"
+      placement="bottom-start"
       onClose={() => {
         applyFilter();
       }}
@@ -35,7 +35,7 @@ const Filter = ({
         </PopoverTrigger>
       </Badge>
 
-      <PopoverContent className="p-2">
+      <PopoverContent className="flex flex-col gap-3 py-2">
         <h3>Фильтры</h3>
         {children}
         <Button
