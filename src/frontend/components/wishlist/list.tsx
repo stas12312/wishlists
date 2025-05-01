@@ -9,9 +9,9 @@ import { addToast } from "@heroui/toast";
 
 import AddCardButton from "../addCardButton";
 
-import WishlistFilter from "./filter";
 import { WishlistItem, WishlistsSkeletonItem } from "./card";
 import WishlistSaveModal from "./saveModal";
+import WishlistFilter from "./filter";
 
 import { Cursor } from "@/lib/models";
 import { IWishlist, IWishlistAction } from "@/lib/models/wishlist";
@@ -142,46 +142,48 @@ export const Wishlists = observer(
     }, [lastItem]);
 
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+      <>
         {actions.filter ? (
           <span className="flex col-span-full">
             <WishlistFilter filter={filter} setFilter={setFilter} />
           </span>
         ) : null}
-        <div className="col-span-full">
-          <WishlistSaveModal
-            isOpen={isOpen}
-            onOpenChange={onOpenChange}
-            onSaveWishlist={OnCreateWishlist}
-          />
-        </div>
-        {components.length ? (
-          <>
-            {!filter.showArchive && actions.edit && !isLoading ? (
-              <AddCardButton title="Добавить вишлист" onPress={onOpen} />
-            ) : null}
-            {components}
-          </>
-        ) : (
-          <div className="col-span-full text-center">
-            <h1 className="text-4xl	col-span-full">
-              {filter.showArchive
-                ? "Список архивированных вишлистов пуст"
-                : "Список вишлистов пуст"}
-            </h1>
-            {actions.edit && !filter.showArchive ? (
-              <Button
-                color="primary"
-                startContent={<IoMdAdd />}
-                variant="light"
-                onPress={onOpen}
-              >
-                Добавить
-              </Button>
-            ) : null}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+          <div className="col-span-full">
+            <WishlistSaveModal
+              isOpen={isOpen}
+              onOpenChange={onOpenChange}
+              onSaveWishlist={OnCreateWishlist}
+            />
           </div>
-        )}
-      </div>
+          {components.length ? (
+            <>
+              {!filter.showArchive && actions.edit && !isLoading ? (
+                <AddCardButton title="Добавить вишлист" onPress={onOpen} />
+              ) : null}
+              {components}
+            </>
+          ) : (
+            <div className="col-span-full text-center">
+              <h1 className="text-4xl	col-span-full">
+                {filter.showArchive
+                  ? "Список архивированных вишлистов пуст"
+                  : "Список вишлистов пуст"}
+              </h1>
+              {actions.edit && !filter.showArchive ? (
+                <Button
+                  color="primary"
+                  startContent={<IoMdAdd />}
+                  variant="light"
+                  onPress={onOpen}
+                >
+                  Добавить
+                </Button>
+              ) : null}
+            </div>
+          )}
+        </div>
+      </>
     );
   },
 );

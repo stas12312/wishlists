@@ -25,18 +25,16 @@ const WishlistFilter = ({
       }}
       isShowBadge={activeValue === "false"}
     >
-      <div className="flex flex-wrap flex-col gap-4 p-4">
-        <Tabs
-          key="filter1"
-          aria-label="Tabs sizes"
-          selectedKey={activeValue}
-          size="sm"
-          onSelectionChange={setActiveValue}
-        >
-          <Tab key="true" title="Активные" />
-          <Tab key="false" title="Архивные" />
-        </Tabs>
-      </div>
+      <Tabs
+        key="filter1"
+        aria-label="Tabs sizes"
+        selectedKey={activeValue}
+        size="sm"
+        onSelectionChange={setActiveValue}
+      >
+        <Tab key="true" title="Активные" />
+        <Tab key="false" title="Архивные" />
+      </Tabs>
     </Filter>
   );
 };
