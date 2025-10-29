@@ -353,10 +353,14 @@ func (u *userServiceImpl) OAuthAuth(
 			OAuthUserId: userFromOAuth.Id,
 		}
 
-		existsUser, err := store.UserRepository().GetByEmail(userFromOAuth.Email)
-		if err != nil && !errors.Is(err, sql.ErrNoRows) {
-			return apperror.NewError(apperror.DatabaseError, "Ошибка при получении пользователя")
+		existsUser := &model.User{}
+		if userFromOAuth.Email != "" {
+			existsUser, err = store.UserRepository().GetByEmail(userFromOAuth.Email)
+			if err != nil && !errors.Is(err, sql.ErrNoRows) {
+				return apperror.NewError(apperror.DatabaseError, "Ошибка при получении пользователя")
+			}
 		}
+
 		if existsUser.Id != 0 {
 			oAuthUser.UserId = existsUser.Id
 		} else {

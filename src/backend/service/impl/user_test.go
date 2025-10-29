@@ -1434,7 +1434,6 @@ func Test_userServiceImpl_OAuthAuth(t *testing.T) {
 						&model.User{Id: int64(1000), Email: "email", Name: "Name", Password: "", IsActive: true},
 						nil,
 					)
-
 				oauthMock.
 					On("Create", &model.OAuthUser{Provider: "provider", OAuthUserId: "1", UserId: 1000}).
 					Once().
@@ -1442,6 +1441,50 @@ func Test_userServiceImpl_OAuthAuth(t *testing.T) {
 
 			},
 			want: &model.User{Id: int64(1000), Email: "email", Name: "Name", Password: "", IsActive: true},
+			args: args{
+				context.Background(),
+				int64(0),
+				"provider",
+				"token",
+			},
+		},
+		{
+			name: "Without Email",
+			mockBehaviour: func(
+				userMock *mocks.UserRepository,
+				oauthMock *mocks.OAuthUserRepository,
+				clientMock *mocks4.Client,
+			) {
+
+				clientMock.
+					On("GetProvider").
+					Once().
+					Return("provider")
+
+				clientMock.
+					On("GetUserInfo", "token").
+					Once().
+					Return(&oauth.User{Id: "1", Email: "", Name: "Name"}, nil)
+
+				oauthMock.
+					On("Get", "provider", "1").
+					Once().
+					Return(&model.OAuthUser{}, nil)
+
+				userMock.
+					On("Create", "", "", "Name", true, "", model.NullDate{}).
+					Once().
+					Return(
+						&model.User{Id: int64(1000), Email: "", Name: "Name", Password: "", IsActive: true},
+						nil,
+					)
+				oauthMock.
+					On("Create", &model.OAuthUser{Provider: "provider", OAuthUserId: "1", UserId: 1000}).
+					Once().
+					Return(nil)
+
+			},
+			want: &model.User{Id: int64(1000), Email: "", Name: "Name", Password: "", IsActive: true},
 			args: args{
 				context.Background(),
 				int64(0),
