@@ -64,7 +64,7 @@ VALUES ($1, $2, $3, $4, $5, $6)
 ON CONFLICT (lower(email))
     DO UPDATE 
 	SET 
-	    email = $1,
+	    email = NULLIF($1, ''),
 		password = $2,
 		name = $3,
 		is_active = $4,
