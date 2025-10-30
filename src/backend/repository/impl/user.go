@@ -15,7 +15,9 @@ type UserRepositoryPostgres struct {
 
 func (r *UserRepositoryPostgres) GetByEmail(email string) (*model.User, error) {
 	query := `
-SELECT *
+SELECT 
+    *, 
+    COALESCE("email", '') AS pretty_email
 FROM users
 WHERE 
     lower(email) = lower($1)
@@ -29,7 +31,9 @@ WHERE
 
 func (r *UserRepositoryPostgres) GetByUsername(username string) (*model.User, error) {
 	query := `
-		SELECT *
+		SELECT
+		    *,
+			COALESCE("email", '') AS pretty_email
 		FROM users
 		WHERE 
 			lower(username) = lower($1)
@@ -43,7 +47,8 @@ func (r *UserRepositoryPostgres) GetByUsername(username string) (*model.User, er
 
 func (r *UserRepositoryPostgres) GetById(id int64) (*model.User, error) {
 	query := `
-SELECT *
+SELECT *,
+		COALESCE("email", '') AS pretty_email
 FROM users
 WHERE
 	user_id = $1
@@ -60,7 +65,7 @@ func (r *UserRepositoryPostgres) Create(
 
 	query := `
 INSERT INTO users (email, password, name, is_active, image, birthday) 
-VALUES ($1, $2, $3, $4, $5, $6)
+VALUES (NULLIF($1, ''), $2, $3, $4, $5, $6)
 ON CONFLICT (lower(email))
     DO UPDATE 
 	SET 
@@ -70,7 +75,9 @@ ON CONFLICT (lower(email))
 		is_active = $4,
 		image = $5,
 		birthday = $6
-RETURNING *
+RETURNING 
+	*, 			
+    COALESCE("email", '') AS pretty_email
 `
 	user := &model.User{}
 
@@ -90,7 +97,9 @@ func (r *UserRepositoryPostgres) Update(user *model.User) (*model.User, error) {
 		image = $6,
 		birthday = $7
 	WHERE user_id = $1
-	RETURNING *
+	RETURNING 
+		*, 			
+	    COALESCE("email", '') AS pretty_email
 `
 
 	updatedUser := &model.User{}
