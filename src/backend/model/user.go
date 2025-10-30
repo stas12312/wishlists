@@ -2,7 +2,7 @@ package model
 
 type User struct {
 	Id        int64    `json:"id" db:"user_id"`
-	Email     string   `json:"pretty_email"`
+	Email     string   `json:"email" db:"pretty_email"`
 	Name      string   `json:"name"`
 	Password  string   `json:"-"`
 	IsActive  bool     `json:"-" db:"is_active"`
