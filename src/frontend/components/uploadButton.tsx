@@ -9,12 +9,14 @@ const UploadButton = ({
   accept,
   handleFile,
   isLoading = false,
+  title = "загрузить",
 }: {
-  previewUrl: string | undefined;
+  previewUrl?: string | undefined;
   className: string;
   accept: string[];
   handleFile: { (file: File): void };
   isLoading?: boolean;
+  title?: string;
 }) => {
   const [isOver, setIsOver] = useState(false);
 
@@ -68,12 +70,12 @@ const UploadButton = ({
 
           {!isOver ? (
             <span className="group-hover:opacity-90 w-full h-full duration-300 absolute flex top-0 justify-center hover:bg-default-300 bg-default-200 opacity-40 rounded-xl z-1">
-              <span className="absolute flex flex-col justify-center left-0 top-0 right-0 bottom-0 ">
+              <span className="absolute flex flex-col justify-center left-0 top-0 right-0 bottom-0 p-2">
                 <span className="flex justify-center text-2xl">
                   <MdOutlineFileUpload />
                 </span>
                 <span className="text-tiny text-center font-normal">
-                  загрузить
+                  {title}
                 </span>
               </span>
             </span>
@@ -90,7 +92,10 @@ const UploadButton = ({
             className="hidden"
             id={id}
             type="file"
-            onChange={handleFileChange}
+            onChange={(e) => {
+              handleFileChange(e);
+            }}
+            onClick={(e) => (e.currentTarget.value = "")}
           />
         </>
       )}

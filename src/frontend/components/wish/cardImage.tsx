@@ -24,11 +24,11 @@ const CardImage = ({
       <div
         className={`bg-gradient-to-br from-default to-default-100 rounded-large w-full flex h-full`}
       >
-        {wish.image ? (
+        {wish.images?.length ? (
           <Image
             className="z-0 object-cover h-full w-full mx-auto"
             removeWrapper={removeWrapper}
-            src={wish.image}
+            src={wish.images[0]}
           />
         ) : (
           <AiFillGift className={`text-8xl mx-auto my-auto ${iconClassName}`} />

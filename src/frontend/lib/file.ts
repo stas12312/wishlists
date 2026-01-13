@@ -1,5 +1,5 @@
-const FILE_SIZE_LIMIT = 3 * 1024 * 1024; // 3 МБ
-const FILE_SIZE_NAME = "3 МБ";
+export const FILE_SIZE_LIMIT = 3 * 1024 * 1024; // 3 МБ
+export const FILE_SIZE_NAME = "3 МБ";
 
 export function isValidFile(file: File, acceptedFormats: string[]): boolean {
   const ext = getFileExt(file.name);
@@ -24,4 +24,13 @@ export function checkFile(
     return `Размер файла превышает допустимый размер (${maxSizeName})`;
   }
   return null;
+}
+
+export function readableBytes(bytes: number): string {
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  const sizes = ["Б", "КБ", "МБ", "ГБ"];
+
+  const converterValue = (bytes / Math.pow(1024, i)).toFixed(2);
+
+  return `${converterValue} ${sizes[i]}`;
 }

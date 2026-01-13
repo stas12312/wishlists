@@ -1,31 +1,32 @@
 "use client";
+
 import { Button } from "@heroui/button";
 import { NumberInput } from "@heroui/number-input";
 import { Input, Textarea } from "@heroui/input";
-import { ClipboardEvent, FormEvent, useState } from "react";
+import { ClipboardEvent, FormEvent, useEffect, useState } from "react";
 import { Form } from "@heroui/form";
 import { MdOutlineFileDownload } from "react-icons/md";
 import { useDisclosure } from "@heroui/modal";
 import { Divider } from "@heroui/divider";
 import { Select, SelectItem } from "@heroui/select";
+import { v4 } from "uuid";
 
-import UploadButton from "../uploadButton";
 import Desirability from "../desirability";
 import MarketIcon from "../marketIcon";
 import IconsGroup from "../iconsGroup";
+import UploadButton from "../uploadButton";
 
 import LoadByLinkModal from "./loadByLinkModal";
+import { ImageItem, UploadImage } from "./imageItem";
 
-import { uploadFile } from "@/lib/requests";
 import { updateWish } from "@/lib/requests/wish";
 import { createWish } from "@/lib/requests/wish";
 import { IError } from "@/lib/models";
 import { IWish } from "@/lib/models/wish";
 import { isURL } from "@/lib/url";
 import { CURRENCIES } from "@/lib/currency";
-import { checkFile } from "@/lib/file";
+import { checkFile, FILE_SIZE_NAME } from "@/lib/file";
 import { ParseResult } from "@/lib/models/parse";
-
 const ACCEPTED_FILE_EXTS = ["jpg", "jpeg", "png", "webp"];
 
 export default function WishForm(props: {
@@ -39,7 +40,7 @@ export default function WishForm(props: {
     comment: string;
     cost: number | undefined;
     link: string | undefined;
-    image: string | undefined;
+    images: string[];
     wishlist_uuid: string;
     uuid: string | undefined;
     desirability: number;
@@ -49,7 +50,7 @@ export default function WishForm(props: {
     comment: existsWish?.comment || "",
     cost: existsWish?.cost || undefined,
     link: existsWish?.link || "",
-    image: existsWish?.image || "",
+    images: existsWish?.images || [],
     wishlist_uuid: props.wishlistUUID,
     uuid: existsWish?.uuid,
     desirability: existsWish?.desirability || 1,
@@ -68,6 +69,14 @@ export default function WishForm(props: {
   const [isCreating, setIsCreating] = useState(false);
   const [imageIsLoading, setImageIsLoading] = useState(false);
   const loadByLinkDisclosure = useDisclosure();
+  const [uploadedImages, setImages] = useState(
+    formData.images.map((image) => {
+      return {
+        url: image,
+        key: image,
+      };
+    }) as UploadImage[],
+  );
 
   async function handleFile(file: File) {
     setErrorMessages({ ...errorMessages, image: "" });
@@ -78,9 +87,8 @@ export default function WishForm(props: {
     }
     try {
       setImageIsLoading(true);
-      const url = await uploadFile(file);
-      setFormData({ ...formData, image: url });
-    } catch {
+      setImages([...uploadedImages, { file: file, key: v4() }]);
+    } catch (e) {
       setErrorMessages({ ...errorMessages, image: "Возникла ошибка" });
     } finally {
       setImageIsLoading(false);
@@ -96,6 +104,15 @@ export default function WishForm(props: {
       }
     }
   };
+
+  useEffect(() => {
+    setFormData({
+      ...formData,
+      images: uploadedImages.map((image) => {
+        return image.url;
+      }),
+    });
+  }, [uploadedImages]);
 
   async function onSumbitForm(e: FormEvent) {
     e.preventDefault();
@@ -153,11 +170,10 @@ export default function WishForm(props: {
       link: link,
       currency: result.currency,
       name: result.title,
-      image: result.image,
+      images: [result.image],
       cost: result.cost,
     });
   }
-
   return (
     <>
       <div onPaste={onPasteImage}>
@@ -294,31 +310,7 @@ export default function WishForm(props: {
             />
             {<MarketIcon className="my-auto" link={formData.link} />}
           </div>
-
-          <div className="flex sm:flex-row flex-col gap-4 w-full">
-            <Input
-              isClearable
-              label="Ссылка на картинку"
-              name="image"
-              value={formData.image}
-              onChange={handlerChange}
-              onClear={() => setFormData({ ...formData, image: "" })}
-              onPaste={onPasteImage}
-            />
-            <div className="flex flex-col">
-              <UploadButton
-                accept={ACCEPTED_FILE_EXTS}
-                className="h-[140px] w-[180px] object-cover"
-                handleFile={handleFile}
-                isLoading={imageIsLoading}
-                previewUrl={formData.image}
-              />
-              <span className="text-danger text-tiny">
-                {errorMessages.image}
-              </span>
-            </div>
-          </div>
-          <div className="flex flex-col justify-center items-center w-full">
+          <div className="flex flex-col justify-center items-center w-full bg-default-100 rounded-medium p-1">
             <span>Желанность</span>
             <Desirability
               size="xl"
@@ -328,6 +320,43 @@ export default function WishForm(props: {
               }}
             />
           </div>
+          <UploadButton
+            accept={ACCEPTED_FILE_EXTS}
+            className="h-16 w-full object-cover"
+            handleFile={handleFile}
+            isLoading={imageIsLoading}
+            title={`Перетащите файл сюда или нажмите для выбора файла (Не более ${FILE_SIZE_NAME})`}
+          />
+          <div className="flex sm:flex-row flex-col gap-4 w-full">
+            <div className="flex flex-col w-full">
+              <span className="text-danger text-tiny">
+                {errorMessages.image}
+              </span>
+            </div>
+          </div>
+          <div className="w-full flex flex-col gap-1">
+            {uploadedImages.map((image) => (
+              <ImageItem
+                key={image.key}
+                uploadImage={image}
+                onDelete={(key) => {
+                  setImages(uploadedImages.filter((item) => item.key != key));
+                }}
+                onUpload={(key, url) => {
+                  setImages(
+                    uploadedImages.map((image) => {
+                      return {
+                        url: key == image.key ? url : image.url,
+                        key: image.key,
+                        file: undefined,
+                      };
+                    }),
+                  );
+                }}
+              />
+            ))}
+          </div>
+
           {errorMessages.details ? (
             <p className="text-danger text-tiny">{errorMessages.details}</p>
           ) : (
