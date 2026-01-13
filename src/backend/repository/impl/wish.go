@@ -1,9 +1,10 @@
 package impl
 
 import (
-	"github.com/gofiber/fiber/v2/log"
 	"main/db"
 	"main/model"
+
+	"github.com/gofiber/fiber/v2/log"
 )
 
 func NewWishRepositoryImpl(connection db.Connection) *WishRepositoryPostgres {
@@ -19,14 +20,14 @@ func (r *WishRepositoryPostgres) Create(wish *model.Wish) (*model.Wish, error) {
 
 	query := `
 	INSERT INTO wishes
-	(name, comment, link, wishlist_uuid, image, desirability, cost, currency)
+	(name, comment, link, wishlist_uuid, images, desirability, cost, currency)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 	RETURNING *
 `
 
 	err := r.Connection.Get(
 		createdWish, query, wish.Name, wish.Comment, wish.Link,
-		wish.WishlistUuid, wish.Image, wish.Desirability, wish.Cost,
+		wish.WishlistUuid, wish.Images, wish.Desirability, wish.Cost,
 		wish.Currency,
 	)
 
@@ -44,7 +45,7 @@ func (r *WishRepositoryPostgres) Update(wish *model.Wish) (*model.Wish, error) {
 		  	name = $2,
 		  	comment = $3,
 		  	link = $4,
-		  	image = $5,
+		  	images = $5,
 		  	desirability = $6,
 		  	cost = $7,
 			wishlist_uuid = $8,
@@ -66,7 +67,7 @@ func (r *WishRepositoryPostgres) Update(wish *model.Wish) (*model.Wish, error) {
 		wish.Name,
 		wish.Comment,
 		wish.Link,
-		wish.Image,
+		wish.Images,
 		wish.Desirability,
 		wish.Cost,
 		wish.WishlistUuid,
@@ -119,6 +120,9 @@ func (r *WishRepositoryPostgres) ListForWishlist(wishlistUuid string) (*[]model.
 	wishes := &[]model.Wish{}
 
 	err := r.Connection.Select(wishes, query, wishlistUuid)
+	if err != nil {
+		log.Error("[ListForWishlist] error querying wishes: " + err.Error())
+	}
 	return wishes, err
 }
 
