@@ -15,6 +15,7 @@ ARG sentry_dsn
 ARG ws_url
 
 ENV BASE_URL $base_url
+ENV NEXT_PUBLIC_BASE_URL $base_url
 ENV NEXT_PUBLIC_YANDEX_METRIKA_ID $yandex_metrika_id
 ENV NEXT_PUBLIC_STATIC_URL $static_url
 

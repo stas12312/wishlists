@@ -8,7 +8,7 @@ export interface IWish {
   link?: string;
   wishlist_uuid: string;
   fulfilled_at?: string;
-  image?: string;
+  images: string[];
   desirability?: number;
   created_at?: string;
   cost?: number;
