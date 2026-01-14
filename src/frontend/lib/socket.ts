@@ -1,9 +1,6 @@
 import { Options } from "react-use-websocket";
 
-export function getCookie(name: string) {
-  let match = document.cookie.match(new RegExp(name + "=([^;]+)"));
-  return match ? match[1] : undefined;
-}
+import { getCookie } from "./cookie";
 
 export function getWebsocketUrl(): string {
   const accessToken = getCookie("access_token");
