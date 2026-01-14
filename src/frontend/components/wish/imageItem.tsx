@@ -8,6 +8,7 @@ import { MdDelete } from "react-icons/md";
 import { Progress } from "@heroui/react";
 
 import { readableBytes } from "@/lib/file";
+import { getCookie } from "@/lib/cookie";
 
 export interface UploadImage {
   url?: string | undefined;
@@ -67,7 +68,7 @@ export const ImageItem = ({
           });
         }
       });
-      const accessToken = await cookieStore.get("access_token");
+      const accessToken = getCookie("access_token");
       const response = await new Promise<string>((resolve, reject) => {
         xhr.addEventListener("load", () => {
           if (xhr.status === 200) {
@@ -81,7 +82,7 @@ export const ImageItem = ({
           "POST",
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/images/upload`,
         );
-        xhr.setRequestHeader("Authorization", "Bearer " + accessToken?.value);
+        xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
 
         xhr.send(formData);
       });
