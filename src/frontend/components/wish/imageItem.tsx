@@ -38,11 +38,9 @@ export const ImageItem = ({
   });
 
   useEffect(() => {
-    return () => {
-      if (uploadImage.file) {
-        uploadFile();
-      }
-    };
+    if (uploadImage.file) {
+      uploadFile();
+    }
   }, []);
 
   const [isUploading, setIsUploading] = useState(false);
