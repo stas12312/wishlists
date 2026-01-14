@@ -109,7 +109,7 @@ export default function WishForm(props: {
     setFormData({
       ...formData,
       images: uploadedImages.map((image) => {
-        return image.url;
+        return image.url || "";
       }),
     });
   }, [uploadedImages]);
