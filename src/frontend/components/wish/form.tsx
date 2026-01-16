@@ -165,6 +165,7 @@ export default function WishForm(props: {
   }
 
   function setLinkResult(result: ParseResult, link: string) {
+    setImages([{ url: result.image, key: result.image }]);
     setFormData({
       ...formData,
       link: link,
