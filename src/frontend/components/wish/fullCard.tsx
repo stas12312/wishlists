@@ -12,7 +12,7 @@ import { Avatar } from "@heroui/avatar";
 
 import MarketIcon from "../marketIcon";
 
-import CardImage from "./cardImage";
+import { ImageSwiper } from "./swiper";
 
 import { IWish } from "@/lib/models/wish";
 import { getMenuItemsByActions } from "@/lib/wish/menu";
@@ -75,7 +75,7 @@ const WishFullCard = ({
                 </Link>
               ) : null}
 
-              <CardImage removeWrapper iconClassName="h-64" wish={wish} />
+              <ImageSwiper wish={wish} />
 
               <div className="flex flex-col gap-2">
                 {menuItems.map((value) => (
