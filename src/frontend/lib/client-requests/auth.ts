@@ -119,15 +119,3 @@ export async function resetPassword(
 
   return response.data;
 }
-
-export async function OAuth(
-  type: string,
-  token: string,
-): Promise<ITokens | IError> {
-  const response = await authAxios.post("/auth/oauth", {
-    type: type,
-    token: token,
-  });
-
-  return response.data;
-}

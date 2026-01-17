@@ -17,3 +17,15 @@ export async function refreshTokens(
   });
   return response.data;
 }
+
+export async function OAuth(
+  type: string,
+  token: string,
+): Promise<ITokens | IError> {
+  const response = await serverAxios.post("/auth/oauth", {
+    type: type,
+    token: token,
+  });
+
+  return response.data;
+}
