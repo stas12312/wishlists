@@ -87,7 +87,7 @@ func (c *UserController) Auth(ctx *fiber.Ctx) error {
 		return err
 	}
 	tokenPair := makeTokenPair(user.Id, user.Email, &c.JWT)
-	SetRefreshToken(ctx, tokenPair.RefreshToken, &c.Config.JWT)
+	SetRefreshToken(ctx, tokenPair.RefreshToken, c.Config)
 	return ctx.JSON(tokenPair)
 }
 
@@ -132,7 +132,7 @@ func (c *UserController) RefreshToken(ctx *fiber.Ctx) error {
 		id := int64(claims["id"].(float64))
 		email := claims["email"].(string)
 		newTokenPair := makeTokenPair(id, email, &c.Config.JWT)
-		SetRefreshToken(ctx, newTokenPair.RefreshToken, &c.Config.JWT)
+		SetRefreshToken(ctx, newTokenPair.RefreshToken, c.Config)
 		return ctx.JSON(newTokenPair)
 	}
 
@@ -156,7 +156,7 @@ func (c *UserController) Confirm(ctx *fiber.Ctx) error {
 	}
 
 	tokenPair := makeTokenPair(user.Id, user.Email, &c.Config.JWT)
-	SetRefreshToken(ctx, tokenPair.RefreshToken, &c.Config.JWT)
+	SetRefreshToken(ctx, tokenPair.RefreshToken, c.Config)
 	return ctx.JSON(tokenPair)
 }
 
@@ -217,7 +217,7 @@ func (c *UserController) Reset(ctx *fiber.Ctx) error {
 	}
 
 	newTokenPair := makeTokenPair(user.Id, user.Email, &c.Config.JWT)
-	SetRefreshToken(ctx, newTokenPair.RefreshToken, &c.Config.JWT)
+	SetRefreshToken(ctx, newTokenPair.RefreshToken, c.Config)
 	return ctx.JSON(newTokenPair)
 
 }
@@ -270,7 +270,7 @@ func (c *UserController) OAuth(ctx *fiber.Ctx) error {
 	}
 
 	tokenPair := makeTokenPair(user.Id, user.Email, &c.JWT)
-	SetRefreshToken(ctx, tokenPair.RefreshToken, &c.Config.JWT)
+	SetRefreshToken(ctx, tokenPair.RefreshToken, c.Config)
 	return ctx.JSON(tokenPair)
 
 }
@@ -401,13 +401,14 @@ func GetUserIdFromCtx(ctx *fiber.Ctx) int64 {
 	return 0
 }
 
-func SetRefreshToken(ctx *fiber.Ctx, refreshToken string, jwtConfig *config.JWTConfig) {
+func SetRefreshToken(ctx *fiber.Ctx, refreshToken string, config *config.Config) {
 	ctx.Cookie(&fiber.Cookie{
 		Name:     "refresh_token",
 		Value:    refreshToken,
 		HTTPOnly: true,
 		Secure:   true,
-		MaxAge:   int(jwtConfig.RefreshExpireTime.Seconds()),
+		SameSite: fiber.CookieSameSiteNoneMode,
+		Expires:  time.Now().Add(time.Minute * config.JWT.RefreshExpireTime),
 	})
 }
 

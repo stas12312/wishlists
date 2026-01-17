@@ -17,7 +17,7 @@ import ConfirmationModal from "../confirmation";
 
 import WishlistSaveModal from "./saveModal";
 
-import { restoreWishlist } from "@/lib/requests";
+import { restoreWishlist } from "@/lib/client-requests/wishlist";
 import { IWishlist } from "@/lib/models/wishlist";
 
 export const WishlistItemMenu = ({

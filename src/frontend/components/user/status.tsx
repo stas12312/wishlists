@@ -4,7 +4,7 @@ import { Chip } from "@heroui/chip";
 import { addToast } from "@heroui/toast";
 
 import { FriendStatus } from "@/lib/models";
-import { AddFriend } from "@/lib/requests";
+import { AddFriend } from "@/lib/client-requests/friend";
 
 const UserStatus = ({
   friendStatus,

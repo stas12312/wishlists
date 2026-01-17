@@ -15,7 +15,8 @@ import WishlistFilter from "./filter";
 
 import { Cursor } from "@/lib/models";
 import { IWishlist, IWishlistAction } from "@/lib/models/wishlist";
-import { deleteWishlist, getWishlists } from "@/lib/requests";
+import { getWishlists } from "@/lib/client-requests/wishlist";
+import { deleteWishlist } from "@/lib/client-requests/wishlist";
 import userStore from "@/store/userStore";
 
 export interface IWishlistFilter {

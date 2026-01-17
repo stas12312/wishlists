@@ -1,4 +1,3 @@
-"use server";
 import {
   ParseError,
   ParseStartInfo,
@@ -6,10 +5,10 @@ import {
   ShopParam,
 } from "../models/parse";
 
-import { axiosInstance } from "./base";
+import { clientAxios } from "./base";
 
 export async function parse(url: string): Promise<ParseStartInfo | ParseError> {
-  const response = await axiosInstance.post("parse", {
+  const response = await clientAxios.post("parse", {
     url: url,
   });
 
@@ -17,11 +16,11 @@ export async function parse(url: string): Promise<ParseStartInfo | ParseError> {
 }
 
 export async function getParseStatus(task_id: string): Promise<ParseStatus> {
-  const response = await axiosInstance.get(`parse/${task_id}/status`);
+  const response = await clientAxios.get(`parse/${task_id}/status`);
   return response.data;
 }
 
 export async function getAvailableParser(): Promise<ShopParam[]> {
-  const response = await axiosInstance.get("parse/available");
+  const response = await clientAxios.get("parse/available");
   return response.data;
 }

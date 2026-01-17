@@ -13,12 +13,9 @@ import UploadButton from "../uploadButton";
 
 import { getUserLink } from "@/lib/label";
 import { IUser } from "@/lib/models/user";
-import {
-  getMe,
-  getUserByUsername,
-  updateUser,
-  uploadFile,
-} from "@/lib/requests";
+import { uploadFile } from "@/lib/client-requests/file";
+import { getUserByUsername, updateUser } from "@/lib/client-requests/user";
+import { getMe } from "@/lib/client-requests/user";
 import userStore from "@/store/userStore";
 import { checkFile } from "@/lib/file";
 import { dateStringToCalendarDate } from "@/lib/date";

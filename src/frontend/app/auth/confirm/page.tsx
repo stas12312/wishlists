@@ -3,7 +3,7 @@ import { redirect, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 
 import { setTokens } from "@/lib/auth";
-import { confirmEmail } from "@/lib/requests";
+import { confirmEmail } from "@/lib/client-requests/auth";
 
 function Confirm() {
   const searchParams = useSearchParams();

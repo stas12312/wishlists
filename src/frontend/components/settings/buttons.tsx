@@ -9,7 +9,7 @@ import ConfirmationModal from "../confirmation";
 
 import userStore from "@/store/userStore";
 import { logout } from "@/lib/auth";
-import { deleteAccount } from "@/lib/requests/user";
+import { deleteAccount } from "@/lib/client-requests/user";
 
 export const DeleteAccountButton = observer(() => {
   const [isOpen, setIsOpen] = useState(false);

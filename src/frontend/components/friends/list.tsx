@@ -10,8 +10,9 @@ import FriendItem from "./card";
 import FriendMenu from "./menu";
 
 import { IUser } from "@/lib/models/user";
-import { getUserFriends } from "@/lib/requests/user";
-import { deleteFriend, getFriends } from "@/lib/requests";
+import { getUserFriends } from "@/lib/client-requests/user";
+import { getFriends } from "@/lib/client-requests/friend";
+import { deleteFriend } from "@/lib/client-requests/friend";
 
 const FriendsList = observer(
   ({

@@ -19,8 +19,8 @@ import UploadButton from "../uploadButton";
 import LoadByLinkModal from "./loadByLinkModal";
 import { ImageItem, UploadImage } from "./imageItem";
 
-import { updateWish } from "@/lib/requests/wish";
-import { createWish } from "@/lib/requests/wish";
+import { updateWish } from "@/lib/client-requests/wish";
+import { createWish } from "@/lib/client-requests/wish";
 import { IError } from "@/lib/models";
 import { IWish } from "@/lib/models/wish";
 import { isURL } from "@/lib/url";

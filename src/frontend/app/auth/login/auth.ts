@@ -1,7 +1,7 @@
 "use server";
 import { jwtDecode } from "jwt-decode";
 
-import { authRequest } from "@/lib/requests";
+import { authRequest } from "@/lib/client-requests/auth";
 import { IError } from "@/lib/models";
 import { setTokens } from "@/lib/auth";
 

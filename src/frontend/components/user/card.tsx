@@ -10,8 +10,9 @@ import { MdCake } from "react-icons/md";
 import UserStatus from "./status";
 
 import { FriendStatus } from "@/lib/models";
-import { getUserFriendsCount } from "@/lib/requests/user";
-import { getFriendStatus, getUserByUsername } from "@/lib/requests";
+import { getUserFriendsCount } from "@/lib/client-requests/user";
+import { getUserByUsername } from "@/lib/client-requests/user";
+import { getFriendStatus } from "@/lib/client-requests/friend";
 import { IUser } from "@/lib/models/user";
 import { wrapUsername } from "@/lib/user";
 import { getLabelForCount, getUserLink } from "@/lib/label";

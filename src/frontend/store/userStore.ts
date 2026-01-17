@@ -1,7 +1,7 @@
 import { makeAutoObservable, flow } from "mobx";
 
 import { IUser } from "@/lib/models/user";
-import { getMe } from "@/lib/requests";
+import { getMe } from "@/lib/client-requests/user";
 
 const emptyUser = { id: 0, name: "", email: "", username: "", image: "" };
 
