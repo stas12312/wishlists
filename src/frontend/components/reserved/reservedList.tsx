@@ -6,7 +6,7 @@ import { WishItem } from "../wish/card";
 import PageHeader from "../pageHeader";
 import { PageSpinner } from "../pageSpinner";
 
-import { getReservedWishes } from "@/lib/requests";
+import { getReservedWishes } from "@/lib/client-requests/wish";
 import { IWish } from "@/lib/models/wish";
 
 export const ReservedWishes = observer(() => {

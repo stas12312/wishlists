@@ -11,7 +11,7 @@ import CodeInput from "@/components/codeInput";
 import PasswordInput from "@/components/passwordInput";
 import { setTokens } from "@/lib/auth";
 import { IRegisterData } from "@/lib/models/auth";
-import { confirmEmail, register } from "@/lib/requests";
+import { confirmEmail, register } from "@/lib/client-requests/auth";
 
 const COUNT_DOWN_DURATION = 1000 * 30 + 500;
 

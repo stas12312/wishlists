@@ -5,7 +5,7 @@ import { Spinner } from "@heroui/spinner";
 import { Listbox, ListboxItem } from "@heroui/listbox";
 
 import { IWishlist } from "@/lib/models/wishlist";
-import { getWishlists } from "@/lib/requests";
+import { getWishlists } from "@/lib/client-requests/wishlist";
 import userStore from "@/store/userStore";
 
 const SelectWishlistModal = observer(

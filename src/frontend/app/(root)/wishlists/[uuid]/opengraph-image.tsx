@@ -1,5 +1,5 @@
 import { getOgImage } from "@/components/ogImage";
-import { getWishlist } from "@/lib/requests";
+import { getWishlist } from "@/lib/client-requests/wishlist";
 
 export const runtime = "edge";
 export const alt = "Вишлист";

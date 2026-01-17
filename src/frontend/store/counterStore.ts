@@ -1,7 +1,7 @@
 import { makeAutoObservable, flow } from "mobx";
 
 import { FriendsCounters } from "@/lib/models";
-import { getFriendsCounters } from "@/lib/requests";
+import { getFriendsCounters } from "@/lib/client-requests/friend";
 
 class CountersStore {
   friendCounters: FriendsCounters = { friends: 0, incoming_requests: 0 };

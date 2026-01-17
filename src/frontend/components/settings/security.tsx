@@ -6,7 +6,7 @@ import { addToast } from "@heroui/toast";
 
 import PasswordInput from "../passwordInput";
 
-import { changePassword, getAuthInfo } from "@/lib/requests/user";
+import { changePassword, getAuthInfo } from "@/lib/client-requests/user";
 
 interface IFormErrors {
   newPassword?: string;

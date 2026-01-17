@@ -6,7 +6,11 @@ import { redirect, useSearchParams } from "next/navigation";
 import { FormEvent, Suspense, useEffect, useState } from "react";
 import { Link } from "@heroui/link";
 
-import { checkCode, resetPassword, restorePassword } from "@/lib/requests";
+import {
+  checkCode,
+  resetPassword,
+  restorePassword,
+} from "@/lib/client-requests/auth";
 import { ITokens } from "@/lib/models/auth";
 import { IRegisterData } from "@/lib/models/auth";
 import { setTokens } from "@/lib/auth";

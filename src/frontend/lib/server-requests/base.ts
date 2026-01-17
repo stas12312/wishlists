@@ -3,8 +3,8 @@ import axios from "axios";
 import { cookies } from "next/headers";
 
 axios.defaults.baseURL = `${process.env.BASE_URL}/api`;
-export const axiosInstance = axios.create({});
-axiosInstance.interceptors.request.use(async (config) => {
+export const serverAxios = axios.create({});
+serverAxios.interceptors.request.use(async (config) => {
   const cookieStore = await cookies();
 
   config.headers.Authorization = `Bearer ${cookieStore.get("access_token")?.value}`;
@@ -12,7 +12,7 @@ axiosInstance.interceptors.request.use(async (config) => {
   return config;
 });
 
-axiosInstance.interceptors.response.use(
+serverAxios.interceptors.response.use(
   async (response) => {
     return response;
   },

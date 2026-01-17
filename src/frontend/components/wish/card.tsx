@@ -16,12 +16,12 @@ import CardImage from "./cardImage";
 import WishSaveModal from "./saveModal";
 
 import { IWish, IWishActions } from "@/lib/models/wish";
-import { getWish } from "@/lib/requests";
-import { cancelWishFull, moveWish } from "@/lib/requests/wish";
-import { makeWishFull } from "@/lib/requests/wish";
-import { cancelReserveWish } from "@/lib/requests/wish";
-import { reserveWish } from "@/lib/requests/wish";
-import { deleteWish } from "@/lib/requests/wish";
+import { getWish } from "@/lib/client-requests/wish";
+import { cancelWishFull, moveWish } from "@/lib/client-requests/wish";
+import { makeWishFull } from "@/lib/client-requests/wish";
+import { cancelReserveWish } from "@/lib/client-requests/wish";
+import { reserveWish } from "@/lib/client-requests/wish";
+import { deleteWish } from "@/lib/client-requests/wish";
 
 export const WishItem = observer(
   ({

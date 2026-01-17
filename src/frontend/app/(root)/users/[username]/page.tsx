@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 
-import { getUserByUsername } from "@/lib/requests";
+import { getUserByUsername } from "@/lib/server-requests/user";
 import PageHeader from "@/components/pageHeader";
 import { Wishlists } from "@/components/wishlist/list";
 

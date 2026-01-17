@@ -21,7 +21,6 @@ services:
   backend:
     build:
       context: src/backend
-      target: dev
     container_name: backend
     networks:
       - default

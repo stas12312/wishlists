@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 import SignInForm from "@/components/auth/signInForm";
 import { Yandex } from "@/components/logo/yandex";
 import { getOgImageUrl } from "@/lib/label";
-import { getOAuthProviders } from "@/lib/requests";
+import { getOAuthProviders } from "@/lib/server-requests/auth";
 
 export const dynamic = "force-dynamic";
 const DESCRIPTION =

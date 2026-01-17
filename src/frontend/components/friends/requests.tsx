@@ -14,9 +14,9 @@ import countersStore from "@/store/counterStore";
 import {
   applyFriendRequest,
   declineFriendRequest,
-  deleteFriendRequest,
   getFriendRequests,
-} from "@/lib/requests";
+} from "@/lib/client-requests/friend";
+import { deleteFriendRequest } from "@/lib/client-requests/friend";
 import { IFriendRequest } from "@/lib/models";
 import { IUser } from "@/lib/models/user";
 import { getUserLink } from "@/lib/label";

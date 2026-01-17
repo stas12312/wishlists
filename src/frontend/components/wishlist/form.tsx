@@ -14,7 +14,8 @@ import { Form } from "@heroui/form";
 
 import { Visible } from "../visibleIcon";
 
-import { createWishList, getFriends, updateWishlist } from "@/lib/requests";
+import { getFriends } from "@/lib/client-requests/friend";
+import { createWishList, updateWishlist } from "@/lib/client-requests/wishlist";
 import { IWishlist } from "@/lib/models/wishlist";
 import { IUser } from "@/lib/models/user";
 import { dateStringToCalendarDate } from "@/lib/date";

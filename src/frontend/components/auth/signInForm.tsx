@@ -8,7 +8,7 @@ import { useState, FormEvent } from "react";
 
 import { IOAuthProvider } from "@/lib/models/auth";
 import PasswordInput from "@/components/passwordInput";
-import { getUser } from "@/app/auth/login/auth";
+import { login } from "@/lib/client-requests/auth";
 
 const SignInForm = ({ providers }: { providers: IOAuthProvider[] }) => {
   const router = useRouter();
@@ -27,7 +27,7 @@ const SignInForm = ({ providers }: { providers: IOAuthProvider[] }) => {
     e.preventDefault();
     setErrorMessage("");
     setIsLoading(true);
-    const result = await getUser(formData.email, formData.password);
+    const result = await login(formData.email, formData.password);
     if ("message" in result) {
       setErrorMessage(result.message);
     } else {

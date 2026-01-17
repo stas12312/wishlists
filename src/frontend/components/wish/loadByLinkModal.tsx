@@ -14,7 +14,7 @@ import {
   parse,
   getParseStatus,
   getAvailableParser,
-} from "@/lib/requests/parse";
+} from "@/lib/client-requests/parse";
 import { ParseResult, ShopParam } from "@/lib/models/parse";
 import { extractLink, isURL } from "@/lib/url";
 

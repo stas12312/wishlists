@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { ITokens } from "./models/auth";
-import { refreshTokens } from "./requests";
+import { refreshTokens } from "./server-requests/auth";
 import { IToken } from "./models/token";
 
 const MAX_AGE = 60 * 60 * 24 * 30;
@@ -13,6 +13,8 @@ export async function refreshTokenIfNeed(): Promise<string | null> {
   const cookie = await cookies();
 
   const accessToken: string | undefined = cookie.get("access_token")?.value;
+  const refreshTokenValue: string | undefined =
+    cookie.get("refresh_token")?.value;
   if (accessToken) {
     const tokenData = jwtDecode(accessToken);
     const expiredTime = tokenData.exp;
@@ -20,7 +22,10 @@ export async function refreshTokenIfNeed(): Promise<string | null> {
       return await refreshToken();
     }
   }
-  return null;
+  if (!accessToken && refreshTokenValue) {
+    return await refreshToken();
+  }
+  return accessToken ?? null;
 }
 
 export async function getTokenData(token: string) {
@@ -48,23 +53,25 @@ export async function logout() {
 export async function setTokens(tokens: ITokens): Promise<string> {
   const cookie = await cookies();
 
-  cookie.set("access_token", tokens.access_token, { maxAge: MAX_AGE });
-  cookie.set("refresh_token", tokens.refresh_token, { maxAge: MAX_AGE });
+  cookie.set("access_token", tokens.access_token, {
+    maxAge: MAX_AGE,
+    secure: true,
+    httpOnly: true,
+  });
   return tokens.access_token;
 }
 
-async function refreshToken(): Promise<string> {
+export async function refreshToken(): Promise<string> {
   const cookie = await cookies();
   const refreshToken = cookie.get("refresh_token")?.value;
 
   if (!refreshToken) {
     throw "Токен не найден";
   }
-  const response = await refreshTokens(refreshToken);
-
-  if ("message" in response) {
+  const data = await refreshTokens(refreshToken);
+  if ("message" in data) {
     throw "Некорректный ответ";
   }
 
-  return await setTokens(response);
+  return await setTokens(data);
 }

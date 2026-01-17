@@ -1,5 +1,5 @@
 import { getOgImage } from "@/components/ogImage";
-import { getUserByUsername } from "@/lib/requests";
+import { getUserByUsername } from "@/lib/client-requests/user";
 
 export const runtime = "edge";
 export const alt = "Вишлист";
