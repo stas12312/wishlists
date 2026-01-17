@@ -58,6 +58,12 @@ export async function setTokens(tokens: ITokens): Promise<string> {
     secure: true,
     httpOnly: true,
   });
+
+  cookie.set("refresh_token", tokens.refresh_token, {
+    maxAge: MAX_AGE,
+    secure: true,
+    httpOnly: true,
+  });
   return tokens.access_token;
 }
 
