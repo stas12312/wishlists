@@ -2,8 +2,6 @@ package controller
 
 import (
 	"fmt"
-	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v5"
 	"main/config"
 	apperror "main/error"
 	"main/middleware"
@@ -11,6 +9,9 @@ import (
 	"main/service"
 	"strings"
 	"time"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func NewUserController(userService *service.UserService, config *config.Config) *UserController {
@@ -86,7 +87,15 @@ func (c *UserController) Auth(ctx *fiber.Ctx) error {
 		return err
 	}
 	tokenPair := makeTokenPair(user.Id, user.Email, &c.JWT)
+	SetRefreshToken(ctx, tokenPair.RefreshToken, &c.Config.JWT)
 	return ctx.JSON(tokenPair)
+}
+
+func (c *UserController) Logout(ctx *fiber.Ctx) error {
+	ctx.ClearCookie("access_token")
+	ctx.ClearCookie("refresh_token")
+
+	return ctx.JSON(model.Response{Data: "ok"})
 }
 
 func (c *UserController) RefreshToken(ctx *fiber.Ctx) error {
@@ -94,18 +103,21 @@ func (c *UserController) RefreshToken(ctx *fiber.Ctx) error {
 		RefreshToken string `json:"refresh_token"`
 	}
 
-	refreshRequest := new(RefreshRequest)
+	tokenString := ctx.Cookies("refresh_token", "")
 
-	if err := ctx.BodyParser(refreshRequest); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).
-			JSON(model.ErrorResponse{Message: "Не передан токен", Details: err.Error()})
+	if tokenString == "" {
+		refreshRequest := new(RefreshRequest)
+		if err := ctx.BodyParser(refreshRequest); err != nil {
+			return ctx.Status(fiber.StatusBadRequest).
+				JSON(model.ErrorResponse{Message: "Не передан токен", Details: err.Error()})
+		}
+
+		tokenString = refreshRequest.RefreshToken
 	}
-
-	tokenString := refreshRequest.RefreshToken
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
 		return []byte(c.Config.JWT.RefreshSecretKey), nil
@@ -120,11 +132,12 @@ func (c *UserController) RefreshToken(ctx *fiber.Ctx) error {
 		id := int64(claims["id"].(float64))
 		email := claims["email"].(string)
 		newTokenPair := makeTokenPair(id, email, &c.Config.JWT)
+		SetRefreshToken(ctx, newTokenPair.RefreshToken, &c.Config.JWT)
 		return ctx.JSON(newTokenPair)
-	} else {
-		return ctx.Status(fiber.StatusBadRequest).
-			JSON(model.ErrorResponse{Message: "Ошибка формирования токена", Details: ""})
 	}
+
+	return ctx.Status(fiber.StatusBadRequest).
+		JSON(model.ErrorResponse{Message: "Ошибка формирования токена", Details: ""})
 
 }
 
@@ -143,6 +156,7 @@ func (c *UserController) Confirm(ctx *fiber.Ctx) error {
 	}
 
 	tokenPair := makeTokenPair(user.Id, user.Email, &c.Config.JWT)
+	SetRefreshToken(ctx, tokenPair.RefreshToken, &c.Config.JWT)
 	return ctx.JSON(tokenPair)
 }
 
@@ -203,6 +217,7 @@ func (c *UserController) Reset(ctx *fiber.Ctx) error {
 	}
 
 	newTokenPair := makeTokenPair(user.Id, user.Email, &c.Config.JWT)
+	SetRefreshToken(ctx, newTokenPair.RefreshToken, &c.Config.JWT)
 	return ctx.JSON(newTokenPair)
 
 }
@@ -255,6 +270,7 @@ func (c *UserController) OAuth(ctx *fiber.Ctx) error {
 	}
 
 	tokenPair := makeTokenPair(user.Id, user.Email, &c.JWT)
+	SetRefreshToken(ctx, tokenPair.RefreshToken, &c.Config.JWT)
 	return ctx.JSON(tokenPair)
 
 }
@@ -385,9 +401,20 @@ func GetUserIdFromCtx(ctx *fiber.Ctx) int64 {
 	return 0
 }
 
+func SetRefreshToken(ctx *fiber.Ctx, refreshToken string, jwtConfig *config.JWTConfig) {
+	ctx.Cookie(&fiber.Cookie{
+		Name:     "refresh_token",
+		Value:    refreshToken,
+		HTTPOnly: true,
+		Secure:   true,
+		MaxAge:   int(jwtConfig.RefreshExpireTime.Seconds()),
+	})
+}
+
 func (c *UserController) Route(router fiber.Router) {
 	auth := router.Group("/auth")
 	auth.Post("/login", c.Auth)
+	auth.Post("/logout", c.Logout)
 	auth.Post("/register", c.Register)
 	auth.Post("/refresh", c.RefreshToken)
 	auth.Post("/confirm", c.Confirm)
