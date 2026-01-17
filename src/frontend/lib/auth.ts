@@ -53,14 +53,16 @@ export async function logout() {
 export async function setTokens(tokens: ITokens): Promise<string> {
   const cookie = await cookies();
 
+  const accessTokenData = jwtDecode(tokens.access_token);
   cookie.set("access_token", tokens.access_token, {
-    maxAge: MAX_AGE,
+    expires: new Date((accessTokenData.exp ?? 0) * 1000),
     secure: true,
     httpOnly: true,
   });
 
+  const refreshTokenData = jwtDecode(tokens.refresh_token);
   cookie.set("refresh_token", tokens.refresh_token, {
-    maxAge: MAX_AGE,
+    expires: new Date((refreshTokenData.exp ?? 0) * 1000),
     secure: true,
     httpOnly: true,
   });
