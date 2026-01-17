@@ -3,8 +3,6 @@ import axios from "axios";
 import { IError } from "../models";
 import { IRegisterData, ITokens } from "../models/auth";
 
-import { clientAxios } from "./base";
-
 export const authAxios = axios.create({});
 
 authAxios.defaults.baseURL = `${process.env.NEXT_PUBLIC_BASE_URL}/api`;
@@ -111,7 +109,7 @@ export async function resetPassword(
   password: string,
   code?: string,
 ): Promise<ITokens | IError> {
-  const response = await clientAxios.post("/auth/reset-password/", {
+  const response = await authAxios.post("/auth/reset-password/", {
     ...registerData,
     code: code,
     password: password,
