@@ -1,6 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 
-import { logout, refreshTokens } from "./client-requests/auth";
+import { refreshTokens } from "./client-requests/auth";
 
 export class AuthManager {
   accessToken: string | undefined;
@@ -26,8 +26,6 @@ export class AuthManager {
     const response = await refreshTokens();
     if ("message" in response) {
       this.accessToken = undefined;
-      logout();
-      location.href = "/";
       return;
     }
     this.accessToken = response.access_token;
