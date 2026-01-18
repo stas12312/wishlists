@@ -6,6 +6,7 @@ import { observer } from "mobx-react-lite";
 import { createRef, useEffect, useRef, useState } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { addToast } from "@heroui/toast";
+import { useRouter } from "next/navigation";
 
 import AddCardButton from "../addCardButton";
 
@@ -50,7 +51,7 @@ export const Wishlists = observer(
       username: username,
     });
     const [cursor, setCursor] = useState(["", ""]);
-
+    const router = useRouter();
     useEffect(() => {
       setIsLoading(true);
       async function fetchData() {
@@ -102,6 +103,7 @@ export const Wishlists = observer(
 
     function OnCreateWishlist(wishlist: IWishlist) {
       items.unshift(wishlist);
+      router.push(`/wishlists/${wishlist.uuid}`);
       onOpenChange();
     }
 

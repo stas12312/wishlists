@@ -8,6 +8,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { addToast } from "@heroui/toast";
 import useWebSocket from "react-use-websocket";
+import { Link } from "@heroui/link";
+import { MdArrowBack } from "react-icons/md";
 
 import AddCardButton from "../addCardButton";
 import PageHeader from "../pageHeader";
@@ -64,6 +66,9 @@ const WishlistDetail = observer(
           <UserCard username={user.username} />
         ) : null}
         <PageHeader>
+          <Link href={isEditable ? "/" : `/users/${wishlist.user?.username}`}>
+            <MdArrowBack /> К вишлистам
+          </Link>
           <div className="flex justify-center md:justify-start">
             <span>
               <div className="flex flex-row gap-2 justify-center lg:justify-start">
