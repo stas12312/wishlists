@@ -3,14 +3,14 @@ import { Button } from "@heroui/button";
 import { Card, CardBody } from "@heroui/card";
 import { Image } from "@heroui/image";
 import { Spinner } from "@heroui/spinner";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { MdDelete } from "react-icons/md";
 import { Progress } from "@heroui/react";
 
 import { readableBytes } from "@/lib/file";
 import { authManager } from "@/lib/clientAuth";
 
-export interface UploadImage {
+export interface IUploadImage {
   url?: string | undefined;
   file?: File | undefined;
   key: string;
@@ -26,10 +26,12 @@ export const ImageItem = ({
   uploadImage,
   onDelete,
   onUpload,
+  endContent,
 }: {
-  uploadImage: UploadImage;
+  uploadImage: IUploadImage;
   onDelete?: { (id: string): void };
   onUpload?: { (key: string, url: string): void };
+  endContent?: ReactNode;
 }) => {
   const [uploadProgress, setUploadProgress] = useState<UploadProgress>({
     loaded: 0,
@@ -140,6 +142,7 @@ export const ImageItem = ({
                 }}
               />
             </div>
+            {endContent}
           </div>
         </div>
       </CardBody>
