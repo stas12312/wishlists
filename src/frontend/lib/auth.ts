@@ -7,8 +7,6 @@ import { ITokens } from "./models/auth";
 import { refreshTokens } from "./server-requests/auth";
 import { IToken } from "./models/token";
 
-const MAX_AGE = 60 * 60 * 24 * 30;
-
 export async function refreshTokenIfNeed(): Promise<string | null> {
   const cookie = await cookies();
 

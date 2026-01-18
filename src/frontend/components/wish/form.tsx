@@ -17,7 +17,8 @@ import IconsGroup from "../iconsGroup";
 import UploadButton from "../uploadButton";
 
 import LoadByLinkModal from "./loadByLinkModal";
-import { ImageItem, UploadImage } from "./imageItem";
+import { IUploadImage } from "./imageItem";
+import { ImagesContainer } from "./imagesContainer";
 
 import { updateWish } from "@/lib/client-requests/wish";
 import { createWish } from "@/lib/client-requests/wish";
@@ -75,9 +76,8 @@ export default function WishForm(props: {
         url: image,
         key: image,
       };
-    }) as UploadImage[],
+    }) as IUploadImage[],
   );
-
   async function handleFile(file: File) {
     setErrorMessages({ ...errorMessages, image: "" });
     const checkResult = checkFile(file, ACCEPTED_FILE_EXTS);
@@ -336,26 +336,24 @@ export default function WishForm(props: {
             </div>
           </div>
           <div className="w-full flex flex-col gap-1">
-            {uploadedImages.map((image) => (
-              <ImageItem
-                key={image.key}
-                uploadImage={image}
-                onDelete={(key) => {
-                  setImages(uploadedImages.filter((item) => item.key != key));
-                }}
-                onUpload={(key, url) => {
-                  setImages(
-                    uploadedImages.map((image) => {
-                      return {
-                        url: key == image.key ? url : image.url,
-                        key: image.key,
-                        file: undefined,
-                      };
-                    }),
-                  );
-                }}
-              />
-            ))}
+            <ImagesContainer
+              images={uploadedImages}
+              setImages={setImages}
+              onDelete={(key) => {
+                setImages(uploadedImages.filter((item) => item.key != key));
+              }}
+              onUpload={(key, url) => {
+                setImages(
+                  uploadedImages.map((image) => {
+                    return {
+                      url: key == image.key ? url : image.url,
+                      key: image.key,
+                      file: undefined,
+                    };
+                  }),
+                );
+              }}
+            />
           </div>
 
           {errorMessages.details ? (
