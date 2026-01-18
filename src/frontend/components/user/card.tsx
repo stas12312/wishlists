@@ -17,6 +17,7 @@ import { IUser } from "@/lib/models/user";
 import { wrapUsername } from "@/lib/user";
 import { getLabelForCount, getUserLink } from "@/lib/label";
 import { getDisplayDate } from "@/lib/date";
+import userStore from "@/store/userStore";
 
 const UserCard = observer(({ username }: { username: string }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -29,13 +30,17 @@ const UserCard = observer(({ username }: { username: string }) => {
     async function fetchData() {
       const responses = await Promise.all([
         getUserByUsername(username),
-        getUserFriendsCount(username),
+        userStore.user.id ? getUserFriendsCount(username) : null,
       ]);
       const responseUser = responses[0];
-      setFriendsCount(responses[1]);
+      if (userStore.user.id) {
+        setFriendsCount(responses[1] ?? 0);
+      }
 
       setUser(responseUser);
-      setFriendStatus(await getFriendStatus(responseUser.id));
+      if (userStore.user.id) {
+        setFriendStatus(await getFriendStatus(responseUser.id));
+      }
       setIsLoading(false);
     }
     fetchData();
@@ -70,13 +75,13 @@ const UserCard = observer(({ username }: { username: string }) => {
                 {getDisplayDate(user.birthday)}
               </Chip>
             ) : null}
-            {
+            {userStore.user.id ? (
               <UserStatus
                 friendStatus={friendStatus}
                 setFriendStatus={setFriendStatus}
                 userId={user.id}
               />
-            }
+            ) : null}
             {friendStatus == FriendStatus.is_friend ||
             friendStatus == FriendStatus.is_yourself ? (
               <Chip
