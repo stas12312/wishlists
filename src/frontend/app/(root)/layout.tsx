@@ -7,6 +7,7 @@ import Menu from "@/components/menu";
 import { ThemeSwitcher } from "@/components/themeSwitcher";
 import { UserItem } from "@/components/user";
 import Version from "@/components/version";
+import { Logo } from "@/components/logo";
 export default async function Layout({
   children,
 }: {
@@ -17,26 +18,29 @@ export default async function Layout({
   return (
     <div className="flex flex-col  min-h-screen justify-between">
       <div>
-        <header className="w-full flex col-span-full justify-between md:justify-end px-4 py-4 gap-4">
-          <ThemeSwitcher />
-          {isLogin ? <UserItem /> : <Login />}
+        <header className="flex">
+          <div className="w-[240px] flex-shrink-0 hidden  p-4 items-center md:flex justify-center">
+            <Logo />
+          </div>
+          <div className="p-4 gap-4 w-full flex col-span-full justify-between md:justify-end">
+            <ThemeSwitcher />
+            {isLogin ? <UserItem /> : <Login />}
+          </div>
         </header>
         <Divider className="md:hidden" />
 
         <div className="gap-1 pb-4 flex">
           {isLogin ? (
-            <>
-              <div className="hidden md:block col-span-full flex-col w-[240px]">
-                <div className="sticky top-10 hidden md:block px-4">
-                  <Menu variant="desktop" />
-                  <footer className="my-2">
-                    <Divider />
-                    <Contacts />
-                    <Version />
-                  </footer>
-                </div>
+            <div className="hidden md:block col-span-full flex-col w-[240px]">
+              <div className="sticky top-10 hidden md:block px-4">
+                <Menu variant="desktop" />
+                <footer className="my-2">
+                  <Divider />
+                  <Contacts />
+                  <Version />
+                </footer>
               </div>
-            </>
+            </div>
           ) : null}
           <div className={`px-3 md:px-4 lg:px-4 w-full`}>
             <main>{children}</main>
@@ -52,7 +56,7 @@ export default async function Layout({
         </footer>
       </span>
       {isLogin ? (
-        <div className=" bg-content1 bg-opacity-50 backdrop-blur-xl fixed inset-x-0 bottom-0 z-10 shadow-medium md:hidden">
+        <div className="bg-content1 bg-opacity-50 backdrop-blur-xl fixed inset-x-0 bottom-0 z-10 shadow-medium md:hidden">
           <Menu variant="mobile" />
         </div>
       ) : null}
