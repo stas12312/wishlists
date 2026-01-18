@@ -9,7 +9,8 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@heroui/dropdown";
-import { MdLink, MdOutlineExitToApp } from "react-icons/md";
+import { MdLink, MdOutlineExitToApp, MdSettings } from "react-icons/md";
+import { useRouter } from "next/navigation";
 
 import userStore from "@/store/userStore";
 import { logout } from "@/lib/auth";
@@ -17,6 +18,7 @@ import { logout } from "@/lib/auth";
 export const UserItem = observer(() => {
   const user = userStore.user;
   let profileLink = "";
+  const router = useRouter();
   if (user.username) {
     profileLink = `${window.location.origin}/users/${user.username}`;
   }
@@ -30,6 +32,9 @@ export const UserItem = observer(() => {
       addToast({
         title: "Ссылка на профиль скопирована",
       });
+    }
+    if (key == "settings") {
+      router.push("/settings");
     }
   }
 
@@ -55,6 +60,13 @@ export const UserItem = observer(() => {
           <DropdownMenu variant="flat" onAction={onHandleAction}>
             <DropdownItem key="share" startContent={<MdLink />}>
               Ссылка на профиль
+            </DropdownItem>
+            <DropdownItem
+              key="settings"
+              showDivider
+              startContent={<MdSettings />}
+            >
+              Настройки
             </DropdownItem>
             <DropdownItem
               key="logoun"
