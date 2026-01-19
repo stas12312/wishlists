@@ -97,8 +97,8 @@ export const ImageItem = ({
   };
 
   return (
-    <Card className="bg-default-100 ">
-      <CardBody className="px-2 p-1 w-full flex">
+    <Card className="bg-default-100">
+      <CardBody className="px-2 p-1 w-full flex touch-none">
         <div className="flex flex-row">
           {uploadImage.url ? (
             <Image

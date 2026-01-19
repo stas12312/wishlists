@@ -66,29 +66,27 @@ export const ImagesContainer = ({
   }
 
   return (
-    <>
-      <DndContext
-        collisionDetection={closestCenter}
-        modifiers={[restrictToVerticalAxis, restrictToParentElement]}
-        sensors={sensors}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext items={items} strategy={verticalListSortingStrategy}>
-          {items.map((key) => {
-            const image = images.find((img) => img.key === key);
-            if (!image) return null;
-            return (
-              <SortableItem
-                key={key}
-                image={image}
-                onDelete={onDelete}
-                onUpload={onUpload}
-              />
-            );
-          })}
-        </SortableContext>
-      </DndContext>
-    </>
+    <DndContext
+      collisionDetection={closestCenter}
+      modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+      sensors={sensors}
+      onDragEnd={handleDragEnd}
+    >
+      <SortableContext items={items} strategy={verticalListSortingStrategy}>
+        {items.map((key) => {
+          const image = images.find((img) => img.key === key);
+          if (!image) return null;
+          return (
+            <SortableItem
+              key={key}
+              image={image}
+              onDelete={onDelete}
+              onUpload={onUpload}
+            />
+          );
+        })}
+      </SortableContext>
+    </DndContext>
   );
 };
 
