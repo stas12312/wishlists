@@ -7,9 +7,9 @@ import React, { useEffect, useState } from "react";
 import useWebSocket from "react-use-websocket";
 import {
   MdAutoAwesome,
+  MdEventNote,
   MdOutlineExitToApp,
   MdPerson,
-  MdSettings,
   MdStar,
 } from "react-icons/md";
 import { usePathname } from "next/navigation";
@@ -46,12 +46,11 @@ const ITEMS: {
     counterName: "requests",
     selectedIconClassName: "text-primary",
   },
-
   {
-    icon: <MdSettings />,
-    title: "Настройки",
-    href: "/settings",
-    selectedIconClassName: "text-gray-500",
+    icon: <MdEventNote />,
+    title: "Лента",
+    href: "/feed",
+    selectedIconClassName: "text-red-500",
   },
 ];
 

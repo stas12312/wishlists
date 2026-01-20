@@ -1,5 +1,4 @@
 "use client";
-import { Avatar } from "@heroui/avatar";
 import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import { useDisclosure } from "@heroui/modal";
@@ -9,6 +8,7 @@ import { addToast } from "@heroui/toast";
 
 import ConfirmationModal from "../confirmation";
 import SelectWishlistModal from "../wishlist/selectModal";
+import { UserChip } from "../user";
 
 import { WishItemMenu } from "./cardMenu";
 import WishFullCard from "./fullCard";
@@ -26,14 +26,16 @@ import { deleteWish } from "@/lib/client-requests/wish";
 export const WishItem = observer(
   ({
     wish,
-    onDelete,
-    onUpdate,
+    onDelete = () => {},
+    onUpdate = () => {},
     withUser = false,
+    withImage = true,
   }: {
     wish: IWish;
-    onDelete: { (wish: IWish, message: string): void };
-    onUpdate: { (wish: IWish): void };
+    onDelete?: { (wish: IWish, message: string): void };
+    onUpdate?: { (wish: IWish): void };
     withUser?: boolean;
+    withImage?: boolean;
   }) => {
     const [isConfirm, setIsConfirm] = useState(false);
     const editModal = useDisclosure();
@@ -147,10 +149,7 @@ export const WishItem = observer(
             </CardBody>
             {withUser ? (
               <CardFooter className="flex justify-between">
-                <Chip avatar={<Avatar src={wish.user.image} />}>
-                  {wish.user.name}
-                </Chip>
-
+                <UserChip user={wish.user} />
                 {wish.wishlist.date ? (
                   <Chip color="warning">
                     {new Date(wish.wishlist.date).toLocaleDateString()}
