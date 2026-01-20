@@ -22,6 +22,10 @@ export class AuthManager {
     return this.accessToken;
   }
 
+  logout() {
+    this.accessToken = undefined;
+  }
+
   async refreshToken() {
     const response = await refreshTokens();
     if ("message" in response) {

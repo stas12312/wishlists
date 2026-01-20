@@ -2,6 +2,7 @@ import { makeAutoObservable, flow } from "mobx";
 
 import { IUser } from "@/lib/models/user";
 import { getMe } from "@/lib/client-requests/user";
+import { authManager } from "@/lib/clientAuth";
 
 const emptyUser = { id: 0, name: "", email: "", username: "", image: "" };
 
@@ -22,6 +23,7 @@ class UserStore {
 
   logout() {
     this.user = emptyUser;
+    authManager.logout();
   }
 
   reloadMe = flow(function* (this: UserStore) {
