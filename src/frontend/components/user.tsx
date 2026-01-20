@@ -11,9 +11,14 @@ import {
 } from "@heroui/dropdown";
 import { MdLink, MdOutlineExitToApp, MdSettings } from "react-icons/md";
 import { useRouter } from "next/navigation";
+import { Avatar } from "@heroui/avatar";
+import { Chip } from "@heroui/chip";
+import { Link } from "@heroui/link";
 
 import userStore from "@/store/userStore";
 import { logout } from "@/lib/auth";
+import { IUser } from "@/lib/models/user";
+import { getUserLink } from "@/lib/label";
 
 export const UserItem = observer(() => {
   const user = userStore.user;
@@ -86,3 +91,34 @@ export const UserItem = observer(() => {
     </>
   );
 });
+
+export const UserChip = ({
+  user,
+  className,
+  variant,
+}: {
+  user: IUser;
+  className?: string;
+  href?: string;
+  variant?:
+    | "dot"
+    | "solid"
+    | "flat"
+    | "shadow"
+    | "bordered"
+    | "faded"
+    | "light"
+    | undefined;
+}) => {
+  return (
+    <Chip
+      as={Link}
+      avatar={<Avatar src={user.image} />}
+      className={className}
+      href={getUserLink(user.username)}
+      variant={variant}
+    >
+      {user.name}
+    </Chip>
+  );
+};
