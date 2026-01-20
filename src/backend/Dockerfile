@@ -1,4 +1,4 @@
-FROM golang:1.23 as base
+FROM golang:1.24 AS base
 
 RUN apt update \
     && apt install -y \
@@ -9,7 +9,7 @@ RUN apt update \
 EXPOSE 8080
 
 # Сборка отладочной версии
-FROM base as dev
+FROM base AS dev
 RUN go install github.com/air-verse/air@latest
 RUN go install github.com/go-delve/delve/cmd/dlv@latest
 
