@@ -3,12 +3,15 @@ package impl
 import (
 	"bytes"
 	"fmt"
-	"github.com/gofiber/fiber/v2/log"
-	"github.com/h2non/bimg"
 	"io"
 	"main/config"
 	"main/repository"
+	"net/http"
 	"path/filepath"
+	"strings"
+
+	"github.com/gofiber/fiber/v2/log"
+	"github.com/h2non/bimg"
 )
 
 type UUIDGenerator func() string
@@ -50,8 +53,23 @@ func (s *ImageServiceImpl) Upload(filename string, file io.Reader) (string, erro
 	return s.ImageRepository.Upload(fullFilename, image)
 }
 
+func (s *ImageServiceImpl) UploadByURL(url string) (string, error) {
+
+	response, err := http.Get(url)
+	if err != nil {
+		return "", err
+	}
+	return s.Upload(getNameFromUrl(url), response.Body)
+
+}
+
 func convertImage(image []byte) ([]byte, error) {
 	log.Info("Конвертация изображения")
 	converted, err := bimg.NewImage(image).Convert(bimg.WEBP)
 	return converted, err
+}
+
+func getNameFromUrl(url string) string {
+	parts := strings.Split(url, "/")
+	return parts[len(parts)-1]
 }
