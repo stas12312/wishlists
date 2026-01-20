@@ -2,14 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/log"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/pprof"
-	"github.com/google/uuid"
-	_ "github.com/jackc/pgx/v5/stdlib"
-	"github.com/jmoiron/sqlx"
-	"github.com/redis/go-redis/v9"
 	"main/config"
 	"main/controller"
 	database "main/db"
@@ -23,6 +15,15 @@ import (
 	service "main/service/impl"
 	impl2 "main/uof/impl"
 	"time"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/pprof"
+	"github.com/google/uuid"
+	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/jmoiron/sqlx"
+	"github.com/redis/go-redis/v9"
 )
 
 func main() {
@@ -75,6 +76,10 @@ func main() {
 	imageService := service.NewImageService(imageRepository, uuid.NewString, appConfig.Feature)
 	imageController := controller.NewImageController(imageService)
 
+	feedRepository := repository.NewFeedRepositoryPostgres(db)
+	feedService := service.NewFeedService(feedRepository)
+	feedController := controller.NewFeedController(feedService)
+
 	api := app.Group("/api")
 
 	websocketController.Route(app)
@@ -82,6 +87,7 @@ func main() {
 	wishlistController.Route(api)
 	imageController.Route(api)
 	friendController.Route(api)
+	feedController.Route(api)
 
 	log.Fatal(app.Listen(":8080"))
 }
