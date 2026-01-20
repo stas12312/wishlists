@@ -1,7 +1,6 @@
 package impl
 
 import (
-	"log"
 	"main/db"
 	"main/model"
 )
@@ -58,7 +57,6 @@ func (r *FeedRepositoryPostgres) Get(userId int64, navigation *model.Navigation)
 	ORDER BY wishes.created_at DESC, wishes.wish_uuid DESC
 	LIMIT $4
 `
-	log.Print(navigation.Count)
 	result := &[]model.Wish{}
 	err := r.Select(result, q, userId, navigation.Cursor[0], navigation.Cursor[1], navigation.Count)
 	return *result, err

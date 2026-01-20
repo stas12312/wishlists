@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"log"
 	"main/middleware"
 	"main/model"
 	"main/service"
@@ -36,8 +35,6 @@ func (c *FeedController) Get(ctx *fiber.Ctx) error {
 	if navigation.Cursor == nil || len(navigation.Cursor) == 0 {
 		navigation.Cursor = []string{"", ""}
 	}
-
-	log.Print(navigation.Cursor[0], navigation.Count)
 
 	feed, err := c.service.Get(userId, navigation)
 	if err != nil {
