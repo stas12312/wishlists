@@ -2,11 +2,11 @@ import {
   MdCreate,
   MdDelete,
   MdOutlineBookmarkAdded,
-  MdOutlineBookmarkRemove,
   MdOutlineCancel,
   MdOutlineCheck,
   MdOutlineOpenInNew,
   MdDriveFileMove,
+  MdOutlineBookmarkRemove,
 } from "react-icons/md";
 import { IconType } from "react-icons";
 
@@ -45,6 +45,13 @@ const ACTIONS: IWishMenuItem[] = [
     icon: MdOutlineBookmarkAdded,
   },
   {
+    key: "cancel_reserve",
+    className: "text-danger",
+    color: "primary",
+    title: "Отменить бронь",
+    icon: MdOutlineBookmarkRemove,
+  },
+  {
     key: "make_full",
     className: "text-primary",
     color: "primary",
@@ -64,13 +71,6 @@ const ACTIONS: IWishMenuItem[] = [
     color: "primary",
     title: "Не исполнено",
     icon: MdOutlineCancel,
-  },
-  {
-    key: "cancel_reserve",
-    className: "text-danger",
-    color: "primary",
-    title: "Отменить бронь",
-    icon: MdOutlineBookmarkRemove,
   },
   {
     actionKey: "edit",
