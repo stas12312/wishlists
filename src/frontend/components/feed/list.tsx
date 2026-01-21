@@ -90,7 +90,7 @@ const FeedList = observer(() => {
           {groupedData.map((dateInfo) => {
             return (
               <div key={dateInfo.date}>
-                <div className="bg-content1 bg-opacity-50 backdrop-blur-xl sticky text-center top-1 z-50 md:float-left rounded-md p-2 mb-2">
+                <div className="bg-content1 bg-opacity-50 backdrop-blur-xl sticky text-center top-1 z-20 md:float-left rounded-md p-2 mb-2">
                   <p className="text-bold text-3xl ">{dateInfo.date}</p>
                 </div>
 
