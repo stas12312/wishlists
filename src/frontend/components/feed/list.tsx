@@ -28,6 +28,7 @@ const FeedList = observer(() => {
   const [cursor, setCursor] = useState(["", ""]);
   const [hasMore, setHasMore] = useState(true);
   const observerLoader = useRef<IntersectionObserver | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setItems(items);
@@ -35,7 +36,11 @@ const FeedList = observer(() => {
   }, [items]);
 
   useEffect(() => {
-    fetchFeed(true, cursor);
+    async function fetch() {
+      await fetchFeed(true, cursor);
+      setIsLoading(false);
+    }
+    fetch();
   }, []);
 
   function onUpdate(wish: IWish) {
@@ -80,29 +85,42 @@ const FeedList = observer(() => {
   return (
     <>
       <PageHeader>Лента</PageHeader>
-      <div className="p-4">
-        {groupedData.map((dateInfo) => {
-          return (
-            <div key={dateInfo.date}>
-              <div className="bg-content1 bg-opacity-50 backdrop-blur-xl sticky text-center top-1 z-50 md:float-left rounded-md p-2 mb-2">
-                <p className="text-bold text-3xl ">{dateInfo.date}</p>
+      {items.length ? (
+        <div className="p-4">
+          {groupedData.map((dateInfo) => {
+            return (
+              <div key={dateInfo.date}>
+                <div className="bg-content1 bg-opacity-50 backdrop-blur-xl sticky text-center top-1 z-50 md:float-left rounded-md p-2 mb-2">
+                  <p className="text-bold text-3xl ">{dateInfo.date}</p>
+                </div>
+
+                {dateInfo.users.map((userInfo) => {
+                  return (
+                    <UserEvents
+                      key={userInfo.wishes[0].wishlist_uuid}
+                      userInfo={userInfo}
+                      onUpdate={onUpdate}
+                    />
+                  );
+                })}
               </div>
+            );
+          })}
 
-              {dateInfo.users.map((userInfo) => {
-                return (
-                  <UserEvents
-                    key={userInfo.wishes[0].wishlist_uuid}
-                    userInfo={userInfo}
-                    onUpdate={onUpdate}
-                  />
-                );
-              })}
+          <div ref={lastItem} />
+        </div>
+      ) : (
+        <>
+          {isLoading ? null : (
+            <div className="flex align-middle justify-center items-center flex-col">
+              <h3 className="text-2xl">Ваша лента пуста</h3>
+              <span className="text-default-500">
+                Добавляйте друзей, чтобы быть в курсе их желаний
+              </span>
             </div>
-          );
-        })}
-
-        {items.length ? <div ref={lastItem} /> : null}
-      </div>
+          )}
+        </>
+      )}
     </>
   );
 });
