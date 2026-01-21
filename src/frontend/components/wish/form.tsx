@@ -28,6 +28,7 @@ import { isURL } from "@/lib/url";
 import { CURRENCIES } from "@/lib/currency";
 import { checkFile, FILE_SIZE_NAME } from "@/lib/file";
 import { ParseResult } from "@/lib/models/parse";
+import { findSpaceWithLenght } from "@/lib/text";
 const ACCEPTED_FILE_EXTS = ["jpg", "jpeg", "png", "webp"];
 
 export default function WishForm(props: {
@@ -166,11 +167,17 @@ export default function WishForm(props: {
 
   function setLinkResult(result: ParseResult, link: string) {
     setImages([{ url: result.image, key: result.image }]);
+
+    let splitIndex = findSpaceWithLenght(result.title, 50);
+    let description = result.title.slice(splitIndex, result.title.length);
+    let title = result.title.slice(0, splitIndex);
+
     setFormData({
       ...formData,
       link: link,
+      comment: description,
       currency: result.currency,
-      name: result.title,
+      name: title,
       images: [result.image],
       cost: result.cost,
     });
