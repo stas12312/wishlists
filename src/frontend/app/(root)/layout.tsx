@@ -14,7 +14,7 @@ export default async function Layout({
   children: React.ReactNode;
 }) {
   const cookieStore = await cookies();
-  const isLogin = cookieStore.has("access_token");
+  const isLogin = cookieStore.has("refresh_token");
   return (
     <div className="flex flex-col  min-h-screen justify-between">
       <div>
