@@ -10,6 +10,7 @@ import { IOAuthProvider } from "@/lib/models/auth";
 import PasswordInput from "@/components/passwordInput";
 import { login } from "@/lib/client-requests/auth";
 import { authManager } from "@/lib/clientAuth";
+import { refreshToken } from "@/lib/auth";
 
 const SignInForm = ({ providers }: { providers: IOAuthProvider[] }) => {
   const router = useRouter();
@@ -32,6 +33,7 @@ const SignInForm = ({ providers }: { providers: IOAuthProvider[] }) => {
     if ("message" in result) {
       setErrorMessage(result.message);
     } else {
+      await refreshToken();
       authManager.accessToken = result.access_token;
       router.push(ret || "/");
     }
