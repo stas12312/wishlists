@@ -41,6 +41,7 @@ func (r *FeedRepositoryPostgres) Get(userId int64, navigation *model.Navigation)
 	JOIN users USING (user_id)
 	JOIN wishes ON wishlists.wishlist_uuid = wishes.wishlist_uuid
 	WHERE 
+		-- Курсорная навигация
 		(
 			 wishes.created_at < COALESCE(NULLIF($2, '')::timestamptz, NOW())
 			 OR (
@@ -48,12 +49,19 @@ func (r *FeedRepositoryPostgres) Get(userId int64, navigation *model.Navigation)
 				 AND wishes.wish_uuid < COALESCE(NULLIF($3, '')::uuid, 'ffffffff-ffff-ffff-ffff-ffffffffffff')
 			)
 		)
-		AND wishlists.user_id = ANY(TABLE friend_ids)
-		AND wishlists.visible IN (1, 2)
-		OR (
-			wishlists.visible = 3
-			AND $1 = ANY(wishlists.visible_user_ids)
+		-- Отбор подходящих вишлистов
+		AND 
+			(
+				wishlists.user_id = ANY(TABLE friend_ids)
+				AND wishlists.visible IN (1, 2)	
+				OR (
+					wishlists.visible = 3
+					AND $1 = ANY(wishlists.visible_user_ids)
+				)
 		)
+		-- Выбор только из активных вишлистов и желаний
+		AND wishlists.is_active IS TRUE
+		AND wishes.is_active IS TRUE
 	ORDER BY wishes.created_at DESC, wishes.wish_uuid DESC
 	LIMIT $4
 `
