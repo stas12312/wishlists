@@ -16,8 +16,6 @@ ARG ws_url
 
 ARG build_time
 ARG base_url
-
-ARG build_time
 ARG version
 
 ENV BASE_URL $base_url
