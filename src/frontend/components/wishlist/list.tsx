@@ -9,8 +9,10 @@ import { addToast } from "@heroui/toast";
 import { useRouter } from "next/navigation";
 
 import AddCardButton from "../addCardButton";
+import { CardsList } from "../cardsList/cardsList";
+import { PageSpinner } from "../pageSpinner";
 
-import { WishlistItem, WishlistsSkeletonItem } from "./card";
+import { WishlistItem } from "./card";
 import WishlistSaveModal from "./saveModal";
 import WishlistFilter from "./filter";
 
@@ -107,24 +109,16 @@ export const Wishlists = observer(
       onOpenChange();
     }
 
-    let components = [];
-    if (isLoading) {
-      for (let i = 1; i < 10; i++) {
-        components.push(<div key={i}>{<WishlistsSkeletonItem />}</div>);
-      }
-    } else {
-      components = items.map((wishlist: IWishlist, index: number) => (
-        <span key={wishlist.uuid}>
-          <WishlistItem
-            ref={index + 1 == items.length ? lastItem : null}
-            edit={actions.edit}
-            wishlist={wishlist}
-            onDelete={onDelete}
-            onRestore={onRestore}
-          />
-        </span>
-      ));
-    }
+    let components = items.map((wishlist: IWishlist, index: number) => (
+      <WishlistItem
+        key={wishlist.uuid}
+        ref={index + 1 == items.length ? lastItem : null}
+        edit={actions.edit}
+        wishlist={wishlist}
+        onDelete={onDelete}
+        onRestore={onRestore}
+      />
+    ));
 
     const actionInSight = (entries: any[]) => {
       if (entries[0].isIntersecting && hasMore) {
@@ -151,6 +145,8 @@ export const Wishlists = observer(
             <WishlistFilter filter={filter} setFilter={setFilter} />
           </span>
         ) : null}
+        {isLoading ? <PageSpinner /> : null}
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
           <div className="col-span-full">
             <WishlistSaveModal
@@ -160,13 +156,19 @@ export const Wishlists = observer(
             />
           </div>
           {components.length ? (
-            <>
-              {!filter.showArchive && actions.edit && !isLoading ? (
-                <AddCardButton title="Добавить вишлист" onPress={onOpen} />
-              ) : null}
-              {components}
-            </>
-          ) : (
+            <CardsList
+              items={[
+                !filter.showArchive && actions.edit && !isLoading ? (
+                  <AddCardButton
+                    className="h-40 w-full"
+                    title="Добавить вишлист"
+                    onPress={onOpen}
+                  />
+                ) : null,
+                ...components,
+              ]}
+            />
+          ) : isLoading ? null : (
             <div className="col-span-full text-center">
               <h1 className="text-4xl	col-span-full">
                 {filter.showArchive

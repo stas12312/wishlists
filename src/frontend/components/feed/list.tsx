@@ -2,24 +2,27 @@
 import { observer } from "mobx-react-lite";
 import { createRef, useEffect, useRef, useState } from "react";
 
+import { PageSpinner } from "../pageSpinner";
+
+import { DateEvents } from "./dateEvents";
+
 import PageHeader from "@/components/pageHeader";
 import { getFeed } from "@/lib/client-requests/feed";
 import { Cursor } from "@/lib/models";
 import { IWish } from "@/lib/models/wish";
 import { IUser } from "@/lib/models/user";
-import { UserEvents } from "@/components/feed/userEvent";
 
 export interface IUserInfo {
   user: IUser;
   wishes: IWish[];
 }
 
-interface IDateInfo {
+export interface IDateInfo {
   date: string;
   users: IUserInfo[];
 }
 
-const COUNT = 25;
+const COUNT = 5;
 
 const FeedList = observer(() => {
   const [items, setItems] = useState([] as IWish[]);
@@ -86,24 +89,14 @@ const FeedList = observer(() => {
     <>
       <PageHeader>Лента</PageHeader>
       {items.length ? (
-        <div className="p-4">
-          {groupedData.map((dateInfo) => {
+        <div>
+          {groupedData.map((dateEvents) => {
             return (
-              <div key={dateInfo.date}>
-                <div className="bg-content1 bg-opacity-50 backdrop-blur-xl sticky text-center top-1 z-20 md:float-left rounded-md p-2 mb-2">
-                  <p className="text-bold text-3xl ">{dateInfo.date}</p>
-                </div>
-
-                {dateInfo.users.map((userInfo) => {
-                  return (
-                    <UserEvents
-                      key={userInfo.wishes[0].wishlist_uuid}
-                      userInfo={userInfo}
-                      onUpdate={onUpdate}
-                    />
-                  );
-                })}
-              </div>
+              <DateEvents
+                key={dateEvents.date}
+                dateEvents={dateEvents}
+                onUpdateEvent={onUpdate}
+              />
             );
           })}
 
@@ -111,7 +104,9 @@ const FeedList = observer(() => {
         </div>
       ) : (
         <>
-          {isLoading ? null : (
+          {isLoading ? (
+            <PageSpinner />
+          ) : (
             <div className="flex align-middle justify-center items-center flex-col">
               <h3 className="text-2xl">Ваша лента пуста</h3>
               <span className="text-default-500">

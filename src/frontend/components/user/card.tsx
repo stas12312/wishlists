@@ -6,6 +6,7 @@ import { Chip } from "@heroui/chip";
 import { observer } from "mobx-react-lite";
 import { Link } from "@heroui/link";
 import { MdCake } from "react-icons/md";
+import { motion } from "framer-motion";
 
 import UserStatus from "./status";
 
@@ -18,6 +19,7 @@ import { wrapUsername } from "@/lib/user";
 import { getLabelForCount, getUserLink } from "@/lib/label";
 import { getDisplayDate } from "@/lib/date";
 import userStore from "@/store/userStore";
+import { defaultVariants } from "@/lib/animations/default";
 
 const UserCard = observer(({ username }: { username: string }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -51,7 +53,12 @@ const UserCard = observer(({ username }: { username: string }) => {
       {isLoading ? (
         <CardSkeleton />
       ) : (
-        <div className="flex justify-center flex-col">
+        <motion.div
+          animate="animate"
+          className="flex justify-center flex-col"
+          initial="initial"
+          variants={defaultVariants}
+        >
           <User
             avatarProps={{
               name: user.name?.length ? user.name[0] : "",
@@ -97,7 +104,7 @@ const UserCard = observer(({ username }: { username: string }) => {
               </Chip>
             ) : null}
           </div>
-        </div>
+        </motion.div>
       )}
     </div>
   );
