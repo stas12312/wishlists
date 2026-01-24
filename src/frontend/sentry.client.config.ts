@@ -11,4 +11,5 @@ Sentry.init({
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1.0,
   debug: false,
+  release: process.env.NEXT_PUBLIC_VERSION,
 });
