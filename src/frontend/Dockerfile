@@ -17,6 +17,9 @@ ARG ws_url
 ARG build_time
 ARG base_url
 
+ARG build_time
+ARG version
+
 ENV BASE_URL $base_url
 ENV NEXT_PUBLIC_BASE_URL $base_url
 ENV NEXT_PUBLIC_YANDEX_METRIKA_ID $yandex_metrika_id
@@ -40,14 +43,6 @@ COPY --from=base /app/.next ./.next
 
 COPY --from=base /app/public ./public
 COPY --from=base /app/next.config.js ./next.config.js
-
-ARG version
-ARG build_time
-ARG base_url
-
-ENV NEXT_PUBLIC_VERSION $version
-ENV NEXT_PUBLIC_BUILD_TIME $build_time
-ENV BASE_URL $base_url
 
 EXPOSE 3000
 

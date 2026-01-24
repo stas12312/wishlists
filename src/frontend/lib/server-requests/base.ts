@@ -2,7 +2,7 @@
 import axios from "axios";
 import { cookies } from "next/headers";
 
-axios.defaults.baseURL = `${process.env.BASE_URL}/api`;
+axios.defaults.baseURL = `${process.env.NEXT_PUBLIC_BASE_URL}/api`;
 export const serverAxios = axios.create({});
 serverAxios.interceptors.request.use(async (config) => {
   const cookieStore = await cookies();
