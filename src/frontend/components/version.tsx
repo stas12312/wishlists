@@ -6,8 +6,8 @@ const Version = () => {
       rel="noreferrer"
       target="_blank"
     >
-      <small className="block m-0">{`${process.env.VERSION ?? process.env.npm_package_version}`}</small>
-      <small className="block m-0">{process.env.BUILD_TIME} </small>
+      <small className="block m-0">{`${process.env.NEXT_PUBLIC_VERSION ?? process.env.npm_package_version}`}</small>
+      <small className="block m-0">{process.env.NEXT_PUBLIC_BUILD_TIME} </small>
     </a>
   );
 };
