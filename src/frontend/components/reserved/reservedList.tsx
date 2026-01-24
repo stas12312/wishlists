@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { WishItem } from "../wish/card";
 import PageHeader from "../pageHeader";
 import { PageSpinner } from "../pageSpinner";
+import { CardsList } from "../cardsList/cardsList";
 
 import { getReservedWishes } from "@/lib/client-requests/wish";
 import { IWish } from "@/lib/models/wish";
@@ -48,7 +49,7 @@ export const ReservedWishes = observer(() => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
           {components.length ? (
-            components
+            <CardsList items={components} />
           ) : (
             <p className="text-2xl text-center col-span-full">Список пуст</p>
           )}

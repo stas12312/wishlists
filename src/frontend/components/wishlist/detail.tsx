@@ -10,6 +10,7 @@ import { addToast } from "@heroui/toast";
 import useWebSocket from "react-use-websocket";
 import { Link } from "@heroui/link";
 import { MdArrowBack } from "react-icons/md";
+import { motion } from "framer-motion";
 
 import AddCardButton from "../addCardButton";
 import PageHeader from "../pageHeader";
@@ -21,6 +22,7 @@ import { LoginButton } from "../login";
 import UserCard from "../user/card";
 import { ISorting, SortingSelector } from "../wish/sortingSelector";
 import { IWishFilter, WishFilter } from "../wish/filter";
+import { CardsList } from "../cardsList/cardsList";
 
 import WishlistItemMenu from "./menu";
 
@@ -34,7 +36,6 @@ import { getWishes } from "@/lib/client-requests/wish";
 import userStore from "@/store/userStore";
 import { defaultParams, getWebsocketUrl, isEvent, WSEvent } from "@/lib/socket";
 import { isEqual } from "@/lib/compare";
-
 function getChannelName(wishlistUUID: string): string {
   return `wishlist_${wishlistUUID}`;
 }
@@ -97,7 +98,11 @@ const WishlistDetail = observer(
           >
             {wishlist.description}
           </span>
-          <div className="flex gap-2 justify-center md:justify-start flex-wrap mt-2">
+          <motion.div
+            animate={{ opacity: 1, transition: { duration: 0.5 } }}
+            className="flex gap-2 justify-center md:justify-start flex-wrap mt-2"
+            initial={{ opacity: 0 }}
+          >
             {wishlist.date ? (
               <Chip>
                 Дата события: {new Date(wishlist.date).toLocaleDateString()}
@@ -118,7 +123,7 @@ const WishlistDetail = observer(
                 ) : null}
               </>
             ) : null}
-          </div>
+          </motion.div>
         </PageHeader>
       </div>
     );
@@ -245,88 +250,96 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
       </div>
     );
   }
-  const components = visibleItems.map((wish: IWish) => (
-    <div key={wish.uuid}>
-      <WishItem wish={wish} onDelete={onDeleteWish} onUpdate={onUpdate} />
-    </div>
-  ));
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
-      <div className="col-span-full">
-        {isLoading ? (
-          <PageHeader>
-            <div className="flex justify-center md:justify-start">
-              <Skeleton className="h-[32px] w-1/5 rounded-full" />
-            </div>
-            <div className="flex justify-center md:justify-start">
-              <Skeleton className="h-[20px] w-2/5 mt-[8px] rounded-full" />
-            </div>
-          </PageHeader>
-        ) : (
-          <WishlistDetail
-            isEditable={isEditable}
-            statistic={statistic}
-            wishlist={wishlist}
-            onDelete={onDeleteWishlist}
-            onUpdate={onUpdateWishlist}
-          />
-        )}
-      </div>
-      {isLoading ? (
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
         <div className="col-span-full">
-          <PageSpinner />
+          {isLoading ? (
+            <PageHeader>
+              <div className="flex justify-center md:justify-start">
+                <Skeleton className="h-[32px] w-1/5 rounded-full" />
+              </div>
+              <div className="flex justify-center md:justify-start">
+                <Skeleton className="h-[20px] w-2/5 mt-[8px] rounded-full" />
+              </div>
+            </PageHeader>
+          ) : (
+            <WishlistDetail
+              isEditable={isEditable}
+              statistic={statistic}
+              wishlist={wishlist}
+              onDelete={onDeleteWishlist}
+              onUpdate={onUpdateWishlist}
+            />
+          )}
         </div>
-      ) : (
-        <>
-          {!userStore.user.id ? (
-            <div className="col-span-full flex justify-center">
-              <div>
-                <Alert
-                  hideIconWrapper
-                  className="mx-auto"
-                  color="warning"
-                  description="Для отображения забронированных желаний войдите в свой аккаунт"
-                  endContent={<LoginButton className="ml-4" />}
-                  title="Некоторые из желаний могут быть забронированы"
+        {isLoading ? (
+          <div className="col-span-full">
+            <PageSpinner />
+          </div>
+        ) : (
+          <>
+            {!userStore.user.id ? (
+              <div className="col-span-full flex justify-center">
+                <div>
+                  <Alert
+                    hideIconWrapper
+                    className="mx-auto"
+                    color="warning"
+                    description="Для отображения забронированных желаний войдите в свой аккаунт"
+                    endContent={<LoginButton className="ml-4" />}
+                    title="Некоторые из желаний могут быть забронированы"
+                  />
+                </div>
+              </div>
+            ) : null}
+            {items.length ? (
+              <div className="col-span-full flex gap-4">
+                <WishFilter
+                  hidedFilters={
+                    isEditable || !userStore.user.id ? ["reserved"] : undefined
+                  }
+                  onChangeFilter={(newFilter: IWishFilter) => {
+                    if (!isEqual(newFilter, filters)) setFilters(newFilter);
+                  }}
+                />
+                <SortingSelector
+                  defaultField="created_at"
+                  onChangeSorting={setSorting}
                 />
               </div>
-            </div>
-          ) : null}
-          {items.length ? (
-            <div className="col-span-full flex gap-4">
-              <WishFilter
-                hidedFilters={
-                  isEditable || !userStore.user.id ? ["reserved"] : undefined
-                }
-                onChangeFilter={(newFilter: IWishFilter) => {
-                  if (!isEqual(newFilter, filters)) setFilters(newFilter);
-                }}
-              />
-              <SortingSelector
-                defaultField="created_at"
-                onChangeSorting={setSorting}
-              />
-            </div>
-          ) : null}
+            ) : null}
 
-          <WishSaveModal
-            isOpen={isOpen}
-            wishlistUUID={wishlistUUID}
-            onOpenChange={onOpenChange}
-            onUpdate={onCreateWish}
-          />
-          {isEditable ? (
-            <AddCardButton
-              className="md:h-[300px]"
-              title="Добавить желание"
-              onPress={onOpen}
+            <WishSaveModal
+              isOpen={isOpen}
+              wishlistUUID={wishlistUUID}
+              onOpenChange={onOpenChange}
+              onUpdate={onCreateWish}
             />
-          ) : null}
-          {components}
-        </>
-      )}
-    </div>
+            <CardsList
+              items={[
+                isEditable ? (
+                  <AddCardButton
+                    className="md:h-[300px] w-full"
+                    title="Добавить желание"
+                    onPress={onOpen}
+                  />
+                ) : null,
+                ...visibleItems.map((wish: IWish) => (
+                  <WishItem
+                    key={wish.uuid}
+                    wish={wish}
+                    onDelete={onDeleteWish}
+                    onUpdate={onUpdate}
+                  />
+                )),
+              ]}
+            />
+          </>
+        )}
+      </div>
+    </>
   );
 });
 

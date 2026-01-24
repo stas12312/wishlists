@@ -4,6 +4,9 @@ import { useDisclosure } from "@heroui/modal";
 import { Popover, PopoverTrigger, PopoverContent } from "@heroui/popover";
 import { MdFilterAlt } from "react-icons/md";
 import { ReactNode } from "react";
+import { motion } from "framer-motion";
+
+import { defaultVariants } from "@/lib/animations/default";
 
 const Filter = ({
   applyFilter,
@@ -27,13 +30,19 @@ const Filter = ({
       }}
       onOpenChange={onOpenChange}
     >
-      <Badge color="primary" content="" isInvisible={!isShowBadge}>
-        <PopoverTrigger>
-          <Button isIconOnly variant="flat" onPress={onOpenChange}>
-            <MdFilterAlt />
-          </Button>
-        </PopoverTrigger>
-      </Badge>
+      <motion.span
+        animate="animate"
+        initial="initial"
+        variants={defaultVariants}
+      >
+        <Badge color="primary" content="" isInvisible={!isShowBadge}>
+          <PopoverTrigger>
+            <Button isIconOnly variant="flat" onPress={onOpenChange}>
+              <MdFilterAlt />
+            </Button>
+          </PopoverTrigger>
+        </Badge>
+      </motion.span>
 
       <PopoverContent className="flex flex-col gap-3 py-2">
         <h3>Фильтры</h3>
