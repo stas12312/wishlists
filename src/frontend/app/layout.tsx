@@ -11,7 +11,7 @@ import { Metrika } from "@/components/yandexMetrika";
 import { getOgImageUrl } from "@/lib/label";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.BASE_URL || ""),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || ""),
   title: {
     default: siteConfig.name,
     template: `%s`,
