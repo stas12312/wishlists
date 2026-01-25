@@ -15,6 +15,7 @@ export default async function Layout({
 }) {
   const cookieStore = await cookies();
   const isLogin = cookieStore.has("refresh_token");
+  const rootClasses = isLogin ? "px-3 md:px-4 lg:px-4 w-full" : "w-full";
   return (
     <div className="flex flex-col  min-h-screen justify-between">
       <div>
@@ -42,7 +43,7 @@ export default async function Layout({
               </div>
             </div>
           ) : null}
-          <div className={`px-3 md:px-4 lg:px-4 w-full`}>
+          <div className={rootClasses}>
             <main>{children}</main>
           </div>
         </div>
