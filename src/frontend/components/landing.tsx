@@ -23,14 +23,16 @@ export default Landing;
 
 const HeaderBlock = () => {
   return (
-    <div className="bg-primary-50 h-3/4 lg:py-32 p-4 shadow-md">
+    <div className="bg-primary-50 h-3/4 lg:py-32 p-4 shadow-md relative overflow-hidden">
+      <div className="absolute h-32 w-32 md:h-96 md:w-96 bg-primary-500/60 -top-16 -left-16 md:-top-40 md:-left-40 rounded-full blur-3xl" />
+      <div className="absolute h-32 w-32 md:h-96 md:w-96 bg-primary-500/60 -bottom-16 -right-16 md:-bottom-40 md:-right-40 rounded-full blur-3xl" />
       <motion.div
         animate="animate"
         className="flex lg:flex-row flex-col max-w-[1200px] mx-auto gap-4"
         initial="initial"
         variants={defaultVariants}
       >
-        <div className="flex-col flex text-center my-[10%] gap-2">
+        <div className="flex-col flex text-center my-[10%] gap-2 z-10">
           <h1 className="font-semibold text-6xl font-mono">MyWishlists</h1>
           <h2 className="text-3xl">
             Бесплатный сервис для составления вишлистов
@@ -135,34 +137,34 @@ const AdvantageBlock = () => {
       </motion.h2>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         <DescriptionBlock
-          className="bg-primary-50"
+          className="bg-gradient-to-br from-blue-300 dark:from-blue-600 md:col-span-2"
           description="Все возможности доступны без ограничений."
           title="Бесплатно"
         />
         <DescriptionBlock
-          className="bg-warning-50"
+          className="bg-gradient-to-bl from-yellow-200 dark:from-yellow-500"
           description="Добавляйте желания из популярных онлайн-магазинов одним кликом."
           title="Автозаполнение"
         />
         <DescriptionBlock
-          className="bg-secondary-50 md:col-span-full lg:col-span-1"
+          className="bg-gradient-to-r from-purple-200 dark:from-purple-500 md:col-span-1"
           description="Никаких навязанных товаров, только ваши желания."
           title="Без рекламы"
         />
         <DescriptionBlock
-          className="col-span-full bg-danger-50"
+          className="bg-gradient-to-l md:col-span-2 from-purple-200 dark:from-purple-500"
           description="Сервис адаптирован для мобильных телефонов и компьютеров, исполняйте ваши мечты там, где удобно."
           title="Удобно везде"
         />
         <DescriptionBlock
-          className="bg-secondary-50 col-span-1"
-          description="Добавляйте ваших друзей и следите за их обновлениями в удобной Ленте."
-          title="Друзья"
-        />
-        <DescriptionBlock
-          className="bg-warning-50 md:col-span-2"
+          className="bg-gradient-to-tr from-yellow-200 dark:from-yellow-500 lg:col-span-2"
           description="Используем современные инструменты, чтобы всё выглядило стильно и красиво."
           title="Дизайн"
+        />
+        <DescriptionBlock
+          className="lg:col-span-1 bg-gradient-to-tl from-blue-300 dark:from-blue-600"
+          description="Добавляйте ваших друзей и следите за их обновлениями в удобной Ленте."
+          title="Друзья"
         />
       </div>
     </div>
