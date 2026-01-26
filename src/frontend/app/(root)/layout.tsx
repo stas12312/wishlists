@@ -19,7 +19,7 @@ export default async function Layout({
   return (
     <div className="flex flex-col  min-h-screen justify-between">
       <div>
-        <header className="flex">
+        <header className="flex z-10">
           <div className="w-[240px] flex-shrink-0 hidden  p-4 items-center md:flex justify-center">
             <Logo />
           </div>
