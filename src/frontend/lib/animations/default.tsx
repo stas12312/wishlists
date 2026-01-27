@@ -1,4 +1,6 @@
-export const defaultVariants = {
+import { Variants } from "framer-motion";
+
+export const defaultVariants: Variants = {
   initial: {
     opacity: 0,
   },

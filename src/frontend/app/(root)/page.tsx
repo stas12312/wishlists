@@ -1,4 +1,4 @@
-import Landing from "@/components/landing";
+import Landing from "@/components/landing/main";
 import { Wishlists } from "@/components/wishlist/list";
 import { getUserFromCookies } from "@/lib/auth";
 import PageHeader from "@/components/pageHeader";
