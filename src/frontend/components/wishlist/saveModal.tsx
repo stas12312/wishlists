@@ -19,7 +19,7 @@ export default function WishlistSaveModal({
     <Modal
       backdrop="blur"
       isOpen={isOpen}
-      placement="top-center"
+      placement="center"
       onOpenChange={onOpenChange}
     >
       <ModalContent>
