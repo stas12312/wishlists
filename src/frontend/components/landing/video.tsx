@@ -14,6 +14,7 @@ export const Video = ({
       autoPlay
       loop
       muted
+      playsInline
       animate="animate"
       className={
         "rounded-2xl lg:border-r-10 lg:border-t-large transform-gpu shadow-sm border object-cover " +
