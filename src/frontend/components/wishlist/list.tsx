@@ -111,7 +111,7 @@ export const Wishlists = observer(
 
     let components = items.map((wishlist: IWishlist, index: number) => (
       <WishlistItem
-        key={wishlist.uuid}
+        key={`${wishlist.uuid}-${wishlist.is_active}`}
         ref={index + 1 == items.length ? lastItem : null}
         edit={actions.edit}
         wishlist={wishlist}
