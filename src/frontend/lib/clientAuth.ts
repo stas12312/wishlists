@@ -5,7 +5,13 @@ import { refreshTokens } from "./client-requests/auth";
 export class AuthManager {
   accessToken: string | undefined;
 
+  private refreshPromise: Promise<void> | null = null;
+  private isAuthorized: undefined | boolean;
+
   async refreshTokenIfNeed() {
+    if (this.isAuthorized !== undefined && !this.isAuthorized) {
+      return;
+    }
     if (this.accessToken) {
       const tokenData = jwtDecode(this.accessToken);
       const expiredTime = tokenData.exp;
@@ -27,11 +33,28 @@ export class AuthManager {
   }
 
   async refreshToken() {
+    if (this.refreshPromise) {
+      await this.refreshPromise;
+      return;
+    }
+
+    this.refreshPromise = this._performRefresh()
+      .finally(() => {
+        this.refreshPromise = null;
+      })
+      .catch(() => {
+        this.isAuthorized = false;
+      });
+    await this.refreshPromise;
+  }
+
+  async _performRefresh() {
     const response = await refreshTokens();
     if ("message" in response) {
       this.accessToken = undefined;
-      return;
+      throw new Error(response.message || "Не удалось обновить токен");
     }
+    this.isAuthorized = true;
     this.accessToken = response.access_token;
   }
 }

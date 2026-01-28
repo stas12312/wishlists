@@ -14,11 +14,12 @@ class UserStore {
     makeAutoObservable(this);
   }
 
-  fetchMe = flow(function* (this: UserStore) {
+  getMe = flow(function* (this: UserStore) {
     if (!this.user.id) {
       this.user = yield getMe();
     }
     this.isLoading = false;
+    return this.user;
   });
 
   logout() {
