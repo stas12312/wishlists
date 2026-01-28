@@ -7,31 +7,31 @@ import { defaultVariants } from "@/lib/animations/default";
 const items = [
   {
     title: "Бесплатно",
-    description: "Все возможности доступны без ограничений.",
+    description: "Все возможности доступны без ограничений",
     className:
       "bg-gradient-to-br from-blue-300 to-blue-100 dark:from-blue-500 dark:to-blue-950 md:col-span-2",
   },
   {
     title: "Быстрое добавление",
-    description: "Добавляйте желания из популярных магазинов за 1 клик.",
+    description: "Добавляйте желания из популярных магазинов за 1 клик",
     className:
       "bg-gradient-to-bl from-yellow-300 to-yellow-100 dark:from-yellow-500 dark:to-yellow-950",
   },
   {
     title: "Без рекламы",
-    description: "Никаких навязанных товаров, только ваши желания.",
+    description: "Никаких навязанных товаров, только ваши желания",
     className:
       "bg-gradient-to-r from-purple-300 to-purple-100 dark:from-purple-500 dark:to-purple-950 md:col-span-1",
   },
   {
     title: "Всегда под рукой",
-    description: "С телефона и компьютера — где и когда удобно.",
+    description: "С телефона и компьютера — где и когда удобно",
     className:
       "bg-gradient-to-l md:col-span-2 from-purple-300 to-purple-100 dark:from-purple-500 dark:to-purple-950",
   },
   {
-    title: "Стильный интерфейс",
-    description: "Современно и понятно — приятно пользоваться каждый день.",
+    title: "Система бронирования",
+    description: "Друзья бронируют подарки — никаких дубликатов",
     className:
       "bg-gradient-to-tr from-yellow-300 to-yellow-100 dark:from-yellow-500  dark:to-yellow-950 lg:col-span-2",
   },

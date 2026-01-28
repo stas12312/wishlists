@@ -3,10 +3,16 @@ import { motion } from "framer-motion";
 
 import { defaultVariants } from "@/lib/animations/default";
 
-export const StartButton = ({ title }: { title: string }) => {
+export const StartButton = ({
+  title,
+  className = "",
+}: {
+  title: string;
+  className?: string;
+}) => {
   return (
     <motion.div
-      className="mx-auto  "
+      className={`mx-auto  ${className}`}
       initial="initial"
       variants={defaultVariants}
       viewport={{ once: true }}

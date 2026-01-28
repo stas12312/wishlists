@@ -7,20 +7,21 @@ import { defaultVariants } from "@/lib/animations/default";
 const items = [
   {
     title: "Создайте вишлист",
-    description: "Оформите список под событие и настройте, кто его видит.",
-    imageUrl: "https://cdn.mywishlists.ru/static/landing/addWishlist.png",
+    description: "Оформите список под событие и настройте, кто его видит",
+    imageUrl: "https://cdn.mywishlists.ru/static/landing/light/addWishlist.png",
   },
   {
     title: "Добавьте желания",
     description:
-      "Укажите цену, ссылку, фото и приоритет — чтобы вас понимали с первого раза.",
-    imageUrl: "https://cdn.mywishlists.ru/static/landing/addWish.png",
+      "Укажите цену, ссылку, фото и приоритет — чтобы вас понимали с первого раза",
+    imageUrl: "https://cdn.mywishlists.ru/static/landing/light/addWish.png",
   },
   {
     title: "Поделитесь с друзьями",
     description:
-      "Отправьте ссылку на вишлист — и друзья выберут подарок без вопросов.",
-    imageUrl: "https://cdn.mywishlists.ru/static/landing/shareWishlist.png",
+      "Отправьте ссылку на вишлист — и друзья выберут подарок без вопросов",
+    imageUrl:
+      "https://cdn.mywishlists.ru/static/landing/light/shareWishlist.png",
   },
 ];
 
