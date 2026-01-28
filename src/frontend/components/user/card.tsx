@@ -30,9 +30,10 @@ const UserCard = observer(({ username }: { username: string }) => {
 
   useEffect(() => {
     async function fetchData() {
+      const me = await userStore.getMe();
       const responses = await Promise.all([
         getUserByUsername(username),
-        userStore.user.id ? getUserFriendsCount(username) : null,
+        me.id ? getUserFriendsCount(username) : null,
       ]);
       const responseUser = responses[0];
       if (userStore.user.id) {

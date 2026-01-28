@@ -28,7 +28,7 @@ export const UserItem = observer(() => {
     profileLink = `${window.location.origin}/users/${user.username}`;
   }
   useEffect(() => {
-    userStore.fetchMe();
+    userStore.getMe();
   }, []);
 
   function onHandleAction(key: Key) {
