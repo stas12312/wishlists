@@ -1,6 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { BsStars } from "react-icons/bs";
 import { Tab, Tabs } from "@heroui/react";
+import { MdOutlineDesktopMac, MdOutlineSmartphone } from "react-icons/md";
+import { ReactNode, useEffect, useState } from "react";
 
 import { StartButton } from "./startButton";
 import { Video } from "./video";
@@ -8,6 +10,12 @@ import { Video } from "./video";
 import { defaultVariants } from "@/lib/animations/default";
 
 export const HeaderBlock = () => {
+  const [activeTab, setActiveTab] = useState("desktop");
+
+  useEffect(() => {
+    setActiveTab(window.innerWidth <= 768 ? "mobile" : "desktop");
+  }, []);
+
   return (
     <div className="bg-primary-200 dark:bg-primary-100 h-3/4 lg:py-32 p-4 shadow-md relative overflow-hidden">
       <div className="absolute h-32 w-32 md:h-96 md:w-96 bg-primary-500/60 -top-16 -left-16 md:-top-40 md:-left-40 rounded-full blur-3xl" />
@@ -27,29 +35,74 @@ export const HeaderBlock = () => {
           <h2 className="text-xl md:text-3xl">
             Бесплатный сервис для составления вишлистов
           </h2>
-          <StartButton title="Начать прямо сейчас" />
+          <StartButton
+            className="hidden lg:block"
+            title="Начать прямо сейчас"
+          />
         </div>
-        <div className="relative lg:w-2/3 h-[500px] md:h-auto flex items-center flex-col lg:skew-y-3">
+        <div className="relative lg:w-2/3 h-[500px] lg:h-auto flex items-center flex-col lg:skew-y-3">
+          <Tabs
+            color="primary"
+            radius="lg"
+            selectedKey={activeTab}
+            size="lg"
+            variant="solid"
+            onSelectionChange={(key) => setActiveTab(key.toString())}
+          >
+            <Tab
+              key="desktop"
+              title={<MdOutlineDesktopMac className="text-2xl" />}
+            />
+            <Tab
+              key="mobile"
+              title={<MdOutlineSmartphone className="text-2xl" />}
+            />
+          </Tabs>
           <AnimatePresence>
-            <Tabs>
-              <Tab title="На ПК">
-                <div className="h-[440px] flex flex-col items-center">
-                  <Video
-                    className="md:h-[440px] my-auto"
-                    src="https://cdn.mywishlists.ru/static/landing/videoMainPC.mp4"
-                  />
-                </div>
-              </Tab>
-              <Tab title="На телефоне">
+            {activeTab == "desktop" ? (
+              <AnimatedDiv
+                key="desktop"
+                className="max-h-[440px] absolute top-14 "
+              >
+                <Video
+                  className="my-auto max-h-[440px]"
+                  posterSrc="https://cdn.mywishlists.ru/static/landing/light/desktopPreload.jpg"
+                  src="https://cdn.mywishlists.ru/static/landing/light/videoMainPC.mp4"
+                />
+              </AnimatedDiv>
+            ) : (
+              <AnimatedDiv key="mobile" className="absolute top-14">
                 <Video
                   className="h-[440px] mx-auto"
-                  src="https://cdn.mywishlists.ru/static/landing/videoMainMobile.mp4"
+                  posterSrc="https://cdn.mywishlists.ru/static/landing/light/mobilePreload.jpg"
+                  src="https://cdn.mywishlists.ru/static/landing/light/videoMainMobile.mp4"
                 />
-              </Tab>
-            </Tabs>
+              </AnimatedDiv>
+            )}
           </AnimatePresence>
         </div>
+        <StartButton className="block lg:hidden" title="Начать прямо сейчас" />
       </motion.div>
     </div>
+  );
+};
+
+const AnimatedDiv = ({
+  className = "",
+  children,
+}: {
+  className?: string;
+  children: ReactNode;
+}) => {
+  return (
+    <motion.div
+      animate="animate"
+      className={className}
+      exit="exit"
+      initial="initial"
+      variants={defaultVariants}
+    >
+      {children}
+    </motion.div>
   );
 };
