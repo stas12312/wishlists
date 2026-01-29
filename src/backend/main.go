@@ -31,6 +31,7 @@ func main() {
 		JSONEncoder:  json.Marshal,
 		JSONDecoder:  json.Unmarshal,
 		ErrorHandler: apperror.AppErrorHandler,
+		BodyLimit:    5 * 1024 * 1024,
 	})
 
 	appConfig := config.NewConfig()
