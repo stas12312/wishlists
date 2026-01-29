@@ -26,7 +26,7 @@ import { IError } from "@/lib/models";
 import { IWish } from "@/lib/models/wish";
 import { isURL } from "@/lib/url";
 import { CURRENCIES } from "@/lib/currency";
-import { checkFile, FILE_SIZE_NAME } from "@/lib/file";
+import { checkFile, FILE_SIZE_LIMIT, readableBytes } from "@/lib/file";
 import { ParseResult } from "@/lib/models/parse";
 import { findSpaceWithLenght } from "@/lib/text";
 const ACCEPTED_FILE_EXTS = ["jpg", "jpeg", "png", "webp"];
@@ -333,7 +333,7 @@ export default function WishForm(props: {
             className="h-16 w-full object-cover"
             handleFile={handleFile}
             isLoading={imageIsLoading}
-            title={`Перетащите файл сюда или нажмите для выбора файла (Не более ${FILE_SIZE_NAME})`}
+            title={`Перетащите файл сюда или нажмите для выбора файла (Не более ${readableBytes(FILE_SIZE_LIMIT, false)})`}
           />
           <div className="flex sm:flex-row flex-col gap-4 w-full">
             <div className="flex flex-col w-full">
