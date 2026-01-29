@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"golang.org/x/crypto/bcrypt"
 	"main/config"
 	apperror "main/error"
 	"main/mail"
@@ -15,7 +14,10 @@ import (
 	"main/service"
 	"main/uof"
 	"strconv"
+	"strings"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func NewUserService(
@@ -73,7 +75,11 @@ func (u *userServiceImpl) Register(ctx context.Context, email, password, name st
 				strconv.FormatInt(emailCountDown.Milliseconds(), 10),
 			)
 		}
-		code = model.NewCode(user.Id, 6, 64, model.ConfirmEmailCode, 3)
+		if u.Config.IsTest() && strings.Contains(email, "@test.mywishlists.ru") {
+			code = model.NewTestCode(user.Id, email, model.ConfirmEmailCode, 3)
+		} else {
+			code = model.NewCode(user.Id, 6, 64, model.ConfirmEmailCode, 3)
+		}
 		_, err = u.CodeRepository.Create(code)
 		if err != nil {
 			return err

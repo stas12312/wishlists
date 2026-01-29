@@ -1,11 +1,12 @@
 package model
 
 import (
-	"github.com/dchest/uniuri"
-	"github.com/google/uuid"
 	"math/rand"
 	"strconv"
 	"strings"
+
+	"github.com/dchest/uniuri"
+	"github.com/google/uuid"
 )
 
 const (
@@ -46,6 +47,24 @@ func NewCode(
 		Code:          strings.Join(numbers, ""),
 		Key:           uniuri.NewLen(keyLength),
 		SecretKey:     uniuri.NewLen(keyLength),
+		UserId:        userId,
+		CodeType:      codeType,
+		AttemptsCount: attemptsCount,
+	}
+}
+
+func NewTestCode(
+	userId int64,
+	email string,
+	codeType int,
+	attemptsCount int,
+) *Code {
+	codeValue := strings.TrimRight(email, "@test.mywishlists.ru")
+	return &Code{
+		UUID:          uuid.NewString(),
+		Code:          codeValue,
+		Key:           email,
+		SecretKey:     email,
 		UserId:        userId,
 		CodeType:      codeType,
 		AttemptsCount: attemptsCount,
