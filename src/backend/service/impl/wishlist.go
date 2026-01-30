@@ -320,6 +320,30 @@ func (s *WishlistImpl) MoveWish(userId int64, wishUuid string, wishlistUuid stri
 	return &preparedWish, nil
 }
 
+func (s *WishlistImpl) CopyWish(userId int64, wishUuid string, toWishlistUuid string) (*model.Wish, error) {
+	wish, err := s.GetWish(userId, wishUuid)
+	if err != nil {
+		return nil, apperror.NewError(apperror.NotFound, "Желание не найдено или недоступно для просмотра")
+	}
+
+	newWish := &model.Wish{
+		UserId:       userId,
+		WishlistUuid: toWishlistUuid,
+		Name:         wish.Name,
+		Comment:      wish.Comment,
+		Images:       wish.Images,
+		Link:         wish.Link,
+		Desirability: wish.Desirability,
+		Cost:         wish.Cost,
+		Currency:     wish.Currency,
+	}
+	savedWish, err := s.AddWish(userId, newWish)
+	if err != nil {
+		return nil, apperror.NewError(apperror.WrongRequest, err.Error())
+	}
+	return savedWish, err
+}
+
 func getActionsForWish(userId int64, wish model.Wish) model.WishActions {
 	userIsOwner := userId == wish.UserId
 	return model.WishActions{
