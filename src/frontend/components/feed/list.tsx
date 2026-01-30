@@ -22,7 +22,7 @@ export interface IDateInfo {
   users: IUserInfo[];
 }
 
-const COUNT = 5;
+const COUNT = 25;
 
 const FeedList = observer(() => {
   const [items, setItems] = useState([] as IWish[]);
