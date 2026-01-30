@@ -18,13 +18,6 @@ import {
 import { ParseResult, ShopParam } from "@/lib/models/parse";
 import { extractLink, isURL } from "@/lib/url";
 
-const TEXT_BY_STATUS = new Map<string, string>([
-  ["FAILES", "Произошла ошибка"],
-  ["WATING", "Ожидание загрузки"],
-  ["RUNNING", "Загрузка"],
-  ["FINISHED", "Загружено"],
-]);
-
 const LoadByLinkModal = ({
   onLinkLoad,
   onOpenChange,
@@ -41,6 +34,8 @@ const LoadByLinkModal = ({
   const [taskId, setTaskId] = useState("");
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
+
+  const [serviceError, setServiceError] = useState("");
 
   async function parseByUrl(url: string) {
     setError("");
@@ -100,61 +95,57 @@ const LoadByLinkModal = ({
             <ModalHeader className="mx-auto">Автозаполнение</ModalHeader>
             <ModalBody>
               <>
-                <Alert
-                  color="primary"
-                  title={
-                    <div>
-                      <p>На данный момент поддерживается заполнение из</p>
-                      <div className="flex gap-1 mt-2 flex-wrap">
-                        <AvailableShops />
-                      </div>
+                {!serviceError ? (
+                  <Form
+                    id="load-by-link"
+                    onSubmit={async (event) => {
+                      event.preventDefault();
+                      await parseByUrl(link);
+                    }}
+                  >
+                    <ShopsBlock onError={setServiceError} />
+
+                    <div className=" w-full flex gap-4">
+                      <Input
+                        isRequired
+                        isDisabled={isLoading}
+                        label="Ссылка на товар"
+                        validate={(value) => {
+                          if (value === "") {
+                            return "Заполните это поле";
+                          }
+                          if (value && !isURL(value)) {
+                            return "Некорректная ссылка";
+                          }
+                          return null;
+                        }}
+                        value={link}
+                        onPaste={async (
+                          event: ClipboardEvent<HTMLInputElement>,
+                        ) => {
+                          event.preventDefault();
+                          const link = extractLink(
+                            event.clipboardData.getData("Text"),
+                          );
+                          setLink(link);
+
+                          await parseByUrl(link);
+                        }}
+                        onValueChange={setLink}
+                      />
+                      {<MarketIcon className="my-auto" link={link} />}
                     </div>
-                  }
-                />
+                    {error != "" ? (
+                      <p className="text-danger">{error}</p>
+                    ) : null}
 
-                <Form
-                  id="load-by-link"
-                  onSubmit={async (event) => {
-                    event.preventDefault();
-                    await parseByUrl(link);
-                  }}
-                >
-                  <div className=" w-full flex gap-4">
-                    <Input
-                      isRequired
-                      isDisabled={isLoading}
-                      label="Ссылка на товар"
-                      validate={(value) => {
-                        if (value === "") {
-                          return "Заполните это поле";
-                        }
-                        if (value && !isURL(value)) {
-                          return "Некорректная ссылка";
-                        }
-                        return null;
-                      }}
-                      value={link}
-                      onPaste={async (
-                        event: ClipboardEvent<HTMLInputElement>,
-                      ) => {
-                        event.preventDefault();
-                        const link = extractLink(
-                          event.clipboardData.getData("Text"),
-                        );
-                        setLink(link);
-
-                        await parseByUrl(link);
-                      }}
-                      onValueChange={setLink}
-                    />
-                    {<MarketIcon className="my-auto" link={link} />}
-                  </div>
-                  {error != "" ? <p className="text-danger">{error}</p> : null}
-
-                  <Button fullWidth isLoading={isLoading} type="submit">
-                    Загрузить
-                  </Button>
-                </Form>
+                    <Button fullWidth isLoading={isLoading} type="submit">
+                      Загрузить
+                    </Button>
+                  </Form>
+                ) : (
+                  <Alert color="danger" title={serviceError} />
+                )}
               </>
             </ModalBody>
           </>
@@ -164,20 +155,47 @@ const LoadByLinkModal = ({
   );
 };
 
-const AvailableShops = () => {
+const ShopsBlock = ({ onError }: { onError: { (error: string): void } }) => {
   const [availableParser, setAvailableParser] = useState<ShopParam[]>([]);
   const [listIsLoading, setListIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     async function fetchData() {
       const parsers = await getAvailableParser();
-      setAvailableParser(parsers);
+      if ("message" in parsers) {
+        setError(parsers.message);
+        onError(parsers.message);
+      } else {
+        setAvailableParser(parsers);
+      }
+
       setListIsLoading(false);
     }
     fetchData();
   }, []);
 
-  if (listIsLoading) {
+  return (
+    <Alert
+      color="primary"
+      title="На данный момент поддерживается заполнение из"
+    >
+      <div title="На данный момент поддерживается заполнение из">
+        <div className="flex gap-1 mt-2 flex-wrap">
+          <AvailableShops isLoading={listIsLoading} shops={availableParser} />
+        </div>
+      </div>
+    </Alert>
+  );
+};
+const AvailableShops = ({
+  isLoading,
+  shops,
+}: {
+  isLoading: boolean;
+  shops: ShopParam[];
+}) => {
+  if (isLoading) {
     return (
       <>
         <Skeleton className="w-32 rounded-full">
@@ -193,7 +211,7 @@ const AvailableShops = () => {
     );
   }
 
-  return availableParser.map((value) => {
+  return shops.map((value) => {
     return (
       <Chip
         key={value.name}

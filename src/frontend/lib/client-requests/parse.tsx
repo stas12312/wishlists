@@ -1,3 +1,4 @@
+import { IError } from "../models";
 import {
   ParseError,
   ParseStartInfo,
@@ -20,7 +21,7 @@ export async function getParseStatus(task_id: string): Promise<ParseStatus> {
   return response.data;
 }
 
-export async function getAvailableParser(): Promise<ShopParam[]> {
+export async function getAvailableParser(): Promise<ShopParam[] | IError> {
   const response = await clientAxios.get("parse/available");
   return response.data;
 }
