@@ -44,7 +44,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html suppressHydrationWarning lang="en">
+    <html suppressHydrationWarning lang="ru">
       <head>
         <meta
           content="width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1, maximum-scale=5"
@@ -58,7 +58,7 @@ export default async function RootLayout({
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
-          <>{children}</>
+          {children}
         </Providers>
         <Suspense>
           <Metrika />
