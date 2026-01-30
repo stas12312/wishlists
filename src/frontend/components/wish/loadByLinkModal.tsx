@@ -31,8 +31,6 @@ const LoadByLinkModal = ({
   const timer = useRef<NodeJS.Timeout | undefined>();
   const [isLoading, setIsLoading] = useState(false);
 
-  const [taskId, setTaskId] = useState("");
-  const [status, setStatus] = useState("");
   const [error, setError] = useState("");
 
   const [serviceError, setServiceError] = useState("");
@@ -47,7 +45,6 @@ const LoadByLinkModal = ({
       return;
     }
 
-    setTaskId(data.task_id);
     await updateStatus(data.task_id, url);
     timer.current = setInterval(() => {
       updateStatus(data.task_id, url);
@@ -57,7 +54,6 @@ const LoadByLinkModal = ({
   async function updateStatus(taskId: string, url: string) {
     const status = await getParseStatus(taskId);
 
-    setStatus(status.status);
     if (status.status == "FINISHED") {
       onLinkLoad(status.result, url);
       onOpenChange();
@@ -158,13 +154,11 @@ const LoadByLinkModal = ({
 const ShopsBlock = ({ onError }: { onError: { (error: string): void } }) => {
   const [availableParser, setAvailableParser] = useState<ShopParam[]>([]);
   const [listIsLoading, setListIsLoading] = useState(true);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     async function fetchData() {
       const parsers = await getAvailableParser();
       if ("message" in parsers) {
-        setError(parsers.message);
         onError(parsers.message);
       } else {
         setAvailableParser(parsers);

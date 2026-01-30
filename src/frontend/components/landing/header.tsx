@@ -17,7 +17,7 @@ export const HeaderBlock = () => {
   }, []);
 
   return (
-    <div className="bg-primary-200 dark:bg-primary-100 h-3/4 lg:py-32 p-4 shadow-md relative overflow-hidden">
+    <div className="bg-primary-200 dark:bg-primary-100 h-3/4 lg:py-32 p-4 shadow-xl relative overflow-hidden rounded-3xl -mx-4 md:mx-0">
       <div className="absolute h-32 w-32 md:h-96 md:w-96 bg-primary-500/60 -top-16 -left-16 md:-top-40 md:-left-40 rounded-full blur-3xl" />
       <div className="absolute h-32 w-32 md:h-96 md:w-96 bg-primary-500/60 -bottom-16 -right-16 md:-bottom-40 md:-right-40 rounded-full blur-3xl" />
       <motion.div className="flex lg:flex-row flex-col max-w-[1200px] mx-auto gap-4">

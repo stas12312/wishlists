@@ -15,11 +15,10 @@ export default async function Layout({
 }) {
   const cookieStore = await cookies();
   const isLogin = cookieStore.has("refresh_token");
-  const rootClasses = isLogin ? "px-3 md:px-4 lg:px-4 w-full" : "w-full";
   return (
     <div className="flex flex-col  min-h-screen justify-between">
       <div>
-        <header className="flex z-10">
+        <header className="flex z-10  m-2">
           <div className="w-[240px] flex-shrink-0 hidden  p-4 items-center md:flex justify-center">
             <Logo />
           </div>
@@ -28,7 +27,6 @@ export default async function Layout({
             {isLogin ? <UserItem /> : <Login />}
           </div>
         </header>
-        <Divider className="md:hidden" />
 
         <div className="gap-1 pb-4 flex">
           {isLogin ? (
@@ -43,7 +41,7 @@ export default async function Layout({
               </div>
             </div>
           ) : null}
-          <div className={rootClasses}>
+          <div className="px-3 md:px-4 lg:px-4 w-full">
             <main>{children}</main>
           </div>
         </div>
