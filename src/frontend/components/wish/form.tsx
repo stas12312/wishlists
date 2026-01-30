@@ -89,7 +89,7 @@ export default function WishForm(props: {
     try {
       setImageIsLoading(true);
       setImages([...uploadedImages, { file: file, key: v4() }]);
-    } catch (e) {
+    } catch {
       setErrorMessages({ ...errorMessages, image: "Возникла ошибка" });
     } finally {
       setImageIsLoading(false);

@@ -29,13 +29,11 @@ export const WishItem = observer(
     onDelete = () => {},
     onUpdate = () => {},
     withUser = false,
-    withImage = true,
   }: {
     wish: IWish;
     onDelete?: { (wish: IWish, message: string): void };
     onUpdate?: { (wish: IWish): void };
     withUser?: boolean;
-    withImage?: boolean;
   }) => {
     const [isConfirm, setIsConfirm] = useState(false);
     const editModal = useDisclosure();

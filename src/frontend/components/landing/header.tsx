@@ -20,13 +20,19 @@ export const HeaderBlock = () => {
     <div className="bg-primary-200 dark:bg-primary-100 h-3/4 lg:py-32 p-4 shadow-md relative overflow-hidden">
       <div className="absolute h-32 w-32 md:h-96 md:w-96 bg-primary-500/60 -top-16 -left-16 md:-top-40 md:-left-40 rounded-full blur-3xl" />
       <div className="absolute h-32 w-32 md:h-96 md:w-96 bg-primary-500/60 -bottom-16 -right-16 md:-bottom-40 md:-right-40 rounded-full blur-3xl" />
-      <motion.div
-        animate="animate"
-        className="flex lg:flex-row flex-col max-w-[1200px] mx-auto gap-4"
-        initial="initial"
-        variants={defaultVariants}
-      >
-        <div className="flex-col flex text-center my-[10%] gap-2 z-10">
+      <motion.div className="flex lg:flex-row flex-col max-w-[1200px] mx-auto gap-4">
+        <motion.div
+          animate={{
+            opacity: 1,
+            transform: "translateX(0)",
+            transition: { duration: 0.5 },
+          }}
+          className="flex-col flex text-center my-[10%] gap-2 z-10"
+          initial={{
+            opacity: 0,
+            transform: "translateX(-20px)",
+          }}
+        >
           <span className="flex gap-2 mx-auto text-5xl md:text-6xl">
             <BsStars style={{ color: "gold" }} />
             <h1 className="font-semibold font-mono">MyWishlists</h1>
@@ -39,8 +45,19 @@ export const HeaderBlock = () => {
             className="hidden lg:block"
             title="Начать прямо сейчас"
           />
-        </div>
-        <div className="relative lg:w-2/3 h-[500px] lg:h-auto flex items-center flex-col lg:skew-y-3">
+        </motion.div>
+        <motion.div
+          animate={{
+            opacity: 1,
+            transform: "translateX(0) skewY(3deg)",
+            transition: { duration: 0.5 },
+          }}
+          className="relative lg:w-2/3 h-[500px] lg:h-auto flex items-center flex-col "
+          initial={{
+            opacity: 0,
+            transform: "translateX(20px) skewY(3deg)",
+          }}
+        >
           <Tabs
             color="primary"
             radius="lg"
@@ -80,7 +97,7 @@ export const HeaderBlock = () => {
               </AnimatedDiv>
             )}
           </AnimatePresence>
-        </div>
+        </motion.div>
         <StartButton className="block lg:hidden" title="Начать прямо сейчас" />
       </motion.div>
     </div>
