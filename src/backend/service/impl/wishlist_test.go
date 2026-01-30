@@ -1,15 +1,18 @@
 package impl
 
 import (
+	"database/sql"
 	"fmt"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/mock"
 	"main/model"
 	"main/repository/mocks"
 	"main/service"
 	mocks2 "main/service/mocks"
 	"reflect"
 	"testing"
+	"time"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestNewWishlistService(t *testing.T) {
@@ -781,6 +784,105 @@ func TestWishlistImpl_DeleteWishlist(t *testing.T) {
 			}
 			if err := s.DeleteWishlist(tt.args.userId, tt.args.wishlistUuid); (err != nil) != tt.wantErr {
 				t.Errorf("DeleteWishlist() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestWishlistImpl_CopyWish(t *testing.T) {
+
+	type args struct {
+		userId         int64
+		wishUuid       string
+		toWishlistUuid string
+	}
+	tests := []struct {
+		name           string
+		mocksBehaviour func(
+			wMock *mocks.WishRepository,
+			wlMock *mocks.WishlistRepository,
+			wsService *mocks2.WSService,
+		)
+		args    args
+		want    *model.Wish
+		wantErr bool
+	}{
+		{
+			name: "OK",
+			mocksBehaviour: func(
+				wMock *mocks.WishRepository,
+				wlMock *mocks.WishlistRepository,
+				wsService *mocks2.WSService,
+			) {
+				wMock.On("Get", "0000").
+					Return(
+						&model.Wish{
+							UserId:       10,
+							WishlistUuid: "0001",
+							FulfilledAt:  model.NullTime{NullTime: sql.NullTime{Valid: true, Time: time.Now()}},
+							PresenterId:  model.NullInt64{NullInt64: sql.NullInt64{Valid: true, Int64: 20}},
+						},
+						nil,
+					)
+				wlMock.On("GetByUUID", "0001").
+					Return(
+						&model.Wishlist{
+							UserId:  10,
+							Uuid:    "0001",
+							Visible: model.Public,
+						},
+						nil,
+					)
+				wlMock.On("GetByUUID", "0002").
+					Return(
+						&model.Wishlist{
+							UserId:  1,
+							Uuid:    "0002",
+							Visible: model.Public,
+						},
+						nil,
+					)
+
+				wMock.On("Create",
+					&model.Wish{
+						UserId:       1,
+						WishlistUuid: "0002",
+					}).
+					Return(&model.Wish{WishlistUuid: "0002", UserId: 1}, nil)
+
+				wsService.On(
+					"SendMessageToChannel",
+					"wishlist_0002",
+					model.WSMessage{Event: service.Update},
+				).
+					Return(nil)
+			},
+			args: args{userId: 1, wishUuid: "0000", toWishlistUuid: "0002"},
+			want: &model.Wish{WishlistUuid: "0002", UserId: 1, Actions: model.WishActions{Edit: true, MakeFull: true}},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			wishRepository := mocks.NewWishRepository(t)
+			wishlistRepository := mocks.NewWishlistRepository(t)
+			wsService := mocks2.NewWSService(t)
+			tt.mocksBehaviour(wishRepository, wishlistRepository, wsService)
+
+			s := &WishlistImpl{
+				WishlistRepository: wishlistRepository,
+				WishRepository:     wishRepository,
+				UserService:        mocks2.NewUserService(t),
+				FriendService:      mocks2.NewFriendService(t),
+				WSService:          wsService,
+			}
+			got, err := s.CopyWish(tt.args.userId, tt.args.wishUuid, tt.args.toWishlistUuid)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("CopyWish() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("CopyWish() got = %v, want %v", got, tt.want)
 			}
 		})
 	}

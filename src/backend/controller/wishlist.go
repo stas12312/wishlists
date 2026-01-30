@@ -2,11 +2,12 @@ package controller
 
 import (
 	"fmt"
-	"github.com/gofiber/fiber/v2"
 	"main/config"
 	"main/middleware"
 	"main/model"
 	"main/service"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func NewWishlistController(service *service.WishlistService, config *config.Config) *WishlistController {
@@ -354,6 +355,26 @@ func (c *WishlistController) GetAvailableParsers(ctx *fiber.Ctx) error {
 	return ctx.Status(statusCode).Send(body)
 }
 
+func (c *WishlistController) CopyWish(ctx *fiber.Ctx) error {
+
+	type WishlistParam struct {
+		WishlistUUID string `json:"wishlist_uuid"`
+	}
+
+	wishlistParam := WishlistParam{}
+	if err := ctx.BodyParser(&wishlistParam); err != nil {
+		return ctx.JSON(model.ErrorResponse{Message: "Некорректные данные"})
+	}
+
+	wishUuid := ctx.Params("uuid")
+	userId := GetUserIdFromCtx(ctx)
+	wish, err := c.WishlistService.CopyWish(userId, wishUuid, wishlistParam.WishlistUUID)
+	if err != nil {
+		return ctx.JSON(model.ErrorResponse{Message: err.Error()})
+	}
+	return ctx.JSON(model.Response{Data: wish})
+}
+
 func (c *WishlistController) Route(router fiber.Router) {
 
 	wishlistGroup := router.Group("/wishlists")
@@ -372,6 +393,7 @@ func (c *WishlistController) Route(router fiber.Router) {
 	wishGroup.Delete("/:uuid", middleware.Protected(true), c.DeleteWishHandler)
 	wishGroup.Post("/:uuid", middleware.Protected(true), c.UpdateWishHandler)
 	wishGroup.Get("/:uuid", middleware.Protected(false), c.GetWish)
+	wishGroup.Post("/:uuid/copy", middleware.Protected(true), c.CopyWish)
 
 	wishGroup.Post("/:uuid/restore", middleware.Protected(true), c.RestoreWishHandler)
 	wishGroup.Post("/:uuid/reserve", middleware.Protected(true), c.ReserveWishHandler)
