@@ -49,6 +49,7 @@ jobs:
             sentry_dsn=${{ secrets.SENTRY_DSN }}
             sentru_auth_token=${{ secrets.SENTRY_AUTH_TOKEN }}
             ws_url=${{ secrets.PROD_WS_URL }}
+            donate_url=${{ secrets.DONATE_URL }}
 
   deploy:
     runs-on: ubuntu-latest
