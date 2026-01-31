@@ -32,6 +32,5 @@ module.exports = withSentryConfig(
     org: SENTRY_CONF[1],
     project: SENTRY_CONF[2],
     authToken: process.env.SENTRY_AUTH_TOKEN,
-    release: process.env.RELEASE,
   }
 );
