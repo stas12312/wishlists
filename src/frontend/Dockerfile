@@ -31,6 +31,7 @@ ENV NEXT_PUBLIC_VERSION $version
 ENV NEXT_PUBLIC_BUILD_TIME $build_time
 ENV NEXT_PUBLIC_DONATE_URL $donate_url
 ENV SENTRY_CONF $sentry_conf
+ENV RELEASE $version
 
 RUN npm run build
 
