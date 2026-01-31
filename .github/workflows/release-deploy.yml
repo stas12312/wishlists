@@ -47,9 +47,10 @@ jobs:
             yandex_metrika_id=${{ secrets.PROD_YANDEX_METRIKA_ID }}
             static_url=${{ secrets.PROD_STATIC_URL }}
             sentry_dsn=${{ secrets.SENTRY_DSN }}
-            sentru_auth_token=${{ secrets.SENTRY_AUTH_TOKEN }}
+            sentry_auth_token=${{ secrets.PROD_SENTRY_AUTH_TOKEN }}
             ws_url=${{ secrets.PROD_WS_URL }}
             donate_url=${{ secrets.DONATE_URL }}
+            sentry_conf=${{ secrets.PROD_SENTRY_CONF }}
 
   deploy:
     runs-on: ubuntu-latest

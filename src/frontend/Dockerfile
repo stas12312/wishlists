@@ -13,6 +13,7 @@ ARG static_url
 ARG sentry_auth_token
 ARG sentry_dsn
 ARG ws_url
+ARG sentry_conf
 
 ARG version
 ARG build_time
@@ -29,6 +30,7 @@ ENV NEXT_PUBLIC_WS_URL $ws_url
 ENV NEXT_PUBLIC_VERSION $version
 ENV NEXT_PUBLIC_BUILD_TIME $build_time
 ENV NEXT_PUBLIC_DONATE_URL $donate_url
+ENV SENTRY_CONF $sentry_conf
 
 RUN npm run build
 
