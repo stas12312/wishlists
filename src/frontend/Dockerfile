@@ -37,6 +37,9 @@ RUN npm run build
 FROM node:20-alpine3.19 as release
 WORKDIR /app
 
+ARG sentry_conf
+ENV SENTRY_CONF $sentry_conf
+
 COPY --from=base /app/node_modules ./node_modules
 COPY --from=base /app/package.json ./package.json
 COPY --from=base /app/.next ./.next
