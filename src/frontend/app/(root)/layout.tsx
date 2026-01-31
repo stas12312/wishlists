@@ -50,9 +50,11 @@ export default async function Layout({
         </div>
       </div>
       <span className={` ${isLogin ? "md:hidden" : ""}`}>
-        <div className="mx-3">
-          <SupportButton className="mt-2 w-full md:mx-0" />
-        </div>
+        {isLogin ? (
+          <div className="mx-3">
+            <SupportButton className="mt-2 w-full md:mx-0" />
+          </div>
+        ) : null}
 
         <footer
           className={`flex items-center justify-between ${isLogin ? "mb-20 md:mb-0" : ""} px-3`}
