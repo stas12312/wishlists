@@ -35,7 +35,9 @@ export function WishItemMenu({
               color={value.color}
               startContent={<value.icon />}
             >
-              {value.title}
+              {value.getTitleFunc !== undefined
+                ? value.getTitleFunc(wish.actions)
+                : value.title}
             </DropdownItem>
           ))}
         </DropdownMenu>

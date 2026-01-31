@@ -17,7 +17,7 @@ const SelectWishlistModal = observer(
   }: {
     isOpen: boolean;
     onOpenChange: { (): void };
-    onSelect: { (wishlistUUID: string): Promise<void> };
+    onSelect: { (wishlist: IWishlist): Promise<void> };
     excludeWishlists?: string[];
   }) => {
     return (
@@ -55,7 +55,7 @@ const WishlistSelector = observer(
     excludeWishlists = [],
   }: {
     onSelect: {
-      (wishlistUUID: string): Promise<void>;
+      (wishlist: IWishlist): Promise<void>;
     };
     excludeWishlists?: string[];
   }) => {
@@ -115,7 +115,11 @@ const WishlistSelector = observer(
             emptyContent={<p className="text-center">Вишлистов нет</p>}
             onAction={async (key) => {
               setIsLoading(true);
-              await onSelect(key.toString());
+              await onSelect(
+                wishlists.filter((wishlist) => {
+                  return wishlist.uuid === key.toString();
+                })[0],
+              );
               setIsLoading(false);
             }}
           >

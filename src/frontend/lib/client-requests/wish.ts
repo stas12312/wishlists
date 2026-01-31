@@ -66,3 +66,9 @@ export async function getWish(wishUUID: string): Promise<IWish> {
   const response = await clientAxios.get(`wishes/${wishUUID}`);
   return response.data;
 }
+
+export async function copyWish(wishUUID: string, toWishlistUUID: string) {
+  await clientAxios.post(`/wishes/${wishUUID}/copy`, {
+    wishlist_uuid: toWishlistUUID,
+  });
+}

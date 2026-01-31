@@ -7,18 +7,20 @@ import {
   MdOutlineOpenInNew,
   MdDriveFileMove,
   MdOutlineBookmarkRemove,
+  MdContentCopy,
 } from "react-icons/md";
 import { IconType } from "react-icons";
 
 import { IWishActions } from "../models/wish";
 
 interface IWishMenuItem {
-  actionKey?: keyof IWishActions;
+  actionKey?: keyof IWishActions | null;
   key: string;
   className: string;
   color?: "primary" | "danger" | "default";
-  title: string;
+  title?: string;
   icon: IconType;
+  getTitleFunc?: { (actions: IWishActions): string };
 }
 
 const ACTIONS: IWishMenuItem[] = [
@@ -36,6 +38,16 @@ const ACTIONS: IWishMenuItem[] = [
     color: "primary",
     title: "Перенести",
     icon: MdDriveFileMove,
+  },
+  {
+    actionKey: null,
+    key: "copy",
+    className: "text-primary",
+    color: "primary",
+    icon: MdContentCopy,
+    getTitleFunc: (actions) => {
+      return actions.edit ? "Копировать" : "Сохранить себе";
+    },
   },
   {
     key: "reserve",
@@ -72,8 +84,8 @@ const ACTIONS: IWishMenuItem[] = [
     title: "Не исполнено",
     icon: MdOutlineCancel,
   },
+
   {
-    actionKey: "edit",
     key: "delete",
     className: "text-danger",
     color: "danger",
@@ -87,7 +99,11 @@ export function getMenuItemsByActions(actions: IWishActions): IWishMenuItem[] {
 
   ACTIONS.forEach((action) => {
     let key = action.key as keyof IWishActions;
-    if ((action.actionKey && actions[action.actionKey]) || actions[key])
+    if (
+      (action.actionKey && actions[action.actionKey]) ||
+      actions[key] ||
+      action.actionKey === null
+    )
       items.push(action);
   });
   return items;

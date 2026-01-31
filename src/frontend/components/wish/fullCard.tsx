@@ -88,7 +88,9 @@ const WishFullCard = ({
                       handeAction(value.key);
                     }}
                   >
-                    {value.title}
+                    {value.getTitleFunc !== undefined
+                      ? value.getTitleFunc(wish.actions)
+                      : value.title}
                   </Button>
                 ))}
               </div>

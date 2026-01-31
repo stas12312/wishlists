@@ -16,12 +16,13 @@ import CardImage from "./cardImage";
 import WishSaveModal from "./saveModal";
 
 import { IWish, IWishActions } from "@/lib/models/wish";
-import { getWish } from "@/lib/client-requests/wish";
+import { copyWish, getWish } from "@/lib/client-requests/wish";
 import { cancelWishFull, moveWish } from "@/lib/client-requests/wish";
 import { makeWishFull } from "@/lib/client-requests/wish";
 import { cancelReserveWish } from "@/lib/client-requests/wish";
 import { reserveWish } from "@/lib/client-requests/wish";
 import { deleteWish } from "@/lib/client-requests/wish";
+import { IWishlist } from "@/lib/models/wishlist";
 
 export const WishItem = observer(
   ({
@@ -38,6 +39,7 @@ export const WishItem = observer(
     const [isConfirm, setIsConfirm] = useState(false);
     const editModal = useDisclosure();
     const moveModal = useDisclosure();
+    const copyModal = useDisclosure();
     const fullCardDrawer = useDisclosure();
 
     async function onDeleteWish() {
@@ -51,10 +53,18 @@ export const WishItem = observer(
       onUpdate(wish);
     }
 
-    async function onMove(wishlistUUID: string) {
-      await moveWish(wish.uuid || "", wishlistUUID);
+    async function onMove(wishlist: IWishlist) {
+      await moveWish(wish.uuid || "", wishlist.uuid);
       moveModal.onClose();
-      await onDelete(wish, "Желание перенесено");
+      await onDelete(wish, `Желание перенесено в вишлист "${wishlist.name}"`);
+    }
+
+    async function onCopy(wishlist: IWishlist) {
+      await copyWish(wish.uuid || "", wishlist.uuid);
+      copyModal.onClose();
+      addToast({
+        title: `Желание скопировано в вишлист "${wishlist.name}"`,
+      });
     }
 
     async function handleOnAction(key: Key | string) {
@@ -107,6 +117,9 @@ export const WishItem = observer(
       }
       if (key === "move") {
         moveModal.onOpen();
+      }
+      if (key === "copy") {
+        copyModal.onOpen();
       }
     }
 
@@ -184,6 +197,12 @@ export const WishItem = observer(
           isOpen={moveModal.isOpen}
           onOpenChange={moveModal.onOpenChange}
           onSelect={onMove}
+        />
+        <SelectWishlistModal
+          excludeWishlists={[]}
+          isOpen={copyModal.isOpen}
+          onOpenChange={copyModal.onOpenChange}
+          onSelect={onCopy}
         />
       </>
     );
