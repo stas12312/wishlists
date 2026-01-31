@@ -25,7 +25,7 @@ export const HeaderBlock = () => {
           animate={{
             opacity: 1,
             transform: "translateX(0)",
-            transition: { duration: 0.5 },
+            transition: { duration: 0.8 },
           }}
           className="flex-col flex text-center my-[10%] gap-2 z-10"
           initial={{
@@ -46,58 +46,60 @@ export const HeaderBlock = () => {
             title="Начать прямо сейчас"
           />
         </motion.div>
-        <motion.div
-          animate={{
-            opacity: 1,
-            transform: "translateX(0) skewY(3deg)",
-            transition: { duration: 0.5 },
-          }}
-          className="relative lg:w-2/3 h-[500px] lg:h-auto flex items-center flex-col "
-          initial={{
-            opacity: 0,
-            transform: "translateX(20px) skewY(3deg)",
-          }}
-        >
-          <Tabs
-            color="primary"
-            radius="lg"
-            selectedKey={activeTab}
-            size="lg"
-            variant="solid"
-            onSelectionChange={(key) => setActiveTab(key.toString())}
+        <span className="md:skew-y-3 h-[500px] lg:w-2/3 lg:h-auto">
+          <motion.div
+            animate={{
+              opacity: 1,
+              transform: "translateX(0)",
+              transition: { duration: 0.8 },
+            }}
+            className="relative w-full h-full flex items-center flex-col"
+            initial={{
+              opacity: 0,
+              transform: "translateX(20px)",
+            }}
           >
-            <Tab
-              key="desktop"
-              title={<MdOutlineDesktopMac className="text-2xl" />}
-            />
-            <Tab
-              key="mobile"
-              title={<MdOutlineSmartphone className="text-2xl" />}
-            />
-          </Tabs>
-          <AnimatePresence>
-            {activeTab == "desktop" ? (
-              <AnimatedDiv
+            <Tabs
+              color="primary"
+              radius="lg"
+              selectedKey={activeTab}
+              size="lg"
+              variant="solid"
+              onSelectionChange={(key) => setActiveTab(key.toString())}
+            >
+              <Tab
                 key="desktop"
-                className="max-h-[440px] absolute top-14 "
-              >
-                <Video
-                  className="my-auto max-h-[440px]"
-                  posterSrc="https://cdn.mywishlists.ru/static/landing/light/desktopPreload.jpg"
-                  src="https://cdn.mywishlists.ru/static/landing/light/videoMainPC.mp4"
-                />
-              </AnimatedDiv>
-            ) : (
-              <AnimatedDiv key="mobile" className="absolute top-14">
-                <Video
-                  className="h-[440px] mx-auto"
-                  posterSrc="https://cdn.mywishlists.ru/static/landing/light/mobilePreload.jpg"
-                  src="https://cdn.mywishlists.ru/static/landing/light/videoMainMobile.mp4"
-                />
-              </AnimatedDiv>
-            )}
-          </AnimatePresence>
-        </motion.div>
+                title={<MdOutlineDesktopMac className="text-2xl" />}
+              />
+              <Tab
+                key="mobile"
+                title={<MdOutlineSmartphone className="text-2xl" />}
+              />
+            </Tabs>
+            <AnimatePresence>
+              {activeTab == "desktop" ? (
+                <AnimatedDiv
+                  key="desktop"
+                  className="max-h-[440px] absolute top-14 "
+                >
+                  <Video
+                    className="my-auto max-h-[440px]"
+                    posterSrc="https://cdn.mywishlists.ru/static/landing/light/desktopPreload.jpg"
+                    src="https://cdn.mywishlists.ru/static/landing/light/videoMainPC.mp4"
+                  />
+                </AnimatedDiv>
+              ) : (
+                <AnimatedDiv key="mobile" className="absolute top-14">
+                  <Video
+                    className="h-[440px] mx-auto"
+                    posterSrc="https://cdn.mywishlists.ru/static/landing/light/mobilePreload.jpg"
+                    src="https://cdn.mywishlists.ru/static/landing/light/videoMainMobile.mp4"
+                  />
+                </AnimatedDiv>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        </span>
         <StartButton className="block lg:hidden" title="Начать прямо сейчас" />
       </motion.div>
     </div>
