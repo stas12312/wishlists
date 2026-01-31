@@ -23,6 +23,9 @@ module.exports = withSentryConfig(
     reactComponentAnnotation: {
       enabled: true,
     },
+    sourcemaps: {
+        deleteSourcemapsAfterUpload: true
+    },
     sentryUrl: SENTRY_CONF[0],
     hideSourceMaps: true,
     disableLogger: true,
