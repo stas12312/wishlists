@@ -14,11 +14,10 @@ ARG sentry_auth_token
 ARG sentry_dsn
 ARG ws_url
 
-ARG build_time
-ARG base_url
 ARG version
+ARG build_time
+ARG donate_url
 
-ENV BASE_URL $base_url
 ENV NEXT_PUBLIC_BASE_URL $base_url
 ENV NEXT_PUBLIC_YANDEX_METRIKA_ID $yandex_metrika_id
 ENV NEXT_PUBLIC_STATIC_URL $static_url
@@ -29,6 +28,7 @@ ENV NEXT_PUBLIC_WS_URL $ws_url
 
 ENV NEXT_PUBLIC_VERSION $version
 ENV NEXT_PUBLIC_BUILD_TIME $build_time
+ENV NEXT_PUBLIC_DONATE_URL $donate_url
 
 RUN npm run build
 

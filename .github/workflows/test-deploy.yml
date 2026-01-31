@@ -26,4 +26,5 @@ jobs:
             --build-arg sentry_dsn="${{ secrets.TEST_SENTRY_DSN }}" \
             --build-arg sentry_auth_token="${{ secrets.TEST_SENTRY_AUTH_TOKEN }}" \
             --build-arg ws_url="${{ secrets.TEST_WS_URL }}" \
+            --build-arg donate_url="${{ secrets.DONATE_URL }}" \
             && docker-compose up -d

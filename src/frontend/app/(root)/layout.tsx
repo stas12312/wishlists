@@ -8,6 +8,7 @@ import { ThemeSwitcher } from "@/components/themeSwitcher";
 import { UserItem } from "@/components/user";
 import Version from "@/components/version";
 import { Logo } from "@/components/logo";
+import { SupportButton } from "@/components/supportButton";
 export default async function Layout({
   children,
 }: {
@@ -33,8 +34,10 @@ export default async function Layout({
             <div className="hidden md:block col-span-full flex-col w-[240px]">
               <div className="sticky top-10 hidden md:block px-4">
                 <Menu variant="desktop" />
+
                 <footer className="my-2">
                   <Divider />
+                  <SupportButton className="mt-4" />
                   <Contacts />
                   <Version />
                 </footer>
@@ -46,12 +49,16 @@ export default async function Layout({
           </div>
         </div>
       </div>
-      <span className={`"mt-auto" ${isLogin ? "md:hidden" : ""}`}>
+      <span className={` ${isLogin ? "md:hidden" : ""}`}>
+        <div className="mx-3">
+          <SupportButton className="mt-2 w-full md:mx-0" />
+        </div>
+
         <footer
           className={`flex items-center justify-between ${isLogin ? "mb-20 md:mb-0" : ""} px-3`}
         >
-          <Version />
           <Contacts />
+          <Version />
         </footer>
       </span>
       {isLogin ? (
