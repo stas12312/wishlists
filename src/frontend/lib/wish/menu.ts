@@ -84,8 +84,8 @@ const ACTIONS: IWishMenuItem[] = [
     title: "Не исполнено",
     icon: MdOutlineCancel,
   },
-
   {
+    actionKey: "edit",
     key: "delete",
     className: "text-danger",
     color: "danger",
