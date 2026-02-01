@@ -52,11 +52,11 @@ export const UserItem = observer(() => {
               <User description={user.email} name={user.name} />
             ) : (
               <User
-                as="button"
                 avatarProps={{
                   name: user.name?.length ? user.name[0] : "",
                   src: user.image,
                 }}
+                className="cursor-pointer"
                 description={user.email}
                 name={user.name}
               />
