@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { logout, refreshTokenIfNeed } from "./lib/auth";
 
-export default async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const requestedUrl = request.nextUrl.pathname;
   const authUrl = new URL(`/auth/login?ret=${requestedUrl}`, request.url);
   if (
@@ -32,7 +32,6 @@ export default async function middleware(request: NextRequest) {
   });
 }
 
-// See "Matching Paths" below to learn more
 export const config = {
   matcher: [
     "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|auth|opengraph-image|static|manifest|icon|image).*)",

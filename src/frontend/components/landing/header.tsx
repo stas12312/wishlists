@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { BsStars } from "react-icons/bs";
-import { Tab, Tabs } from "@heroui/react";
+import { Tab, Tabs } from "@heroui/tabs";
 import { MdOutlineDesktopMac, MdOutlineSmartphone } from "react-icons/md";
 import { ReactNode, useEffect, useState } from "react";
 
@@ -35,7 +35,7 @@ export const HeaderBlock = () => {
         >
           <span className="flex gap-2 mx-auto text-5xl md:text-6xl">
             <BsStars style={{ color: "gold" }} />
-            <h1 className="font-semibold font-mono">MyWishlists</h1>
+            <h1 className="font-semibold">MyWishlists</h1>
           </span>
 
           <h2 className="text-xl md:text-3xl">

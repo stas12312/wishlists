@@ -212,7 +212,7 @@ export function WishlistCreateForm({
               <div className="flex gap-2 items-center">
                 <Avatar
                   alt={user.name}
-                  className="flex-shrink-0"
+                  className="shrink-0"
                   name={user.name[0]}
                   size="sm"
                   src={user.image}

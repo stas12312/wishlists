@@ -20,7 +20,9 @@ export const CardsList = observer(
               <motion.div
                 key={item.key}
                 layout
+                animate="show"
                 exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                initial="hidden"
                 variants={itemVariants}
               >
                 {item}

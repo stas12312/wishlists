@@ -11,7 +11,7 @@ const nextConfig = {
 const { withSentryConfig } = require("@sentry/nextjs");
 
 // В формате sentryUrl;org;project
-SENTRY_CONF = process.env.SENTRY_CONF.split(";")
+SENTRY_CONF = (process.env.SENTRY_CONF || ";;").split(";")
 
 
 

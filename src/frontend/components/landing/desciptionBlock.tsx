@@ -17,7 +17,7 @@ export const DescriptionBlock = ({
   return (
     <motion.div
       className={
-        "p-4 shadow-md rounded-xl w-full bg-content1 border-1 dark:border-none " +
+        "p-4 shadow-md rounded-xl w-full bg-content1 border-default-200 border dark:border-none " +
         className
       }
       initial="hidden"
@@ -27,7 +27,11 @@ export const DescriptionBlock = ({
       whileInView="show"
     >
       {imageUrl ? (
-        <Image removeWrapper className="shadow-md border" src={imageUrl} />
+        <Image
+          removeWrapper
+          className="shadow-md border-default-200 border"
+          src={imageUrl}
+        />
       ) : null}
 
       <div className={"flex items-center " + (!imageUrl ? "" : "")}>

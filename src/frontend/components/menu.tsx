@@ -130,7 +130,7 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
         <Link
           key="Выход"
           disableAnimation
-          className={`w-full flex gap-2 p-1 rounded-small hover:transition-colors ease-in items-center hover:bg-danger-100 text-lg cursor-pointer text-danger`}
+          className="w-full flex gap-2 p-1 rounded-small hover:transition-colors ease-in items-center hover:bg-danger-100 text-lg cursor-pointer text-danger"
           color="foreground"
           onPress={() => {
             userStore.logout();
