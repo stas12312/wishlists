@@ -72,7 +72,7 @@ const CodeInput = ({
     const element = (
       <span key={i}>
         <Input
-          ref={(ref) => {
+          ref={(ref: HTMLInputElement | null) => {
             inputsRefs.current[i] = ref;
           }}
           className="w-12"
