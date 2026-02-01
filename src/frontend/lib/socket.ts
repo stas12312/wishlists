@@ -1,9 +1,9 @@
 import { Options } from "react-use-websocket";
 
-import { getCookie } from "./cookie";
+import { authManager } from "./clientAuth";
 
-export function getWebsocketUrl(): string {
-  const accessToken = getCookie("access_token");
+export async function getWebsocketUrl(): Promise<string> {
+  const accessToken = await authManager.getAccessToken();
   return `${process.env.NEXT_PUBLIC_WS_URL}?token=${accessToken}`;
 }
 
