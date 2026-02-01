@@ -7,7 +7,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@heroui/modal";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 
 const ConfirmationModal = ({
   onConfirm,
@@ -37,7 +37,29 @@ const ConfirmationModal = ({
 
   useEffect(() => {
     setText("");
+    const handleKeyDown = (e: KeyboardEvent): void => {
+      if (isOpen && e.key === "Enter") {
+        const activeElement = document.activeElement;
+        if (
+          !activeElement ||
+          (activeElement.tagName !== "BUTTON" &&
+            activeElement.tagName !== "INPUT" &&
+            activeElement.tagName !== "TEXTAREA")
+        ) {
+          buttonRef.current?.click();
+        }
+      }
+    };
+
+    const keydownHandler = (e: KeyboardEvent): void => handleKeyDown(e);
+    document.addEventListener("keydown", keydownHandler as EventListener);
+
+    return () => {
+      document.removeEventListener("keydown", keydownHandler as EventListener);
+    };
   }, [isOpen]);
+
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   return (
     <>
@@ -71,6 +93,7 @@ const ConfirmationModal = ({
                   {declineName}
                 </Button>
                 <Button
+                  ref={buttonRef}
                   color="danger"
                   isDisabled={confirmByText && !(confirmText == text)}
                   isLoading={isLoading}
