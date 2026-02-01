@@ -1,4 +1,4 @@
-import { Divider } from "@heroui/react";
+import { Divider } from "@heroui/divider";
 import { motion } from "framer-motion";
 
 import { UserChip } from "../user";

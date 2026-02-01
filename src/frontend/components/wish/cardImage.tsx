@@ -22,7 +22,7 @@ const CardImage = ({
   return (
     <div className={`relative ${className}`}>
       <div
-        className={`bg-gradient-to-br from-default to-default-100 rounded-large w-full flex h-full`}
+        className={`bg-linear-to-br from-default to-default-100 rounded-large w-full flex h-full`}
       >
         {wish.images?.length ? (
           <Image

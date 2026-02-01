@@ -5,7 +5,7 @@ import { Image } from "@heroui/image";
 import { Spinner } from "@heroui/spinner";
 import { ReactNode, useEffect, useState } from "react";
 import { MdDelete } from "react-icons/md";
-import { Progress } from "@heroui/react";
+import { Progress } from "@heroui/progress";
 
 import { readableBytes } from "@/lib/file";
 import { authManager } from "@/lib/clientAuth";

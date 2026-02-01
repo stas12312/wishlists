@@ -1,7 +1,7 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import { Image } from "@heroui/image";
-import { Chip } from "@heroui/react";
+import { Chip } from "@heroui/chip";
 import { AiFillGift } from "react-icons/ai";
 
 import Desirability from "../desirability";
@@ -23,7 +23,7 @@ export const ImageSwiper = ({ wish }: { wish: IWish }) => {
         </span>
       </div>
       <div
-        className={`bg-gradient-to-br from-default to-default-100 rounded-large w-full flex h-full`}
+        className={`bg-linear-to-br from-default to-default-100 rounded-large w-full flex h-full`}
       >
         {wish.images.length ? (
           <Swiper

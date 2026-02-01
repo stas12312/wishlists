@@ -29,7 +29,7 @@ export const StartBlock = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full gap-4  p-4">
       <motion.h2
-        className="text-3xl font-mono font-semibold text-center my-4 col-span-full"
+        className="text-3xl font-semibold text-center my-4 col-span-full"
         initial="initial"
         variants={defaultVariants}
         viewport={{ once: true }}
