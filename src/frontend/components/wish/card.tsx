@@ -63,7 +63,8 @@ export const WishItem = observer(
       await copyWish(wish.uuid || "", wishlist.uuid);
       copyModal.onClose();
       addToast({
-        title: `Желание скопировано в вишлист "${wishlist.name}"`,
+        title: "Желание скопировано",
+        description: `В вишлист "${wishlist.name}"`,
       });
     }
 
