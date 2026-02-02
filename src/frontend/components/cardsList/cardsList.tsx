@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { observer } from "mobx-react-lite";
 import { ReactElement } from "react";
 
@@ -13,30 +13,32 @@ export const CardsList = observer(
         initial="hidden"
         variants={containerVariants}
       >
-        {items.map((item) => {
-          if (!item) {
-            return null;
-          }
-          return (
-            <motion.div
-              key={item.key}
-              layout
-              animate={{
-                opacity: 1,
-                transform: "translateY(0px)",
-                transition: { duration: 0.3 },
-              }}
-              exit={{
-                opacity: 0,
-                transform: "translateY(-20px)",
-                transition: { duration: 0.1 },
-              }}
-              variants={itemVariants}
-            >
-              {item}
-            </motion.div>
-          );
-        })}
+        <AnimatePresence mode="popLayout">
+          {items.map((item) => {
+            if (!item) {
+              return null;
+            }
+            return (
+              <motion.div
+                key={item.key}
+                layout
+                animate={{
+                  opacity: 1,
+                  transform: "translateY(0px)",
+                  transition: { duration: 0.3 },
+                }}
+                exit={{
+                  opacity: 0,
+                  transform: "translateY(-20px)",
+                  transition: { duration: 0.1 },
+                }}
+                variants={itemVariants}
+              >
+                {item}
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
       </motion.div>
     );
   },
