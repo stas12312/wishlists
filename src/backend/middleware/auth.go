@@ -1,11 +1,12 @@
 package middleware
 
 import (
+	"main/model"
+	"os"
+
 	jwtware "github.com/gofiber/contrib/jwt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
-	"main/model"
-	"os"
 )
 
 func Protected(requiredAuth bool) fiber.Handler {
