@@ -11,6 +11,7 @@ type User struct {
 	CreatedAt string     `json:"-" db:"created_at"`
 	Birthday  NullDate   `json:"birthday" db:"birthday"`
 	RawEmail  NullString `json:"-" db:"email"`
+	IsAdmin   bool       `json:"-" db:"is_admin"`
 }
 
 type UserForUpdate struct {

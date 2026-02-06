@@ -81,6 +81,8 @@ func main() {
 	feedService := service.NewFeedService(feedRepository)
 	feedController := controller.NewFeedController(feedService)
 
+	adminController := controller.NewAdminController(userService)
+
 	api := app.Group("/api")
 
 	websocketController.Route(app)
@@ -89,6 +91,7 @@ func main() {
 	imageController.Route(api)
 	friendController.Route(api)
 	feedController.Route(api)
+	adminController.Route(api)
 
 	log.Fatal(app.Listen(":8080"))
 }
