@@ -7,6 +7,8 @@ import { Logo } from "@/components/logo";
 import { ThemeSwitcher } from "@/components/themeSwitcher";
 import { UserItem } from "@/components/user";
 
+export const dynamic = "force-dynamic";
+
 export default async function Layout({ children }: { children: ReactNode }) {
   const isAdmin = await checkIsAdmin();
   if (!isAdmin) {
