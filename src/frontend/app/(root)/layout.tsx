@@ -1,5 +1,7 @@
 import { Divider } from "@heroui/divider";
 import { cookies } from "next/headers";
+import { Link } from "@heroui/link";
+import { MdCreate } from "react-icons/md";
 
 import { Contacts } from "@/components/contacts";
 import Login from "@/components/login";
@@ -9,6 +11,7 @@ import { UserItem } from "@/components/user";
 import Version from "@/components/version";
 import { Logo } from "@/components/logo";
 import { SupportButton } from "@/components/supportButton";
+
 export default async function Layout({
   children,
 }: {
@@ -17,13 +20,21 @@ export default async function Layout({
   const cookieStore = await cookies();
   const isLogin = cookieStore.has("refresh_token");
   return (
-    <div className="flex flex-col  min-h-screen justify-between">
+    <div className="flex flex-col min-h-screen justify-between">
       <div>
-        <header className="flex z-10  m-2">
-          <div className="w-[240px] shrink-0 hidden  p-4 items-center md:flex justify-center">
+        <header className="flex z-10 justify-between justify">
+          <div className="w-60 shrink-0 hidden  p-4 items-center md:flex justify-center">
             <Logo />
           </div>
-          <div className="p-4 gap-4 w-full flex col-span-full justify-between md:justify-end">
+          <Link
+            className="mx-auto text-xl flex gap-1"
+            color="foreground"
+            href="/blog"
+          >
+            <MdCreate />
+            <p>Блог</p>
+          </Link>
+          <div className="p-4 gap-4 flex justify-between md:justify-end">
             <ThemeSwitcher />
             {isLogin ? <UserItem /> : <Login />}
           </div>
@@ -31,7 +42,7 @@ export default async function Layout({
 
         <div className="gap-1 pb-4 flex">
           {isLogin ? (
-            <div className="hidden md:block col-span-full flex-col w-[240px]">
+            <div className="hidden md:block col-span-full flex-col w-60">
               <div className="sticky top-10 hidden md:block px-4">
                 <Menu variant="desktop" />
 

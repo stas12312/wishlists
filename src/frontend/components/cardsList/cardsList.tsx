@@ -5,11 +5,17 @@ import { ReactElement } from "react";
 import { containerVariants, itemVariants } from "./animation";
 
 export const CardsList = observer(
-  ({ items }: { items: Array<ReactElement | null> }) => {
+  ({
+    items,
+    gridConfig = "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5",
+  }: {
+    items: Array<ReactElement | null>;
+    gridConfig?: string;
+  }) => {
     return (
       <motion.div
         animate="show"
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 col-span-full"
+        className={`grid gap-4 col-span-full ${gridConfig}`}
         initial="hidden"
         variants={containerVariants}
       >
