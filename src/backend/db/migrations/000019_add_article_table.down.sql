@@ -1,0 +1,2 @@
+DROP INDEX IF EXISTS articles_slug;
+DROP TABLE IF EXISTS articles;

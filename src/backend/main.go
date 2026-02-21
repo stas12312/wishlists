@@ -77,12 +77,15 @@ func main() {
 	imageService := service.NewImageService(imageRepository, uuid.NewString, appConfig.Feature)
 	imageController := controller.NewImageController(imageService)
 
+	articleRepository := repository.NewArticlePostgresRepository(db)
+	articleService := service.NewArticleService(articleRepository)
+
 	feedRepository := repository.NewFeedRepositoryPostgres(db)
 	feedService := service.NewFeedService(feedRepository)
 	feedController := controller.NewFeedController(feedService)
 
-	adminController := controller.NewAdminController(userService)
-
+	adminController := controller.NewAdminController(userService, articleService)
+	articleController := controller.NewArticleController(articleService)
 	api := app.Group("/api")
 
 	websocketController.Route(app)
@@ -92,6 +95,7 @@ func main() {
 	friendController.Route(api)
 	feedController.Route(api)
 	adminController.Route(api)
+	articleController.Route(api)
 
 	log.Fatal(app.Listen(":8080"))
 }
