@@ -20,7 +20,7 @@ export const HeaderBlock = () => {
     <div className="bg-primary-200 dark:bg-primary-100 h-3/4 lg:py-32 p-4 shadow-xl relative overflow-hidden rounded-3xl -mx-4 md:mx-0">
       <div className="absolute h-32 w-32 md:h-96 md:w-96 bg-primary-500/60 -top-16 -left-16 md:-top-40 md:-left-40 rounded-full blur-3xl" />
       <div className="absolute h-32 w-32 md:h-96 md:w-96 bg-primary-500/60 -bottom-16 -right-16 md:-bottom-40 md:-right-40 rounded-full blur-3xl" />
-      <motion.div className="flex lg:flex-row flex-col max-w-[1200px] mx-auto gap-4">
+      <motion.div className="flex lg:flex-row flex-col max-w-300 mx-auto gap-4">
         <motion.div
           animate={{
             opacity: 1,
@@ -35,7 +35,7 @@ export const HeaderBlock = () => {
         >
           <span className="flex gap-2 mx-auto text-5xl md:text-6xl">
             <BsStars style={{ color: "gold" }} />
-            <h1 className="font-semibold">MyWishlists</h1>
+            <h1 className="font-semibold text-5xl md:text-6xl">MyWishlists</h1>
           </span>
 
           <h2 className="text-xl md:text-3xl">

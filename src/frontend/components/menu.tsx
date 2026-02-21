@@ -1,6 +1,4 @@
 "use client";
-import { Badge } from "@heroui/badge";
-import { Chip } from "@heroui/chip";
 import { Link } from "@heroui/link";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
@@ -14,6 +12,8 @@ import {
 } from "react-icons/md";
 import { usePathname } from "next/navigation";
 import { Divider } from "@heroui/divider";
+
+import { DesktopMenuItem, MobileMenuItem } from "./main-menu/item";
 
 import countersStore from "@/store/counterStore";
 import userStore from "@/store/userStore";
@@ -84,16 +84,14 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
     return (
       <div className="flex justify-between">
         {ITEMS.map((item) => (
-          <MenuItem
+          <MobileMenuItem
             key={item.title}
-            counter={
-              item.counterName ? countersValues.get(item.counterName) || 0 : 0
-            }
-            href={item.href}
-            icon={item.icon}
-            isCurrent={pathname == item.href}
-            selectedIconClassName={item.selectedIconClassName}
-            title={item.title}
+            item={item}
+            params={{
+              counter: item.counterName
+                ? countersValues.get(item.counterName) || 0
+                : 0,
+            }}
           />
         ))}
       </div>
@@ -102,29 +100,16 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
     return (
       <div>
         {ITEMS.map((item) => (
-          <Link
+          <DesktopMenuItem
             key={item.title}
-            disableAnimation
-            className={`w-full flex gap-2 p-1 rounded-small hover:transition-colors ease-in items-center hover:bg-default-200 text-lg ${pathname == item.href ? "bg-default" : null}`}
-            color="foreground"
-            href={item.href}
-          >
-            <span
-              className={
-                pathname == item.href && item.selectedIconClassName
-                  ? item.selectedIconClassName
-                  : ""
-              }
-            >
-              {item.icon}
-            </span>
-            {item.title}
-            {item.counterName ? (
-              <Counter value={countersValues.get(item.counterName) || 0} />
-            ) : (
-              ""
-            )}
-          </Link>
+            item={item}
+            params={{
+              isCurrent: pathname == item.href,
+              counter: item.counterName
+                ? countersValues.get(item.counterName) || 0
+                : 0,
+            }}
+          />
         ))}
         <Divider className="my-2" />
         <Link
@@ -146,58 +131,5 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
     );
   }
 });
-
-const MenuItem = ({
-  icon,
-  title,
-  href,
-  counter,
-  isCurrent,
-  selectedIconClassName,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  href: string;
-  counter: number;
-  isCurrent: boolean;
-  selectedIconClassName?: string;
-}) => {
-  return (
-    <div className="h-full w-full p-4 flex justify-center rounded-xl">
-      <Badge
-        color="primary"
-        content={counter}
-        isInvisible={counter == 0}
-        showOutline={false}
-      >
-        <Link
-          disableAnimation
-          className={`flex flex-col `}
-          color="foreground"
-          href={href}
-        >
-          <div
-            className={`text-3xl mx-auto ${
-              isCurrent && selectedIconClassName ? selectedIconClassName : ""
-            }`}
-          >
-            {icon}
-          </div>
-          <span className="text-tiny">{title}</span>
-        </Link>
-      </Badge>
-    </div>
-  );
-};
-
-const Counter = ({ value }: { value: number }) => {
-  return value ? (
-    <Chip className="my-auto" color="primary" radius="sm" size="sm">
-      {value.toLocaleString()}
-    </Chip>
-  ) : (
-    ""
-  );
-};
 
 export default Menu;
