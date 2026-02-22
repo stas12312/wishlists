@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import { ArticleDetails } from "@/components/article/details";
 import PageHeader from "@/components/pageHeader";
 import { getArticleBySlug } from "@/lib/server-requests/article";
+import { CustomBreadcrumbs } from "@/components/breadcrumbs";
 
 export async function generateMetadata({
   params,
@@ -47,7 +48,18 @@ export default async function Page({
   return (
     <>
       <PageHeader>
-        <p className="text-center mx-auto">{article.title}</p>
+        <CustomBreadcrumbs
+          items={[
+            {
+              title: "Блог",
+              href: "/blog",
+            },
+            {
+              title: article.title,
+              href: `/blog/${article.slug}`,
+            },
+          ]}
+        />
       </PageHeader>
       <ArticleDetails article={article} />
     </>
