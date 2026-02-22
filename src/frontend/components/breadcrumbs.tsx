@@ -1,5 +1,6 @@
 "use client";
 import { BreadcrumbItem, Breadcrumbs } from "@heroui/breadcrumbs";
+import { useRouter } from "next/navigation";
 
 interface IBreadcrumbItem {
   href: string;
@@ -7,6 +8,7 @@ interface IBreadcrumbItem {
 }
 
 export const CustomBreadcrumbs = ({ items }: { items: IBreadcrumbItem[] }) => {
+  const router = useRouter();
   return (
     <Breadcrumbs
       classNames={{
@@ -17,7 +19,12 @@ export const CustomBreadcrumbs = ({ items }: { items: IBreadcrumbItem[] }) => {
       }}
     >
       {items.map((item) => (
-        <BreadcrumbItem key={item.title} href={item.href}>
+        <BreadcrumbItem
+          key={item.title}
+          onPress={() => {
+            router.push(item.href);
+          }}
+        >
           {item.title}
         </BreadcrumbItem>
       ))}
