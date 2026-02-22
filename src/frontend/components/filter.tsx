@@ -37,7 +37,12 @@ const Filter = ({
       >
         <Badge color="primary" content="" isInvisible={!isShowBadge}>
           <PopoverTrigger>
-            <Button isIconOnly variant="flat" onPress={onOpenChange}>
+            <Button
+              isIconOnly
+              data-qa="select-filters"
+              variant="flat"
+              onPress={onOpenChange}
+            >
               <MdFilterAlt />
             </Button>
           </PopoverTrigger>
