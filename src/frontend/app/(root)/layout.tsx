@@ -1,7 +1,7 @@
 import { Divider } from "@heroui/divider";
 import { cookies } from "next/headers";
 import { Link } from "@heroui/link";
-import { MdCreate } from "react-icons/md";
+import { MdBolt } from "react-icons/md";
 
 import { Contacts } from "@/components/contacts";
 import Login from "@/components/login";
@@ -11,7 +11,7 @@ import { UserItem } from "@/components/user";
 import Version from "@/components/version";
 import { Logo } from "@/components/logo";
 import { SupportButton } from "@/components/supportButton";
-
+import { ActiveIcon } from "@/components/activeIcon";
 export default async function Layout({
   children,
 }: {
@@ -27,11 +27,16 @@ export default async function Layout({
             <Logo />
           </div>
           <Link
-            className="mx-auto text-xl flex gap-1"
+            className="mx-auto text-xl flex"
             color="foreground"
             href="/blog"
           >
-            <MdCreate />
+            <ActiveIcon
+              activeClassName="text-yellow-500"
+              className=""
+              icon={<MdBolt />}
+              path="/blog"
+            />
             <p>Блог</p>
           </Link>
           <div className="p-4 gap-4 flex justify-between md:justify-end">
