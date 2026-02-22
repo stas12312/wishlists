@@ -88,6 +88,7 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
             key={item.title}
             item={item}
             params={{
+              isCurrent: pathname == item.href,
               counter: item.counterName
                 ? countersValues.get(item.counterName) || 0
                 : 0,
