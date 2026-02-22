@@ -66,7 +66,6 @@ function header(data: BlockToolData): ReactNode {
 }
 
 function image(data: BlockToolData): ReactNode {
-  console.log(data);
   return (
     <div>
       <Image

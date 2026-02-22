@@ -8,14 +8,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { addToast } from "@heroui/toast";
 import useWebSocket from "react-use-websocket";
-import { Link } from "@heroui/link";
-import { MdArrowBack } from "react-icons/md";
 import { motion } from "framer-motion";
 
 import AddCardButton from "../addCardButton";
 import PageHeader from "../pageHeader";
 import { PageSpinner } from "../pageSpinner";
-import { VisibleStatus } from "../visibleIcon";
 import { WishItem } from "../wish/card";
 import WishSaveModal from "../wish/saveModal";
 import { LoginButton } from "../login";
@@ -23,6 +20,8 @@ import UserCard from "../user/card";
 import { ISorting, SortingSelector } from "../wish/sortingSelector";
 import { IWishFilter, WishFilter } from "../wish/filter";
 import { CardsList } from "../cardsList/cardsList";
+import { VisibleStatus } from "../visibleIcon";
+import { CustomBreadcrumbs } from "../breadcrumbs";
 
 import WishlistItemMenu from "./menu";
 
@@ -67,15 +66,23 @@ const WishlistDetail = observer(
           <UserCard username={user.username} />
         ) : null}
         <PageHeader>
-          <Link href={isEditable ? "/" : `/users/${wishlist.user?.username}`}>
-            <MdArrowBack /> К вишлистам
-          </Link>
           <div className="flex justify-center md:justify-start">
             <span>
               <div className="flex flex-row gap-2 justify-center lg:justify-start">
-                <span className="text-2xl" title={wishlist.name}>
-                  {wishlist.name}
-                </span>
+                <CustomBreadcrumbs
+                  items={[
+                    {
+                      title: isEditable ? "Вишлисты" : "Вишлисты пользователя",
+                      href: isEditable
+                        ? "/"
+                        : `/users/${wishlist.user?.username}`,
+                    },
+                    {
+                      title: wishlist.name,
+                      href: `/wishlists/${wishlist.uuid}`,
+                    },
+                  ]}
+                />
                 <span>
                   <VisibleStatus visible={wishlist.visible} />
                 </span>
@@ -258,10 +265,10 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
           {isLoading ? (
             <PageHeader>
               <div className="flex justify-center md:justify-start">
-                <Skeleton className="h-[32px] w-1/5 rounded-full" />
+                <Skeleton className="h-8 w-1/5 rounded-full" />
               </div>
               <div className="flex justify-center md:justify-start">
-                <Skeleton className="h-[20px] w-2/5 mt-[8px] rounded-full" />
+                <Skeleton className="h-5 w-2/5 mt-2 rounded-full" />
               </div>
             </PageHeader>
           ) : (
