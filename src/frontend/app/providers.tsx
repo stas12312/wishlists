@@ -34,7 +34,6 @@ export function Providers({ children }: ProvidersProps) {
   return (
     <HeroUIProvider>
       <RouterProvider navigate={router.push}>
-        {children}
         <ToastProvider toastOffset={width < 768 ? 80 : 0} />
         <NextThemesProvider attribute="class" defaultTheme="light">
           {children}
