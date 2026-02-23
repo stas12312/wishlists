@@ -257,92 +257,88 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
-        <div className="col-span-full">
-          {isLoading ? (
-            <PageHeader>
-              <div className="flex justify-center md:justify-start">
-                <Skeleton className="h-8 w-1/5 rounded-full" />
-              </div>
-              <div className="flex justify-center md:justify-start">
-                <Skeleton className="h-5 w-2/5 mt-2 rounded-full" />
-              </div>
-            </PageHeader>
-          ) : (
-            <WishlistDetail
-              isEditable={isEditable}
-              statistic={statistic}
-              wishlist={wishlist}
-              onDelete={onDeleteWishlist}
-              onUpdate={onUpdateWishlist}
-            />
-          )}
-        </div>
-        {isLoading ? (
-          <div className="col-span-full">
-            <PageSpinner />
+      {isLoading ? (
+        <PageHeader>
+          <div className="flex justify-center md:justify-start">
+            <Skeleton className="h-8 w-1/5 rounded-full" />
           </div>
-        ) : (
-          <>
-            {!userStore.user.id ? (
-              <div className="col-span-full flex justify-center">
-                <div>
-                  <Alert
-                    hideIconWrapper
-                    className="mx-auto"
-                    color="warning"
-                    description="Для отображения забронированных желаний войдите в свой аккаунт"
-                    endContent={<LoginButton className="ml-4" />}
-                    title="Некоторые из желаний могут быть забронированы"
-                  />
-                </div>
-              </div>
-            ) : null}
-            {items.length ? (
-              <div className="col-span-full flex gap-4">
-                <WishFilter
-                  hidedFilters={
-                    isEditable || !userStore.user.id ? ["reserved"] : undefined
-                  }
-                  onChangeFilter={(newFilter: IWishFilter) => {
-                    if (!isEqual(newFilter, filters)) setFilters(newFilter);
-                  }}
+          <div className="flex justify-center md:justify-start">
+            <Skeleton className="h-5 w-2/5 mt-2 rounded-full" />
+          </div>
+        </PageHeader>
+      ) : (
+        <WishlistDetail
+          isEditable={isEditable}
+          statistic={statistic}
+          wishlist={wishlist}
+          onDelete={onDeleteWishlist}
+          onUpdate={onUpdateWishlist}
+        />
+      )}
+      {isLoading ? (
+        <div className="col-span-full">
+          <PageSpinner />
+        </div>
+      ) : (
+        <>
+          {!userStore.user.id ? (
+            <div className="col-span-full flex justify-center">
+              <div>
+                <Alert
+                  hideIconWrapper
+                  className="mx-auto"
+                  color="warning"
+                  description="Для отображения забронированных желаний войдите в свой аккаунт"
+                  endContent={<LoginButton className="ml-4" />}
+                  title="Некоторые из желаний могут быть забронированы"
                 />
-                <SortingSelector
-                  defaultField="created_at"
-                  onChangeSorting={setSorting}
-                />
               </div>
-            ) : null}
+            </div>
+          ) : null}
+          {items.length ? (
+            <div className="col-span-full flex gap-4 mb-4">
+              <WishFilter
+                hidedFilters={
+                  isEditable || !userStore.user.id ? ["reserved"] : undefined
+                }
+                onChangeFilter={(newFilter: IWishFilter) => {
+                  if (!isEqual(newFilter, filters)) setFilters(newFilter);
+                }}
+              />
+              <SortingSelector
+                defaultField="created_at"
+                onChangeSorting={setSorting}
+              />
+            </div>
+          ) : null}
 
-            <WishSaveModal
-              isOpen={isOpen}
-              wishlistUUID={wishlistUUID}
-              onOpenChange={onOpenChange}
-              onUpdate={onCreateWish}
-            />
-            <CardsList
-              items={[
-                isEditable ? (
-                  <AddCardButton
-                    className="md:h-75 w-full"
-                    title="Добавить желание"
-                    onPress={onOpen}
-                  />
-                ) : null,
-                ...visibleItems.map((wish: IWish) => (
-                  <WishItem
-                    key={wish.uuid}
-                    wish={wish}
-                    onDelete={onDeleteWish}
-                    onUpdate={onUpdate}
-                  />
-                )),
-              ]}
-            />
-          </>
-        )}
-      </div>
+          <WishSaveModal
+            isOpen={isOpen}
+            wishlistUUID={wishlistUUID}
+            onOpenChange={onOpenChange}
+            onUpdate={onCreateWish}
+          />
+          <CardsList
+            items={[
+              isEditable ? (
+                <AddCardButton
+                  className="md:h-75 w-full"
+                  title="Добавить желание"
+                  onPress={onOpen}
+                />
+              ) : null,
+              ...visibleItems.map((wish: IWish) => (
+                <WishItem
+                  key={wish.uuid}
+                  wish={wish}
+                  onDelete={onDeleteWish}
+                  onUpdate={onUpdate}
+                />
+              )),
+            ]}
+          />
+        </>
+      )}
     </>
   );
 });
