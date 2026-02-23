@@ -23,7 +23,7 @@ export const WishlistItemMenu = ({
   onDelete,
   onUpdate,
   onRestore,
-  className,
+  className = "",
   isEditable,
 }: {
   wishlist: IWishlist;
@@ -73,7 +73,7 @@ export const WishlistItemMenu = ({
   return (
     <span data-qa="wishlist-menu">
       <Dropdown>
-        <MenuTrigger />
+        <MenuTrigger className={className} />
         <DropdownMenu aria-label="Static Actions" onAction={handleOnAction}>
           {isEditable ? (
             <>
