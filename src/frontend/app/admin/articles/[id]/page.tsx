@@ -12,7 +12,7 @@ export default async function Page({
   const article = await getArticleById(articleId);
   return (
     <>
-      <PageHeader>Редактирование статьи</PageHeader>
+      <PageHeader title="Редактирование статьи" />
       <ArticleForm existsArticle={article} />
     </>
   );

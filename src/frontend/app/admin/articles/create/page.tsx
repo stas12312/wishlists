@@ -5,7 +5,7 @@ import PageHeader from "@/components/pageHeader";
 export default function Page() {
   return (
     <>
-      <PageHeader>Новая статья</PageHeader>
+      <PageHeader title="Новая статья" />
       <ArticleForm />
     </>
   );

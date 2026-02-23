@@ -101,7 +101,7 @@ const WishlistDetail = observer(
           {isOwner || wishlist.date ? (
             <motion.div
               animate={{ opacity: 1, transition: { duration: 0.5 } }}
-              className="flex gap-2 justify-center md:justify-start flex-wrap mt-2"
+              className="flex gap-2 justify-center md:justify-start flex-wrap my-2"
               initial={{ opacity: 0 }}
             >
               {isOwner ? <VisibleChip wishlist={wishlist} /> : null}

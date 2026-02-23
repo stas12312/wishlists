@@ -34,7 +34,7 @@ export default function Page() {
   }
   return (
     <>
-      <PageHeader>Статьи</PageHeader>
+      <PageHeader title="Статьи" />
       <div className="p-4">
         <CardsList
           items={[

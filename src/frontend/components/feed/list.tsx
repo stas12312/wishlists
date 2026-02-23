@@ -87,7 +87,7 @@ const FeedList = observer(() => {
 
   return (
     <>
-      <PageHeader>Лента</PageHeader>
+      <PageHeader dividerClassName="mt-2" title="Лента" />
       {items.length ? (
         <div>
           {groupedData.map((dateEvents) => {

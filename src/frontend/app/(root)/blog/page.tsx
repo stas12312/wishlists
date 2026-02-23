@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Page() {
   return (
     <>
-      <PageHeader>Блог</PageHeader>
+      <PageHeader title="Блог" />
       <ArticlesList />
     </>
   );

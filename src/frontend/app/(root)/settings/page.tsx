@@ -9,8 +9,8 @@ import { DeleteAccountButton, ExitButton } from "@/components/settings/buttons";
 export default function SettingsPage() {
   return (
     <>
+      <PageHeader dividerClassName="mt-2 mb-4" title="Настройки" />
       <div className="flex flex-col gap-3 sm:text-center md:text-left ">
-        <PageHeader>Настройки</PageHeader>
         <SettingItem header="Профиль">
           <ProfileSection />
         </SettingItem>
