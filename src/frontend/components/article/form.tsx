@@ -28,6 +28,7 @@ const ArticleForm = observer(
       title: "",
       description: "",
       is_published: false,
+      created_at: "",
       slug: "",
       image: "",
     },
@@ -51,6 +52,7 @@ const ArticleForm = observer(
     }
 
     async function publishThisArticle() {
+      await updateArticle(article);
       await publishArticle(article.id);
       setArticle({ ...article, is_published: true });
     }

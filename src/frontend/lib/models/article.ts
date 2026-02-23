@@ -8,6 +8,7 @@ export interface IArticle {
   create_at?: string;
   is_published: boolean;
   published_at?: string;
+  created_at: string;
   image: string;
   slug: string;
 }
