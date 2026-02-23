@@ -1,8 +1,8 @@
 "use client";
 
-import { Button } from "@heroui/button";
+import { Tab, Tabs } from "@heroui/tabs";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import { Key, useEffect, useState } from "react";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 export function ThemeSwitcher() {
   const [mounted, setMounted] = useState(false);
@@ -15,15 +15,16 @@ export function ThemeSwitcher() {
   if (!mounted) return null;
 
   return (
-    <Button
-      isIconOnly
-      className="text-2xl cursor-pointer hover:opacity-90 my-auto hover:bg-default-200 p-2 rounded-xl bg-none"
-      variant="flat"
-      onPress={() => {
-        theme === "dark" ? setTheme("light") : setTheme("dark");
+    <Tabs
+      aria-label="Theme"
+      selectedKey={theme}
+      onSelectionChange={(key: Key) => {
+        setTheme(key.toString());
       }}
     >
-      {theme == "dark" ? <MdLightMode /> : <MdDarkMode />}
-    </Button>
+      <Tab key="system" title={"Системная"} />
+      <Tab key="light" title={<MdLightMode />} />
+      <Tab key="dark" title={<MdDarkMode />} />
+    </Tabs>
   );
 }

@@ -15,6 +15,8 @@ import { Avatar } from "@heroui/avatar";
 import { Chip } from "@heroui/chip";
 import { Link } from "@heroui/link";
 
+import { ThemeSwitcher } from "./themeSwitcher";
+
 import userStore from "@/store/userStore";
 import { logout } from "@/lib/auth";
 import { IUser } from "@/lib/models/user";
@@ -63,6 +65,15 @@ export const UserItem = observer(() => {
             )}
           </DropdownTrigger>
           <DropdownMenu variant="flat" onAction={onHandleAction}>
+            <DropdownItem
+              key="theme-switcher"
+              isReadOnly
+              classNames={{
+                base: "data-[hover=true]:bg-default/0",
+              }}
+            >
+              <ThemeSwitcher />
+            </DropdownItem>
             <DropdownItem key="share" startContent={<MdLink />}>
               Ссылка на профиль
             </DropdownItem>

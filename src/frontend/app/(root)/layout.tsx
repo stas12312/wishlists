@@ -6,7 +6,6 @@ import { MdBolt } from "react-icons/md";
 import { Contacts } from "@/components/contacts";
 import Login from "@/components/login";
 import Menu from "@/components/menu";
-import { ThemeSwitcher } from "@/components/themeSwitcher";
 import { UserItem } from "@/components/user";
 import Version from "@/components/version";
 import { Logo } from "@/components/logo";
@@ -40,7 +39,6 @@ export default async function Layout({
             <p>Блог</p>
           </Link>
           <div className="p-4 gap-4 flex justify-between md:justify-end">
-            <ThemeSwitcher />
             {isLogin ? <UserItem /> : <Login />}
           </div>
         </header>
