@@ -43,7 +43,7 @@ export function WishlistCreateForm({
     name: wishlist?.name || "",
     description: wishlist?.description || "",
     date: wishlist?.date || null,
-    visible: wishlist?.visible || Visible.Public,
+    visible: wishlist?.visible ?? Visible.Public,
     uuid: wishlist?.uuid || "",
     visible_user_ids: wishlist?.visible_user_ids || [],
   });
@@ -103,7 +103,6 @@ export function WishlistCreateForm({
       ["date"]: datetime ? datetime.toISOString() : null,
     });
   };
-
   return (
     <Form
       className="flex flex-col gap-3"
