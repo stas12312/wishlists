@@ -87,8 +87,12 @@ func (r ArticlePostgresRepository) List(filter *model.ArticleFilter, navigation 
 		FROM articles
 		WHERE
 			CASE WHEN $1 THEN is_published IS TRUE ELSE TRUE END
-			AND id > $3::bigint
-		ORDER BY created_at DESC
+			AND 
+		    	CASE WHEN $1 
+		    	    THEN published_at < COALESCE(NULLIF($3, '')::timestamp, now())::timestamp
+		    	    ELSE created_at < COALESCE(NULLIF($3, '')::timestamp, now())::timestamp
+		    	END
+		ORDER BY CASE WHEN $1 THEN published_at ELSE created_at END DESC
 		LIMIT $2
 		`
 	articles := []model.Article{}
