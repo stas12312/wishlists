@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import { CardsList } from "../cardsList/cardsList";
 import { PageSpinner } from "../pageSpinner";
+import { InfinityLoader } from "../infinityLoader";
 
 import { ArticleCard } from "./card";
 
@@ -14,9 +15,10 @@ import { IArticle } from "@/lib/models/article";
 export const ArticlesList = observer(() => {
   const [articles, setArticles] = useState<IArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadedAll, setIsLoadedAll] = useState(false);
   const [navigation, setNavigation] = useState<INavigation>({
-    count: 20,
-    cursor: ["0"],
+    count: 10,
+    cursor: [""],
   });
   useEffect(() => {
     async function fetchData() {
@@ -28,22 +30,36 @@ export const ArticlesList = observer(() => {
     fetchData();
   }, []);
 
+  async function loadData() {
+    if (isLoadedAll) {
+      return;
+    }
+    const response = await getArticles(navigation);
+    if (response.data.length == 0) {
+      setIsLoadedAll(true);
+    }
+    setArticles([...articles, ...response.data]);
+    setNavigation(response.navigation);
+  }
+
   if (isLoading) {
     return <PageSpinner />;
   }
 
   return (
-    <CardsList
-      gridConfig="grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
-      items={[
-        ...articles.map((article) => (
-          <ArticleCard
-            key={article.id}
-            article={article}
-            href={`/blog/${article.slug}`}
-          />
-        )),
-      ]}
-    />
+    <InfinityLoader onLoad={loadData}>
+      <CardsList
+        gridConfig="grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+        items={[
+          ...articles.map((article) => (
+            <ArticleCard
+              key={article.id}
+              article={article}
+              href={`/blog/${article.slug}`}
+            />
+          )),
+        ]}
+      />
+    </InfinityLoader>
   );
 });
