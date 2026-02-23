@@ -9,7 +9,7 @@ import MenuTrigger from "../menu/trigger";
 const FriendMenu = observer(
   ({ handleAction }: { handleAction: { (action: Key): void } }) => {
     return (
-      <span>
+      <span className="flex items-center">
         <Dropdown>
           <MenuTrigger />
           <DropdownMenu aria-label="Wish actions" onAction={handleAction}>

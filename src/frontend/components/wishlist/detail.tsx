@@ -60,31 +60,26 @@ const WishlistDetail = observer(
     statistic?: IStatistic;
   }) => {
     const user = wishlist.user;
+    const isOwner = user && user.id === userStore.user.id;
     return (
       <div className="flex flex-col">
         {user && user.id != userStore.user.id ? (
           <UserCard username={user.username} />
         ) : null}
         <PageHeader>
-          <div className="flex justify-center md:justify-start">
-            <span>
-              <div className="flex flex-row gap-2 justify-center lg:justify-start">
-                <CustomBreadcrumbs
-                  items={[
-                    {
-                      title: isEditable ? "Вишлисты" : "Вишлисты пользователя",
-                      href: isEditable
-                        ? "/"
-                        : `/users/${wishlist.user?.username}`,
-                    },
-                    {
-                      title: wishlist.name,
-                      href: `/wishlists/${wishlist.uuid}`,
-                    },
-                  ]}
-                />
-              </div>
-            </span>
+          <div className="flex justify-center md:justify-start gap-1">
+            <CustomBreadcrumbs
+              items={[
+                {
+                  title: isEditable ? "Вишлисты" : "Вишлисты пользователя",
+                  href: isEditable ? "/" : `/users/${wishlist.user?.username}`,
+                },
+                {
+                  title: wishlist.name,
+                  href: `/wishlists/${wishlist.uuid}`,
+                },
+              ]}
+            />
             <span className="my-auto">
               <WishlistItemMenu
                 isEditable={isEditable}
@@ -102,36 +97,36 @@ const WishlistDetail = observer(
           >
             {wishlist.description}
           </span>
-          <motion.div
-            animate={{ opacity: 1, transition: { duration: 0.5 } }}
-            className="flex gap-2 justify-center md:justify-start flex-wrap mt-2"
-            initial={{ opacity: 0 }}
-          >
-            {user && user.id === userStore.user.id ? (
-              <VisibleChip wishlist={wishlist} />
-            ) : null}
+          {isOwner || wishlist.date ? (
+            <motion.div
+              animate={{ opacity: 1, transition: { duration: 0.5 } }}
+              className="flex gap-2 justify-center md:justify-start flex-wrap mt-2"
+              initial={{ opacity: 0 }}
+            >
+              {isOwner ? <VisibleChip wishlist={wishlist} /> : null}
 
-            {wishlist.date ? (
-              <Chip>
-                Дата события: {new Date(wishlist.date).toLocaleDateString()}
-              </Chip>
-            ) : null}
-            {user && user.id === userStore.user.id ? (
-              <>
-                {statistic?.totalSum ? (
-                  <Chip color="warning">
-                    Общая сумма: {statistic?.totalSum.toLocaleString()}
-                  </Chip>
-                ) : null}
-                {statistic?.totalCount ? (
-                  <Chip color="primary">
-                    Исполнено: {statistic.fullfiledCount} из{" "}
-                    {statistic.totalCount}
-                  </Chip>
-                ) : null}
-              </>
-            ) : null}
-          </motion.div>
+              {wishlist.date ? (
+                <Chip>
+                  Дата события: {new Date(wishlist.date).toLocaleDateString()}
+                </Chip>
+              ) : null}
+              {isOwner ? (
+                <>
+                  {statistic?.totalSum ? (
+                    <Chip color="warning">
+                      Общая сумма: {statistic?.totalSum.toLocaleString()}
+                    </Chip>
+                  ) : null}
+                  {statistic?.totalCount ? (
+                    <Chip color="primary">
+                      Исполнено: {statistic.fullfiledCount} из{" "}
+                      {statistic.totalCount}
+                    </Chip>
+                  ) : null}
+                </>
+              ) : null}
+            </motion.div>
+          ) : null}
         </PageHeader>
       </div>
     );

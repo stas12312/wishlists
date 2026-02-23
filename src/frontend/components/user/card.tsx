@@ -115,12 +115,12 @@ export default UserCard;
 
 const CardSkeleton = () => {
   return (
-    <div className="max-w-[200px] w-full flex flex-col mx-auto gap-1">
+    <div className="max-w-50 w-full flex flex-col mx-auto gap-1">
       <div className="flex gap-4 items-center mx-auto">
         <div>
           <Skeleton className="w-14 h-14 rounded-full" />
         </div>
-        <div className="max-w-[120px] w-full flex flex-col gap-2">
+        <div className="max-w-30 w-full flex flex-col gap-2">
           <Skeleton className="h-6 w-32 rounded-full" />
           <Skeleton className="h-5 w-32 rounded-full" />
         </div>

@@ -128,14 +128,14 @@ export const WishItem = observer(
       <>
         <div className="md:hover:scale-[1.03] duration-200">
           <Card
-            className={`flex-col ${withUser ? "h-[340px]" : "h-[300px]"} w-full`}
+            className={`flex-col ${withUser ? "h-85" : "h-75"} w-full`}
             isPressable={true}
             onPress={() => {
               fullCardDrawer.onOpen();
             }}
           >
             <CardHeader className="flex-col items-start">
-              <div className="flex flex-row justify-between w-full h-[40px]">
+              <div className="flex flex-row justify-between w-full h-10">
                 <p className="text-tiny font-bold my-auto flex flex-col text-left overflow-hidden text-ellipsis truncate">
                   <span className="text-xl" title={wish.name}>
                     {wish.name}
@@ -145,7 +145,7 @@ export const WishItem = observer(
                   </span>
                 </p>
                 {showMenu(wish.actions) ? (
-                  <span>
+                  <span className="flex items-center">
                     <WishItemMenu handeAction={handleOnAction} wish={wish} />
                   </span>
                 ) : null}

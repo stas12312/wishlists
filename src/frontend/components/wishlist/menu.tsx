@@ -1,19 +1,17 @@
 import { Key } from "react";
-import { Button } from "@heroui/button";
 import {
   Dropdown,
-  DropdownTrigger,
   DropdownMenu,
   DropdownSection,
   DropdownItem,
 } from "@heroui/dropdown";
 import { useDisclosure } from "@heroui/modal";
 import { useState } from "react";
-import { BsThreeDotsVertical } from "react-icons/bs";
 import { MdCreate, MdLink, MdRestoreFromTrash, MdDelete } from "react-icons/md";
 import { addToast } from "@heroui/toast";
 
 import ConfirmationModal from "../confirmation";
+import MenuTrigger from "../menu/trigger";
 
 import WishlistSaveModal from "./saveModal";
 
@@ -75,11 +73,7 @@ export const WishlistItemMenu = ({
   return (
     <span data-qa="wishlist-menu">
       <Dropdown>
-        <DropdownTrigger>
-          <Button isIconOnly as="div" radius="lg" variant="light">
-            <BsThreeDotsVertical className={className ?? ""} />
-          </Button>
-        </DropdownTrigger>
+        <MenuTrigger />
         <DropdownMenu aria-label="Static Actions" onAction={handleOnAction}>
           {isEditable ? (
             <>
