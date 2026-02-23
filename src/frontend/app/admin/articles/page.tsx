@@ -10,14 +10,17 @@ import { IArticle } from "@/lib/models/article";
 import { INavigation } from "@/lib/models";
 import { ArticleCard } from "@/components/article/card";
 import { PageSpinner } from "@/components/pageSpinner";
+import { InfinityLoader } from "@/components/infinityLoader";
+
 export default function Page() {
   const route = useRouter();
 
   const [articles, setArticles] = useState<IArticle[]>([]);
   const [navigation, setNavigation] = useState<INavigation>({
-    count: 100,
-    cursor: ["0"],
+    count: 10,
+    cursor: [""],
   });
+  const [isLoadedAll, setIsLoadedAll] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -29,33 +32,48 @@ export default function Page() {
     }
     fetchData();
   }, []);
+
+  async function loadData() {
+    if (isLoadedAll) {
+      return;
+    }
+    const response = await getAdminArticles(navigation);
+    if (response.data.length == 0) {
+      setIsLoadedAll(true);
+    }
+    setArticles([...articles, ...response.data]);
+    setNavigation(response.navigation);
+  }
+
   if (isLoading) {
     return <PageSpinner />;
   }
   return (
     <>
       <PageHeader title="Статьи" />
-      <div className="p-4">
-        <CardsList
-          items={[
-            <AddCardButton
-              key="add"
-              className="w-full"
-              title="Добавить"
-              onPress={() => {
-                route.push("/admin/articles/create");
-              }}
-            />,
-            ...articles.map((article) => (
-              <ArticleCard
-                key={article.id}
-                article={article}
-                href={`/admin/articles/${article.id}`}
-              />
-            )),
-          ]}
-        />
-      </div>
+      <InfinityLoader onLoad={loadData}>
+        <div className="p-4">
+          <CardsList
+            items={[
+              <AddCardButton
+                key="add"
+                className="w-full"
+                title="Добавить"
+                onPress={() => {
+                  route.push("/admin/articles/create");
+                }}
+              />,
+              ...articles.map((article) => (
+                <ArticleCard
+                  key={article.id}
+                  article={article}
+                  href={`/admin/articles/${article.id}`}
+                />
+              )),
+            ]}
+          />
+        </div>
+      </InfinityLoader>
     </>
   );
 }
