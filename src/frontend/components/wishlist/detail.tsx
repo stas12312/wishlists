@@ -20,8 +20,8 @@ import UserCard from "../user/card";
 import { ISorting, SortingSelector } from "../wish/sortingSelector";
 import { IWishFilter, WishFilter } from "../wish/filter";
 import { CardsList } from "../cardsList/cardsList";
-import { VisibleStatus } from "../visibleIcon";
 import { CustomBreadcrumbs } from "../breadcrumbs";
+import { VisibleChip } from "../visibleChip";
 
 import WishlistItemMenu from "./menu";
 
@@ -83,9 +83,6 @@ const WishlistDetail = observer(
                     },
                   ]}
                 />
-                <span>
-                  <VisibleStatus visible={wishlist.visible} />
-                </span>
               </div>
             </span>
             <span className="my-auto">
@@ -110,6 +107,10 @@ const WishlistDetail = observer(
             className="flex gap-2 justify-center md:justify-start flex-wrap mt-2"
             initial={{ opacity: 0 }}
           >
+            {user && user.id === userStore.user.id ? (
+              <VisibleChip wishlist={wishlist} />
+            ) : null}
+
             {wishlist.date ? (
               <Chip>
                 Дата события: {new Date(wishlist.date).toLocaleDateString()}

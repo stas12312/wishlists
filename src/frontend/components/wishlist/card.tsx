@@ -6,7 +6,7 @@ import { Skeleton } from "@heroui/skeleton";
 import { useRouter } from "next/navigation";
 import { forwardRef, useState } from "react";
 
-import { VisibleStatus } from "../visibleIcon";
+import { VisibleChip } from "../visibleChip";
 
 import WishlistItemMenu from "./menu";
 
@@ -50,12 +50,13 @@ export const WishlistItem = forwardRef(
                 <span
                   className={`flex flex-row gap-1 ${!wishlist.is_active ? "text-default-400" : ""}`}
                 >
+                  {edit ? (
+                    <VisibleChip onlyIcon wishlist={cardWishlist} />
+                  ) : null}
+
                   <p className="uppercase text-large" title={cardWishlist.name}>
                     {cardWishlist.name}
                   </p>
-                  <span className="text-small">
-                    <VisibleStatus visible={cardWishlist.visible} />
-                  </span>
                 </span>
                 <p
                   className="text-default-500 text-left"
@@ -79,7 +80,7 @@ export const WishlistItem = forwardRef(
           </CardHeader>
           <CardBody className="justify-end">
             <div className="flow-root">
-              <span className=" float-right flex flex-col gap-1">
+              <span className="float-right flex flex-col gap-1">
                 <Chip className="mr-0 ml-auto" color="primary">
                   {cardWishlist.wishes_count > 0
                     ? wishlist.wishes_count

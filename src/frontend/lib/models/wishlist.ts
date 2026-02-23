@@ -1,5 +1,12 @@
 import { IUser } from "./user";
 
+export enum Visible {
+  Private = 0,
+  Public,
+  ForFriends,
+  ForSelectedFriends,
+}
+
 export interface IWishlist {
   uuid: string;
   name: string;
@@ -9,7 +16,7 @@ export interface IWishlist {
   user_id: number;
   is_active: boolean;
   wishes_count: number;
-  visible: 0 | 1 | 2 | 3;
+  visible: Visible;
   user?: IUser;
   visible_user_ids: number[];
 }

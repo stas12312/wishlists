@@ -12,11 +12,9 @@ import { Avatar } from "@heroui/avatar";
 import { Chip } from "@heroui/chip";
 import { Form } from "@heroui/form";
 
-import { Visible } from "../visibleIcon";
-
 import { getFriends } from "@/lib/client-requests/friend";
 import { createWishList, updateWishlist } from "@/lib/client-requests/wishlist";
-import { IWishlist } from "@/lib/models/wishlist";
+import { IWishlist, Visible } from "@/lib/models/wishlist";
 import { IUser } from "@/lib/models/user";
 import { dateStringToCalendarDate } from "@/lib/date";
 
@@ -45,7 +43,7 @@ export function WishlistCreateForm({
     name: wishlist?.name || "",
     description: wishlist?.description || "",
     date: wishlist?.date || null,
-    visible: wishlist?.visible || Visible.all,
+    visible: wishlist?.visible || Visible.Public,
     uuid: wishlist?.uuid || "",
     visible_user_ids: wishlist?.visible_user_ids || [],
   });
