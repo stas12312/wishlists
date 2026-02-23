@@ -82,6 +82,7 @@ const WishlistDetail = observer(
             />
             <span className="my-auto">
               <WishlistItemMenu
+                className="h-8"
                 isEditable={isEditable}
                 wishlist={wishlist}
                 onDelete={onDelete}

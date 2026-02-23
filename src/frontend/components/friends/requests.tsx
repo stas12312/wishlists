@@ -156,7 +156,7 @@ const FriendRequestItem = observer(
   ({ user, children }: { user: IUser; children?: ReactNode }) => {
     const router = useRouter();
     return (
-      <Card className="max-w-[1000px] mx-auto w-full">
+      <Card className="max-w-250 mx-auto w-full">
         <CardBody className="flex flex-row gap-4 justify-between">
           <User
             avatarProps={{
