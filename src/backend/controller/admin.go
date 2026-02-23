@@ -6,6 +6,7 @@ import (
 	"main/model"
 	"main/service"
 	"strconv"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -71,12 +72,11 @@ func (c *AdminController) ListArticle(ctx *fiber.Ctx) error {
 	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{Message: err.Error()})
 	}
-	lastId := int64(-1)
+	lastCreatedAt := ""
 	if len(articles) > 0 {
-		lastId = articles[len(articles)-1].Id
+		lastCreatedAt = articles[len(articles)-1].CreatedAt.Format(time.RFC3339Nano)
 	}
-	newCursor := strconv.FormatInt(lastId, 10)
-	newNavigation := model.Navigation{Cursor: []string{newCursor}, Count: navigation.Count}
+	newNavigation := model.Navigation{Cursor: []string{lastCreatedAt}, Count: navigation.Count}
 
 	return ctx.JSON(model.Response{Data: articles, Navigation: newNavigation})
 }

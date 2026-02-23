@@ -3,7 +3,7 @@ package controller
 import (
 	"main/model"
 	"main/service"
-	"strconv"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -40,24 +40,24 @@ func (c *ArticleController) GetAll(ctx *fiber.Ctx) error {
 		navigation.Count = 100
 	}
 	if len(navigation.Cursor) == 0 {
-		navigation.Cursor = []string{"0"}
+		navigation.Cursor = []string{""}
 	}
 
 	articles, err := c.service.List(&model.ArticleFilter{IsPublished: true}, navigation)
 
-	lastId := int64(-1)
+	lastPublishedAt := ""
 	if len(articles) > 0 {
-		lastId = articles[len(articles)-1].Id
+		lastPublishedAt = articles[len(articles)-1].PublishedAt.Time.Format(time.RFC3339Nano)
 	}
 
 	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).
 			JSON(model.ErrorResponse{Message: "Ошибка при получении", Details: err.Error()})
 	}
-	newCursor := strconv.FormatInt(lastId, 10)
+
 	return ctx.JSON(model.Response{
 		Data:       articles,
-		Navigation: model.Navigation{Count: navigation.Count, Cursor: []string{newCursor}},
+		Navigation: model.Navigation{Count: navigation.Count, Cursor: []string{lastPublishedAt}},
 	})
 
 }
