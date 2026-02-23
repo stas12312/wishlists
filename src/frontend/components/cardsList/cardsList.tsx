@@ -8,14 +8,16 @@ export const CardsList = observer(
   ({
     items,
     gridConfig = "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5",
+    className,
   }: {
     items: Array<ReactElement | null>;
     gridConfig?: string;
+    className?: string;
   }) => {
     return (
       <motion.div
         animate="show"
-        className={`grid gap-4 col-span-full ${gridConfig}`}
+        className={`grid gap-4 col-span-full ${gridConfig} ${className}`}
         initial="hidden"
         variants={containerVariants}
       >

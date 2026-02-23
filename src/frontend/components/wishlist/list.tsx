@@ -141,53 +141,49 @@ export const Wishlists = observer(
     return (
       <>
         {actions.filter ? (
-          <span className="flex col-span-full">
+          <span className="flex col-span-full mb-4">
             <WishlistFilter filter={filter} setFilter={setFilter} />
           </span>
         ) : null}
         {isLoading ? <PageSpinner /> : null}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
-          <div className="col-span-full">
-            <WishlistSaveModal
-              isOpen={isOpen}
-              onOpenChange={onOpenChange}
-              onSaveWishlist={OnCreateWishlist}
-            />
-          </div>
-          {components.length ? (
-            <CardsList
-              items={[
-                !filter.showArchive && actions.edit && !isLoading ? (
-                  <AddCardButton
-                    className="h-40 w-full"
-                    title="Добавить вишлист"
-                    onPress={onOpen}
-                  />
-                ) : null,
-                ...components,
-              ]}
-            />
-          ) : isLoading ? null : (
-            <div className="col-span-full text-center">
-              <h1 className="text-4xl	col-span-full">
-                {filter.showArchive
-                  ? "Список архивированных вишлистов пуст"
-                  : "Список вишлистов пуст"}
-              </h1>
-              {actions.edit && !filter.showArchive ? (
-                <Button
-                  color="primary"
-                  startContent={<IoMdAdd />}
-                  variant="light"
+        {components.length ? (
+          <CardsList
+            items={[
+              !filter.showArchive && actions.edit && !isLoading ? (
+                <AddCardButton
+                  className="h-40 w-full"
+                  title="Добавить вишлист"
                   onPress={onOpen}
-                >
-                  Добавить
-                </Button>
-              ) : null}
-            </div>
-          )}
-        </div>
+                />
+              ) : null,
+              ...components,
+            ]}
+          />
+        ) : isLoading ? null : (
+          <div className="col-span-full text-center">
+            <h1 className="text-4xl	col-span-full">
+              {filter.showArchive
+                ? "Список архивированных вишлистов пуст"
+                : "Список вишлистов пуст"}
+            </h1>
+            {actions.edit && !filter.showArchive ? (
+              <Button
+                color="primary"
+                startContent={<IoMdAdd />}
+                variant="light"
+                onPress={onOpen}
+              >
+                Добавить
+              </Button>
+            ) : null}
+          </div>
+        )}
+        <WishlistSaveModal
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+          onSaveWishlist={OnCreateWishlist}
+        />
       </>
     );
   },

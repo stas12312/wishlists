@@ -33,19 +33,17 @@ export const ArticlesList = observer(() => {
   }
 
   return (
-    <div className="p-4">
-      <CardsList
-        gridConfig="grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
-        items={[
-          ...articles.map((article) => (
-            <ArticleCard
-              key={article.id}
-              article={article}
-              href={`/blog/${article.slug}`}
-            />
-          )),
-        ]}
-      />
-    </div>
+    <CardsList
+      gridConfig="grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+      items={[
+        ...articles.map((article) => (
+          <ArticleCard
+            key={article.id}
+            article={article}
+            href={`/blog/${article.slug}`}
+          />
+        )),
+      ]}
+    />
   );
 });
