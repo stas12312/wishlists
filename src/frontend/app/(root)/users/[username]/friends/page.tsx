@@ -9,7 +9,7 @@ const UserFriendsPage = async ({
   const username = (await params).username;
   return (
     <>
-      <PageHeader>Друзья пользователя</PageHeader>
+      <PageHeader title="Друзья пользователя" />
       <FriendsList username={username} />
     </>
   );

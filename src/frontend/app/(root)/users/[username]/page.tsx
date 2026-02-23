@@ -33,7 +33,7 @@ const UserPage = async ({
   const username = (await params).username;
   return (
     <>
-      <PageHeader>Вишлисты пользователя</PageHeader>
+      <PageHeader title="Вишлисты пользователя" />
       {username ? (
         <Wishlists
           actions={{ edit: false, filter: false }}

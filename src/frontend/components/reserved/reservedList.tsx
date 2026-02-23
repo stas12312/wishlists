@@ -43,7 +43,7 @@ export const ReservedWishes = observer(() => {
 
   return (
     <>
-      <PageHeader>Забронированные желания</PageHeader>
+      <PageHeader title="Забронированные желания" />
       {isLoading ? (
         <PageSpinner />
       ) : (

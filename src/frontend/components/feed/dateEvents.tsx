@@ -18,7 +18,7 @@ export const DateEvents = ({
       animate={{ opacity: 1, transition: { duration: 0.5 } }}
       initial={{ opacity: 0 }}
     >
-      <div className="bg-content1/50 backdrop-blur-xl sticky text-center top-1 z-20 md:float-left rounded-md p-2 mb-2 mx-6 md:mx-0">
+      <div className="bg-content1/50 backdrop-blur-xl sticky text-center top-1 z-20 md:float-left rounded-md p-2 my-4 mx-6 md:mx-0">
         <p className="text-bold text-3xl ">{dateEvents.date}</p>
       </div>
 
