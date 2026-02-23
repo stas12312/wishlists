@@ -12,8 +12,7 @@ export const CustomBreadcrumbs = ({ items }: { items: IBreadcrumbItem[] }) => {
   return (
     <Breadcrumbs
       classNames={{
-        base: "items-center flex",
-        list: "justify-center md:justify-start",
+        base: "items-center flex justify-center md:justify-start",
       }}
       itemClasses={{
         item: ["text-2xl"],
