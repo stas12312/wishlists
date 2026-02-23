@@ -66,6 +66,7 @@ export default function Page() {
               ...articles.map((article) => (
                 <ArticleCard
                   key={article.id}
+                  forAdmin
                   article={article}
                   href={`/admin/articles/${article.id}`}
                 />

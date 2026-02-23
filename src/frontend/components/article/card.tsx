@@ -11,11 +11,11 @@ export const ArticleCard = observer(
   ({
     article,
     href,
-    withStatus = false,
+    forAdmin = false,
   }: {
     article: IArticle;
     href: string;
-    withStatus?: boolean;
+    forAdmin?: boolean;
   }) => {
     const route = useRouter();
 
@@ -29,7 +29,7 @@ export const ArticleCard = observer(
           }}
         >
           <CardBody className="h-2/3 overflow-hidden p-0 rounded-xl">
-            <div>
+            <div className="relative">
               <Image
                 removeWrapper
                 className="object-cover mx-auto my-auto w-full h-60"
@@ -41,18 +41,27 @@ export const ArticleCard = observer(
                 </h1>
                 <p className="mt-2">{article.description} </p>
 
-                {withStatus ? (
-                  <Chip>
-                    {article.is_published ? "Опубликовано" : "Черновик"}
-                  </Chip>
+                {forAdmin ? (
+                  <div className="flex flex-col absolute top-1 z-10 gap-1 items-center inset-x-0">
+                    <Chip color={article.is_published ? "success" : "primary"}>
+                      {article.is_published ? "Опубликовано" : "Черновик"}
+                    </Chip>
+                    <Chip>
+                      Создан:{" "}
+                      {new Date(article.created_at).toLocaleDateString()}
+                    </Chip>
+                  </div>
                 ) : null}
               </div>
             </div>
           </CardBody>
           <CardFooter className="flex justify-between">
-            <Chip>
-              {new Date(article.published_at ?? "").toLocaleDateString()}
-            </Chip>
+            {article.published_at ? (
+              <Chip color="primary">
+                {new Date(article.published_at).toLocaleDateString()}
+              </Chip>
+            ) : null}
+
             <Link href={`/blog/${article.slug}`}>Читать далее</Link>
           </CardFooter>
         </Card>
