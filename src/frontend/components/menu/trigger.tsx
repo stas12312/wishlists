@@ -5,7 +5,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 const MenuTrigger = () => {
   return (
     <DropdownTrigger>
-      <Button isIconOnly as="div" radius="lg" variant="light">
+      <Button isIconOnly as="div" className="h-8" radius="lg" variant="light">
         <BsThreeDotsVertical />
       </Button>
     </DropdownTrigger>
