@@ -2,9 +2,15 @@ import { Button } from "@heroui/button";
 import { DropdownTrigger } from "@heroui/dropdown";
 import { BsThreeDotsVertical } from "react-icons/bs";
 
-const MenuTrigger = ({ className = "" }: { className?: string }) => {
+const MenuTrigger = ({
+  className = "",
+  name = "",
+}: {
+  className?: string;
+  name?: string;
+}) => {
   return (
-    <DropdownTrigger>
+    <DropdownTrigger data-qa={name}>
       <Button
         isIconOnly
         as="div"
