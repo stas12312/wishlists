@@ -118,6 +118,15 @@ func (c *AdminController) Publish(ctx *fiber.Ctx) error {
 	return ctx.JSON(model.Response{Data: "ok"})
 }
 
+func (c *AdminController) Unpublish(ctx *fiber.Ctx) error {
+	articleId, _ := strconv.ParseInt(ctx.Params("articleId"), 10, 64)
+	_, err := c.articleService.Unpublish(articleId)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{Message: err.Error()})
+	}
+	return ctx.JSON(model.Response{Data: "ok"})
+}
+
 func (c *AdminController) Route(router fiber.Router) {
 
 	adminGroup := router.Group("/admin", middleware.Protected(true))
@@ -130,6 +139,7 @@ func (c *AdminController) Route(router fiber.Router) {
 	articleGroup.Get("/:articleId", c.GetArticleById)
 	articleGroup.Post("/:articleId", c.Update)
 	articleGroup.Post("/:articleId/publish", c.Publish)
+	articleGroup.Post("/:articleId/unpublish", c.Unpublish)
 	articleGroup.Delete("/:articleId", c.DeleteArticle)
 
 }
