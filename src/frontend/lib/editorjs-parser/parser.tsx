@@ -71,10 +71,10 @@ function image(data: BlockToolData): ReactNode {
       <Image
         removeWrapper
         alt={data.caption}
-        className={data.stretched ? "w-full" : ""}
+        className={`mx-auto ${data.stretched ? "w-full" : ""}`}
         src={data.file.url}
       />
-      <p className="font-light italic">{data.caption}</p>
+      <p className="font-light italic text-center">{data.caption}</p>
     </div>
   );
 }
