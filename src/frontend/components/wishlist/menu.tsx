@@ -71,9 +71,9 @@ export const WishlistItemMenu = ({
   }
 
   return (
-    <span data-qa="wishlist-menu">
+    <>
       <Dropdown>
-        <MenuTrigger className={className} />
+        <MenuTrigger className={className} name="wishlist-menu" />
         <DropdownMenu aria-label="Static Actions" onAction={handleOnAction}>
           {isEditable ? (
             <>
@@ -130,7 +130,7 @@ export const WishlistItemMenu = ({
           setIsConfirm(false);
         }}
       />
-    </span>
+    </>
   );
 };
 

@@ -16,7 +16,7 @@ export function WishItemMenu({
   const menuItems = getMenuItemsByActions(wish.actions);
   return (
     <Dropdown>
-      <MenuTrigger />
+      <MenuTrigger name="wish-menu" />
       <DropdownMenu aria-label="Wish actions" onAction={handeAction}>
         {menuItems.map((value) => (
           <DropdownItem
