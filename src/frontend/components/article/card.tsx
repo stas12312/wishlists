@@ -46,10 +46,12 @@ export const ArticleCard = observer(
                     <Chip color={article.is_published ? "success" : "primary"}>
                       {article.is_published ? "Опубликовано" : "Черновик"}
                     </Chip>
-                    <Chip>
-                      Создан:{" "}
-                      {new Date(article.created_at).toLocaleDateString()}
-                    </Chip>
+                    {article.created_at ? (
+                      <Chip>
+                        Создан:{" "}
+                        {new Date(article.created_at).toLocaleDateString()}
+                      </Chip>
+                    ) : null}
                   </div>
                 ) : null}
               </div>
