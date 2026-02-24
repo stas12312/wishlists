@@ -28,7 +28,6 @@ const ArticleForm = observer(
       title: "",
       description: "",
       is_published: false,
-      created_at: "",
       slug: "",
       image: "",
     },
