@@ -9,6 +9,8 @@ services:
       POSTGRES_USER: ${PG_USER}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "6432:5432"
   redis:
     image: redis:7-alpine
     restart: always

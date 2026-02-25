@@ -11,7 +11,7 @@ const FriendMenu = observer(
     return (
       <span className="flex items-center">
         <Dropdown>
-          <MenuTrigger />
+          <MenuTrigger name="friend-menu" />
           <DropdownMenu aria-label="Wish actions" onAction={handleAction}>
             <DropdownItem
               key="delete"
