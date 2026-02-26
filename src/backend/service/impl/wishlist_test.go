@@ -276,7 +276,7 @@ func TestWishlistImpl_GetForUserByUUID(t *testing.T) {
 				userId: 1,
 				uuid:   "0",
 			},
-			want: &model.Wishlist{Name: "2", UserId: 1, User: &model.User{Id: 1}},
+			want: &model.Wishlist{Name: "2", UserId: 1, User: &model.User{Id: 1}, IsActive: true},
 			mocksBehaviour: func(
 				wlMock *mocks.WishlistRepository,
 				wMock *mocks.WishRepository,
@@ -285,7 +285,7 @@ func TestWishlistImpl_GetForUserByUUID(t *testing.T) {
 				wlMock.
 					On("GetByUUID", "0").
 					Once().
-					Return(&model.Wishlist{Name: "2", UserId: 1}, nil)
+					Return(&model.Wishlist{Name: "2", UserId: 1, IsActive: true}, nil)
 				uService.
 					On("GetById", mock.Anything, int64(1)).
 					Once().
@@ -307,7 +307,7 @@ func TestWishlistImpl_GetForUserByUUID(t *testing.T) {
 				wlMock.
 					On("GetByUUID", "0").
 					Once().
-					Return(&model.Wishlist{Name: "2", UserId: 1}, nil)
+					Return(&model.Wishlist{Name: "2", UserId: 1, IsActive: true}, nil)
 				uService.
 					On("GetById", mock.Anything, int64(1)).
 					Once().
@@ -320,7 +320,7 @@ func TestWishlistImpl_GetForUserByUUID(t *testing.T) {
 				userId: 2,
 				uuid:   "0",
 			},
-			want: &model.Wishlist{Name: "2", UserId: 1, Visible: model.Public, User: &model.User{Id: 1}},
+			want: &model.Wishlist{Name: "2", UserId: 1, Visible: model.Public, User: &model.User{Id: 1}, IsActive: true},
 			mocksBehaviour: func(
 				wlMock *mocks.WishlistRepository,
 				wMock *mocks.WishRepository,
@@ -329,7 +329,29 @@ func TestWishlistImpl_GetForUserByUUID(t *testing.T) {
 				wlMock.
 					On("GetByUUID", "0").
 					Once().
-					Return(&model.Wishlist{Name: "2", UserId: 1, Visible: model.Public}, nil)
+					Return(&model.Wishlist{Name: "2", UserId: 1, Visible: model.Public, IsActive: true}, nil)
+				uService.
+					On("GetById", mock.Anything, int64(1)).
+					Once().
+					Return(&model.User{Id: 1}, nil)
+			},
+		},
+		{
+			name: "Archive wishlist",
+			args: args{
+				userId: 2,
+				uuid:   "0",
+			},
+			wantErr: true,
+			mocksBehaviour: func(
+				wlMock *mocks.WishlistRepository,
+				wMock *mocks.WishRepository,
+				uService *mocks2.UserService,
+			) {
+				wlMock.
+					On("GetByUUID", "0").
+					Once().
+					Return(&model.Wishlist{Name: "1", UserId: 1, Visible: model.Public, IsActive: false}, nil)
 				uService.
 					On("GetById", mock.Anything, int64(1)).
 					Once().
@@ -487,7 +509,7 @@ func TestWishlistImpl_ListWishesForWishlist(t *testing.T) {
 				wlMock.
 					On("GetByUUID", "0").
 					Once().
-					Return(&model.Wishlist{UserId: 1, Visible: model.Public}, nil)
+					Return(&model.Wishlist{UserId: 1, Visible: model.Public, IsActive: true}, nil)
 
 				wMock.
 					On("ListForWishlist", "0").
@@ -827,9 +849,10 @@ func TestWishlistImpl_CopyWish(t *testing.T) {
 				wlMock.On("GetByUUID", "0001").
 					Return(
 						&model.Wishlist{
-							UserId:  10,
-							Uuid:    "0001",
-							Visible: model.Public,
+							UserId:   10,
+							Uuid:     "0001",
+							Visible:  model.Public,
+							IsActive: true,
 						},
 						nil,
 					)
