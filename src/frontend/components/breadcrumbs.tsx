@@ -18,14 +18,14 @@ export const CustomBreadcrumbs = ({ items }: { items: IBreadcrumbItem[] }) => {
         item: ["text-2xl"],
       }}
     >
-      {items.map((item) => (
+      {items.map((item, i) => (
         <BreadcrumbItem
           key={item.title}
           onPress={() => {
             router.push(item.href);
           }}
         >
-          {item.title}
+          {i == items.length - 1 ? <h1>{item.title}</h1> : item.title}
         </BreadcrumbItem>
       ))}
     </Breadcrumbs>
