@@ -143,6 +143,16 @@ func (s *WishlistImpl) UserCanEditWishlist(userId int64, wishlistUuid string) bo
 }
 
 func (s *WishlistImpl) UserCanViewWishlistByModel(userId int64, wishlist *model.Wishlist) bool {
+
+	userIsOwner := userId == wishlist.UserId
+	if userIsOwner {
+		return true
+	}
+
+	if !wishlist.IsActive {
+		return false
+	}
+
 	if wishlist.Visible == model.Public {
 		return true
 	}
@@ -154,7 +164,7 @@ func (s *WishlistImpl) UserCanViewWishlistByModel(userId int64, wishlist *model.
 		return true
 	}
 
-	return wishlist.UserId == userId
+	return false
 
 }
 
