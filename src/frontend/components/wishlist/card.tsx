@@ -40,8 +40,8 @@ export const WishlistItem = forwardRef(
       <div className="md:hover:scale-[1.03] duration-200">
         <Card
           ref={ref}
+          isPressable
           className="w-full h-40 flex-col"
-          isPressable={wishlist.is_active}
           onPress={() => router.push(`/wishlists/${cardWishlist.uuid}`)}
         >
           <CardHeader className="flex-col items-start">
