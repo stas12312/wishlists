@@ -128,6 +128,17 @@ const WishlistDetail = observer(
               ) : null}
             </motion.div>
           ) : null}
+          {!wishlist.is_active ? (
+            <motion.div
+              animate={{ opacity: 1, transition: { duration: 0.5 } }}
+              initial={{ opacity: 0 }}
+            >
+              <Alert
+                color="danger"
+                title="Вишлист архивирован и не доступен другим пользователям"
+              />
+            </motion.div>
+          ) : null}
         </PageHeader>
       </div>
     );
@@ -320,7 +331,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
           />
           <CardsList
             items={[
-              isEditable ? (
+              isEditable && wishlist.is_active ? (
                 <AddCardButton
                   className="md:h-75 w-full"
                   title="Добавить желание"
