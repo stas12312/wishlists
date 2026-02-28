@@ -58,6 +58,7 @@ export const Wishlists = observer(
       setIsLoading(true);
       async function fetchData() {
         const cursor = ["", ""];
+        setItems([]);
         setCursor(cursor);
         await fetchWishlists(true, filter, cursor);
         setIsLoading(false);
