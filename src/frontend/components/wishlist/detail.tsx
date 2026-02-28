@@ -86,7 +86,9 @@ const WishlistDetail = observer(
                 isEditable={isEditable}
                 wishlist={wishlist}
                 onDelete={onDelete}
-                onRestore={() => {}}
+                onRestore={() => {
+                  onUpdate({ ...wishlist, is_active: true });
+                }}
                 onUpdate={onUpdate}
               />
             </span>
@@ -104,8 +106,9 @@ const WishlistDetail = observer(
               className="flex gap-2 justify-center md:justify-start flex-wrap my-2"
               initial={{ opacity: 0 }}
             >
-              {isOwner ? <VisibleChip wishlist={wishlist} /> : null}
-
+              {isOwner && wishlist.is_active ? (
+                <VisibleChip wishlist={wishlist} />
+              ) : null}
               {wishlist.date ? (
                 <Chip>
                   Дата события: {new Date(wishlist.date).toLocaleDateString()}
