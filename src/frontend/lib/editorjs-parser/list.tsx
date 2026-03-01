@@ -19,7 +19,7 @@ export function list(data: IListItem): ReactNode {
   return (
     <ol className={`pl-8 text-lg ${counterStyle}`}>
       {items.map((item, i: number) => (
-        <li key={i} className="mark py-1">
+        <li key={i} className="mark my-2">
           <span dangerouslySetInnerHTML={{ __html: item.content }} />
           {list({ content: item.content, items: item.items, meta: data.meta })}
         </li>
