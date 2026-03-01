@@ -12,15 +12,18 @@ export const CustomBreadcrumbs = ({ items }: { items: IBreadcrumbItem[] }) => {
   return (
     <Breadcrumbs
       classNames={{
-        base: "items-center flex justify-center md:justify-start",
+        list: "justify justify-center md:justify-start",
       }}
       itemClasses={{
-        item: ["text-2xl"],
+        item: [
+          "text-2xl line-clamp-2 whitespace-normal text-center md:text-left",
+        ],
       }}
     >
       {items.map((item, i) => (
         <BreadcrumbItem
           key={item.title}
+          title={item.title}
           onPress={() => {
             router.push(item.href);
           }}
