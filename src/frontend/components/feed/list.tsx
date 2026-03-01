@@ -107,7 +107,7 @@ const FeedList = observer(() => {
           {isLoading ? (
             <PageSpinner />
           ) : (
-            <div className="flex align-middle justify-center items-center flex-col">
+            <div className="flex align-middle justify-center items-center flex-col mt-4">
               <h3 className="text-2xl">Ваша лента пуста</h3>
               <span className="text-default-500">
                 Добавляйте друзей, чтобы быть в курсе их желаний
