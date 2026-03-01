@@ -1,6 +1,9 @@
 import { BlockToolData, OutputBlockData } from "@editorjs/editorjs";
 import { ReactNode } from "react";
 import { Image } from "@heroui/image";
+
+import { list } from "./list";
+
 export function editorjsParse(blocks: OutputBlockData[]): ReactNode[] {
   let result = [];
   for (let block of blocks) {
@@ -30,18 +33,6 @@ export function editorjsParse(blocks: OutputBlockData[]): ReactNode[] {
 function paragraph(data: BlockToolData): ReactNode {
   return (
     <p dangerouslySetInnerHTML={{ __html: data.text }} className="text-lg" />
-  );
-}
-
-function list(data: BlockToolData): ReactNode {
-  return (
-    <ul className="list-disc pl-8 text-lg">
-      {data.items.map((item: any) => (
-        <li key={item.content} className="mark py-1">
-          {item.content}
-        </li>
-      ))}
-    </ul>
   );
 }
 
