@@ -82,7 +82,7 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
 
   if (variant == "mobile") {
     return (
-      <div className="flex justify-between">
+      <div className="flex justify-between bg-content1/50 backdrop-blur-xl fixed inset-x-0 bottom-0 z-50 shadow-medium m-4 rounded-4xl md:hidden">
         {ITEMS.map((item) => (
           <MobileMenuItem
             key={item.title}
@@ -99,7 +99,7 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
     );
   } else {
     return (
-      <div>
+      <div className="bg-content1/50 backdrop-blur-xl shadow-medium m-2 rounded-2xl overflow-hidden p-1">
         {ITEMS.map((item) => (
           <DesktopMenuItem
             key={item.title}
@@ -116,7 +116,7 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
         <Link
           key="Выход"
           disableAnimation
-          className="w-full flex gap-2 p-1 rounded-small hover:transition-colors ease-in items-center hover:bg-danger-100 text-lg cursor-pointer text-danger"
+          className="w-full flex gap-2 py-1 pl-3 rounded-xl ease-in items-center hover:bg-danger-100 text-lg cursor-pointer text-danger"
           color="foreground"
           onPress={() => {
             userStore.logout();
