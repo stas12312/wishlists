@@ -61,7 +61,7 @@ export const DesktopMenuItem = observer(
       <Link
         key={item.title}
         disableAnimation
-        className={`w-full flex gap-2 p-1 rounded-small hover:transition-colors ease-in items-center hover:bg-default-200 text-lg ${params.isCurrent ? "bg-default" : null}`}
+        className={`w-full flex gap-2 py-1 pl-3 hover:transition-colors rounded-xl ease-in items-center hover:bg-default-200 text-lg ${params.isCurrent ? "bg-default" : null}`}
         color="foreground"
         href={item.href}
       >

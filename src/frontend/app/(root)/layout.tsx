@@ -1,16 +1,10 @@
-import { Divider } from "@heroui/divider";
 import { cookies } from "next/headers";
-import { Link } from "@heroui/link";
-import { MdBolt } from "react-icons/md";
 
 import { Contacts } from "@/components/contacts";
-import Login from "@/components/login";
 import Menu from "@/components/menu";
-import { UserItem } from "@/components/user";
 import Version from "@/components/version";
-import { Logo } from "@/components/logo";
 import { SupportButton } from "@/components/supportButton";
-import { ActiveIcon } from "@/components/activeIcon";
+import { Header } from "@/components/header";
 export default async function Layout({
   children,
 }: {
@@ -21,44 +15,22 @@ export default async function Layout({
   return (
     <div className="flex flex-col min-h-screen justify-between">
       <div>
-        <header className="flex z-10 justify-between justify">
-          <div className="w-60 shrink-0 hidden  p-4 items-center md:flex justify-center">
-            <Logo />
-          </div>
-          <Link
-            className="mx-auto text-xl flex"
-            color="foreground"
-            href="/blog"
-          >
-            <ActiveIcon
-              activeClassName="text-yellow-500"
-              className=""
-              icon={<MdBolt />}
-              path="/blog"
-            />
-            <p>Блог</p>
-          </Link>
-          <div className="p-4 gap-4 flex justify-between md:justify-end">
-            {isLogin ? <UserItem /> : <Login />}
-          </div>
-        </header>
+        <Header isLogin={isLogin} />
 
-        <div className="gap-1 pb-4 flex">
+        <div className="gap-1 pb-4 flex mt-4">
           {isLogin ? (
-            <div className="hidden md:block col-span-full flex-col w-60">
-              <div className="sticky top-10 hidden md:block px-4">
+            <div className="hidden md:block col-span-full flex-col w-80">
+              <div className="sticky top-22 hidden md:block">
                 <Menu variant="desktop" />
-
-                <footer className="my-2">
-                  <Divider />
-                  <SupportButton className="mt-4" />
+                <footer className="my-2 w-full px-2">
+                  <SupportButton className="mt-4 w-full" />
                   <Contacts />
                   <Version />
                 </footer>
               </div>
             </div>
           ) : null}
-          <div className="px-3 md:px-4 lg:px-4 w-full">
+          <div className="px-3 md:px-4 lg:px-4 py-3 w-full">
             <main>{children}</main>
           </div>
         </div>
@@ -77,11 +49,7 @@ export default async function Layout({
           <Version />
         </footer>
       </span>
-      {isLogin ? (
-        <div className="bg-content1/50 backdrop-blur-xl fixed inset-x-0 bottom-0 z-50 shadow-medium md:hidden">
-          <Menu variant="mobile" />
-        </div>
-      ) : null}
+      {isLogin ? <Menu variant="mobile" /> : null}
     </div>
   );
 }
