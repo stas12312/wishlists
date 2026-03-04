@@ -11,6 +11,7 @@ import Login from "./login";
 export const Header = ({ isLogin }: { isLogin: boolean }) => {
   const [isVisible, setIsVisible] = useState(true);
   const lastScrollY = useRef(0);
+  const [showBg, setShowBg] = useState(false);
 
   useEffect(() => {
     let ticking = false;
@@ -18,19 +19,19 @@ export const Header = ({ isLogin }: { isLogin: boolean }) => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const currentScrollY = window.scrollY;
-          console.log(currentScrollY);
 
+          setShowBg(currentScrollY > 0);
           if (currentScrollY > lastScrollY.current) {
             setIsVisible(false);
           } else {
             setIsVisible(true);
           }
+          lastScrollY.current = currentScrollY;
 
           if (currentScrollY <= 100) {
             setIsVisible(true);
           }
 
-          lastScrollY.current = currentScrollY;
           ticking = false;
         });
         ticking = true;
@@ -46,7 +47,7 @@ export const Header = ({ isLogin }: { isLogin: boolean }) => {
 
   return (
     <header
-      className={`flex z-50 justify-between justify rounded-2xl bg-content1/50 m-2 shadow-medium items-center sticky top-2 backdrop-blur-xl py-3 ${isVisible ? "opacity-100" : "opacity-0"} duration-200`}
+      className={`flex z-50 justify-between justify rounded-2xl m-2 items-center sticky top-2 ${showBg ? "bg-content1/50 backdrop-blur-xl shadow-medium ring-gray-500/10 ring-1 " : ""}  py-3 ${isVisible ? "opacity-100" : "opacity-0"} duration-200 `}
     >
       <div className="w-60 shrink-0 hidden items-center md:flex justify-center">
         <Logo />
