@@ -5,6 +5,7 @@ import { useDisclosure } from "@heroui/modal";
 import { observer } from "mobx-react-lite";
 import { Key, useState } from "react";
 import { addToast } from "@heroui/toast";
+import { Image } from "@heroui/image";
 
 import ConfirmationModal from "../confirmation";
 import SelectWishlistModal from "../wishlist/selectModal";
@@ -23,7 +24,6 @@ import { cancelReserveWish } from "@/lib/client-requests/wish";
 import { reserveWish } from "@/lib/client-requests/wish";
 import { deleteWish } from "@/lib/client-requests/wish";
 import { IWishlist } from "@/lib/models/wishlist";
-
 export const WishItem = observer(
   ({
     wish,
@@ -126,16 +126,23 @@ export const WishItem = observer(
 
     return (
       <>
-        <div className="md:hover:scale-[1.03] duration-200">
+        <div className="md:hover:scale-[1.03] duration-200 relative">
           <Card
-            className={`flex-col ${withUser ? "h-85" : "h-75"} w-full`}
+            className={`flex-col ${withUser ? "h-80" : "h-70"} w-full ring-1 ring-gray-500/30`}
             isPressable={true}
             onPress={() => {
               fullCardDrawer.onOpen();
             }}
           >
-            <CardHeader className="flex-col items-start">
-              <div className="flex flex-row justify-between w-full h-10">
+            <Image
+              removeWrapper
+              className="object-cover bottom-[50%] z-0 blur-lg absolute rounded-large"
+              src={wish.images[0]}
+            />
+            <div className="bg-content1/50 absolute z-0 inset-0 roundend-large" />
+
+            <CardHeader className="flex-col items-start p-0">
+              <div className="flex flex-row justify-between w-full h-14 px-2">
                 <p className="text-tiny font-bold my-auto flex flex-col text-left overflow-hidden text-ellipsis truncate">
                   <span className="text-xl" title={wish.name}>
                     {wish.name}
@@ -151,7 +158,7 @@ export const WishItem = observer(
                 ) : null}
               </div>
             </CardHeader>
-            <CardBody>
+            <CardBody className="p-0 h-full object-cover">
               <CardImage
                 removeWrapper
                 className="h-full"
