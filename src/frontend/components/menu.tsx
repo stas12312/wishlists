@@ -82,7 +82,7 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
 
   if (variant == "mobile") {
     return (
-      <div className="flex justify-between bg-content1/50 backdrop-blur-xl fixed inset-x-0 bottom-0 z-50 shadow-medium m-4 rounded-4xl md:hidden">
+      <div className="flex justify-between bg-content1/50 backdrop-blur-xl fixed inset-x-0 bottom-0 z-50 shadow-medium my-4 mx-2 rounded-4xl md:hidden inset-shadow-md ring-1 ring-gray-500/20">
         {ITEMS.map((item) => (
           <MobileMenuItem
             key={item.title}
@@ -99,7 +99,7 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
     );
   } else {
     return (
-      <div className="bg-content1/50 backdrop-blur-xl shadow-medium m-2 rounded-2xl overflow-hidden p-1">
+      <div className="bg-content1/50 backdrop-blur-xl shadow-medium m-2 rounded-2xl overflow-hidden p-1 ring ring-gray-500/20">
         {ITEMS.map((item) => (
           <DesktopMenuItem
             key={item.title}
