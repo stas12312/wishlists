@@ -47,12 +47,16 @@ export const Header = ({ isLogin }: { isLogin: boolean }) => {
 
   return (
     <header
-      className={`flex z-50 justify-between justify rounded-2xl m-2 items-center sticky top-2 ${showBg ? "bg-content1/50 backdrop-blur-xl shadow-medium ring-gray-500/10 ring-1 " : ""}  py-3 ${isVisible ? "opacity-100" : "opacity-0"} duration-200 `}
+      className={`flex z-50 justify-between justify rounded-2xl m-2 items-center sticky top-2 ${showBg ? "bg-content1/50 backdrop-blur-xl shadow-medium ring-gray-500/10 ring-1 " : ""}  py-3 ${isVisible ? "opacity-100" : "opacity-0"} duration-400 `}
     >
       <div className="w-60 shrink-0 hidden items-center md:flex justify-center">
         <Logo />
       </div>
-      <Link className="mx-auto text-xl flex" color="foreground" href="/blog">
+      <Link
+        className="mx-auto text-xl flex items-center"
+        color="foreground"
+        href="/blog"
+      >
         <ActiveIcon
           activeClassName="text-yellow-500"
           className=""
