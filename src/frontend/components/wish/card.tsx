@@ -136,10 +136,10 @@ export const WishItem = observer(
           >
             <Image
               removeWrapper
-              className="object-cover bottom-[50%] z-0 blur-lg absolute rounded-large"
+              className="object-cover bottom-[50%] z-0 blur-md absolute rounded-large"
               src={wish.images[0]}
             />
-            <div className="bg-content1/50 absolute z-0 inset-0 roundend-large" />
+            <div className="bg-content1/50 absolute z-0 inset-0 roundend-large backdrop-saturate-200 backdrop-contrast-125" />
 
             <CardHeader className="flex-col items-start p-0">
               <div className="flex flex-row justify-between w-full h-14 px-2">
