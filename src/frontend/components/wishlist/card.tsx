@@ -46,7 +46,7 @@ export const WishlistItem = forwardRef(
         >
           <CardHeader className="flex-col items-start">
             <div className="flex flex-row justify-between w-full">
-              <div className="text-tiny font-bold my-auto flex flex-col text-left overflow-hidden truncate">
+              <div className="text-tiny font-bold flex flex-col text-left overflow-hidden truncate">
                 <span
                   className={`flex flex-row gap-1 ${!wishlist.is_active ? "text-default-400" : ""}`}
                 >
@@ -59,7 +59,7 @@ export const WishlistItem = forwardRef(
                   </p>
                 </span>
                 <p
-                  className="text-default-500 text-left"
+                  className="text-default-500 text-left text-sm mt-0.5"
                   title={cardWishlist.description}
                 >
                   {cardWishlist.description}

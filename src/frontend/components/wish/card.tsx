@@ -143,11 +143,14 @@ export const WishItem = observer(
 
             <CardHeader className="flex-col items-start p-0">
               <div className="flex flex-row justify-between w-full h-14 px-2">
-                <p className="text-tiny font-bold my-auto flex flex-col text-left overflow-hidden text-ellipsis truncate">
+                <p className="font-bold my-auto flex flex-col text-left overflow-hidden text-ellipsis truncate">
                   <span className="text-xl" title={wish.name}>
                     {wish.name}
                   </span>
-                  <span className="text-default-500" title={wish.comment}>
+                  <span
+                    className="text-default-500 text-sm"
+                    title={wish.comment}
+                  >
                     {wish.comment}
                   </span>
                 </p>
