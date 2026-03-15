@@ -86,6 +86,11 @@ func main() {
 
 	adminController := controller.NewAdminController(userService, articleService)
 	articleController := controller.NewArticleController(articleService)
+
+	questionRepository := repository.NewQuestionRepositoryPostgres(db)
+	questionService := service.NewQuestionServiceImpl(wishlistService, questionRepository, websocketService)
+	questionController := controller.NewQuestionController(questionService)
+
 	api := app.Group("/api")
 
 	websocketController.Route(app)
@@ -96,6 +101,7 @@ func main() {
 	feedController.Route(api)
 	adminController.Route(api)
 	articleController.Route(api)
+	questionController.Route(api)
 
 	log.Fatal(app.Listen(":8080"))
 }

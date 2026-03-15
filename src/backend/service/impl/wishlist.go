@@ -131,10 +131,15 @@ func (s *WishlistImpl) ListWishesForWishlist(userId int64, wishlistUuid string) 
 		return wishes, apperror.NewError(apperror.NotFound, "Вишлист не найден")
 	}
 
-	wishes, err = s.WishRepository.ListForWishlist(wishlistUuid)
+	wishes, err = s.WishRepository.ListBy(wishlistUuid, []string{})
 	prepareWishes(userId, wishes)
 	return wishes, err
+}
 
+func (s *WishlistImpl) ListWishesByUUIDS(userId int64, wishUUIDs []string) (*[]model.Wish, error) {
+	wishes, err := s.WishRepository.ListBy("", wishUUIDs)
+	prepareWishes(userId, wishes)
+	return wishes, err
 }
 
 func (s *WishlistImpl) UserCanEditWishlist(userId int64, wishlistUuid string) bool {
