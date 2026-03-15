@@ -75,7 +75,7 @@ export const QuestionItem = ({
           <>
             <h2 className="text-2xl col-span-full">{question.wish?.name}</h2>
             <div className="col-span-1 flex flex-col gap-2">
-              {question.wish?.images.length ? (
+              {question.wish?.images?.length ? (
                 <Image
                   removeWrapper
                   className="object-cover h-40 w-full"

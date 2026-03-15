@@ -134,11 +134,14 @@ export const WishItem = observer(
               fullCardDrawer.onOpen();
             }}
           >
-            <Image
-              removeWrapper
-              className="object-cover bottom-[50%] z-0 blur-xl absolute rounded-large"
-              src={wish.images[0]}
-            />
+            {wish.images ? (
+              <Image
+                removeWrapper
+                className="object-cover bottom-[50%] z-0 blur-xl absolute rounded-large"
+                src={wish.images[0]}
+              />
+            ) : null}
+
             <div className="bg-content1/50 absolute z-0 inset-0 roundend-large backdrop-saturate-200 backdrop-contrast-125" />
 
             <CardHeader className="flex-col items-start p-0">
