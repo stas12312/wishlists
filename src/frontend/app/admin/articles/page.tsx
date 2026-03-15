@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import AddCardButton from "@/components/addCardButton";
-import { CardsList } from "@/components/cardsList/cardsList";
+import { AnimatedList } from "@/components/cardsList/cardsList";
 import PageHeader from "@/components/pageHeader";
 import { getAdminArticles } from "@/lib/client-requests/article";
 import { IArticle } from "@/lib/models/article";
@@ -53,7 +53,7 @@ export default function Page() {
       <PageHeader title="Статьи" />
       <InfinityLoader onLoad={loadData}>
         <div className="p-4">
-          <CardsList
+          <AnimatedList
             items={[
               <AddCardButton
                 key="add"

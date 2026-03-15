@@ -11,6 +11,7 @@ import { Chip } from "@heroui/chip";
 import { Avatar } from "@heroui/avatar";
 
 import MarketIcon from "../marketIcon";
+import { QuestionList } from "../questions/list";
 
 import { ImageSwiper } from "./swiper";
 
@@ -32,7 +33,6 @@ const WishFullCard = ({
   withUser?: boolean;
 }) => {
   const menuItems = getMenuItemsByActions(wish.actions);
-
   return (
     <Drawer isOpen={isOpen} size="xl" onOpenChange={onOpenChange}>
       <DrawerContent>
@@ -94,6 +94,9 @@ const WishFullCard = ({
                   </Button>
                 ))}
               </div>
+              {wish.uuid ? (
+                <QuestionList withAskForm wishUUID={wish.uuid} />
+              ) : null}
             </DrawerBody>
             <DrawerFooter className="flex flex-col">
               {wish.created_at ? (

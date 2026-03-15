@@ -9,7 +9,7 @@ import { addToast } from "@heroui/toast";
 import { useRouter } from "next/navigation";
 
 import AddCardButton from "../addCardButton";
-import { CardsList } from "../cardsList/cardsList";
+import { AnimatedList } from "../cardsList/cardsList";
 import { PageSpinner } from "../pageSpinner";
 
 import { WishlistItem } from "./card";
@@ -149,7 +149,7 @@ export const Wishlists = observer(
         {isLoading ? <PageSpinner /> : null}
 
         {components.length ? (
-          <CardsList
+          <AnimatedList
             items={[
               !filter.showArchive && actions.edit && !isLoading ? (
                 <AddCardButton

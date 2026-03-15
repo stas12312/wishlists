@@ -63,7 +63,7 @@ const ConfirmationModal = ({
 
   return (
     <>
-      <Modal isOpen={isOpen} onOpenChange={onDecline}>
+      <Modal isOpen={isOpen} placement="center" onOpenChange={onDecline}>
         <ModalContent>
           {() => (
             <>

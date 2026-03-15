@@ -37,6 +37,7 @@ const ITEMS: {
     icon: <MdStar />,
     title: "Желания",
     href: "/wishes",
+    counterName: "questions",
     selectedIconClassName: "text-yellow-500",
   },
   {
@@ -62,7 +63,10 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
   const { lastJsonMessage } = useWebSocket(getWebsocketUrl, {
     ...defaultParams,
     filter: (message) => {
-      return isEvent(message, WSEvent.ChangeIncomingFriendsRequests);
+      return (
+        isEvent(message, WSEvent.ChangeIncomingFriendsRequests) ||
+        isEvent(message, WSEvent.ChangeQuestionCount)
+      );
     },
   });
 
@@ -76,9 +80,12 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
 
   useEffect(() => {
     setCounterValues(
-      new Map([["requests", countersStore.friendCounters.incoming_requests]]),
+      new Map([
+        ["requests", countersStore.friendCounters.incoming_requests],
+        ["questions", countersStore.totalQuestions],
+      ]),
     );
-  }, [countersStore.friendCounters]);
+  }, [countersStore.questionCounters, countersStore.friendCounters]);
 
   if (variant == "mobile") {
     return (
