@@ -8,7 +8,7 @@ type WishRepository interface {
 	Create(wish *model.Wish) (*model.Wish, error)
 	Update(wish *model.Wish) (*model.Wish, error)
 	Get(wishUuid string) (*model.Wish, error)
-	ListForWishlist(wishlistUuid string) (*[]model.Wish, error)
+	ListBy(wishlistUuid string, wishUUIDs []string) (*[]model.Wish, error)
 	Delete(wishUuid string) error
 	Restore(wishUuid string) error
 	SetPresenter(wishUuid string, presenterId model.NullInt64) error

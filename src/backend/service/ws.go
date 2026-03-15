@@ -1,12 +1,14 @@
 package service
 
 import (
-	"github.com/gofiber/contrib/websocket"
 	"main/model"
+
+	"github.com/gofiber/contrib/websocket"
 )
 
 const (
 	ChangeIncomingFriendsRequests = "ChangeIncomingFriendsRequests"
+	ChangeQuestionsCount          = "ChangeQuestionsCount"
 
 	Subscribe   = "Subscribe"
 	Unsubscribe = "Unsubscribe"

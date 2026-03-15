@@ -104,7 +104,7 @@ func (r *WishRepositoryPostgres) Get(wishUuid string) (*model.Wish, error) {
 	return wish, err
 }
 
-func (r *WishRepositoryPostgres) ListForWishlist(wishlistUuid string) (*[]model.Wish, error) {
+func (r *WishRepositoryPostgres) ListBy(wishlistUuid string, wishUUIDs []string) (*[]model.Wish, error) {
 	query := `
 		SELECT 
 		    wishes.*, 
@@ -112,14 +112,17 @@ func (r *WishRepositoryPostgres) ListForWishlist(wishlistUuid string) (*[]model.
 		    wishes.presenter_id IS NOT NULL AS is_reserved
 		FROM wishes
 		JOIN wishlists USING (wishlist_uuid)
-		WHERE 
-		    wishlist_uuid = $1
+		WHERE
+		    CASE 
+		        WHEN $1 != '' THEN wishlist_uuid = $1::uuid
+		    	WHEN $2 != '{}'::uuid[] THEN wish_uuid = ANY($2::uuid[])
+			END
 			AND wishes.is_active = True
 		ORDER BY created_at DESC 
 `
 	wishes := &[]model.Wish{}
 
-	err := r.Connection.Select(wishes, query, wishlistUuid)
+	err := r.Connection.Select(wishes, query, wishlistUuid, wishUUIDs)
 	if err != nil {
 		log.Error("[ListForWishlist] error querying wishes: " + err.Error())
 	}

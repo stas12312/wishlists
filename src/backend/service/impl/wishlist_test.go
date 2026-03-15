@@ -471,7 +471,7 @@ func TestWishlistImpl_ListWishesForWishlist(t *testing.T) {
 					Return(&model.Wishlist{UserId: 1}, nil)
 
 				wMock.
-					On("ListForWishlist", "0").
+					On("ListBy", "0", []string{}).
 					Once().
 					Return(&[]model.Wish{{UserId: 1}, {UserId: 1}}, nil)
 			},
@@ -512,7 +512,7 @@ func TestWishlistImpl_ListWishesForWishlist(t *testing.T) {
 					Return(&model.Wishlist{UserId: 1, Visible: model.Public, IsActive: true}, nil)
 
 				wMock.
-					On("ListForWishlist", "0").
+					On("ListBy", "0", []string{}).
 					Once().
 					Return(&[]model.Wish{{UserId: 1}, {UserId: 1}}, nil)
 			},

@@ -24,4 +24,5 @@ type WishlistService interface {
 	CancelWishFull(userId int64, wishUuid string) error
 	MoveWish(userId int64, wishUuid string, wishlistUuid string) (*model.Wish, error)
 	CopyWish(userId int64, wishUuid string, toWishlistUuid string) (*model.Wish, error)
+	ListWishesByUUIDS(userId int64, wishUUIDs []string) (*[]model.Wish, error)
 }
