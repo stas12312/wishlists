@@ -25,7 +25,7 @@ export const ImageSwiper = ({ wish }: { wish: IWish }) => {
       <div
         className={`bg-linear-to-br from-default to-default-100 rounded-large w-full flex h-full`}
       >
-        {wish.images.length ? (
+        {wish.images?.length ? (
           <Swiper
             navigation
             autoHeight={true}
