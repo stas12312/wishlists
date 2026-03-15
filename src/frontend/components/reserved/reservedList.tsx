@@ -5,7 +5,8 @@ import { useEffect, useState } from "react";
 import { WishItem } from "../wish/card";
 import PageHeader from "../pageHeader";
 import { PageSpinner } from "../pageSpinner";
-import { CardsList } from "../cardsList/cardsList";
+import { AnimatedList } from "../cardsList/cardsList";
+import { QuestionInfo } from "../questions/card";
 
 import { getReservedWishes } from "@/lib/client-requests/wish";
 import { IWish } from "@/lib/models/wish";
@@ -43,17 +44,19 @@ export const ReservedWishes = observer(() => {
 
   return (
     <>
-      <PageHeader title="Забронированные желания" />
+      <PageHeader title="Желания" />
       {isLoading ? (
         <PageSpinner />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+        <>
+          <QuestionInfo />
           {components.length ? (
-            <CardsList items={components} />
-          ) : (
-            <p className="text-2xl text-center col-span-full">Список пуст</p>
-          )}
-        </div>
+            <span>
+              <PageHeader title="Забронированные желания" />
+              <AnimatedList items={components} />
+            </span>
+          ) : null}
+        </>
       )}
     </>
   );

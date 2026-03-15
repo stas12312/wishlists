@@ -19,7 +19,7 @@ import { LoginButton } from "../login";
 import UserCard from "../user/card";
 import { ISorting, SortingSelector } from "../wish/sortingSelector";
 import { IWishFilter, WishFilter } from "../wish/filter";
-import { CardsList } from "../cardsList/cardsList";
+import { AnimatedList } from "../cardsList/cardsList";
 import { CustomBreadcrumbs } from "../breadcrumbs";
 import { VisibleChip } from "../visibleChip";
 
@@ -332,7 +332,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
             onOpenChange={onOpenChange}
             onUpdate={onCreateWish}
           />
-          <CardsList
+          <AnimatedList
             items={[
               isEditable && wishlist.is_active ? (
                 <AddCardButton

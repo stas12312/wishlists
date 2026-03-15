@@ -2,7 +2,7 @@
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 
-import { CardsList } from "../cardsList/cardsList";
+import { AnimatedList } from "../cardsList/cardsList";
 import { PageSpinner } from "../pageSpinner";
 import { InfinityLoader } from "../infinityLoader";
 
@@ -48,7 +48,7 @@ export const ArticlesList = observer(() => {
 
   return (
     <InfinityLoader onLoad={loadData}>
-      <CardsList
+      <AnimatedList
         gridConfig="grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
         items={[
           ...articles.map((article) => (

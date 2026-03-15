@@ -5,7 +5,7 @@ import { addToast } from "@heroui/toast";
 
 import { PageSpinner } from "../pageSpinner";
 import ConfirmationModal from "../confirmation";
-import { CardsList } from "../cardsList/cardsList";
+import { AnimatedList } from "../cardsList/cardsList";
 
 import FriendItem from "./card";
 import FriendMenu from "./menu";
@@ -88,7 +88,7 @@ const FriendsList = observer(
     if (friends) {
       return (
         <>
-          <CardsList items={users} />
+          <AnimatedList items={users} />
           <ConfirmationModal
             isOpen={isConfirm}
             message="Вы уверены, что хотите удалить пользователя из друзей?"
