@@ -93,26 +93,39 @@ export const QuestionList = observer(
       <>
         <div>
           {withAskForm ? (
-            <Form
-              className="mt-2"
-              validationBehavior="native"
-              onSubmit={(e) => {
-                e.preventDefault();
-                submitForm();
-              }}
-            >
-              <Textarea
-                required
-                minLength={2}
-                value={newQuestion}
-                onValueChange={(value) => {
-                  setNewQuestion(value);
+            <>
+              <h2 className="text-2xl text-center">
+                Вопросы {questions.length ? `(${questions.length})` : null}
+              </h2>
+              <Form
+                className="mt-2"
+                validationBehavior="native"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  submitForm();
                 }}
-              />
-              <Button fullWidth color="primary" type="submit">
-                Задать вопрос
-              </Button>
-            </Form>
+              >
+                <Textarea
+                  required
+                  minLength={2}
+                  placeholder="Введите вопрос"
+                  value={newQuestion}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && e.ctrlKey) {
+                      e.preventDefault();
+                      submitForm();
+                    }
+                  }}
+                  onValueChange={(value) => {
+                    console.log(value);
+                    setNewQuestion(value);
+                  }}
+                />
+                <Button fullWidth color="primary" type="submit">
+                  Задать вопрос
+                </Button>
+              </Form>
+            </>
           ) : null}
         </div>
         <div className="flex flex-col gap-4">
