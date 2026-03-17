@@ -9,7 +9,7 @@ const Landing = () => {
   return (
     <div className="flex flex-col justify-center">
       <HeaderBlock />
-      <div className="flex lg:flex-col flex-col max-w-[1200px] mx-auto w-full gap-4 mt-4">
+      <div className="flex lg:flex-col flex-col max-w-300 mx-auto w-full gap-4 mt-4">
         <StartBlock />
         <AdvantageBlock />
         <StartButton title="Поехали 🚀" />
