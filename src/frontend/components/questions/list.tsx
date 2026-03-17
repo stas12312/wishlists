@@ -95,7 +95,7 @@ export const QuestionList = observer(
     return (
       <>
         <div>
-          {withTitle ? (
+          {withTitle && questions.length > 0 ? (
             <h2 className="text-2xl text-center">
               Вопросы {questions.length ? `(${questions.length})` : null}
             </h2>
