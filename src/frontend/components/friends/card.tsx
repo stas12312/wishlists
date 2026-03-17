@@ -24,16 +24,19 @@ const FriendItem = ({
         router.push(getUserLink(friend.username));
       }}
     >
-      <CardBody className="flex flex-row justify-between">
-        <User
-          avatarProps={{
-            src: friend.image,
-            name: friend.name[0],
-          }}
-          className="cursor-pointer"
-          description={wrapUsername(friend.username)}
-          name={friend.name}
-        />
+      <CardBody className="flex flex-row justify-between overflow-hidden">
+        <span className="h-10 truncate">
+          <User
+            avatarProps={{
+              src: friend.image,
+              name: friend.name[0],
+            }}
+            className="cursor-pointer"
+            description={wrapUsername(friend.username)}
+            name={friend.name}
+          />
+        </span>
+
         {children}
       </CardBody>
     </Card>
