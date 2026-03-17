@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Textarea } from "@heroui/input";
 import { Form } from "@heroui/form";
 import { Button } from "@heroui/button";
@@ -27,6 +27,7 @@ export const QuestionList = observer(
     isWithWish = false,
     withAskForm = false,
     emptyMessage = "",
+    withTitle = false,
   }: {
     wishUUID?: string;
     isMy?: boolean;
@@ -34,8 +35,10 @@ export const QuestionList = observer(
     isWithWish?: boolean;
     withAskForm?: boolean;
     emptyMessage?: string;
+    withTitle?: boolean;
   }) => {
     const [newQuestion, setNewQuestion] = useState<string>("");
+    const submitRef = useRef<HTMLButtonElement>(null);
 
     const submitForm = async () => {
       if (!wishUUID) {
@@ -92,11 +95,13 @@ export const QuestionList = observer(
     return (
       <>
         <div>
+          {withTitle ? (
+            <h2 className="text-2xl text-center">
+              Вопросы {questions.length ? `(${questions.length})` : null}
+            </h2>
+          ) : null}
           {withAskForm ? (
-            <>
-              <h2 className="text-2xl text-center">
-                Вопросы {questions.length ? `(${questions.length})` : null}
-              </h2>
+            <div>
               <Form
                 className="mt-2"
                 validationBehavior="native"
@@ -107,34 +112,35 @@ export const QuestionList = observer(
               >
                 <Textarea
                   required
+                  className="rounded-2xl"
+                  maxLength={200}
                   minLength={2}
                   placeholder="Введите вопрос"
                   value={newQuestion}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && e.ctrlKey) {
-                      e.preventDefault();
-                      submitForm();
+                      submitRef.current?.click();
                     }
                   }}
                   onValueChange={(value) => {
-                    console.log(value);
                     setNewQuestion(value);
                   }}
                 />
-                <Button fullWidth color="primary" type="submit">
+
+                <Button ref={submitRef} fullWidth color="primary" type="submit">
                   Задать вопрос
                 </Button>
               </Form>
-            </>
+            </div>
           ) : null}
         </div>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 object-cover">
           {questions.length === 0 && emptyMessage ? (
             <p className="text-2xl w-full text-center mt-4">{emptyMessage}</p>
           ) : (
             <InfinityLoader onLoad={() => fetchData()}>
               <AnimatedList
-                gridConfig=""
+                className="flex flex-col gap-2"
                 items={questions.map((item, i) => (
                   <QuestionItem
                     key={item.id}
@@ -153,6 +159,7 @@ export const QuestionList = observer(
                     }}
                   />
                 ))}
+                withGrid={false}
               />
             </InfinityLoader>
           )}

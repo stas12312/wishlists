@@ -2,9 +2,9 @@ import { Button } from "@heroui/button";
 import { Form } from "@heroui/form";
 import { Image } from "@heroui/image";
 import { Textarea } from "@heroui/input";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { AiFillGift } from "react-icons/ai";
-import { MdCheck, MdDelete } from "react-icons/md";
+import { MdCheck, MdDelete, MdSend } from "react-icons/md";
 import { useDisclosure } from "@heroui/modal";
 import { addToast } from "@heroui/toast";
 import { Chip } from "@heroui/chip";
@@ -33,6 +33,7 @@ export const QuestionItem = ({
   const [answer, setAnswer] = useState("");
   const confirmDeleteQuestion = useDisclosure();
   const confirmDeleteAnswer = useDisclosure();
+  const submitRef = useRef<HTMLButtonElement>(null);
 
   const submitForm = async () => {
     if (!answer) {
@@ -78,7 +79,7 @@ export const QuestionItem = ({
               {question.wish?.images?.length ? (
                 <Image
                   removeWrapper
-                  className="object-cover h-40 w-full"
+                  className="object-cover h-60 md:h-full w-full"
                   src={question.wish?.images[0]}
                 />
               ) : (
@@ -89,30 +90,17 @@ export const QuestionItem = ({
             </div>
           </>
         ) : null}
+        <div className="flex flex-col w-full gap-2 col-span-4 h-full my-auto">
+          <QuestionContent
+            content={question.content}
+            createdAt={question.created_at ?? ""}
+            withDeleteButton={question.actions?.delete}
+            onDelete={confirmDeleteQuestion.onOpen}
+          />
 
-        <div className="flex flex-col w-full gap-2 col-span-4 ">
-          <div className="rounded-2xl flex justify-between relative bg-content2 px-2 gap-2 h-10">
-            <p className="w-full my-auto">{question.content}</p>
-            <p className="text-tiny text-right my-auto w-50">
-              {new Date(question.created_at ?? "").toLocaleString()}
-            </p>
-            {question.actions?.delete === true ? (
-              <Button
-                isIconOnly
-                className="my-auto"
-                color="danger"
-                data-qa="delete-question"
-                size="sm"
-                startContent={<MdDelete />}
-                variant="light"
-                onPress={() => {
-                  confirmDeleteQuestion.onOpenChange();
-                }}
-              />
-            ) : null}
-          </div>
           {question.actions?.answer && question.answer?.content === null ? (
             <Form
+              className="ml-10 flex flex-row items-stretch"
               validationBehavior="native"
               onSubmit={(e) => {
                 e.preventDefault();
@@ -121,42 +109,39 @@ export const QuestionItem = ({
             >
               <Textarea
                 required
+                className="rounded-2xl"
+                maxLength={200}
+                maxRows={100}
                 minLength={2}
+                placeholder="Введите ответ"
                 value={answer}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && e.ctrlKey) {
+                    submitRef.current?.click();
+                  }
+                }}
                 onValueChange={(value) => {
                   setAnswer(value);
                 }}
               />
               <Button
-                className="ml-auto w-full md:w-max"
+                ref={submitRef}
+                isIconOnly
+                className="w-max h-auto"
                 color="primary"
+                startContent={<MdSend />}
                 type="submit"
-              >
-                Ответить
-              </Button>
+              />
             </Form>
           ) : null}
-          {question.answer && question.answer.content !== null ? (
-            <div className="ml-10 rounded-2xl flex justify-between bg-content2 px-2 h-10 gap-1">
-              <p className="my-auto w-full">{question.answer?.content}</p>
-              <p className="text-right text-tiny my-auto w-50">
-                {new Date(question.answer?.created_at ?? "").toLocaleString()}
-              </p>
-              {question.actions?.answer === true ? (
-                <Button
-                  isIconOnly
-                  className="my-auto"
-                  color="danger"
-                  data-qa="delete-answer"
-                  size="sm"
-                  startContent={<MdDelete />}
-                  variant="light"
-                  onPress={() => {
-                    confirmDeleteAnswer.onOpen();
-                  }}
-                />
-              ) : null}
-            </div>
+          {question.answer && question.answer.content ? (
+            <QuestionContent
+              className="ml-10"
+              content={question.answer.content}
+              createdAt={question.answer.created_at}
+              withDeleteButton={question.actions?.answer}
+              onDelete={confirmDeleteAnswer.onOpen}
+            />
           ) : null}
           {question.actions?.delete &&
           question.status === QuestionStatus.resolved ? (
@@ -204,5 +189,50 @@ export const QuestionItem = ({
         }}
       />
     </>
+  );
+};
+
+const QuestionContent = ({
+  content,
+  createdAt,
+  withDeleteButton = false,
+  onDelete = () => {},
+  className = "",
+}: {
+  content: string;
+  createdAt: string;
+  withDeleteButton?: boolean;
+  onDelete?: { (): void };
+  className?: string;
+}) => {
+  return (
+    <div
+      className={`${className} rounded-2xl flex flex-col justify-between bg-content2 px-2  min-h-10 py-1 gap-1`}
+    >
+      <div className="flex">
+        <p className="my-auto w-full whitespace-pre-wrap break-all">
+          {content}
+        </p>
+
+        {withDeleteButton ? (
+          <Button
+            isIconOnly
+            className="my-auto"
+            color="danger"
+            data-qa="delete-answer"
+            size="sm"
+            startContent={<MdDelete />}
+            variant="light"
+            onPress={() => {
+              onDelete();
+            }}
+          />
+        ) : null}
+      </div>
+
+      <p className="text-right text-tiny my-auto w-50 ml-auto">
+        {new Date(createdAt ?? "").toLocaleString()}
+      </p>
+    </div>
   );
 };
