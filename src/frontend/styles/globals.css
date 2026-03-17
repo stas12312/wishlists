@@ -23,4 +23,7 @@
         content: counters(item, ".") ". ";
     }
 
+    html {
+        scrollbar-gutter: stable
+    }
 }

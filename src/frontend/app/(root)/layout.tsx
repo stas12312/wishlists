@@ -20,7 +20,7 @@ export default async function Layout({
         <div className="gap-1 pb-4 flex mt-4">
           {isLogin ? (
             <div className="hidden md:block col-span-full flex-col w-80">
-              <div className="sticky top-22 hidden md:block">
+              <div className="sticky top-22 hidden md:block ml-2">
                 <Menu variant="desktop" />
                 <footer className="my-2 w-full px-2">
                   <SupportButton className="mt-4 w-full" />
