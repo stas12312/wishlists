@@ -9,15 +9,17 @@ export const AnimatedList = observer(
     items,
     gridConfig = "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5",
     className,
+    withGrid = true,
   }: {
     items: Array<ReactElement | null>;
     gridConfig?: string;
     className?: string;
+    withGrid?: boolean;
   }) => {
     return (
       <motion.div
         animate="show"
-        className={`grid gap-4 col-span-full ${gridConfig} ${className}`}
+        className={`${withGrid ? "grid gap-4 col-span-full" : null}  ${gridConfig} ${className}`}
         initial="hidden"
         variants={containerVariants}
       >

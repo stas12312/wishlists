@@ -95,7 +95,11 @@ const WishFullCard = ({
                 ))}
               </div>
               {wish.uuid ? (
-                <QuestionList withAskForm wishUUID={wish.uuid} />
+                <QuestionList
+                  withTitle
+                  wishUUID={wish.uuid}
+                  withAskForm={!wish.actions.edit}
+                />
               ) : null}
             </DrawerBody>
             <DrawerFooter className="flex flex-col">
