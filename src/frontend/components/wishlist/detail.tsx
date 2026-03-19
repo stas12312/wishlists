@@ -296,7 +296,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
       ) : (
         <>
           {!userStore.user.id ? (
-            <div className="col-span-full flex justify-center">
+            <div className="col-span-full flex justify-center mb-4">
               <div>
                 <Alert
                   hideIconWrapper
