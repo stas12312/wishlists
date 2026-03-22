@@ -149,29 +149,6 @@ export default function WishForm(props: {
     setIsCreating(false);
   }
 
-  function handlerChange(
-    e: React.ChangeEvent<
-      HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement
-    >,
-  ) {
-    e.preventDefault();
-    const { name, value } = e.target;
-
-    if (name && name === "cost") {
-      const preparedValue = value.replace(/\s/g, "");
-      let valueForSave: number | undefined;
-
-      if (preparedValue && !isNumeric(preparedValue)) {
-        return;
-      } else if (preparedValue !== "") {
-        valueForSave = Number(preparedValue);
-      }
-      setFormData({ ...formData, [name]: valueForSave });
-    } else {
-      setFormData({ ...formData, [name]: value.trimStart() });
-    }
-  }
-
   function setLinkResult(result: ParseResult, link: string) {
     setImages([{ url: result.image, key: result.image }]);
 

@@ -45,7 +45,7 @@ export default function Editor({
         },
         minHeight: 300,
         onReady: () => {},
-        async onChange(api, event) {
+        async onChange(api) {
           const data = await api.saver.save();
           onChange(data);
         },

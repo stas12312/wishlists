@@ -36,7 +36,6 @@ export const WishlistItemMenu = ({
   const [isConfirm, setIsConfirm] = useState(false);
 
   async function handleOnAction(key: Key) {
-    console.log(key);
     if (key === "delete") {
       setIsConfirm(true);
     }

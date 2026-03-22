@@ -85,20 +85,6 @@ export function WishlistCreateForm({
     fetchFriends();
   }, [formData.visible]);
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement
-    >,
-  ) => {
-    let { name, value } = e.target;
-
-    if (name == "visible") {
-      setFormData({ ...formData, [name]: Number(value) });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
-  };
-
   const setData = (dateValue: CalendarDate | null) => {
     let datetime = null;
     if (dateValue) {

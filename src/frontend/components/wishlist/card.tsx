@@ -1,7 +1,6 @@
 "use client";
 
 import { Card, Chip, Skeleton } from "@heroui/react";
-import { useRouter } from "next/navigation";
 import { forwardRef, useState } from "react";
 import Link from "next/link";
 
@@ -27,8 +26,6 @@ export const WishlistItem = forwardRef(
     },
     ref: any,
   ) => {
-    const router = useRouter();
-
     const [cardWishlist, setCardWishlist] = useState<IWishlist>(wishlist);
 
     function onUpdate(wishlist: IWishlist): void {
