@@ -1,16 +1,16 @@
-import { Image } from "@heroui/image";
-import { Chip } from "@heroui/chip";
+import { Chip } from "@heroui/react";
+import Image from "next/image";
 import { AiFillGift } from "react-icons/ai";
 
 import Desirability from "../desirability";
 
 import WishlistStatus from "./wishlistStatus";
 
-import { IWish } from "@/lib/models/wish";
 import { CURRENCY_BY_CODE } from "@/lib/currency";
+import { IWish } from "@/lib/models/wish";
+
 const CardImage = ({
   wish,
-  removeWrapper,
   className,
   iconClassName,
 }: {
@@ -26,8 +26,11 @@ const CardImage = ({
       >
         {wish.images?.length ? (
           <Image
+            unoptimized
+            alt="Изображение карточки желания"
             className="z-0 object-cover h-full w-full mx-auto"
-            removeWrapper={removeWrapper}
+            fill={true}
+            sizes="auto, auto"
             src={wish.images[0]}
           />
         ) : (
@@ -41,12 +44,12 @@ const CardImage = ({
       </div>
       <div className="flex absolute bottom-1.5 px-1 w-full z-10">
         {wish.desirability && wish.desirability > 1 ? (
-          <Chip>
+          <Chip size="lg">
             <Desirability onlyRead value={wish.desirability} />
           </Chip>
         ) : null}
         {wish.cost ? (
-          <Chip className="ml-auto mr-0">
+          <Chip className="ml-auto mr-0" size="lg">
             {wish.cost.toLocaleString() +
               ` ${CURRENCY_BY_CODE.get(wish.currency)?.symbol || CURRENCY_BY_CODE.get("RUB")?.symbol}`}
           </Chip>

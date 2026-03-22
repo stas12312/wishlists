@@ -1,16 +1,23 @@
 "use client";
 
 import { CalendarDate, getLocalTimeZone } from "@internationalized/date";
-import { Button } from "@heroui/button";
-import { DatePicker } from "@heroui/date-picker";
-import { Input, Textarea } from "@heroui/input";
-import { Select, SelectItem } from "@heroui/select";
-import { I18nProvider } from "@react-aria/i18n";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { FormEvent, Key, useEffect, useState } from "react";
 import { MdOutlinePublic, MdOutlinePublicOff, MdPerson } from "react-icons/md";
-import { Avatar } from "@heroui/avatar";
-import { Chip } from "@heroui/chip";
-import { Form } from "@heroui/form";
+import {
+  Avatar,
+  Button,
+  Chip,
+  Form,
+  Input,
+  Label,
+  ListBox,
+  Select,
+  TextArea,
+  TextField,
+} from "@heroui/react";
+
+import { CustomDatePicker } from "../datePicker";
+import { UserAvatar } from "../userAvatar";
 
 import { getFriends } from "@/lib/client-requests/friend";
 import { createWishList, updateWishlist } from "@/lib/client-requests/wishlist";
@@ -78,20 +85,6 @@ export function WishlistCreateForm({
     fetchFriends();
   }, [formData.visible]);
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement
-    >,
-  ) => {
-    let { name, value } = e.target;
-
-    if (name == "visible") {
-      setFormData({ ...formData, [name]: Number(value) });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
-  };
-
   const setData = (dateValue: CalendarDate | null) => {
     let datetime = null;
     if (dateValue) {
@@ -110,11 +103,8 @@ export function WishlistCreateForm({
       validationBehavior="native"
       onSubmit={handleSubmit}
     >
-      <Input
-        fullWidth
-        isClearable
+      <TextField
         isRequired
-        label="Название"
         name="name"
         validate={(value) => {
           if (value === "") {
@@ -123,79 +113,86 @@ export function WishlistCreateForm({
           return null;
         }}
         value={formData.name}
-        onChange={handleChange}
-        onClear={() => setFormData({ ...formData, name: "" })}
-      />
-      <Textarea
-        fullWidth
-        isClearable
-        label="Описание"
+        variant="secondary"
+        onChange={(value) => {
+          setFormData({ ...formData, name: value });
+        }}
+      >
+        <Label>Название</Label>
+        <Input
+          fullWidth
+
+          // onClear={() => setFormData({ ...formData, name: "" })}
+        />
+      </TextField>
+
+      <TextField
         name="description"
         value={formData.description}
-        onChange={handleChange}
-        onClear={() => setFormData({ ...formData, description: "" })}
+        variant="secondary"
+        onChange={(value) => setFormData({ ...formData, description: value })}
+      >
+        <Label>Описание</Label>
+        <TextArea fullWidth />
+      </TextField>
+
+      <CustomDatePicker
+        label="Дата события"
+        name="date"
+        value={dateStringToCalendarDate(formData.date)}
+        variant="secondary"
+        onChange={setData}
       />
-      <I18nProvider locale="ru-RU">
-        <DatePicker
-          showMonthAndYearPickers
-          calendarWidth={300}
-          label="Дата события"
-          name="date"
-          value={dateStringToCalendarDate(formData.date)}
-          onChange={setData}
-        />
-      </I18nProvider>
       <Select
         disabledKeys={
           friends.length == 0 && formData.visible_user_ids.length == 0
             ? ["3"]
             : undefined
         }
-        label="Кому доступен"
         name="visible"
-        selectedKeys={[formData.visible.toString()]}
-        onChange={handleChange}
+        value={formData.visible.toString()}
+        variant="secondary"
+        onChange={(value) => {
+          setFormData({
+            ...formData,
+            visible: parseInt(value?.toString() ?? "1"),
+          });
+        }}
       >
-        {visibleItems.map((visible) => (
-          <SelectItem
-            key={visible.key}
-            startContent={<Avatar icon={visible.icon} />}
-          >
-            {visible.label}
-          </SelectItem>
-        ))}
+        <Label>Кому доступен</Label>
+        <Select.Trigger>
+          <Select.Value />
+          <Select.Indicator />
+        </Select.Trigger>
+        <Select.Popover>
+          <ListBox>
+            {visibleItems.map((visible) => (
+              <ListBox.Item
+                key={visible.key}
+                id={visible.key}
+                textValue={visible.label}
+              >
+                <div className="flex items-center gap-2">
+                  <Avatar size="sm">{visible.icon}</Avatar>
+                  {visible.label}
+                </div>
+
+                <ListBox.ItemIndicator />
+              </ListBox.Item>
+            ))}
+          </ListBox>
+        </Select.Popover>
       </Select>
       {formData.visible == 3 ? (
         <Select
           isRequired
-          isMultiline={true}
-          items={friends}
-          label="Выберите друзей"
-          renderValue={(items) => {
-            return (
-              <div className="flex flex-wrap gap-2">
-                {items.map((item) => (
-                  <Chip
-                    key={item.key}
-                    avatar={
-                      <Avatar
-                        name={item.data?.name[0]}
-                        src={item.data?.image}
-                      />
-                    }
-                  >
-                    {item.data?.name}
-                  </Chip>
-                ))}
-              </div>
-            );
-          }}
-          selectedKeys={formData?.visible_user_ids.map((value) => {
-            return String(value);
-          })}
           selectionMode="multiple"
-          onChange={(e: ChangeEvent<HTMLSelectElement>) => {
-            const ids = e.target.value.split(",").map((value) => {
+          value={formData?.visible_user_ids.map((value) => {
+            return value;
+          })}
+          variant="secondary"
+          onChange={(keys: Key[]) => {
+            const ids = keys.map((value) => {
               return Number(value);
             });
             setFormData({
@@ -204,28 +201,78 @@ export function WishlistCreateForm({
             });
           }}
         >
-          {(user) => (
-            <SelectItem key={user.id}>
-              <div className="flex gap-2 items-center">
-                <Avatar
-                  alt={user.name}
-                  className="shrink-0"
-                  name={user.name[0]}
-                  size="sm"
-                  src={user.image}
-                />
-                <div className="flex flex-col">
-                  <span className="text-small">{user.name}</span>
-                  <span className="text-tiny text-default-400">
-                    {user.username}
-                  </span>
-                </div>
-              </div>
-            </SelectItem>
-          )}
+          <Label>Выберите друзей</Label>
+          <Select.Trigger>
+            <Select.Value>
+              {({ defaultChildren, isPlaceholder, state }) => {
+                if (isPlaceholder || state.selectedItems.length === 0) {
+                  return defaultChildren;
+                }
+                const selectedItems = state.selectedItems;
+                const selectedItem = friends.find(
+                  (user) => user.id === selectedItems[0]?.key,
+                );
+                if (!selectedItem) {
+                  return defaultChildren;
+                }
+                return (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedItems.map((userId) => {
+                      const user = friends.find(
+                        (user) => user.id == userId.key,
+                      );
+                      if (!user) {
+                        return <></>;
+                      }
+                      return (
+                        <Chip key={user.id}>
+                          <UserAvatar
+                            description=""
+                            image={user.image}
+                            name={user.name}
+                            size="sm"
+                          />
+                        </Chip>
+                      );
+                    })}
+                  </div>
+                );
+              }}
+            </Select.Value>
+            <Select.Indicator />
+          </Select.Trigger>
+          <Select.Popover>
+            <ListBox selectionMode="multiple">
+              {friends.map((user) => {
+                return (
+                  <ListBox.Item
+                    key={user.id}
+                    id={user.id}
+                    textValue={user.name}
+                  >
+                    <div className="flex gap-2 items-center">
+                      <UserAvatar
+                        description=""
+                        image={user.image}
+                        name={user.name[0]}
+                        size="sm"
+                      />
+                      <div className="flex flex-col">
+                        <span className="text-small">{user.name}</span>
+                        <span className="text-tiny text-default-400">
+                          {user.username}
+                        </span>
+                      </div>
+                    </div>
+                    <ListBox.ItemIndicator />
+                  </ListBox.Item>
+                );
+              })}
+            </ListBox>
+          </Select.Popover>
         </Select>
       ) : null}
-      <Button fullWidth isLoading={isCreating} type="submit">
+      <Button fullWidth isPending={isCreating} type="submit">
         Сохранить
       </Button>
     </Form>

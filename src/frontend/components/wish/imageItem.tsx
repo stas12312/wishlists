@@ -1,14 +1,11 @@
 "use client";
-import { Button } from "@heroui/button";
-import { Card, CardBody } from "@heroui/card";
-import { Image } from "@heroui/image";
-import { Spinner } from "@heroui/spinner";
+import { Button, Card, Spinner, ProgressBar } from "@heroui/react";
+import Image from "next/image";
 import { ReactNode, useEffect, useState } from "react";
 import { MdDelete } from "react-icons/md";
-import { Progress } from "@heroui/progress";
 
-import { readableBytes } from "@/lib/file";
 import { authManager } from "@/lib/clientAuth";
+import { readableBytes } from "@/lib/file";
 
 export interface IUploadImage {
   url?: string | undefined;
@@ -97,21 +94,19 @@ export const ImageItem = ({
   };
 
   return (
-    <Card className="bg-default-100">
-      <CardBody className="px-2 p-1 w-full flex touch-none">
+    <Card className=" p-0" variant="secondary">
+      <Card.Content className="px-2 p-1 w-full flex touch-none">
         <div className="flex flex-row">
           {uploadImage.url ? (
             <Image
-              className="object-cover cursor-pointer"
+              alt="Загруженное изображение"
+              className="object-cover cursor-pointer h-16 w-16 rounded-xl"
               height={50}
               src={uploadImage.url}
               width={80}
-              onClick={() => {
-                window.open(uploadImage.url, "_blank");
-              }}
             />
           ) : (
-            <Spinner className="w-[80px] h-[50px]" />
+            <Spinner className="my-auto" />
           )}
 
           <div className="w-full flex flex-row gap-1">
@@ -123,7 +118,7 @@ export const ImageItem = ({
               </div>
               {uploadProgress.percentage ? (
                 <div className="w-full">
-                  <Progress
+                  <ProgressBar
                     aria-label="Uploading"
                     size="sm"
                     value={uploadProgress.percentage}
@@ -134,18 +129,18 @@ export const ImageItem = ({
             <div className="my-auto">
               <Button
                 isIconOnly
-                color="danger"
-                startContent={<MdDelete className="text-danger" />}
-                variant="flat"
+                variant="danger-soft"
                 onPress={() => {
                   onDelete ? onDelete(uploadImage.key || "") : null;
                 }}
-              />
+              >
+                <MdDelete className="text-danger" />
+              </Button>
             </div>
             {endContent}
           </div>
         </div>
-      </CardBody>
+      </Card.Content>
     </Card>
   );
 };

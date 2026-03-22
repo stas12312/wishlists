@@ -1,10 +1,7 @@
-import { Badge } from "@heroui/badge";
-import { Button } from "@heroui/button";
-import { useDisclosure } from "@heroui/modal";
-import { Popover, PopoverTrigger, PopoverContent } from "@heroui/popover";
-import { MdFilterAlt } from "react-icons/md";
-import { ReactNode } from "react";
+import { Badge, Button, Popover, useOverlayState } from "@heroui/react";
 import { motion } from "framer-motion";
+import { ReactNode } from "react";
+import { MdFilterAlt } from "react-icons/md";
 
 import { defaultVariants } from "@/lib/animations/default";
 
@@ -17,53 +14,54 @@ const Filter = ({
   isShowBadge?: boolean;
   children: ReactNode;
 }) => {
-  const { isOpen, onOpenChange } = useDisclosure();
+  const filterOverlay = useOverlayState();
 
   return (
     <Popover
-      showArrow
-      isOpen={isOpen}
-      offset={20}
-      placement="bottom-start"
-      onClose={() => {
-        applyFilter();
+      isOpen={filterOverlay.isOpen}
+      onOpenChange={(isOpen) => {
+        if (isOpen === false) {
+          applyFilter();
+        }
+        filterOverlay.setOpen(isOpen);
       }}
-      onOpenChange={onOpenChange}
     >
-      <motion.span
-        animate="animate"
-        initial="initial"
-        variants={defaultVariants}
-      >
-        <Badge color="primary" content="" isInvisible={!isShowBadge}>
-          <PopoverTrigger>
+      <Popover.Trigger>
+        <motion.span
+          animate="animate"
+          initial="initial"
+          variants={defaultVariants}
+        >
+          <Badge.Anchor>
             <Button
               isIconOnly
               data-qa="select-filters"
-              variant="flat"
-              onPress={onOpenChange}
+              variant="tertiary"
+              onPress={filterOverlay.toggle}
             >
               <MdFilterAlt />
             </Button>
-          </PopoverTrigger>
-        </Badge>
-      </motion.span>
-
-      <PopoverContent className="flex flex-col gap-3 py-2">
-        <h3>Фильтры</h3>
-        {children}
-        <Button
-          fullWidth
-          color="primary"
-          size="sm"
-          onPress={() => {
-            onOpenChange();
-            applyFilter();
-          }}
-        >
-          Применить
-        </Button>
-      </PopoverContent>
+            {isShowBadge ? <Badge color="accent" size="sm" /> : null}
+          </Badge.Anchor>
+        </motion.span>
+      </Popover.Trigger>
+      <Popover.Content offset={20} placement="bottom left">
+        <Popover.Dialog className="flex flex-col gap-3 py-2">
+          <Popover.Arrow className="custom-arrow" />
+          <Popover.Heading className="text-center">Фильтры</Popover.Heading>
+          {children}
+          <Button
+            fullWidth
+            size="sm"
+            onPress={() => {
+              applyFilter();
+              filterOverlay.close();
+            }}
+          >
+            Применить
+          </Button>
+        </Popover.Dialog>
+      </Popover.Content>
     </Popover>
   );
 };

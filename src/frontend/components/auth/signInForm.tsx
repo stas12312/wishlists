@@ -1,8 +1,15 @@
 "use client";
-import { Button } from "@heroui/button";
-import { Divider } from "@heroui/divider";
-import { Input } from "@heroui/input";
-import { Link } from "@heroui/link";
+import {
+  Link,
+  Button,
+  Separator,
+  TextField,
+  Label,
+  Input,
+  Surface,
+  Form,
+  FieldError,
+} from "@heroui/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, FormEvent } from "react";
 
@@ -48,23 +55,22 @@ const SignInForm = ({ providers }: { providers: IOAuthProvider[] }) => {
     setFormData({ ...formData, [name]: value });
   };
   return (
-    <>
-      <form
-        className="flex flex-col gap-2 bg-content1 p-4 rounded-xl box-border shadow-medium"
-        id="login"
-        onSubmit={handleSubmit}
-      >
+    <Surface className="rounded-3xl box-border p-4 shadow-medium">
+      <Form className="flex flex-col gap-2" id="login" onSubmit={handleSubmit}>
         <h2 className="text-center text-2xl">Вход в аккаунт</h2>
         <div>
-          <Input
+          <TextField
             fullWidth
-            required
             className="text-2xl"
-            label="Email"
             name="email"
+            type="email"
             value={formData.email}
-            onChange={handleChange}
-          />
+            variant="secondary"
+          >
+            <Label>Email</Label>
+            <Input required onChange={handleChange} />
+            <FieldError />
+          </TextField>
         </div>
         <div>
           <PasswordInput
@@ -74,28 +80,26 @@ const SignInForm = ({ providers }: { providers: IOAuthProvider[] }) => {
             onChange={handleChange}
           />
           <small>
-            <Link className="text-sm" href={`/auth/reset-password?ret=${ret}`}>
+            <Link
+              className="text-sm text-accent no-underline"
+              href={`/auth/reset-password?ret=${ret}`}
+            >
               Забыли пароль?
             </Link>
           </small>
         </div>
         <span className="text-danger text-sm text-center">{errorMessage}</span>
         <div>
-          <Button
-            fullWidth
-            isLoading={isLoading}
-            spinnerPlacement="end"
-            type="submit"
-          >
+          <Button fullWidth isPending={isLoading} type="submit">
             Войти
           </Button>
         </div>
         <span className="grid grid-cols-5 md:grid-cols-4 mt-2">
-          <Divider className="my-auto col-span-1" />
+          <Separator className="my-auto col-span-1" />
           <span className="text-center col-span-3 md:col-span-2">
             или войти с помощью
           </span>
-          <Divider className="my-auto col-span-1" />
+          <Separator className="my-auto col-span-1" />
         </span>
 
         <div className="flex justify-center">
@@ -104,7 +108,7 @@ const SignInForm = ({ providers }: { providers: IOAuthProvider[] }) => {
               <div key={provider.name} className="p-1 rounded-full">
                 <Button
                   isIconOnly
-                  className="h-10 text-5xl font-bold rounded-full"
+                  className="p-0"
                   onPress={() => {
                     localStorage.setItem("path", ret || "/");
                     window.open(
@@ -120,12 +124,17 @@ const SignInForm = ({ providers }: { providers: IOAuthProvider[] }) => {
             );
           })}
         </div>
-      </form>
+      </Form>
       <p className="text-center mt-4">
         Нет аккаунта?{" "}
-        <Link href={`/auth/register?ret=${ret}`}>Зарегистрироваться</Link>
+        <Link
+          className="text-accent no-underline"
+          href={`/auth/register?ret=${ret}`}
+        >
+          Зарегистрироваться
+        </Link>
       </p>
-    </>
+    </Surface>
   );
 };
 

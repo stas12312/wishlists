@@ -1,5 +1,5 @@
 "use client";
-import { Link } from "@heroui/link";
+import { Link, Separator } from "@heroui/react";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
 import useWebSocket from "react-use-websocket";
@@ -11,7 +11,6 @@ import {
   MdStar,
 } from "react-icons/md";
 import { usePathname } from "next/navigation";
-import { Divider } from "@heroui/divider";
 
 import { DesktopMenuItem, MobileMenuItem } from "./main-menu/item";
 
@@ -89,7 +88,7 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
 
   if (variant == "mobile") {
     return (
-      <div className="flex justify-between bg-content1/50 backdrop-blur-xl fixed inset-x-0 bottom-0 z-50 shadow-medium my-4 mx-2 rounded-4xl md:hidden inset-shadow-md ring-1 ring-gray-500/20">
+      <div className="flex justify-between bg-white/50  dark:bg-default/50 backdrop-blur-xl fixed inset-x-0 bottom-0 z-50 shadow-medium my-4 mx-2 rounded-4xl md:hidden inset-shadow-md ring-1 ring-gray-500/20">
         {ITEMS.map((item) => (
           <MobileMenuItem
             key={item.title}
@@ -106,7 +105,7 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
     );
   } else {
     return (
-      <div className="bg-content1/50 backdrop-blur-xl shadow-medium m-2 rounded-2xl overflow-hidden p-1 ring ring-gray-500/20">
+      <div className="bg-white dark:bg-default/50 backdrop-blur-xl shadow-medium m-2 rounded-2xl overflow-hidden p-1 ring ring-gray-500/30">
         {ITEMS.map((item) => (
           <DesktopMenuItem
             key={item.title}
@@ -119,12 +118,10 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
             }}
           />
         ))}
-        <Divider className="my-2" />
+        <Separator className="my-2" />
         <Link
           key="Выход"
-          disableAnimation
-          className="w-full flex gap-2 py-1 pl-3 rounded-xl ease-in items-center hover:bg-danger-100 text-lg cursor-pointer text-danger"
-          color="foreground"
+          className="w-full flex gap-2 py-1 pl-3 rounded-xl ease-in items-center hover:bg-danger-soft-hover text-lg cursor-pointer text-danger  no-underline "
           onPress={() => {
             userStore.logout();
             logout();

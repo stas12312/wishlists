@@ -36,7 +36,7 @@ export const Desirability = ({
             return (
               <div
                 key={index}
-                className={index <= (hover || value) ? "text-danger-500" : ""}
+                className={index <= (hover || value) ? "text-danger" : ""}
               >
                 <span className={className}>
                   <IoMdHeart />
@@ -52,7 +52,7 @@ export const Desirability = ({
             return (
               <button
                 key={index}
-                className={index <= (hover || value) ? "text-danger-500" : ""}
+                className={index <= (hover || value) ? "text-danger" : ""}
                 disabled={onlyRead}
                 type="button"
                 onClick={() => onChange(index)}

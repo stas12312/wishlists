@@ -5,6 +5,7 @@ import {
   IFriendRequest,
 } from "../models";
 import { IUser } from "../models/user";
+
 import { clientAxios } from "./base";
 
 export async function getFriendStatus(userId: number): Promise<FriendStatus> {

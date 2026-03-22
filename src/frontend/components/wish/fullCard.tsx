@@ -1,14 +1,4 @@
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerBody,
-  DrawerFooter,
-} from "@heroui/drawer";
-import { Button } from "@heroui/button";
-import { Link } from "@heroui/link";
-import { Chip } from "@heroui/chip";
-import { Avatar } from "@heroui/avatar";
+import { Avatar, Button, Chip, Drawer, Link, LinkIcon } from "@heroui/react";
 import { observer } from "mobx-react-lite";
 
 import MarketIcon from "../marketIcon";
@@ -16,9 +6,9 @@ import { QuestionList } from "../questions/list";
 
 import { ImageSwiper } from "./swiper";
 
+import { getUserLink } from "@/lib/label";
 import { IWish } from "@/lib/models/wish";
 import { getMenuItemsByActions } from "@/lib/wish/menu";
-import { getUserLink } from "@/lib/label";
 import userStore from "@/store/userStore";
 
 const WishFullCard = observer(
@@ -37,22 +27,29 @@ const WishFullCard = observer(
   }) => {
     const menuItems = getMenuItemsByActions(wish.actions);
     return (
-      <Drawer isOpen={isOpen} size="xl" onOpenChange={onOpenChange}>
-        <DrawerContent>
-          {(onClose) => (
-            <>
-              <DrawerHeader className="text-center">
-                <h1 className="text-2xl">{wish.name}</h1>
-              </DrawerHeader>
+      <Drawer isOpen={isOpen} onOpenChange={onOpenChange}>
+        <Drawer.Backdrop>
+          <Drawer.Content placement="right">
+            <Drawer.Dialog className="max-w-140 w-full">
+              <Drawer.Handle />
+              <Drawer.CloseTrigger />
+              <Drawer.Header className="text-center">
+                <Drawer.Heading className="text-2xl">
+                  {wish.name}
+                </Drawer.Heading>
+              </Drawer.Header>
 
-              <DrawerBody className="flex">
+              <Drawer.Body className="flex flex-col gap-4">
                 {withUser ? (
                   <div className="mx-auto">
                     <Link
                       className="md:hover:scale-[1.03] transition"
                       href={getUserLink(wish.user.username)}
                     >
-                      <Chip avatar={<Avatar src={wish.user.image} />}>
+                      <Chip>
+                        <Avatar>
+                          <Avatar.Image src={wish.user.image} />
+                        </Avatar>
                         {wish.user.name}
                       </Chip>
                     </Link>
@@ -65,16 +62,13 @@ const WishFullCard = observer(
 
                 {wish.link ? (
                   <Link
-                    isBlock
-                    isExternal
-                    showAnchorIcon
-                    className="w-full"
+                    className="w-full button button--secondary button--lg no-underline"
                     href={wish.link}
-                    size="lg"
                   >
                     <MarketIcon link={wish.link || ""} />
 
-                    <span className="mx-auto">Перейти в магазин</span>
+                    <span className="mx-auto my-2">Перейти в магазин</span>
+                    <LinkIcon className="my-auto" />
                   </Link>
                 ) : null}
 
@@ -84,13 +78,13 @@ const WishFullCard = observer(
                   {menuItems.map((value) => (
                     <Button
                       key={value.key}
-                      color={value.color}
-                      startContent={<value.icon />}
-                      variant="flat"
+                      className="w-full"
+                      variant={value.variant}
                       onPress={() => {
                         handeAction(value.key);
                       }}
                     >
+                      <value.icon />
                       {value.getTitleFunc !== undefined
                         ? value.getTitleFunc(wish.actions)
                         : value.title}
@@ -104,20 +98,20 @@ const WishFullCard = observer(
                     withAskForm={!wish.actions.edit && userStore.user.id > 0}
                   />
                 ) : null}
-              </DrawerBody>
-              <DrawerFooter className="flex flex-col">
+              </Drawer.Body>
+              <Drawer.Footer className="flex flex-col">
                 {wish.created_at ? (
                   <span className="text-default-500">
                     Добавлено {new Date(wish.created_at).toLocaleString()}
                   </span>
                 ) : null}
-                <Button fullWidth color="danger" onPress={onClose}>
+                <Button fullWidth slot="close">
                   Закрыть
                 </Button>
-              </DrawerFooter>
-            </>
-          )}
-        </DrawerContent>
+              </Drawer.Footer>
+            </Drawer.Dialog>
+          </Drawer.Content>
+        </Drawer.Backdrop>
       </Drawer>
     );
   },

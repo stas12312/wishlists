@@ -1,5 +1,5 @@
 "use client";
-import { BreadcrumbItem, Breadcrumbs } from "@heroui/breadcrumbs";
+import { Breadcrumbs, BreadcrumbsItem } from "@heroui/react";
 import { useRouter } from "next/navigation";
 
 interface IBreadcrumbItem {
@@ -10,26 +10,25 @@ interface IBreadcrumbItem {
 export const CustomBreadcrumbs = ({ items }: { items: IBreadcrumbItem[] }) => {
   const router = useRouter();
   return (
-    <Breadcrumbs
-      classNames={{
-        list: "justify justify-center md:justify-start",
-      }}
-      itemClasses={{
-        item: [
-          "text-2xl line-clamp-2 whitespace-normal text-center md:text-left",
-        ],
-      }}
-    >
+    <Breadcrumbs className="justify justify-center md:justify-start">
       {items.map((item, i) => (
-        <BreadcrumbItem
+        <BreadcrumbsItem
           key={item.title}
-          title={item.title}
+          className="*:p-0 p-0"
           onPress={() => {
             router.push(item.href);
           }}
         >
-          {i == items.length - 1 ? <h1>{item.title}</h1> : item.title}
-        </BreadcrumbItem>
+          {i == items.length - 1 ? (
+            <h1 className="text-2xl line-clamp-2 whitespace-normal text-center md:text-left">
+              {item.title}
+            </h1>
+          ) : (
+            <span className="text-2xl line-clamp-2 whitespace-normal text-center md:text-left">
+              {item.title}
+            </span>
+          )}
+        </BreadcrumbsItem>
       ))}
     </Breadcrumbs>
   );

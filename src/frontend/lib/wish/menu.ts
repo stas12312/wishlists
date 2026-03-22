@@ -17,34 +17,42 @@ interface IWishMenuItem {
   actionKey?: keyof IWishActions | null;
   key: string;
   className: string;
-  color?: "primary" | "danger" | "default";
   title?: string;
   icon: IconType;
   getTitleFunc?: { (actions: IWishActions): string };
+  variant:
+    | "primary"
+    | "secondary"
+    | "danger"
+    | "tertiary"
+    | "ghost"
+    | "outline"
+    | "danger-soft";
 }
 
 const ACTIONS: IWishMenuItem[] = [
   {
     key: "edit",
     className: "",
-    color: "default",
     title: "Редактировать",
     icon: MdCreate,
+    variant: "secondary",
   },
   {
     actionKey: "edit",
     key: "move",
     className: "text-primary",
-    color: "primary",
     title: "Перенести",
     icon: MdDriveFileMove,
+    variant: "primary",
   },
   {
     actionKey: null,
     key: "copy",
     className: "text-primary",
-    color: "primary",
     icon: MdContentCopy,
+    variant: "primary",
+
     getTitleFunc: (actions) => {
       return actions.edit ? "Копировать" : "Сохранить себе";
     },
@@ -52,45 +60,45 @@ const ACTIONS: IWishMenuItem[] = [
   {
     key: "reserve",
     className: "text-primary",
-    color: "primary",
     title: "Забронировать",
     icon: MdOutlineBookmarkAdded,
+    variant: "tertiary",
   },
   {
     key: "cancel_reserve",
     className: "text-danger",
-    color: "primary",
     title: "Отменить бронь",
     icon: MdOutlineBookmarkRemove,
+    variant: "primary",
   },
   {
     key: "make_full",
     className: "text-primary",
-    color: "primary",
     title: "Исполнено",
     icon: MdOutlineCheck,
+    variant: "primary",
   },
   {
     key: "open_wishlist",
     className: "text-primary",
-    color: "primary",
     title: "Открыть вишлист",
     icon: MdOutlineOpenInNew,
+    variant: "primary",
   },
   {
     key: "cancel_full",
     className: "text-primary",
-    color: "primary",
     title: "Не исполнено",
     icon: MdOutlineCancel,
+    variant: "primary",
   },
   {
     actionKey: "edit",
     key: "delete",
     className: "text-danger",
-    color: "danger",
     title: "Удалить",
     icon: MdDelete,
+    variant: "danger",
   },
 ];
 

@@ -1,14 +1,13 @@
 import { Key } from "react";
-import {
-  Dropdown,
-  DropdownMenu,
-  DropdownSection,
-  DropdownItem,
-} from "@heroui/dropdown";
-import { useDisclosure } from "@heroui/modal";
 import { useState } from "react";
 import { MdCreate, MdLink, MdRestoreFromTrash, MdDelete } from "react-icons/md";
-import { addToast } from "@heroui/toast";
+import {
+  Dropdown,
+  Label,
+  Separator,
+  toast,
+  useOverlayState,
+} from "@heroui/react";
 
 import ConfirmationModal from "../confirmation";
 import MenuTrigger from "../menu/trigger";
@@ -33,7 +32,7 @@ export const WishlistItemMenu = ({
   className?: string;
   isEditable: boolean;
 }) => {
-  const { isOpen, onOpenChange } = useDisclosure();
+  const { isOpen, toggle } = useOverlayState();
   const [isConfirm, setIsConfirm] = useState(false);
 
   async function handleOnAction(key: Key) {
@@ -41,22 +40,18 @@ export const WishlistItemMenu = ({
       setIsConfirm(true);
     }
     if (key === "edit") {
-      onOpenChange();
+      toggle();
     }
     if (key === "share") {
       navigator.clipboard.writeText(
         `${window.location.origin}/wishlists/${wishlist.uuid}`,
       );
-      addToast({
-        title: "Ссылка на вишлист скопирована",
-      });
+      toast.success("Ссылка на вишлист скопирована");
     }
     if (key === "restore") {
       await restoreWishlist(wishlist.uuid);
       onRestore(wishlist);
-      addToast({
-        title: "Вишлист восстановлен",
-      });
+      toast("Вишлист восстановлен");
     }
   }
 
@@ -66,7 +61,7 @@ export const WishlistItemMenu = ({
   }
 
   function onUpdateWishlist(updadedWishlist: IWishlist): void {
-    onOpenChange();
+    toggle();
     onUpdate(updadedWishlist);
   }
 
@@ -74,52 +69,50 @@ export const WishlistItemMenu = ({
     <>
       <Dropdown>
         <MenuTrigger className={className} name="wishlist-menu" />
-        <DropdownMenu aria-label="Static Actions" onAction={handleOnAction}>
-          {isEditable ? (
-            <>
-              <DropdownSection showDivider>
-                {wishlist.is_active ? (
-                  <>
-                    <DropdownItem key="edit" startContent={<MdCreate />}>
-                      Редактировать
-                    </DropdownItem>
+        <Dropdown.Popover>
+          <Dropdown.Menu aria-label="Static Actions" onAction={handleOnAction}>
+            {isEditable ? (
+              <>
+                <Dropdown.Section>
+                  {wishlist.is_active ? (
+                    <>
+                      <Dropdown.Item id="edit">
+                        <MdCreate />
+                        <Label>Редактировать</Label>
+                      </Dropdown.Item>
 
-                    <DropdownItem key="share" startContent={<MdLink />}>
-                      Поделиться
-                    </DropdownItem>
-                  </>
-                ) : (
-                  <DropdownItem
-                    key="restore"
-                    className="text-primary"
-                    color="primary"
-                    startContent={<MdRestoreFromTrash />}
-                  >
-                    Восстановить
-                  </DropdownItem>
-                )}
-              </DropdownSection>
+                      <Dropdown.Item id="share">
+                        <MdLink />
+                        <Label>Поделиться</Label>
+                      </Dropdown.Item>
+                    </>
+                  ) : (
+                    <Dropdown.Item className="text-primary" id="restore">
+                      <MdRestoreFromTrash />
+                      <Label>Восстановить</Label>
+                    </Dropdown.Item>
+                  )}
+                </Dropdown.Section>
+                <Separator />
 
-              <DropdownItem
-                key="delete"
-                className="text-danger"
-                color="danger"
-                startContent={<MdDelete />}
-              >
-                {wishlist.is_active ? "Архивировать" : "Удалить"}
-              </DropdownItem>
-            </>
-          ) : (
-            <DropdownItem key="share" startContent={<MdLink />}>
-              Поделиться
-            </DropdownItem>
-          )}
-        </DropdownMenu>
+                <Dropdown.Item className="text-danger" id="delete">
+                  <MdDelete />
+                  {wishlist.is_active ? "Архивировать" : "Удалить"}
+                </Dropdown.Item>
+              </>
+            ) : (
+              <Dropdown.Item id="share">
+                <MdLink />
+                <Label>Поделиться</Label>
+              </Dropdown.Item>
+            )}
+          </Dropdown.Menu>
+        </Dropdown.Popover>
       </Dropdown>
       <WishlistSaveModal
         isOpen={isOpen}
         wishlist={wishlist}
-        onOpenChange={onOpenChange}
+        onOpenChange={toggle}
         onSaveWishlist={onUpdateWishlist}
       />
       <ConfirmationModal

@@ -1,8 +1,9 @@
 "use client";
-import { Card, CardBody } from "@heroui/card";
-import { User } from "@heroui/user";
+import { Card } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { ReactNode } from "react";
+
+import { UserAvatar } from "../userAvatar";
 
 import { IUser } from "@/lib/models/user";
 import { getUserLink } from "@/lib/label";
@@ -18,27 +19,24 @@ const FriendItem = ({
   const router = useRouter();
   return (
     <Card
-      isPressable
       className="w-full"
-      onPress={() => {
+      role="button"
+      onClick={() => {
         router.push(getUserLink(friend.username));
       }}
     >
-      <CardBody className="flex flex-row justify-between overflow-hidden">
+      <Card.Content className="flex flex-row justify-between overflow-hidden">
         <span className="h-10 truncate">
-          <User
-            avatarProps={{
-              src: friend.image,
-              name: friend.name[0],
-            }}
+          <UserAvatar
             className="cursor-pointer"
             description={wrapUsername(friend.username)}
+            image={friend.image}
             name={friend.name}
           />
         </span>
 
         {children}
-      </CardBody>
+      </Card.Content>
     </Card>
   );
 };

@@ -1,4 +1,4 @@
-import { Spinner } from "@heroui/spinner";
+import { Spinner } from "@heroui/react";
 
 export const PageSpinner = () => {
   return (

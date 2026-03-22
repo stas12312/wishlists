@@ -1,7 +1,7 @@
 const Version = () => {
   return (
     <a
-      className="cursor-default hover:text-default-400 block text-center text-default-300"
+      className="cursor-default hover:text-foreground/50 block text-center text-foreground/40"
       href="https://github.com/stas12312/wishlists"
       rel="noreferrer"
       target="_blank"

@@ -1,9 +1,7 @@
-import { Button } from "@heroui/button";
+import { Button, Separator, toast } from "@heroui/react";
 import { observer } from "mobx-react-lite";
 import { MdDelete, MdOutlineExitToApp } from "react-icons/md";
 import { useState } from "react";
-import { Divider } from "@heroui/divider";
-import { addToast } from "@heroui/toast";
 
 import ConfirmationModal from "../confirmation";
 
@@ -18,13 +16,12 @@ export const DeleteAccountButton = observer(() => {
     <>
       <Button
         fullWidth
-        color="danger"
-        startContent={<MdDelete />}
-        variant="light"
+        variant="danger"
         onPress={async () => {
           setIsOpen(true);
         }}
       >
+        <MdDelete />
         Удалить аккаунт
       </Button>
       <ConfirmationModal
@@ -39,7 +36,7 @@ export const DeleteAccountButton = observer(() => {
               Данное действие необратимо, все ваши желания и список друзей будут
               удалены безвозвратно
             </span>
-            <Divider className="my-2" />
+            <Separator className="my-2" />
             <div className="flex flex-col justify-center">
               <span className="text-center">
                 Для подтверждения введите ваш e-mail:
@@ -56,15 +53,10 @@ export const DeleteAccountButton = observer(() => {
         onConfirm={async () => {
           const result = await deleteAccount();
           if ("message" in result) {
-            addToast({
-              title: result.message,
-              color: "danger",
-            });
+            toast.danger(result.message);
           } else {
             userStore.logout();
-            addToast({
-              title: "Аккаунт удален",
-            });
+            toast("Аккаунт удален");
             await logout();
           }
         }}
@@ -80,14 +72,13 @@ export const ExitButton = observer(() => {
   return (
     <Button
       fullWidth
-      color="danger"
-      startContent={<MdOutlineExitToApp />}
-      variant="light"
+      variant="danger"
       onPress={async () => {
         userStore.logout();
         await logout();
       }}
     >
+      <MdOutlineExitToApp />
       Выйти
     </Button>
   );

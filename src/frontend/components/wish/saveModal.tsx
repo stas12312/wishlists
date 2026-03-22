@@ -1,4 +1,4 @@
-import { Modal, ModalContent, ModalHeader, ModalBody } from "@heroui/modal";
+import { Modal, ModalHeader, ModalBody } from "@heroui/react";
 
 import WishForm from "./form";
 
@@ -18,29 +18,26 @@ export default function WishSaveModal({
   wish?: IWish | undefined;
 }) {
   return (
-    <Modal
-      backdrop="blur"
-      isOpen={isOpen}
-      placement="top-center"
-      size="3xl"
-      onOpenChange={onOpenChange}
-    >
-      <ModalContent>
-        {() => (
-          <>
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal.Backdrop>
+        <Modal.Container placement="center">
+          <Modal.Dialog className="max-w-200 w-full">
+            <Modal.CloseTrigger />
             <ModalHeader className="flex flex-col gap-1 text-center">
-              {wish ? "Редактирование желания" : "Добавление желания"}
+              <Modal.Heading>
+                {wish ? "Редактирование желания" : "Добавление желания"}
+              </Modal.Heading>
             </ModalHeader>
-            <ModalBody>
+            <ModalBody className="p-1">
               <WishForm
                 wish={wish}
                 wishlistUUID={wishlistUUID}
                 onCreate={onUpdate}
               />
             </ModalBody>
-          </>
-        )}
-      </ModalContent>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
     </Modal>
   );
 }

@@ -1,24 +1,32 @@
-import { Button } from "@heroui/button";
-import { Form } from "@heroui/form";
-import { Input } from "@heroui/input";
+import {
+  Button,
+  FieldError,
+  Form,
+  Input,
+  InputGroup,
+  Label,
+  TextField,
+  toast,
+} from "@heroui/react";
+import { getLocalTimeZone, today } from "@internationalized/date";
 import { observer } from "mobx-react-lite";
 import { FormEvent, useEffect, useState } from "react";
 import { MdContentCopy, MdLink } from "react-icons/md";
-import { addToast } from "@heroui/toast";
-import { I18nProvider } from "@react-aria/i18n";
-import { DatePicker } from "@heroui/date-picker";
-import { getLocalTimeZone, today } from "@internationalized/date";
 
+import { CustomDatePicker } from "../datePicker";
 import UploadButton from "../uploadButton";
 
+import { uploadFile } from "@/lib/client-requests/file";
+import {
+  getMe,
+  getUserByUsername,
+  updateUser,
+} from "@/lib/client-requests/user";
+import { dateStringToCalendarDate } from "@/lib/date";
+import { checkFile } from "@/lib/file";
 import { getUserLink } from "@/lib/label";
 import { IUser } from "@/lib/models/user";
-import { uploadFile } from "@/lib/client-requests/file";
-import { getUserByUsername, updateUser } from "@/lib/client-requests/user";
-import { getMe } from "@/lib/client-requests/user";
 import userStore from "@/store/userStore";
-import { checkFile } from "@/lib/file";
-import { dateStringToCalendarDate } from "@/lib/date";
 
 const ACCEPTED_FILE_EXTS = ["jpg", "jpeg", "png", "webp"];
 
@@ -66,16 +74,11 @@ const ProfileForm = observer(() => {
 
     const updatedUser = await updateUser(user);
     if ("message" in updatedUser) {
-      addToast({
-        title: updatedUser.message,
-        color: "danger",
-      });
+      toast.danger(updatedUser.message);
     } else {
       setUser(updatedUser);
       userStore.reloadMe();
-      addToast({
-        title: "Профиль обновлен",
-      });
+      toast("Профиль обновлен");
     }
     setIsProfileLoading(false);
   }
@@ -87,61 +90,68 @@ const ProfileForm = observer(() => {
       onSubmit={onSubmit}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-1 w-full">
-        <Input
+        <TextField
           isRequired
-          label="Имя пользователя"
           name="username"
-          startContent="@"
           validate={(value) => {
             if (value.length < 3) {
               return "Имя пользователя должно содержать не менее двух символов";
             }
           }}
-          value={user.username}
-          onValueChange={(value) => {
-            setUser({ ...user, username: value });
-          }}
-        />
-        <Input
+          variant="secondary"
+        >
+          <Label>Имя пользователя</Label>
+          <InputGroup>
+            <InputGroup.Prefix>@</InputGroup.Prefix>
+            <InputGroup.Input
+              value={user.username}
+              onChange={(e) => {
+                setUser({ ...user, username: e.target.value });
+              }}
+            />
+          </InputGroup>
+          <FieldError />
+        </TextField>
+        <TextField
           isRequired
-          label="Имя"
           name="name"
           validate={(value) => {
             if (value.length < 2) {
               return "Имя должно содержать не менее трех символов";
             }
           }}
-          value={user.name}
-          onValueChange={(value) => {
-            setUser({ ...user, name: value });
-          }}
-        />
-        <I18nProvider locale="ru-RU">
-          <DatePicker
-            fullWidth
-            showMonthAndYearPickers
-            calendarWidth={300}
-            className="text-left"
-            label="День рождения"
-            maxValue={today(getLocalTimeZone())}
-            name="date"
-            value={dateStringToCalendarDate(user.birthday || "")}
-            onChange={(date) => {
-              setUser({ ...user, birthday: date?.toString() });
+          variant="secondary"
+        >
+          <Label>Имя</Label>
+          <Input
+            value={user.name}
+            onChange={(e) => {
+              setUser({ ...user, name: e.target.value });
             }}
           />
-        </I18nProvider>
+          <FieldError />
+        </TextField>
+        <CustomDatePicker
+          label="День рождения"
+          maxValue={today(getLocalTimeZone())}
+          name="date"
+          value={dateStringToCalendarDate(user.birthday || "")}
+          variant="secondary"
+          onChange={(date) => {
+            setUser({ ...user, birthday: date?.toString() });
+          }}
+        />
       </div>
       <span className="text-sm">Изображение профиля</span>
       <UploadButton
         accept={ACCEPTED_FILE_EXTS}
-        className="h-[100px] w-[120px] object-cover"
+        className="h-25 w-30 object-cover"
         handleFile={handleFile}
         isLoading={imageIsLoading}
         previewUrl={user.image}
       />
       <span className="text-danger text-tiny">{errors.image}</span>
-      <Button fullWidth isLoading={isProfileLoading} type="submit">
+      <Button fullWidth isPending={isProfileLoading} type="submit">
         Сохранить
       </Button>
     </Form>
@@ -165,23 +175,26 @@ const ProfileLink = observer(() => {
     <>
       <p className="">Ссылка на профиль</p>
       <div className="flex gap-2 flex-col md:flex-row">
-        <Input
+        <TextField
           isReadOnly
           className="w-full md:max-w-[60%]"
-          labelPlacement="outside"
-          startContent={<MdLink />}
-          value={userStore.user.id ? profileLink : ""}
-        />
+          variant="secondary"
+        >
+          <InputGroup>
+            <InputGroup.Prefix>
+              <MdLink />
+            </InputGroup.Prefix>
+            <InputGroup.Input value={userStore.user.id ? profileLink : ""} />
+          </InputGroup>
+        </TextField>
         <Button
           className="w-full md:w-[40%]"
-          startContent={<MdContentCopy />}
           onPress={() => {
             navigator.clipboard.writeText(profileLink);
-            addToast({
-              title: "Ссылка на профиль скопирована",
-            });
+            toast("Ссылка на профиль скопирована");
           }}
         >
+          <MdContentCopy />
           Скопировать
         </Button>
       </div>

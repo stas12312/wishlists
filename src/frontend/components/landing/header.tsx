@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { BsStars } from "react-icons/bs";
-import { Tab, Tabs } from "@heroui/tabs";
+import { Tabs } from "@heroui/react";
 import { MdOutlineDesktopMac, MdOutlineSmartphone } from "react-icons/md";
 import { ReactNode, useEffect, useState } from "react";
 
@@ -17,9 +17,9 @@ export const HeaderBlock = () => {
   }, []);
 
   return (
-    <div className="bg-primary-200 dark:bg-primary-100 h-3/4 lg:py-32 p-4 shadow-xl relative overflow-hidden rounded-3xl  -mx-3 md:mx-0 ">
-      <div className="absolute h-32 w-32 md:h-96 md:w-96 bg-primary-500/60 -top-16 -left-16 md:-top-40 md:-left-40 rounded-full blur-3xl" />
-      <div className="absolute h-32 w-32 md:h-96 md:w-96 bg-primary-500/60 -bottom-16 -right-16 md:-bottom-40 md:-right-40 rounded-full blur-3xl" />
+    <div className="bg-accent dark:bg-accent/30 h-3/4 lg:py-32 p-4 shadow-xl relative overflow-hidden rounded-3xl  -mx-3 md:mx-0 ">
+      <div className="absolute h-32 w-32 md:h-96 md:w-96 bg-accent/60 -top-16 -left-16 md:-top-40 md:-left-40 rounded-full blur-3xl" />
+      <div className="absolute h-32 w-32 md:h-96 md:w-96 bg-accent/60 -bottom-16 -right-16 md:-bottom-40 md:-right-40 rounded-full blur-3xl" />
       <motion.div className="flex lg:flex-row flex-col max-w-300 mx-auto gap-4">
         <motion.div
           animate={{
@@ -46,7 +46,7 @@ export const HeaderBlock = () => {
             title="Начать прямо сейчас"
           />
         </motion.div>
-        <span className="md:skew-y-3 h-[500px] lg:w-2/3 lg:h-auto">
+        <span className="md:skew-y-3 h-125 lg:w-2/3 lg:h-auto">
           <motion.div
             animate={{
               opacity: 1,
@@ -60,44 +60,54 @@ export const HeaderBlock = () => {
             }}
           >
             <Tabs
-              color="primary"
-              radius="lg"
               selectedKey={activeTab}
-              size="lg"
-              variant="solid"
+              variant="secondary"
               onSelectionChange={(key) => setActiveTab(key.toString())}
             >
-              <Tab
-                key="desktop"
-                title={<MdOutlineDesktopMac className="text-2xl" />}
-              />
-              <Tab
-                key="mobile"
-                title={<MdOutlineSmartphone className="text-2xl" />}
-              />
-            </Tabs>
-            <AnimatePresence>
-              {activeTab == "desktop" ? (
-                <AnimatedDiv
+              <Tabs.ListContainer>
+                <Tabs.List>
+                  <Tabs.Tab id="desktop">
+                    <MdOutlineDesktopMac className="text-2xl" />
+                    <Tabs.Indicator />
+                  </Tabs.Tab>
+                  <Tabs.Tab id="mobile">
+                    <MdOutlineSmartphone className="text-2xl" />
+                    <Tabs.Indicator />
+                  </Tabs.Tab>
+                </Tabs.List>
+              </Tabs.ListContainer>
+              <AnimatePresence>
+                <Tabs.Panel
                   key="desktop"
-                  className="max-h-[440px] absolute top-14 "
+                  className="flex justify-center"
+                  id="desktop"
                 >
-                  <Video
-                    className="my-auto max-h-[440px]"
-                    posterSrc="https://cdn.mywishlists.ru/static/landing/light/desktopPreload.jpg"
-                    src="https://cdn.mywishlists.ru/static/landing/light/videoMainPC.mp4"
-                  />
-                </AnimatedDiv>
-              ) : (
-                <AnimatedDiv key="mobile" className="absolute top-14">
-                  <Video
-                    className="h-[440px] mx-auto"
-                    posterSrc="https://cdn.mywishlists.ru/static/landing/light/mobilePreload.jpg"
-                    src="https://cdn.mywishlists.ru/static/landing/light/videoMainMobile.mp4"
-                  />
-                </AnimatedDiv>
-              )}
-            </AnimatePresence>
+                  <AnimatedDiv
+                    key="desktop"
+                    className="max-h-110 absolute top-14 "
+                  >
+                    <Video
+                      className="my-auto max-h-110"
+                      posterSrc="https://cdn.mywishlists.ru/static/landing/light/desktopPreload.jpg"
+                      src="https://cdn.mywishlists.ru/static/landing/light/videoMainPC.mp4"
+                    />
+                  </AnimatedDiv>
+                </Tabs.Panel>
+                <Tabs.Panel
+                  key="mobile"
+                  className="flex justify-center"
+                  id="mobile"
+                >
+                  <AnimatedDiv key="mobile" className="absolute top-14">
+                    <Video
+                      className="h-110 mx-auto"
+                      posterSrc="https://cdn.mywishlists.ru/static/landing/light/mobilePreload.jpg"
+                      src="https://cdn.mywishlists.ru/static/landing/light/videoMainMobile.mp4"
+                    />
+                  </AnimatedDiv>
+                </Tabs.Panel>
+              </AnimatePresence>
+            </Tabs>
           </motion.div>
         </span>
         <StartButton className="block lg:hidden" title="Начать прямо сейчас" />

@@ -1,8 +1,5 @@
-import { Button } from "@heroui/button";
-import { Form } from "@heroui/form";
-import { Spinner } from "@heroui/spinner";
+import { Button, Form, Spinner, toast } from "@heroui/react";
 import { FormEvent, useEffect, useState } from "react";
-import { addToast } from "@heroui/toast";
 
 import PasswordInput from "../passwordInput";
 
@@ -45,9 +42,7 @@ const SecuritySection = () => {
       }
     } else {
       setErrors({});
-      addToast({
-        title: "Пароль успешно изменен",
-      });
+      toast("Пароль успешно изменен");
       setOldPassword("");
       setNewPassword("");
       setHasPassword(true);
@@ -108,7 +103,7 @@ const SecuritySection = () => {
               />
             </div>
             <span className="text-tiny text-danger">{errors.message}</span>
-            <Button fullWidth isLoading={isLoading} type="submit">
+            <Button fullWidth isPending={isLoading} type="submit">
               Сменить пароль
             </Button>
           </>

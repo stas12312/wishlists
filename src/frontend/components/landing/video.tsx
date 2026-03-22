@@ -24,7 +24,7 @@ export const Video = (
       playsInline
       animate="animate"
       className={
-        "rounded-2xl transform-gpu shadow-lg object-cover " + className
+        "rounded-3xl transform-gpu shadow-lg object-cover " + className
       }
       exit="exit"
       initial="initial"

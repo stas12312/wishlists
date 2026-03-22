@@ -1,7 +1,6 @@
 "use client";
-import { Button } from "@heroui/button";
-import { Chip } from "@heroui/chip";
-import { addToast } from "@heroui/toast";
+
+import { Button, Chip, toast } from "@heroui/react";
 
 import { FriendStatus } from "@/lib/models";
 import { AddFriend } from "@/lib/client-requests/friend";
@@ -23,19 +22,13 @@ const UserStatus = ({
       item = (
         <Button
           className="h-7"
-          color="primary"
-          variant="ghost"
+          variant="primary"
           onPress={async () => {
             const result = await AddFriend(userId);
             if (result && "code" in result) {
-              addToast({
-                title: result.message,
-                color: "danger",
-              });
+              toast.danger(result.message);
             } else {
-              addToast({
-                title: "Заяка отправлена",
-              });
+              toast.success("Заявка отправлена");
               setFriendStatus(FriendStatus.has_outcoming_request);
             }
           }}
@@ -45,16 +38,32 @@ const UserStatus = ({
       );
       break;
     case FriendStatus.has_incoming_request:
-      item = <Chip color="warning">Отправил вам заявку в друзья</Chip>;
+      item = (
+        <Chip color="warning" size="lg">
+          Отправил вам заявку в друзья
+        </Chip>
+      );
       break;
     case FriendStatus.has_outcoming_request:
-      item = <Chip color="warning">Заявка отправлена</Chip>;
+      item = (
+        <Chip color="warning" size="lg">
+          Заявка отправлена
+        </Chip>
+      );
       break;
     case FriendStatus.is_friend:
-      item = <Chip color="success">Ваш друг</Chip>;
+      item = (
+        <Chip color="success" size="lg">
+          Ваш друг
+        </Chip>
+      );
       break;
     case FriendStatus.is_yourself:
-      item = <Chip color="success">Вы</Chip>;
+      item = (
+        <Chip color="success" size="lg">
+          Вы
+        </Chip>
+      );
   }
   return <div className={className}>{item}</div>;
 };

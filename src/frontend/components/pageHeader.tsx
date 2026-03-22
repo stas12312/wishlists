@@ -1,4 +1,4 @@
-import { Divider } from "@heroui/divider";
+import { Separator } from "@heroui/react";
 import { ReactNode } from "react";
 
 const PageHeader = ({
@@ -16,7 +16,7 @@ const PageHeader = ({
         <h1 className="text-2xl text-center md:text-left">{title}</h1>
       ) : null}
       {children}
-      <Divider className={dividerClassName} />
+      <Separator className={dividerClassName} />
     </div>
   );
 };

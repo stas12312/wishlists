@@ -1,12 +1,10 @@
 "use client";
 
-import { Button } from "@heroui/button";
-import { useDisclosure } from "@heroui/modal";
 import { observer } from "mobx-react-lite";
 import { createRef, useEffect, useRef, useState } from "react";
 import { IoMdAdd } from "react-icons/io";
-import { addToast } from "@heroui/toast";
 import { useRouter } from "next/navigation";
+import { Button, toast, useOverlayState } from "@heroui/react";
 
 import AddCardButton from "../addCardButton";
 import { AnimatedList } from "../cardsList/cardsList";
@@ -45,7 +43,7 @@ export const Wishlists = observer(
     const lastItem = createRef<HTMLDivElement>();
     const observerLoader = useRef<IntersectionObserver | null>(null);
 
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const { isOpen, open, toggle } = useOverlayState();
     const [hasMore, setHasMore] = useState(true);
     const [filter, setFilter] = useState<IWishlistFilter>({
       showArchive: false,
@@ -73,9 +71,7 @@ export const Wishlists = observer(
           return value.uuid != wishlist.uuid;
         }),
       );
-      addToast({
-        title: `Вишлист ${wishlist.is_active ? "архивирован" : "удален"}`,
-      });
+      toast(`Вишлист ${wishlist.is_active ? "архивирован" : "удален"}`);
     }
 
     async function fetchWishlists(
@@ -107,7 +103,7 @@ export const Wishlists = observer(
     function OnCreateWishlist(wishlist: IWishlist) {
       items.unshift(wishlist);
       router.push(`/wishlists/${wishlist.uuid}`);
-      onOpenChange();
+      toggle();
     }
 
     let components = items.map((wishlist: IWishlist, index: number) => (
@@ -155,7 +151,7 @@ export const Wishlists = observer(
                 <AddCardButton
                   className="h-40 w-full"
                   title="Добавить вишлист"
-                  onPress={onOpen}
+                  onPress={open}
                 />
               ) : null,
               ...components,
@@ -169,12 +165,8 @@ export const Wishlists = observer(
                 : "Список вишлистов пуст"}
             </h1>
             {actions.edit && !filter.showArchive ? (
-              <Button
-                color="primary"
-                startContent={<IoMdAdd />}
-                variant="light"
-                onPress={onOpen}
-              >
+              <Button variant="primary" onPress={open}>
+                <IoMdAdd />
                 Добавить
               </Button>
             ) : null}
@@ -182,7 +174,7 @@ export const Wishlists = observer(
         )}
         <WishlistSaveModal
           isOpen={isOpen}
-          onOpenChange={onOpenChange}
+          onOpenChange={toggle}
           onSaveWishlist={OnCreateWishlist}
         />
       </>

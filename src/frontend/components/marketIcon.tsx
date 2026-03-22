@@ -1,4 +1,4 @@
-import { Image } from "@heroui/image";
+import Image from "next/image";
 
 import { getDomainFromUrl } from "@/lib/url";
 
@@ -39,10 +39,12 @@ const MarketIcon = ({
   }
   return (
     <Image
-      removeWrapper
-      className={className}
+      unoptimized
+      alt={ICON_BY_DOMAIN.get(domain) as string}
+      className={`rounded-xl ${className}`}
       height={height}
       src={ICON_BY_DOMAIN.get(domain) as string}
+      width={height}
     />
   );
 };

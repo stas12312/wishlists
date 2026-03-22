@@ -1,11 +1,9 @@
-import { Modal, ModalBody, ModalContent, ModalHeader } from "@heroui/modal";
-import { useEffect, useState } from "react";
+import { Modal, Spinner, ListBox, ListBoxItem } from "@heroui/react";
 import { observer } from "mobx-react-lite";
-import { Spinner } from "@heroui/spinner";
-import { Listbox, ListboxItem } from "@heroui/listbox";
+import { useEffect, useState } from "react";
 
-import { IWishlist } from "@/lib/models/wishlist";
 import { getWishlists } from "@/lib/client-requests/wishlist";
+import { IWishlist } from "@/lib/models/wishlist";
 import userStore from "@/store/userStore";
 
 const SelectWishlistModal = observer(
@@ -22,28 +20,27 @@ const SelectWishlistModal = observer(
   }) => {
     return (
       <Modal
-        backdrop="blur"
         className="min-h-32"
         isOpen={isOpen}
         placement="top-center"
         size="3xl"
         onOpenChange={onOpenChange}
       >
-        <ModalContent>
-          {() => (
-            <>
-              <ModalHeader className="flex flex-col gap-1 text-center">
-                Выберите вишлист
-              </ModalHeader>
-              <ModalBody>
+        <Modal.Backdrop variant="blur">
+          <Modal.Container>
+            <Modal.Dialog>
+              <Modal.Header className="flex flex-col gap-1 text-center">
+                <Modal.Heading>Выберите вишлист</Modal.Heading>
+              </Modal.Header>
+              <Modal.Body>
                 <WishlistSelector
                   excludeWishlists={excludeWishlists}
                   onSelect={onSelect}
                 />
-              </ModalBody>
-            </>
-          )}
-        </ModalContent>
+              </Modal.Body>
+            </Modal.Dialog>
+          </Modal.Container>
+        </Modal.Backdrop>
       </Modal>
     );
   },
@@ -88,9 +85,9 @@ const WishlistSelector = observer(
     }
     const items = wishlists.map((wishlist) => {
       return (
-        <ListboxItem
+        <ListBoxItem
           key={wishlist.uuid}
-          className="p-2 border-default-200 box-border my-0.5 border-1"
+          className="p-2 border-default-200 box-border my-0.5 border"
         >
           <p className="text-lg text-ellipsis truncate overflow-hidden">
             {wishlist.name}
@@ -98,7 +95,7 @@ const WishlistSelector = observer(
           <small className="text-tiny text-default-500">
             {wishlist.description}
           </small>
-        </ListboxItem>
+        </ListBoxItem>
       );
     });
 
@@ -108,7 +105,7 @@ const WishlistSelector = observer(
           {isLoading ? (
             <Spinner className="h-full mt-auto absolute z-20 bg-content1 w-full opacity-80" />
           ) : null}
-          <Listbox
+          <ListBox
             aria-label="Move wish"
             className="text-center"
             disabledKeys={excludeWishlists}
@@ -124,7 +121,7 @@ const WishlistSelector = observer(
             }}
           >
             {items}
-          </Listbox>
+          </ListBox>
         </div>
       </>
     );

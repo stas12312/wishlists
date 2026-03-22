@@ -1,4 +1,4 @@
-import { Input } from "@heroui/input";
+import { FieldError, InputGroup, Label, TextField } from "@heroui/react";
 import { useState } from "react";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 
@@ -28,34 +28,39 @@ export default function PasswordInput({
   const [isVisible, setIsVisible] = useState(false);
   errorMessage;
   return (
-    <Input
-      fullWidth
-      endContent={
-        <button
-          aria-label="toggle password visibility"
-          className="focus:outline-none"
-          type="button"
-          onClick={() => setIsVisible(!isVisible)}
-        >
-          {isVisible ? (
-            <IoMdEyeOff className="text-2xl text-default-400 pointer-events-none" />
-          ) : (
-            <IoMdEye className="text-2xl text-default-400 pointer-events-none" />
-          )}
-        </button>
-      }
-      errorMessage={errorMessage}
+    <TextField
       isInvalid={isInvalid}
       isRequired={isRequired}
-      label={label}
       name={name}
-      type={isVisible ? "text" : "password"}
+      type="password"
       validate={validate}
-      value={value}
-      onBlur={onBlur}
-      onChange={onChange}
-      onValueChange={onValueChange}
-    />
+      variant="secondary"
+    >
+      <Label>{label}</Label>
+      <InputGroup>
+        <InputGroup.Input
+          type={isVisible ? "text" : "password"}
+          value={value}
+          onBlur={onBlur}
+          onChange={onChange}
+        />
+        <InputGroup.Suffix>
+          <button
+            aria-label="toggle password visibility"
+            className="focus:outline-none"
+            type="button"
+            onClick={() => setIsVisible(!isVisible)}
+          >
+            {isVisible ? (
+              <IoMdEyeOff className="text-2xl text-default-400 pointer-events-none" />
+            ) : (
+              <IoMdEye className="text-2xl text-default-400 pointer-events-none" />
+            )}
+          </button>
+        </InputGroup.Suffix>
+      </InputGroup>
+      <FieldError>{errorMessage}</FieldError>
+    </TextField>
   );
 }
 

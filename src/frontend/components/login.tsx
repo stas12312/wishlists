@@ -1,19 +1,18 @@
 "use client";
-import { Button } from "@heroui/button";
-import { Link } from "@heroui/link";
+import { Button } from "@heroui/react";
 import { observer } from "mobx-react-lite";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 const Login = observer(() => {
   const pathname = usePathname();
-
+  const router = useRouter();
   return (
     <span className="flex flex-row gap-1">
       <LoginButton />
       <Button
-        as={Link}
-        color="primary"
-        href={`/auth/register?ret=${pathname}`}
-        variant="light"
+        variant="tertiary"
+        onPress={() => {
+          router.push(`/auth/register?ret=${pathname}`);
+        }}
       >
         Регистрация
       </Button>
@@ -25,14 +24,14 @@ export default Login;
 
 export const LoginButton = observer(({ className }: { className?: string }) => {
   const pathname = usePathname();
-
+  const router = useRouter();
   return (
     <Button
-      as={Link}
       className={className}
-      color="primary"
-      href={`/auth/login?ret=${pathname}`}
-      variant="ghost"
+      variant="primary"
+      onPress={() => {
+        router.push(`/auth/login?ret=${pathname}`);
+      }}
     >
       Войти
     </Button>

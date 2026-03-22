@@ -1,10 +1,5 @@
-import { Button } from "@heroui/button";
-import {
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-} from "@heroui/dropdown";
+import { Button } from "@heroui/react";
+import { Dropdown, DropdownItem, DropdownMenu } from "@heroui/react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { MdArrowDownward, MdArrowUpward, MdCheck } from "react-icons/md";
@@ -62,53 +57,46 @@ export const SortingSelector = ({
         initial="initial"
         variants={defaultVariants}
       >
-        <DropdownTrigger>
-          <Button
-            endContent={desc ? <MdArrowDownward /> : <MdArrowUpward />}
-            startContent={<MdSort />}
-            variant="flat"
-          >
-            {
-              (
-                items.find((value) => {
-                  return value.key === field;
-                }) || items[0]
-              ).name
-            }
-          </Button>
-        </DropdownTrigger>
+        <Button variant="tertiary">
+          <MdSort />
+          {
+            (
+              items.find((value) => {
+                return value.key === field;
+              }) || items[0]
+            ).name
+          }
+          {desc ? <MdArrowDownward /> : <MdArrowUpward />}
+        </Button>
       </motion.span>
-      <DropdownMenu
-        aria-label="Сортировка"
-        items={items}
-        onAction={(action) => {
-          if (action === "desc") {
-            setDesc(true);
-            return;
-          }
-          if (action === "abs") {
-            setDesc(false);
-            return;
-          }
-          setField(action.toString());
-        }}
-      >
-        {(item) => (
-          <DropdownItem
-            key={item.key}
-            showDivider={item.name === "Желанности"}
-            startContent={
-              item.key == field || item.desk === desc ? (
+      <Dropdown.Popover>
+        <DropdownMenu
+          aria-label="Сортировка"
+          items={items}
+          onAction={(action) => {
+            if (action === "desc") {
+              setDesc(true);
+              return;
+            }
+            if (action === "abs") {
+              setDesc(false);
+              return;
+            }
+            setField(action.toString());
+          }}
+        >
+          {(item) => (
+            <DropdownItem key={item.key} id={item.key}>
+              {item.key == field || item.desk === desc ? (
                 <MdCheck />
               ) : (
                 <span className="w-4" />
-              )
-            }
-          >
-            {item.name}
-          </DropdownItem>
-        )}
-      </DropdownMenu>
+              )}
+              {item.name}
+            </DropdownItem>
+          )}
+        </DropdownMenu>
+      </Dropdown.Popover>
     </Dropdown>
   );
 };

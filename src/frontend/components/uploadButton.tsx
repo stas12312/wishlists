@@ -1,8 +1,7 @@
 import { useId, useState } from "react";
-import { Image } from "@heroui/image";
 import { MdOutlineFileUpload } from "react-icons/md";
-import { Spinner } from "@heroui/spinner";
-
+import { Spinner } from "@heroui/react";
+import Image from "next/image";
 const UploadButton = ({
   previewUrl,
   className,
@@ -50,7 +49,7 @@ const UploadButton = ({
     <label
       className={
         className +
-        ` cursor-pointer relative group bg-default-100 rounded-xl hover:bg-default-200 ${isOver ? "outline-2 outline-dashed bg-default-200" : null}`
+        ` cursor-pointer relative group bg-default rounded-xl hover:bg-default-200 ${isOver ? "outline-2 outline-dashed bg-default-200" : null}`
       }
       htmlFor={id}
       onDragEnter={onDragEnter}
@@ -65,7 +64,13 @@ const UploadButton = ({
       ) : (
         <>
           {previewUrl ? (
-            <Image className={className + " z-2"} src={previewUrl} />
+            <Image
+              alt=""
+              className={className + " z-2"}
+              height={0}
+              src={previewUrl}
+              width={0}
+            />
           ) : null}
 
           {!isOver ? (

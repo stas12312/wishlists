@@ -1,19 +1,25 @@
 "use client";
-import { Button } from "@heroui/button";
-import { Form } from "@heroui/form";
-import { Input } from "@heroui/input";
-import { Modal, ModalBody, ModalContent, ModalHeader } from "@heroui/modal";
-import { useEffect, useRef, useState, ClipboardEvent } from "react";
-import { Alert } from "@heroui/alert";
-import { Chip } from "@heroui/chip";
-import { Skeleton } from "@heroui/skeleton";
+import {
+  Alert,
+  Button,
+  Chip,
+  FieldError,
+  Form,
+  InputGroup,
+  Label,
+  Modal,
+  Skeleton,
+  Spinner,
+  TextField,
+} from "@heroui/react";
+import { ClipboardEvent, useEffect, useRef, useState } from "react";
 
 import MarketIcon from "../marketIcon";
 
 import {
-  parse,
-  getParseStatus,
   getAvailableParser,
+  getParseStatus,
+  parse,
 } from "@/lib/client-requests/parse";
 import { ParseResult, ShopParam } from "@/lib/models/parse";
 import { extractLink, isURL } from "@/lib/url";
@@ -78,18 +84,12 @@ const LoadByLinkModal = ({
   }, []);
 
   return (
-    <Modal
-      backdrop="blur"
-      isOpen={isOpen}
-      placement="center"
-      size="3xl"
-      onOpenChange={onOpenChange}
-    >
-      <ModalContent>
-        {() => (
-          <>
-            <ModalHeader className="mx-auto">Автозаполнение</ModalHeader>
-            <ModalBody>
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal.Backdrop variant="blur">
+        <Modal.Container placement="center">
+          <Modal.Dialog>
+            <Modal.Header className="mx-auto">Автозаполнение</Modal.Header>
+            <Modal.Body className="p-1">
               <>
                 {!serviceError ? (
                   <Form
@@ -101,11 +101,11 @@ const LoadByLinkModal = ({
                   >
                     <ShopsBlock onError={setServiceError} />
 
-                    <div className=" w-full flex gap-4">
-                      <Input
+                    <div className=" w-full  flex flex-col gap-2">
+                      <TextField
+                        fullWidth
                         isRequired
                         isDisabled={isLoading}
-                        label="Ссылка на товар"
                         validate={(value) => {
                           if (value === "") {
                             return "Заполните это поле";
@@ -115,38 +115,55 @@ const LoadByLinkModal = ({
                           }
                           return null;
                         }}
-                        value={link}
-                        onPaste={async (
-                          event: ClipboardEvent<HTMLInputElement>,
-                        ) => {
-                          event.preventDefault();
-                          const link = extractLink(
-                            event.clipboardData.getData("Text"),
-                          );
-                          setLink(link);
+                        variant="secondary"
+                      >
+                        <Label>Ссылка на товар</Label>
+                        <div className="flex gap-2">
+                          <InputGroup className="w-full">
+                            <InputGroup.Input
+                              value={link}
+                              onChange={(e) => {
+                                setLink(e.target.value);
+                              }}
+                              onPaste={async (
+                                event: ClipboardEvent<HTMLInputElement>,
+                              ) => {
+                                event.preventDefault();
+                                const link = extractLink(
+                                  event.clipboardData.getData("Text"),
+                                );
+                                setLink(link);
 
-                          await parseByUrl(link);
-                        }}
-                        onValueChange={setLink}
-                      />
-                      {<MarketIcon className="my-auto" link={link} />}
+                                await parseByUrl(link);
+                              }}
+                            />
+                          </InputGroup>
+                          <MarketIcon className="my-auto" link={link} />
+                        </div>
+
+                        <FieldError>{error}</FieldError>
+                      </TextField>
+
+                      <Button fullWidth isPending={isLoading} type="submit">
+                        {({ isPending }) => (
+                          <>
+                            {isPending ? (
+                              <Spinner color="current" size="sm" />
+                            ) : null}
+                            Загрузить
+                          </>
+                        )}
+                      </Button>
                     </div>
-                    {error != "" ? (
-                      <p className="text-danger">{error}</p>
-                    ) : null}
-
-                    <Button fullWidth isLoading={isLoading} type="submit">
-                      Загрузить
-                    </Button>
                   </Form>
                 ) : (
                   <Alert color="danger" title={serviceError} />
                 )}
               </>
-            </ModalBody>
-          </>
-        )}
-      </ModalContent>
+            </Modal.Body>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
     </Modal>
   );
 };
@@ -192,27 +209,17 @@ const AvailableShops = ({
   if (isLoading) {
     return (
       <>
-        <Skeleton className="w-32 rounded-full">
-          <div className="h-7 w-1/5 rounded-full bg-default-300" />
-        </Skeleton>
-        <Skeleton className="w-24 rounded-full">
-          <div className="h-7 w-1/5 rounded-full bg-default-300" />
-        </Skeleton>
-        <Skeleton className="w-36 rounded-full">
-          <div className="h-7 w-1/5 rounded-full bg-default-300" />
-        </Skeleton>
+        <Skeleton className="w-32 rounded-full" />
+        <Skeleton className="w-24 rounded-full" />
+        <Skeleton className="w-36 rounded-full" />
       </>
     );
   }
 
   return shops.map((value) => {
     return (
-      <Chip
-        key={value.name}
-        startContent={<MarketIcon height={22} link={value.url} />}
-        title={value.name}
-        variant="flat"
-      >
+      <Chip key={value.name} size="lg" title={value.name}>
+        <MarketIcon height={22} link={value.url} />
         {value.name}
       </Chip>
     );

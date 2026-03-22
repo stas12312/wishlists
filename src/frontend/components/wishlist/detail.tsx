@@ -1,40 +1,38 @@
 "use client";
-import { Alert } from "@heroui/alert";
-import { Chip } from "@heroui/chip";
-import { useDisclosure } from "@heroui/modal";
-import { Skeleton } from "@heroui/skeleton";
+import { Alert, Chip, Skeleton, toast, useOverlayState } from "@heroui/react";
+import { motion } from "framer-motion";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { addToast } from "@heroui/toast";
 import useWebSocket from "react-use-websocket";
-import { motion } from "framer-motion";
 
 import AddCardButton from "../addCardButton";
+import { CustomBreadcrumbs } from "../breadcrumbs";
+import { AnimatedList } from "../cardsList/cardsList";
+import { LoginButton } from "../login";
 import PageHeader from "../pageHeader";
 import { PageSpinner } from "../pageSpinner";
-import { WishItem } from "../wish/card";
-import WishSaveModal from "../wish/saveModal";
-import { LoginButton } from "../login";
 import UserCard from "../user/card";
-import { ISorting, SortingSelector } from "../wish/sortingSelector";
-import { IWishFilter, WishFilter } from "../wish/filter";
-import { AnimatedList } from "../cardsList/cardsList";
-import { CustomBreadcrumbs } from "../breadcrumbs";
 import { VisibleChip } from "../visibleChip";
+import { WishItem } from "../wish/card";
+import { IWishFilter, WishFilter } from "../wish/filter";
+import WishSaveModal from "../wish/saveModal";
+import { ISorting, SortingSelector } from "../wish/sortingSelector";
 
 import WishlistItemMenu from "./menu";
 
+import { getWishes } from "@/lib/client-requests/wish";
+import {
+  deleteWishlist,
+  getWishlist,
+  updateWishlist,
+} from "@/lib/client-requests/wishlist";
+import { isEqual } from "@/lib/compare";
 import { IError } from "@/lib/models";
 import { IWish } from "@/lib/models/wish";
 import { IWishlist } from "@/lib/models/wishlist";
-import { getWishlist } from "@/lib/client-requests/wishlist";
-import { deleteWishlist } from "@/lib/client-requests/wishlist";
-import { updateWishlist } from "@/lib/client-requests/wishlist";
-import { getWishes } from "@/lib/client-requests/wish";
-import userStore from "@/store/userStore";
 import { defaultParams, getWebsocketUrl, isEvent, WSEvent } from "@/lib/socket";
-import { isEqual } from "@/lib/compare";
+import userStore from "@/store/userStore";
 function getChannelName(wishlistUUID: string): string {
   return `wishlist_${wishlistUUID}`;
 }
@@ -110,19 +108,19 @@ const WishlistDetail = observer(
                 <VisibleChip wishlist={wishlist} />
               ) : null}
               {wishlist.date ? (
-                <Chip>
+                <Chip size="lg">
                   Дата события: {new Date(wishlist.date).toLocaleDateString()}
                 </Chip>
               ) : null}
               {isOwner ? (
                 <>
                   {statistic?.totalSum ? (
-                    <Chip color="warning">
+                    <Chip color="warning" size="lg" variant="primary">
                       Общая сумма: {statistic?.totalSum.toLocaleString()}
                     </Chip>
                   ) : null}
                   {statistic?.totalCount ? (
-                    <Chip color="primary">
+                    <Chip color="accent" size="lg" variant="primary">
                       Исполнено: {statistic.fullfiledCount} из{" "}
                       {statistic.totalCount}
                     </Chip>
@@ -166,7 +164,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
   const [error, setError] = useState({} as IError);
   const isEditable = userStore.user.id == wishlist.user_id;
 
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isOpen, open, toggle } = useOverlayState();
 
   const { lastJsonMessage, sendJsonMessage } = useWebSocket(getWebsocketUrl, {
     filter: (message) => {
@@ -231,21 +229,17 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
         return value.uuid !== wish.uuid;
       }),
     );
-    addToast({
-      title: message,
-    });
+    toast(message);
   }
 
   async function onCreateWish(wish: IWish) {
-    onOpenChange();
+    toggle();
     setItems([wish, ...items]);
   }
 
   async function onDeleteWishlist(wishlist: IWishlist) {
     await deleteWishlist(wishlist.uuid);
-    addToast({
-      title: "Вишлист удален",
-    });
+    toast("Вишлист удален");
     router.push("/");
   }
 
@@ -298,14 +292,18 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
           {!userStore.user.id ? (
             <div className="col-span-full flex justify-center mb-4">
               <div>
-                <Alert
-                  hideIconWrapper
-                  className="mx-auto"
-                  color="warning"
-                  description="Для отображения забронированных желаний войдите в свой аккаунт"
-                  endContent={<LoginButton className="ml-4" />}
-                  title="Некоторые из желаний могут быть забронированы"
-                />
+                <Alert className="mx-auto" color="warning">
+                  <Alert.Content>
+                    <Alert.Title>
+                      Некоторые из желаний могут быть забронированы
+                    </Alert.Title>
+                    <Alert.Description>
+                      Для отображения забронированных желаний войдите в свой
+                      аккаунт
+                    </Alert.Description>
+                    <LoginButton className="ml-4" />
+                  </Alert.Content>
+                </Alert>
               </div>
             </div>
           ) : null}
@@ -329,7 +327,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
           <WishSaveModal
             isOpen={isOpen}
             wishlistUUID={wishlistUUID}
-            onOpenChange={onOpenChange}
+            onOpenChange={toggle}
             onUpdate={onCreateWish}
           />
           <AnimatedList
@@ -338,7 +336,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
                 <AddCardButton
                   className="md:h-70 w-full"
                   title="Добавить желание"
-                  onPress={onOpen}
+                  onPress={open}
                 />
               ) : null,
               ...visibleItems.map((wish: IWish) => (

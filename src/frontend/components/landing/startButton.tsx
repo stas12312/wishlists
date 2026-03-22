@@ -1,6 +1,6 @@
-import { Button } from "@heroui/button";
-import { Link } from "@heroui/link";
+import { Button } from "@heroui/react";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 import { defaultVariants } from "@/lib/animations/default";
 
@@ -11,6 +11,7 @@ export const StartButton = ({
   title: string;
   className?: string;
 }) => {
+  const router = useRouter();
   return (
     <motion.div
       className={`mx-auto  ${className}`}
@@ -20,10 +21,11 @@ export const StartButton = ({
       whileInView="animate"
     >
       <Button
-        as={Link}
         className="mt-4 py-8 text-2xl text-center"
-        color="primary"
-        href="/auth/login"
+        variant="primary"
+        onPress={() => {
+          router.push("/auth/login");
+        }}
       >
         {title}
       </Button>

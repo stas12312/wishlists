@@ -1,4 +1,4 @@
-import { Divider } from "@heroui/divider";
+import { Separator } from "@heroui/react";
 import { motion } from "framer-motion";
 
 import { UserChip } from "../user";
@@ -18,13 +18,13 @@ export const UserEvents = ({
 }) => {
   return (
     <div>
-      <Divider className="my-4" />
+      <Separator className="my-4" />
       <motion.div
         animate={{ opacity: 1, transition: { duration: 0.5 } }}
         className="flex flex-col items-center justify md:flex-row"
         initial={{ opacity: 0 }}
       >
-        <UserChip user={userInfo.user} variant="light" />{" "}
+        <UserChip user={userInfo.user} variant="tertiary" />{" "}
         <span className="text-bold text-foreground-500">
           добавил(а) желания
         </span>
