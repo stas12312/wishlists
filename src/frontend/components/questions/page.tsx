@@ -1,4 +1,4 @@
-import { Tabs, Tab } from "@heroui/tabs";
+import { Tabs } from "@heroui/react";
 import { observer } from "mobx-react-lite";
 
 import PageHeader from "../pageHeader";
@@ -14,26 +14,31 @@ export const QuestionPage = observer(() => {
     <div className="flex flex-col">
       <PageHeader title="Вопросы" />
       <Tabs className="mx-auto">
-        <Tab
-          title={
-            <span className="flex gap-2">
-              <p>Мои</p>
-              <Counter value={countersStore.questionCounters.answered} />
-            </span>
-          }
-        >
+        <Tabs.ListContainer className="flex justify-center">
+          <Tabs.List className="w-100">
+            <Tabs.Tab id="asked-questions">
+              <span className="flex gap-2">
+                <p>Мои</p>
+                <Counter value={countersStore.questionCounters.answered} />
+              </span>
+              <Tabs.Indicator />
+            </Tabs.Tab>
+            <Tabs.Tab id="for-me-questions">
+              <span className="flex gap-2">
+                <p>Задали мне</p>
+                <Counter value={countersStore.questionCounters.waiting} />
+              </span>
+              <Tabs.Indicator />
+            </Tabs.Tab>
+          </Tabs.List>
+        </Tabs.ListContainer>
+
+        <Tabs.Panel id="asked-questions">
           <AskedQuestions />
-        </Tab>
-        <Tab
-          title={
-            <span className="flex gap-2">
-              <p>Задали мне</p>
-              <Counter value={countersStore.questionCounters.waiting} />
-            </span>
-          }
-        >
+        </Tabs.Panel>
+        <Tabs.Panel id="for-me-questions">
           <ForMeQuestions />
-        </Tab>
+        </Tabs.Panel>
       </Tabs>
     </div>
   );

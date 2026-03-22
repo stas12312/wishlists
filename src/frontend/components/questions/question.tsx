@@ -1,13 +1,16 @@
-import { Button } from "@heroui/button";
-import { Form } from "@heroui/form";
-import { Image } from "@heroui/image";
-import { Textarea } from "@heroui/input";
+import {
+  Button,
+  Chip,
+  Form,
+  TextArea,
+  TextField,
+  toast,
+  useOverlayState,
+} from "@heroui/react";
 import { useRef, useState } from "react";
 import { AiFillGift } from "react-icons/ai";
 import { MdCheck, MdDelete, MdSend } from "react-icons/md";
-import { useDisclosure } from "@heroui/modal";
-import { addToast } from "@heroui/toast";
-import { Chip } from "@heroui/chip";
+import Image from "next/image";
 
 import ConfirmationModal from "../confirmation";
 
@@ -31,8 +34,8 @@ export const QuestionItem = ({
   isWithWish?: boolean;
 }) => {
   const [answer, setAnswer] = useState("");
-  const confirmDeleteQuestion = useDisclosure();
-  const confirmDeleteAnswer = useDisclosure();
+  const confirmDeleteQuestion = useOverlayState();
+  const confirmDeleteAnswer = useOverlayState();
   const submitRef = useRef<HTMLButtonElement>(null);
 
   const submitForm = async () => {
@@ -47,30 +50,30 @@ export const QuestionItem = ({
   async function deleteQuestionById() {
     const error = await deleteQuestion(question.id ?? 0);
     if (error !== null) {
-      addToast({ title: error.message, color: "danger" });
+      toast.danger(error.message);
     } else {
-      addToast({ title: "Вопрос удален" });
+      toast("Вопрос удален");
     }
   }
 
   async function deleteAnswerById() {
     const result = await deleteAnswer(question.id ?? 0);
     if ("message" in result) {
-      addToast({ title: result.message, color: "danger" });
+      toast.danger(result.message);
     } else {
+      toast("Ответ удален");
       onUpdateQuestion(result);
-      addToast({ title: "Ответ удален" });
     }
   }
   async function markClose() {
     await markQuestionClose([question.id ?? 0]);
-    addToast({ title: "Вопрос закрыт", color: "success" });
+    toast.success("Вопрос закрыт");
   }
 
   return (
     <>
       <div
-        className={`bg-content1/50 rounded-2xl p-2 flex flex-col ${isWithWish ? "md:grid md:grid-cols-5" : ""} gap-2 ring-1 ring-gray-500/40`}
+        className={`bg-content1/50 rounded-3xl p-2 flex flex-col ${isWithWish ? "md:grid md:grid-cols-5" : ""} gap-2 ring-1 ring-gray-500/40`}
       >
         {isWithWish ? (
           <>
@@ -78,13 +81,16 @@ export const QuestionItem = ({
             <div className="col-span-1 flex flex-col gap-2">
               {question.wish?.images?.length ? (
                 <Image
-                  removeWrapper
-                  className="object-cover h-60 md:h-full w-full"
+                  alt="Изображение желаания"
+                  className="object-cover h-60 md:h-full w-full rounded-3xl"
+                  height="0"
+                  sizes="100vw"
                   src={question.wish?.images[0]}
+                  width="0"
                 />
               ) : (
                 <AiFillGift
-                  className={`text-8xl mx-auto my-auto bg-linear-to-br from-default to-default-100 w-full rounded-2xl h-40`}
+                  className={`text-8xl mx-auto my-auto bg-linear-to-br from-default to-default-100 w-full rounded-3xl h-40`}
                 />
               )}
             </div>
@@ -95,43 +101,46 @@ export const QuestionItem = ({
             content={question.content}
             createdAt={question.created_at ?? ""}
             withDeleteButton={question.actions?.delete}
-            onDelete={confirmDeleteQuestion.onOpen}
+            onDelete={confirmDeleteQuestion.open}
           />
 
           {question.actions?.answer && question.answer?.content === null ? (
             <Form
-              className="ml-10 flex flex-row items-stretch"
+              className="ml-10 flex flex-row items-stretch gap-2"
               validationBehavior="native"
               onSubmit={(e) => {
                 e.preventDefault();
                 submitForm();
               }}
             >
-              <Textarea
-                required
-                className="rounded-2xl"
-                maxLength={200}
-                maxRows={100}
-                minLength={2}
-                placeholder="Введите ответ"
-                value={answer}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && e.ctrlKey) {
-                    submitRef.current?.click();
-                  }
-                }}
-                onValueChange={(value) => {
-                  setAnswer(value);
-                }}
-              />
+              <TextField fullWidth isRequired>
+                <TextArea
+                  className="rounded-2xl"
+                  maxLength={200}
+                  // maxRows={100}
+                  minLength={2}
+                  placeholder="Введите ответ"
+                  value={answer}
+                  onChange={(e) => {
+                    setAnswer(e.target.value);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && e.ctrlKey) {
+                      submitRef.current?.click();
+                    }
+                  }}
+                />
+              </TextField>
+
               <Button
                 ref={submitRef}
                 isIconOnly
-                className="w-max h-auto"
-                color="primary"
-                startContent={<MdSend />}
+                className="w-12 h-auto"
                 type="submit"
-              />
+                variant="primary"
+              >
+                <MdSend />
+              </Button>
             </Form>
           ) : null}
           {question.answer && question.answer.content ? (
@@ -140,19 +149,18 @@ export const QuestionItem = ({
               content={question.answer.content}
               createdAt={question.answer.created_at}
               withDeleteButton={question.actions?.answer}
-              onDelete={confirmDeleteAnswer.onOpen}
+              onDelete={confirmDeleteAnswer.open}
             />
           ) : null}
           {question.actions?.delete &&
           question.status === QuestionStatus.resolved ? (
             <div className="mt-auto ml-auto flex gap-2 items-center">
-              <Chip color="primary">Получен ответ</Chip>
+              <Chip color="accent">Получен ответ</Chip>
               <Button
                 isIconOnly
-                color="success"
+                className="bg-success"
                 data-qa="mark-closed"
-                startContent={<MdCheck />}
-                variant="light"
+                variant="primary"
                 onPress={() => {
                   markClose();
                   onUpdateQuestion({
@@ -160,7 +168,9 @@ export const QuestionItem = ({
                     status: QuestionStatus.closed,
                   });
                 }}
-              />
+              >
+                <MdCheck />
+              </Button>
             </div>
           ) : null}
         </div>
@@ -171,10 +181,10 @@ export const QuestionItem = ({
         onConfirm={async () => {
           await deleteQuestionById();
           onDeleteQuestion(question.id ?? 0);
-          confirmDeleteQuestion.onClose();
+          confirmDeleteQuestion.close();
         }}
         onDecline={() => {
-          confirmDeleteQuestion.onClose();
+          confirmDeleteQuestion.close();
         }}
       />
       <ConfirmationModal
@@ -182,10 +192,10 @@ export const QuestionItem = ({
         message="Вы хотите удалить ответ?"
         onConfirm={async () => {
           await deleteAnswerById();
-          confirmDeleteAnswer.onClose();
+          confirmDeleteAnswer.close();
         }}
         onDecline={() => {
-          confirmDeleteAnswer.onClose();
+          confirmDeleteAnswer.close();
         }}
       />
     </>
@@ -207,7 +217,7 @@ const QuestionContent = ({
 }) => {
   return (
     <div
-      className={`${className} rounded-2xl flex flex-col justify-between bg-content2 px-2  min-h-10 py-1 gap-1`}
+      className={`${className} rounded-3xl flex flex-col justify-between bg-default px-2  min-h-10 py-1 gap-1`}
     >
       <div className="flex">
         <p className="my-auto w-full whitespace-pre-wrap break-all">
@@ -218,15 +228,15 @@ const QuestionContent = ({
           <Button
             isIconOnly
             className="my-auto"
-            color="danger"
             data-qa="delete-answer"
             size="sm"
-            startContent={<MdDelete />}
-            variant="light"
+            variant="danger-soft"
             onPress={() => {
               onDelete();
             }}
-          />
+          >
+            <MdDelete />
+          </Button>
         ) : null}
       </div>
 

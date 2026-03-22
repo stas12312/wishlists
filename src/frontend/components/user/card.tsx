@@ -1,12 +1,12 @@
 "use client";
-import { Skeleton } from "@heroui/skeleton";
-import { User } from "@heroui/user";
+import { Chip, Skeleton } from "@heroui/react";
 import { useEffect, useState } from "react";
-import { Chip } from "@heroui/chip";
 import { observer } from "mobx-react-lite";
-import { Link } from "@heroui/link";
 import { MdCake } from "react-icons/md";
 import { motion } from "framer-motion";
+import Link from "next/link";
+
+import { UserAvatar } from "../userAvatar";
 
 import UserStatus from "./status";
 
@@ -56,18 +56,16 @@ const UserCard = observer(({ username }: { username: string }) => {
       ) : (
         <motion.div
           animate="animate"
-          className="flex justify-center flex-col"
+          className="flex justify-center flex-col items-center"
           initial="initial"
           variants={defaultVariants}
         >
-          <User
-            avatarProps={{
-              name: user.name?.length ? user.name[0] : "",
-              src: user.image,
-              size: "lg",
-            }}
+          <UserAvatar
             description={
-              <Link className="text-lg" href={getUserLink(user.username)}>
+              <Link
+                className="text-lg text-accent"
+                href={getUserLink(user.username)}
+              >
                 <span>{wrapUsername(user.username)}</span>
               </Link>
             }
@@ -76,10 +74,11 @@ const UserCard = observer(({ username }: { username: string }) => {
           <div className="mx-auto flex gap-1 mt-2 h-7">
             {user.birthday ? (
               <Chip
-                color="secondary"
-                startContent={<MdCake />}
+                size="lg"
                 title={`День рождения ${getDisplayDate(user.birthday)}`}
+                variant="secondary"
               >
+                <MdCake />
                 {getDisplayDate(user.birthday)}
               </Chip>
             ) : null}
@@ -92,8 +91,8 @@ const UserCard = observer(({ username }: { username: string }) => {
             ) : null}
             {friendStatus == FriendStatus.is_friend ||
             friendStatus == FriendStatus.is_yourself ? (
-              <Chip
-                as={Link}
+              <Link
+                className="chip chip--primary chip--lg"
                 href={
                   friendStatus == FriendStatus.is_friend
                     ? `/users/${username}/friends`
@@ -102,7 +101,7 @@ const UserCard = observer(({ username }: { username: string }) => {
               >
                 {friendsCount}{" "}
                 {getLabelForCount(friendsCount, ["друг", "друга", "друзей"])}
-              </Chip>
+              </Link>
             ) : null}
           </div>
         </motion.div>

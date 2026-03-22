@@ -1,4 +1,4 @@
-import { Button } from "@heroui/button";
+import { Button } from "@heroui/react";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 
@@ -11,7 +11,8 @@ export const QuestionInfo = observer(() => {
 
   return (
     <Button
-      className="bg-content1/50 ring-1 ring-gray-500/50 shadow-medium roundend-2xl h-30 md:w-40 w-full mb-4"
+      className="ring-1 ring-gray-500/50 shadow-medium roundend-2xl h-30 md:w-40 w-full mb-4"
+      variant="ghost"
       onPress={() => {
         router.push("/questions");
       }}

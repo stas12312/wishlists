@@ -1,34 +1,41 @@
 "use client";
 
-import { Button } from "@heroui/button";
-import { NumberInput } from "@heroui/number-input";
-import { Input, Textarea } from "@heroui/input";
+import {
+  Button,
+  FieldError,
+  Form,
+  Input,
+  Key,
+  Label,
+  ListBox,
+  NumberField,
+  Select,
+  Separator,
+  TextArea,
+  TextField,
+  useOverlayState,
+} from "@heroui/react";
 import { ClipboardEvent, FormEvent, useEffect, useState } from "react";
-import { Form } from "@heroui/form";
 import { MdOutlineFileDownload } from "react-icons/md";
-import { useDisclosure } from "@heroui/modal";
-import { Divider } from "@heroui/divider";
-import { Select, SelectItem } from "@heroui/select";
 import { v4 } from "uuid";
 
 import Desirability from "../desirability";
-import MarketIcon from "../marketIcon";
 import IconsGroup from "../iconsGroup";
+import MarketIcon from "../marketIcon";
 import UploadButton from "../uploadButton";
 
-import LoadByLinkModal from "./loadByLinkModal";
 import { IUploadImage } from "./imageItem";
 import { ImagesContainer } from "./imagesContainer";
+import LoadByLinkModal from "./loadByLinkModal";
 
-import { updateWish } from "@/lib/client-requests/wish";
-import { createWish } from "@/lib/client-requests/wish";
-import { IError } from "@/lib/models";
-import { IWish } from "@/lib/models/wish";
-import { isURL } from "@/lib/url";
+import { createWish, updateWish } from "@/lib/client-requests/wish";
 import { CURRENCIES } from "@/lib/currency";
 import { checkFile, FILE_SIZE_LIMIT, readableBytes } from "@/lib/file";
+import { IError } from "@/lib/models";
 import { ParseResult } from "@/lib/models/parse";
+import { IWish } from "@/lib/models/wish";
 import { findSpaceWithLenght } from "@/lib/text";
+import { isURL } from "@/lib/url";
 const ACCEPTED_FILE_EXTS = ["jpg", "jpeg", "png", "webp"];
 
 export default function WishForm(props: {
@@ -70,7 +77,7 @@ export default function WishForm(props: {
 
   const [isCreating, setIsCreating] = useState(false);
   const [imageIsLoading, setImageIsLoading] = useState(false);
-  const loadByLinkDisclosure = useDisclosure();
+  const loadByLinkDisclosure = useOverlayState();
   const [uploadedImages, setImages] = useState(
     formData.images.map((image) => {
       return {
@@ -189,29 +196,25 @@ export default function WishForm(props: {
           <>
             <Button
               fullWidth
-              className=""
-              color="primary"
-              endContent={
-                <div className="flex gap-1">
-                  <IconsGroup
-                    sites={["dns-shop.ru", "ozon.ru", "wildberries.ru"]}
-                  />
-                </div>
-              }
-              startContent={<MdOutlineFileDownload />}
-              variant="flat"
+              variant="primary"
               onPress={() => {
-                loadByLinkDisclosure.onOpen();
+                loadByLinkDisclosure.open();
               }}
             >
+              <MdOutlineFileDownload />
               Заполнить автоматически
+              <div className="flex gap-1">
+                <IconsGroup
+                  sites={["dns-shop.ru", "ozon.ru", "wildberries.ru"]}
+                />
+              </div>
             </Button>
             <span className="grid grid-cols-5 md:grid-cols-4 my-3">
-              <Divider className="my-auto col-span-1" />
+              <Separator className="my-auto col-span-1" />
               <span className="text-center col-span-3 md:col-span-2">
                 или вручную
               </span>
-              <Divider className="my-auto col-span-1" />
+              <Separator className="my-auto col-span-1" />
             </span>
           </>
         ) : null}
@@ -221,11 +224,8 @@ export default function WishForm(props: {
           validationBehavior="native"
           onSubmit={onSumbitForm}
         >
-          <Input
-            isClearable
+          <TextField
             isRequired
-            errorMessage={errorMessages.Name}
-            label="Название"
             name="name"
             validate={(value) => {
               if (value === "") {
@@ -237,71 +237,89 @@ export default function WishForm(props: {
               return null;
             }}
             value={formData.name}
-            onChange={handlerChange}
-            onClear={() => setFormData({ ...formData, name: "" })}
-          />
-          <Textarea
-            isClearable
-            label="Комментарий"
+            variant="secondary"
+            onChange={(value) => {
+              setFormData({ ...formData, name: value });
+            }}
+          >
+            <Label>Название</Label>
+            <Input />
+            <FieldError />
+          </TextField>
+          <TextField
             name="comment"
             value={formData.comment}
-            onChange={handlerChange}
-            onClear={() => setFormData({ ...formData, comment: "" })}
-          />
+            variant="secondary"
+            onChange={(value) => {
+              setFormData({ ...formData, comment: value });
+            }}
+          >
+            <Label>Комментарий</Label>
+            <TextArea />
+            <FieldError />
+          </TextField>
+
           <div className="flex gap-4 w-full">
-            <NumberInput
+            <NumberField
               fullWidth
-              hideStepper
-              isClearable
               formatOptions={{
                 currencySign: "standard",
                 currency: formData.currency,
               }}
-              label="Цена"
               minValue={0}
               name="cost"
               value={formData.cost}
-              onClear={() => setFormData({ ...formData, cost: undefined })}
-              onValueChange={(value) => {
-                setFormData({ ...formData, cost: value });
-              }}
-            />
-            <Select
-              disallowEmptySelection
-              className="w-72"
-              items={CURRENCIES}
-              label="Валюта"
-              renderValue={(items) => {
-                return items.map((item) => (
-                  <div key={item.key} className="flex flex-wrap gap-1">
-                    {item.data?.icon ? (
-                      <item.data.icon className="rounded my-auto" height={14} />
-                    ) : null}
-                    {item.data?.code}
-                  </div>
-                ));
-              }}
-              selectedKeys={[formData.currency]}
-              onChange={(e) => {
-                setFormData({ ...formData, currency: e.target.value });
+              variant="secondary"
+              onChange={(value) => {
+                setFormData({
+                  ...formData,
+                  cost: value,
+                });
               }}
             >
-              {(currency) => (
-                <SelectItem
-                  key={currency.code}
-                  startContent={
-                    <currency.icon className="rounded" height={14} />
-                  }
-                >
-                  {`${currency.symbol} ${currency.code}`}
-                </SelectItem>
-              )}
+              <Label>Цена</Label>
+              <NumberField.Group className="w-full flex">
+                <NumberField.Input className="w-full" />
+              </NumberField.Group>
+
+              <FieldError />
+            </NumberField>
+
+            <Select
+              className="w-72"
+              value={formData.currency}
+              variant="secondary"
+              onChange={(e: Key | null) => {
+                setFormData({ ...formData, currency: e?.toString() ?? "RUB" });
+              }}
+            >
+              <Label>Валюта</Label>
+              <Select.Trigger className="p-0 flex items-center pl-4">
+                <Select.Value />
+                <Select.Indicator />
+              </Select.Trigger>
+              <Select.Popover>
+                <ListBox>
+                  {CURRENCIES.map((currency) => (
+                    <ListBox.Item
+                      key={currency.code}
+                      id={currency.code}
+                      textValue={currency.code}
+                    >
+                      <div className="flex gap-2 items-center text-sm">
+                        <currency.icon className="rounded" height={14} />
+                        <span className="text-sm">{`${currency.symbol} ${currency.code}`}</span>
+                      </div>
+                      <ListBox.ItemIndicator />
+                    </ListBox.Item>
+                  ))}
+                </ListBox>
+              </Select.Popover>
             </Select>
           </div>
           <div className="flex w-full gap-4">
-            <Input
-              isClearable
-              label="Ссылка на товар"
+            <TextField
+              fullWidth
               name="link"
               validate={(value) => {
                 if (value.length > 500) {
@@ -313,12 +331,19 @@ export default function WishForm(props: {
                 return null;
               }}
               value={formData.link}
-              onChange={handlerChange}
-              onClear={() => setFormData({ ...formData, link: "" })}
-            />
+              variant="secondary"
+              onChange={(value) => {
+                setFormData({ ...formData, link: value });
+              }}
+            >
+              <Label>Ссылка на товар</Label>
+              <Input />
+              <FieldError />
+            </TextField>
+
             {<MarketIcon className="my-auto" link={formData.link} />}
           </div>
-          <div className="flex flex-col justify-center items-center w-full bg-default-100 rounded-medium p-1">
+          <div className="flex flex-col justify-center items-center w-full bg-default rounded-xl p-1">
             <span>Желанность</span>
             <Desirability
               size="xl"
@@ -369,7 +394,7 @@ export default function WishForm(props: {
             <span />
           )}
 
-          <Button fullWidth isLoading={isCreating} type="submit">
+          <Button fullWidth isPending={isCreating} type="submit">
             Сохранить
           </Button>
         </Form>
@@ -379,7 +404,7 @@ export default function WishForm(props: {
           <LoadByLinkModal
             isOpen={loadByLinkDisclosure.isOpen}
             onLinkLoad={setLinkResult}
-            onOpenChange={loadByLinkDisclosure.onOpenChange}
+            onOpenChange={loadByLinkDisclosure.toggle}
           />
         ) : null}
       </div>

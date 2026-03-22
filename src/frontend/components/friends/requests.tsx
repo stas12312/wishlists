@@ -1,13 +1,11 @@
-import { Button } from "@heroui/button";
-import { Card, CardBody } from "@heroui/card";
-import { User } from "@heroui/user";
+import { Button, Card, toast } from "@heroui/react";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
-import { addToast } from "@heroui/toast";
 import useWebSocket from "react-use-websocket";
 
 import { PageSpinner } from "../pageSpinner";
+import { UserAvatar } from "../userAvatar";
 
 import userStore from "@/store/userStore";
 import countersStore from "@/store/counterStore";
@@ -61,42 +59,30 @@ const FriendRequestsItems = observer(() => {
   const inpomingItems = incomingRequests.map((r) => (
     <FriendRequestItem key={r.from_user.id} user={r.from_user}>
       <Button
-        color="primary"
-        variant="flat"
+        variant="ghost"
         onPress={async () => {
           const result = await applyFriendRequest(r.from_user.id);
           if (result && "code" in result) {
-            addToast({
-              color: "danger",
-              title: result.message,
-            });
+            toast.danger(result.message);
           } else {
             setRequests(await getFriendRequests());
             countersStore.getCounters();
-            addToast({
-              title: "Заявка принята",
-            });
+            toast.success("Заявка принята");
           }
         }}
       >
         Принять
       </Button>
       <Button
-        color="danger"
-        variant="flat"
+        variant="ghost"
         onPress={async () => {
           const result = await declineFriendRequest(r.from_user.id);
           if (result && "code" in result) {
-            addToast({
-              title: result.message,
-              color: "danger",
-            });
+            toast.danger(result.message);
           } else {
             setRequests(await getFriendRequests());
             countersStore.getCounters();
-            addToast({
-              title: "Заявка отклонена",
-            });
+            toast("Заявка отклонена");
           }
         }}
       >
@@ -108,21 +94,15 @@ const FriendRequestsItems = observer(() => {
   const outcomingItems = outcomingRequests.map((r) => (
     <FriendRequestItem key={r.to_user.id} user={r.to_user}>
       <Button
-        color="danger"
-        variant="flat"
+        variant="ghost"
         onPress={async () => {
           const result = await deleteFriendRequest(r.to_user.id);
           if (result && "code" in result) {
-            addToast({
-              title: result.message,
-              color: "danger",
-            });
+            toast.danger(result.message);
           } else {
             setRequests(await getFriendRequests());
             countersStore.getCounters();
-            addToast({
-              title: "Заявка отменена",
-            });
+            toast.danger("Заявка отменена");
           }
         }}
       >
@@ -157,22 +137,21 @@ const FriendRequestItem = observer(
     const router = useRouter();
     return (
       <Card className="max-w-250 mx-auto w-full">
-        <CardBody className="flex flex-row gap-4 justify-between">
-          <User
-            avatarProps={{
-              src: user.image,
-              name: user.name[0],
-            }}
-            className="cursor-pointer"
-            description={user.username}
-            name={user.name}
+        <Card.Content className="flex flex-row gap-4 justify-between">
+          <Button
             onClick={() => {
               router.push(getUserLink(user.username));
             }}
-          />
+          >
+            <UserAvatar
+              className="cursor-pointer"
+              description={user.username}
+              name={user.name}
+            />
+          </Button>
 
           <div className="flex gap-1">{children}</div>
-        </CardBody>
+        </Card.Content>
       </Card>
     );
   },

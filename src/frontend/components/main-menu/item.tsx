@@ -1,5 +1,4 @@
-import { Badge } from "@heroui/badge";
-import { Link } from "@heroui/link";
+import { Badge, Link } from "@heroui/react";
 import { observer } from "mobx-react-lite";
 
 import { Counter } from "./counter";
@@ -27,18 +26,8 @@ export const MobileMenuItem = observer((props: IMenuItemProps) => {
   const params = props.params;
   return (
     <div className="h-full w-full p-4 flex justify-center rounded-xl">
-      <Badge
-        color="primary"
-        content={params.counter}
-        isInvisible={params.counter == 0}
-        showOutline={false}
-      >
-        <Link
-          disableAnimation
-          className={`flex flex-col `}
-          color="foreground"
-          href={item.href}
-        >
+      <Badge.Anchor color="primary">
+        <Link className={`flex flex-col no-underline`} href={item.href}>
           <div
             className={`text-3xl mx-auto ${
               params.isCurrent && item.selectedIconClassName
@@ -50,7 +39,12 @@ export const MobileMenuItem = observer((props: IMenuItemProps) => {
           </div>
           <span className="text-tiny">{item.title}</span>
         </Link>
-      </Badge>
+        {params.counter ? (
+          <Badge color="accent" variant="primary">
+            {params.counter}
+          </Badge>
+        ) : null}
+      </Badge.Anchor>
     </div>
   );
 });
@@ -60,9 +54,7 @@ export const DesktopMenuItem = observer(
     return (
       <Link
         key={item.title}
-        disableAnimation
-        className={`w-full flex gap-2 py-1 pl-3 hover:transition-colors rounded-xl ease-in items-center hover:bg-default-200 text-lg ${params.isCurrent ? "bg-default" : null}`}
-        color="foreground"
+        className={`w-full flex gap-2 py-1 pl-3 hover:transition-colors rounded-xl ease-in items-center hover:bg-default-hover text-lg ${params.isCurrent ? "bg-default" : null} no-underline `}
         href={item.href}
       >
         <span

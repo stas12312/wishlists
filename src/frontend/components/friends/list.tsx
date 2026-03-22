@@ -1,7 +1,7 @@
 "use client";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
-import { addToast } from "@heroui/toast";
+import { toast } from "@heroui/react";
 
 import { PageSpinner } from "../pageSpinner";
 import ConfirmationModal from "../confirmation";
@@ -67,9 +67,7 @@ const FriendsList = observer(
                 if (action == "delete") {
                   successFunction.current = async () => {
                     await deleteFriend(friend.id);
-                    addToast({
-                      title: "Пользователь удален из друзей",
-                    });
+                    toast("Пользователь удален из друзей");
                     setIsConfirm(false);
                     setFriends(
                       friends.filter((f) => {

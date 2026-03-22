@@ -1,8 +1,8 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
-import { Image } from "@heroui/image";
-import { Chip } from "@heroui/chip";
+import { Chip } from "@heroui/react";
 import { AiFillGift } from "react-icons/ai";
+import Image from "next/image";
 
 import Desirability from "../desirability";
 
@@ -39,8 +39,15 @@ export const ImageSwiper = ({ wish }: { wish: IWish }) => {
             {wish.images.map((image) => {
               return (
                 <SwiperSlide key={image}>
-                  <div className="flex justify-center">
-                    <Image src={image} />
+                  <div className="flex justify-center h-64">
+                    <Image
+                      unoptimized
+                      alt=""
+                      className="object-cover"
+                      fill={true}
+                      height={0}
+                      src={image}
+                    />
                   </div>
                 </SwiperSlide>
               );

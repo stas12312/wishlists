@@ -1,7 +1,6 @@
-import { Chip } from "@heroui/chip";
+import { Chip, Tooltip } from "@heroui/react";
 import { ReactNode } from "react";
 import { MdOutlinePublic, MdOutlinePublicOff, MdPerson } from "react-icons/md";
-import { Tooltip } from "@heroui/tooltip";
 
 import { IWishlist, Visible } from "@/lib/models/wishlist";
 
@@ -40,13 +39,19 @@ export const VisibleChip = ({
 
   if (onlyIcon) {
     return (
-      <Tooltip closeDelay={50} content={info.title}>
-        <Chip color="default">{info.icon}</Chip>
+      <Tooltip closeDelay={50} delay={0}>
+        <Tooltip.Trigger>
+          <Chip color="default" size="lg" variant="primary">
+            {info.icon}
+          </Chip>
+        </Tooltip.Trigger>
+        <Tooltip.Content>{info.title}</Tooltip.Content>
       </Tooltip>
     );
   } else {
     return (
-      <Chip color="success" startContent={info.icon}>
+      <Chip color="success" size="lg" variant="primary">
+        {info.icon}
         {info.title}
       </Chip>
     );

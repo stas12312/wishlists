@@ -1,12 +1,4 @@
-import { Button } from "@heroui/button";
-import { Input } from "@heroui/input";
-import {
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-} from "@heroui/modal";
+import { Button, Input, Label, Modal, TextField } from "@heroui/react";
 import { ReactNode, useEffect, useRef, useState } from "react";
 
 const ConfirmationModal = ({
@@ -62,55 +54,56 @@ const ConfirmationModal = ({
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   return (
-    <>
-      <Modal isOpen={isOpen} placement="center" onOpenChange={onDecline}>
-        <ModalContent>
-          {() => (
-            <>
-              <ModalHeader className="flex flex-col gap-1 text-center">
-                {title}
-              </ModalHeader>
-              <ModalBody>
-                <div className="flex flex-col gap-2">
-                  {message}
-                  {confirmByText ? (
+    <Modal isOpen={isOpen} onOpenChange={onDecline}>
+      <Modal.Backdrop>
+        <Modal.Container>
+          <Modal.Dialog>
+            <Modal.Header className="flex flex-col gap-1 text-center">
+              <Modal.Heading> {title}</Modal.Heading>
+            </Modal.Header>
+            <Modal.Body>
+              <div className="flex flex-col gap-2">
+                {message}
+                {confirmByText ? (
+                  <TextField>
+                    <Label>{confirmLabel}</Label>
                     <Input
-                      label={confirmLabel}
                       value={text}
-                      onValueChange={setText}
+                      onChange={(e) => {
+                        setText(e.target.value);
+                      }}
                     />
-                  ) : null}
-                </div>
-              </ModalBody>
-              <ModalFooter>
-                <Button
-                  color="primary"
-                  variant="light"
-                  onPress={() => {
-                    onDecline();
-                  }}
-                >
-                  {declineName}
-                </Button>
-                <Button
-                  ref={buttonRef}
-                  color="danger"
-                  isDisabled={confirmByText && !(confirmText == text)}
-                  isLoading={isLoading}
-                  onPress={async () => {
-                    setIsLoading(true);
-                    await onConfirm();
-                    setIsLoading(false);
-                  }}
-                >
-                  {confirmName}
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
-    </>
+                  </TextField>
+                ) : null}
+              </div>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                value="primary"
+                onPress={() => {
+                  onDecline();
+                }}
+              >
+                {declineName}
+              </Button>
+              <Button
+                ref={buttonRef}
+                isDisabled={confirmByText && !(confirmText == text)}
+                isPending={isLoading}
+                variant="danger-soft"
+                onPress={async () => {
+                  setIsLoading(true);
+                  await onConfirm();
+                  setIsLoading(false);
+                }}
+              >
+                {confirmName}
+              </Button>
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
+    </Modal>
   );
 };
 

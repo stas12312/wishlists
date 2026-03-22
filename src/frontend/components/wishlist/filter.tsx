@@ -1,4 +1,4 @@
-import { Tabs, Tab } from "@heroui/tabs";
+import { Tabs, Tab } from "@heroui/react";
 import { useState } from "react";
 import { Key } from "@react-types/shared";
 
@@ -27,13 +27,21 @@ const WishlistFilter = ({
     >
       <Tabs
         key="filter1"
-        aria-label="Tabs sizes"
         selectedKey={activeValue}
-        size="sm"
         onSelectionChange={setActiveValue}
       >
-        <Tab key="true" title="Активные" />
-        <Tab key="false" title="Архивные" />
+        <Tabs.ListContainer>
+          <Tabs.List className="*:h-6">
+            <Tab id="true">
+              Активные
+              <Tabs.Indicator />
+            </Tab>
+            <Tab id="false">
+              Архивные
+              <Tabs.Indicator />
+            </Tab>
+          </Tabs.List>
+        </Tabs.ListContainer>
       </Tabs>
     </Filter>
   );

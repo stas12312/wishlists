@@ -1,8 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { useState, useEffect, useRef } from "react";
-import { Textarea } from "@heroui/input";
-import { Form } from "@heroui/form";
-import { Button } from "@heroui/button";
+import { Form, Button, TextField, TextArea, FieldError } from "@heroui/react";
 
 import { AnimatedList } from "../cardsList/cardsList";
 import { InfinityLoader } from "../infinityLoader";
@@ -110,24 +108,35 @@ export const QuestionList = observer(
                   submitForm();
                 }}
               >
-                <Textarea
-                  required
-                  className="rounded-2xl"
-                  maxLength={200}
-                  minLength={2}
-                  placeholder="Введите вопрос"
-                  value={newQuestion}
+                <TextField
+                  variant="secondary"
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && e.ctrlKey) {
                       submitRef.current?.click();
                     }
                   }}
-                  onValueChange={(value) => {
-                    setNewQuestion(value);
-                  }}
-                />
+                >
+                  <TextArea
+                    required
+                    className="rounded-3xl"
+                    maxLength={200}
+                    minLength={2}
+                    placeholder="Введите вопрос"
+                    value={newQuestion}
+                    onChange={(e) => {
+                      setNewQuestion(e.target.value);
+                    }}
+                  />
+                  <FieldError />
+                </TextField>
 
-                <Button ref={submitRef} fullWidth color="primary" type="submit">
+                <Button
+                  ref={submitRef}
+                  fullWidth
+                  className="mt-2"
+                  type="submit"
+                  variant="primary"
+                >
                   Задать вопрос
                 </Button>
               </Form>

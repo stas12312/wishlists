@@ -1,11 +1,9 @@
-import { Modal, ModalBody, ModalContent, ModalHeader } from "@heroui/modal";
-import { useEffect, useState } from "react";
+import { Modal, Spinner } from "@heroui/react";
 import { observer } from "mobx-react-lite";
-import { Spinner } from "@heroui/spinner";
-import { Listbox, ListboxItem } from "@heroui/listbox";
+import { useEffect, useState } from "react";
 
-import { IWishlist } from "@/lib/models/wishlist";
 import { getWishlists } from "@/lib/client-requests/wishlist";
+import { IWishlist } from "@/lib/models/wishlist";
 import userStore from "@/store/userStore";
 
 const SelectWishlistModal = observer(
@@ -29,21 +27,21 @@ const SelectWishlistModal = observer(
         size="3xl"
         onOpenChange={onOpenChange}
       >
-        <ModalContent>
+        <Modal.Container>
           {() => (
             <>
-              <ModalHeader className="flex flex-col gap-1 text-center">
+              <Modal.Header className="flex flex-col gap-1 text-center">
                 Выберите вишлист
-              </ModalHeader>
-              <ModalBody>
+              </Modal.Header>
+              <Modal.Body>
                 <WishlistSelector
                   excludeWishlists={excludeWishlists}
                   onSelect={onSelect}
                 />
-              </ModalBody>
+              </Modal.Body>
             </>
           )}
-        </ModalContent>
+        </Modal.Container>
       </Modal>
     );
   },

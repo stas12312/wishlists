@@ -1,21 +1,27 @@
 "use client";
-import { Button } from "@heroui/button";
-import { Input } from "@heroui/input";
+import {
+  Button,
+  FieldError,
+  Form,
+  Input,
+  Label,
+  Link,
+  Surface,
+  TextField,
+} from "@heroui/react";
 import { observer } from "mobx-react-lite";
 import { redirect, useSearchParams } from "next/navigation";
 import { FormEvent, Suspense, useEffect, useState } from "react";
-import { Link } from "@heroui/link";
 
+import CodeInput from "@/components/codeInput";
+import PasswordInput from "@/components/passwordInput";
+import { setTokens } from "@/lib/auth";
 import {
   checkCode,
   resetPassword,
   restorePassword,
 } from "@/lib/client-requests/auth";
-import { ITokens } from "@/lib/models/auth";
-import { IRegisterData } from "@/lib/models/auth";
-import { setTokens } from "@/lib/auth";
-import PasswordInput from "@/components/passwordInput";
-import CodeInput from "@/components/codeInput";
+import { IRegisterData, ITokens } from "@/lib/models/auth";
 
 const RestorePassword = observer(() => {
   const [email, setEmail] = useState("");
@@ -81,79 +87,86 @@ const RestorePassword = observer(() => {
   }
 
   return (
-    <Suspense>
-      <form
-        className="gap-2 flex flex-col bg-content1 rounded-xl box-border shadow-medium p-4"
-        id="reset-password"
-        onSubmit={handleOnSumbit}
-      >
-        <h2 className="text-2xl text-center">
-          {step == 0
-            ? "Восстановление пароля"
-            : step == 2
-              ? "Новый пароль"
-              : "Код подтверждения"}
-        </h2>
-        {email !== "" && step === 1 ? (
-          <span className="text-tiny text-center">
-            На {email} было отправлено письмо с кодом подтверждения
-          </span>
-        ) : null}
-        {(() => {
-          if (step === 0) {
-            return (
-              <Input
-                label="Email"
-                name="email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                }}
-              />
-            );
-          } else if (step === 1) {
-            return (
-              <>
-                <CodeInput
-                  digitsCount={6}
-                  disabled={isLoading}
-                  value={code}
-                  onValueChange={setCode}
+    <Surface className="rounded-3xl box-border shadow-medium p-4">
+      <Suspense>
+        <Form
+          className="gap-2 flex flex-col"
+          id="reset-password"
+          onSubmit={handleOnSumbit}
+        >
+          <h2 className="text-2xl text-center">
+            {step == 0
+              ? "Восстановление пароля"
+              : step == 2
+                ? "Новый пароль"
+                : "Код подтверждения"}
+          </h2>
+          {email !== "" && step === 1 ? (
+            <span className="text-tiny text-center">
+              На {email} было отправлено письмо с кодом подтверждения
+            </span>
+          ) : null}
+          {(() => {
+            if (step === 0) {
+              return (
+                <TextField
+                  name="email"
+                  value={email}
+                  variant="secondary"
+                  onChange={setEmail}
+                >
+                  <Label>Email</Label>
+                  <Input />
+                  <FieldError />
+                </TextField>
+              );
+            } else if (step === 1) {
+              return (
+                <>
+                  <CodeInput
+                    digitsCount={6}
+                    disabled={isLoading}
+                    value={code}
+                    onValueChange={setCode}
+                  />
+                  <span className="text-danger text-tiny">{codeError}</span>
+                </>
+              );
+            } else if (step == 2) {
+              return (
+                <PasswordInput
+                  errorMessage={passwordError}
+                  isInvalid={passwordError != ""}
+                  label="Пароль"
+                  name="new-password"
+                  value={password}
+                  onBlur={() => {
+                    setPasswordError("");
+                  }}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
-                <span className="text-danger text-tiny">{codeError}</span>
-              </>
-            );
-          } else if (step == 2) {
-            return (
-              <PasswordInput
-                errorMessage={passwordError}
-                isInvalid={passwordError != ""}
-                label="Пароль"
-                name="new-password"
-                value={password}
-                onBlur={() => {
-                  setPasswordError("");
-                }}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            );
-          } else {
-            return null;
-          }
-        })()}
-        {[0, 2].includes(step) ? (
-          <Button isLoading={isLoading} type="submit">
-            {step !== 2 ? "Далее" : "Сменить пароль"}
-          </Button>
-        ) : null}
-      </form>
-      <div className="text-center mt-4">
-        Вспомнили пароль?{" "}
-        <Link className="w" href={`/auth/login?ret=${ret}`}>
-          Войти
-        </Link>
-      </div>
-    </Suspense>
+              );
+            } else {
+              return null;
+            }
+          })()}
+          {[0, 2].includes(step) ? (
+            <Button isPending={isLoading} type="submit">
+              {step !== 2 ? "Далее" : "Сменить пароль"}
+            </Button>
+          ) : null}
+        </Form>
+        <div className="text-center mt-4">
+          Вспомнили пароль?{" "}
+          <Link
+            className="text-accent no-underline"
+            href={`/auth/login?ret=${ret}`}
+          >
+            Войти
+          </Link>
+        </div>
+      </Suspense>
+    </Surface>
   );
 });
 

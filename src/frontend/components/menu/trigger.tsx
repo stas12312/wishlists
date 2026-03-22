@@ -1,5 +1,4 @@
-import { Button } from "@heroui/button";
-import { DropdownTrigger } from "@heroui/dropdown";
+import { Popover } from "@heroui/react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 
 const MenuTrigger = ({
@@ -10,17 +9,12 @@ const MenuTrigger = ({
   name?: string;
 }) => {
   return (
-    <DropdownTrigger data-qa={name}>
-      <Button
-        isIconOnly
-        as="div"
-        className={className}
-        radius="lg"
-        variant="light"
-      >
-        <BsThreeDotsVertical />
-      </Button>
-    </DropdownTrigger>
+    <Popover.Trigger
+      className={`button button--ghost ${className}`}
+      data-qa={name}
+    >
+      <BsThreeDotsVertical />
+    </Popover.Trigger>
   );
 };
 

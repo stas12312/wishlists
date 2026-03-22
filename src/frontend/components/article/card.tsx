@@ -1,10 +1,10 @@
 "use client";
 import { observer } from "mobx-react-lite";
-import { Card, CardBody, CardFooter } from "@heroui/card";
-import { Image } from "@heroui/image";
-import { Chip } from "@heroui/chip";
+import { Button, Card } from "@heroui/react";
+import { Chip } from "@heroui/react";
 import { useRouter } from "next/navigation";
-import { Link } from "@heroui/link";
+import { Link } from "@heroui/react";
+import Image from "next/image";
 
 import { IArticle } from "@/lib/models/article";
 export const ArticleCard = observer(
@@ -21,52 +21,52 @@ export const ArticleCard = observer(
 
     return (
       <div className="md:hover:scale-[1.03] duration-200 h-full">
-        <Card
-          isPressable
-          className="w-full h-full"
+        <Button
           onPress={() => {
             route.push(href);
           }}
         >
-          <CardBody className="h-2/3 overflow-hidden p-0 rounded-xl">
-            <div className="relative">
-              <Image
-                removeWrapper
-                className="object-cover mx-auto my-auto w-full h-60"
-                src={article.image}
-              />
-              <div className="p-2">
-                <h1 className="text-2xl font-bold text-center">
-                  {article.title}
-                </h1>
-                <p className="mt-2">{article.description} </p>
+          <Card className="w-full h-full">
+            <Card.Content className="h-2/3 overflow-hidden p-0 rounded-xl">
+              <div className="relative">
+                <Image
+                  alt="Изображение"
+                  className="object-cover mx-auto my-auto w-full h-60"
+                  src={article.image}
+                />
+                <div className="p-2">
+                  <h1 className="text-2xl font-bold text-center">
+                    {article.title}
+                  </h1>
+                  <p className="mt-2">{article.description} </p>
 
-                {forAdmin ? (
-                  <div className="flex flex-col absolute top-1 z-10 gap-1 items-center inset-x-0">
-                    <Chip color={article.is_published ? "success" : "primary"}>
-                      {article.is_published ? "Опубликовано" : "Черновик"}
-                    </Chip>
-                    {article.created_at ? (
-                      <Chip>
-                        Создан:{" "}
-                        {new Date(article.created_at).toLocaleDateString()}
+                  {forAdmin ? (
+                    <div className="flex flex-col absolute top-1 z-10 gap-1 items-center inset-x-0">
+                      <Chip color={article.is_published ? "success" : "accent"}>
+                        {article.is_published ? "Опубликовано" : "Черновик"}
                       </Chip>
-                    ) : null}
-                  </div>
-                ) : null}
+                      {article.created_at ? (
+                        <Chip>
+                          Создан:{" "}
+                          {new Date(article.created_at).toLocaleDateString()}
+                        </Chip>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </div>
               </div>
-            </div>
-          </CardBody>
-          <CardFooter className="flex justify-between">
-            {article.published_at ? (
-              <Chip color="primary">
-                {new Date(article.published_at).toLocaleDateString()}
-              </Chip>
-            ) : null}
+            </Card.Content>
+            <Card.Footer className="flex justify-between">
+              {article.published_at ? (
+                <Chip variant="primary">
+                  {new Date(article.published_at).toLocaleDateString()}
+                </Chip>
+              ) : null}
 
-            <Link href={`/blog/${article.slug}`}>Читать далее</Link>
-          </CardFooter>
-        </Card>
+              <Link href={`/blog/${article.slug}`}>Читать далее</Link>
+            </Card.Footer>
+          </Card>
+        </Button>
       </div>
     );
   },

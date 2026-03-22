@@ -1,13 +1,18 @@
 "use client";
-import { Form } from "@heroui/form";
-import { Input, Textarea } from "@heroui/input";
+import {
+  Form,
+  Input,
+  TextField,
+  Button,
+  Chip,
+  Label,
+  TextArea,
+} from "@heroui/react";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { OutputData } from "@editorjs/editorjs";
 import { useRouter } from "next/navigation";
-import { Button } from "@heroui/button";
-import { Chip } from "@heroui/chip";
 
 import UploadButton from "../uploadButton";
 
@@ -66,7 +71,7 @@ const ArticleForm = observer(
         <div className="my-2 flex gap-2">
           <Chip
             className="my-auto"
-            color={article.is_published ? "success" : "primary"}
+            color={article.is_published ? "success" : "accent"}
           >
             {article.is_published ? "Опубликовано" : "Черовик"}
           </Chip>
@@ -82,29 +87,33 @@ const ArticleForm = observer(
           ) : null}
         </div>
         <Form className="w-210 flex flex-col" onSubmit={saveArticle}>
-          <Input
-            isRequired
-            label="Название"
-            name="title"
-            value={article.title}
-            onValueChange={(value) => setArticle({ ...article, title: value })}
-          />
-          <Input
-            isRequired
-            label="Slug"
-            name="slug"
-            value={article.slug}
-            onValueChange={(value) => setArticle({ ...article, slug: value })}
-          />
-          <Textarea
-            isRequired
-            label="Описание"
-            name="description"
-            value={article.description}
-            onValueChange={(value) =>
-              setArticle({ ...article, description: value })
-            }
-          />
+          <TextField isRequired name="title" type="text">
+            <Label>Название</Label>
+            <Input
+              value={article.title}
+              onChange={(e) =>
+                setArticle({ ...article, title: e.target.value })
+              }
+            />
+          </TextField>
+          <TextField isRequired name="slug" type="text">
+            <Label>Slug</Label>
+            <Input
+              value={article.slug}
+              onChange={(e) => setArticle({ ...article, slug: e.target.value })}
+            />
+          </TextField>
+          <TextField isRequired>
+            <Label>Описание</Label>
+            <TextArea
+              name="description"
+              value={article.description}
+              onChange={(e) =>
+                setArticle({ ...article, description: e.target.value })
+              }
+            />
+          </TextField>
+
           <Editor
             holder="create-article"
             value={editorData}

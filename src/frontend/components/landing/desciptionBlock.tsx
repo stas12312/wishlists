@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Image } from "@heroui/image";
+import Image from "next/image";
 
 import { itemVariants } from "./main";
 
@@ -17,7 +17,7 @@ export const DescriptionBlock = ({
   return (
     <motion.div
       className={
-        "p-4 shadow-md rounded-xl w-full bg-content1 border-default-200 border dark:border-none " +
+        "p-4 shadow-md rounded-3xl w-full surface surface--default border-default border dark:border-none " +
         className
       }
       initial="hidden"
@@ -28,9 +28,12 @@ export const DescriptionBlock = ({
     >
       {imageUrl ? (
         <Image
-          removeWrapper
-          className="shadow-md border-default-200 border"
+          alt="Изображение описания"
+          className="shadow-md  border w-full rounded-3xl"
+          height="0"
+          sizes="100vw"
           src={imageUrl}
+          width="0"
         />
       ) : null}
 

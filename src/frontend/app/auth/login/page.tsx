@@ -21,7 +21,10 @@ export const metadata: Metadata = {
 };
 
 const PROVIDER_TO_ICON = new Map<string, ReactNode>([
-  ["YANDEX", <Yandex key="YANDEX" className="rounded-full hover:opacity-80" />],
+  [
+    "YANDEX",
+    <Yandex key="YANDEX" className="rounded-full hover:opacity-80 h-10 w-10" />,
+  ],
 ]);
 
 export default async function Page() {

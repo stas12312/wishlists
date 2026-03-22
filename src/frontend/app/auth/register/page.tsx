@@ -1,17 +1,24 @@
 "use client";
-import { Button } from "@heroui/button";
-import { Input } from "@heroui/input";
-import { FormEvent, Suspense, useEffect, useRef, useState } from "react";
+import {
+  Button,
+  FieldError,
+  Form,
+  Input,
+  Label,
+  Link,
+  LinkIcon,
+  Surface,
+  TextField,
+  toast,
+} from "@heroui/react";
 import { redirect, useSearchParams } from "next/navigation";
-import { Link } from "@heroui/link";
-import { Form } from "@heroui/form";
-import { addToast } from "@heroui/toast";
+import { FormEvent, Suspense, useEffect, useRef, useState } from "react";
 
 import CodeInput from "@/components/codeInput";
 import PasswordInput from "@/components/passwordInput";
 import { setTokens } from "@/lib/auth";
-import { IRegisterData } from "@/lib/models/auth";
 import { confirmEmail, register } from "@/lib/client-requests/auth";
+import { IRegisterData } from "@/lib/models/auth";
 
 const COUNT_DOWN_DURATION = 1000 * 30 + 500;
 
@@ -149,9 +156,9 @@ function SignInForm() {
   }, [countDownDate]);
 
   return (
-    <>
+    <Surface className="p-4 rounded-3xl box-border shadow-medium">
       <Form
-        className="flex flex-col gap-2 bg-content1 p-4 rounded-xl box-border shadow-medium"
+        className="flex flex-col gap-2 "
         id="register"
         validationBehavior="native"
         onSubmit={handleSubmit}
@@ -160,22 +167,36 @@ function SignInForm() {
 
         {step === 0 ? (
           <div className="flex flex-col gap-2 w-full">
-            <Input
+            <TextField
               fullWidth
               isRequired
-              label="Имя"
               name="name"
               value={formData.name}
-              onChange={handleChange}
-            />
-            <Input
+              variant="secondary"
+              onChange={(value) => {
+                setFormData({ ...formData, name: value });
+              }}
+            >
+              <Label>Имя</Label>
+              <Input />
+              <FieldError />
+            </TextField>
+
+            <TextField
               fullWidth
               isRequired
-              label="Email"
               name="email"
               value={formData.email}
-              onChange={handleChange}
-            />
+              variant="secondary"
+              onChange={(value) => {
+                setFormData({ ...formData, email: value });
+              }}
+            >
+              <Label>Email</Label>
+              <Input name="email" onChange={handleChange} />
+              <FieldError />
+            </TextField>
+
             <PasswordInput
               errorMessage={errorMessages.Password}
               isInvalid={errorMessages.Password != ""}
@@ -193,20 +214,15 @@ function SignInForm() {
             <span className="text-center">
               <span>Регистрируясь, вы соглашаетесь с </span>{" "}
               <Link
-                isExternal
-                className="inline"
+                className="text-accent no-underline"
                 href={`${process.env.NEXT_PUBLIC_STATIC_URL}/docs/terms-of-service.pdf`}
               >
                 пользовательским соглашением
+                <LinkIcon />
               </Link>
             </span>
 
-            <Button
-              fullWidth
-              isLoading={isLoading}
-              spinnerPlacement="end"
-              type="submit"
-            >
+            <Button fullWidth isPending={isLoading} type="submit">
               Далее
             </Button>
           </div>
@@ -235,15 +251,15 @@ function SignInForm() {
             <div className="flex flex-col gap-2 mt-2">
               <Button
                 fullWidth
-                color="primary"
                 isDisabled={countDown >= 0}
-                isLoading={retryIsLoading}
+                isPending={retryIsLoading}
+                variant="primary"
                 onPress={async () => {
                   setRetryIsLoading(true);
                   await sendDataForRegister();
-                  addToast({
-                    title: `Подтверждение было повторно отправлено на ${formData.email}`,
-                  });
+                  toast.success(
+                    `Подтверждение было повторно отправлено на ${formData.email}`,
+                  );
                   setRetryIsLoading(false);
                 }}
               >
@@ -266,9 +282,15 @@ function SignInForm() {
           </div>
         ) : null}
       </Form>
-      <div className="text-center mt-4">
-        Уже есть аккаунт? <Link href={`/auth/login?ret=${ret}`}>Войти</Link>
+      <div className="text-center mt-4 ">
+        Уже есть аккаунт?{" "}
+        <Link
+          className="text-accent no-underline"
+          href={`/auth/login?ret=${ret}`}
+        >
+          Войти
+        </Link>
       </div>
-    </>
+    </Surface>
   );
 }

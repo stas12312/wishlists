@@ -4,7 +4,17 @@ const nextConfig = {
         serverActions: {
             bodySizeLimit: '3mb',
         }
-    }
+    },
+      images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+        port: '',
+        pathname: '**',
+      },
+    ],
+  },
 };
 
 

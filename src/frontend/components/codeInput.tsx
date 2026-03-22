@@ -1,4 +1,4 @@
-import { Input } from "@heroui/input";
+import { Input, TextField } from "@heroui/react";
 import { ChangeEvent, useEffect, useRef } from "react";
 
 const CodeInput = ({
@@ -71,27 +71,24 @@ const CodeInput = ({
   for (let i = 0; i < digitsCount; i++) {
     const element = (
       <span key={i}>
-        <Input
-          ref={(ref: HTMLInputElement | null) => {
-            inputsRefs.current[i] = ref;
-          }}
-          className="w-12"
-          classNames={{
-            inputWrapper: [
-              "group-data-[focus=true]:bg-default-200 group-data-[focus=true]:scale-105",
-            ],
-            input: ["text-center"],
-          }}
+        <TextField
           isDisabled={disabled || i > currentIndex}
-          name={i.toString()}
-          size="lg"
           type="number"
-          value={values[i]}
-          onChange={processInput}
-          onKeyUp={(e) => {
-            e.key == "Backspace" ? deleteDigit(i) : null;
-          }}
-        />
+          variant="secondary"
+        >
+          <Input
+            ref={(ref: HTMLInputElement | null) => {
+              inputsRefs.current[i] = ref;
+            }}
+            className="w-12 group-data-[focus=true]:bg-default-200 group-data-[focus=true]:scale-105 text-center"
+            name={i.toString()}
+            value={values[i]}
+            onChange={processInput}
+            onKeyUp={(e) => {
+              e.key == "Backspace" ? deleteDigit(i) : null;
+            }}
+          />
+        </TextField>
       </span>
     );
     inputs.push(element);

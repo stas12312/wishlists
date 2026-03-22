@@ -1,11 +1,14 @@
 @import "tailwindcss";
-@plugin '../hero.ts';
+@import "@heroui/styles";
 @source '../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
 @source '../components/**/*.{js,ts,jsx,tsx,mdx}';
 @source '../app/**/*.{js,ts,jsx,tsx,mdx}';
 
 @custom-variant dark (&:is(html.dark, html.dark *));
 
+@theme {
+    --text-sm: 16px;
+}
 
 @layer base {
     input[type="number"]::-webkit-inner-spin-button,
@@ -24,6 +27,6 @@
     }
 
     html {
-        scrollbar-gutter: stable
+        scrollbar-gutter: stable;
     }
 }

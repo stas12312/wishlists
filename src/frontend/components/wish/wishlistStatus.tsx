@@ -1,4 +1,4 @@
-import { Chip } from "@heroui/chip";
+import { Chip } from "@heroui/react";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { IWish } from "@/lib/models/wish";
@@ -9,7 +9,7 @@ const WishlistStatus = ({
   size = "md",
 }: {
   wish: IWish;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | undefined;
 }) => {
   return (
     <>
@@ -22,7 +22,7 @@ const WishlistStatus = ({
             initial="initial"
             variants={defaultVariants}
           >
-            <Chip color="primary" size={size}>
+            <Chip color="accent" size={size} variant="primary">
               Исполнено {wish.actions.cancel_reserve ? " вами" : null}
             </Chip>
           </motion.span>
@@ -35,7 +35,7 @@ const WishlistStatus = ({
             initial="initial"
             variants={defaultVariants}
           >
-            <Chip color="success" size="lg">
+            <Chip color="success" size="lg" variant="primary">
               Забронировано
               {wish.actions.cancel_reserve ? " вами" : null}
             </Chip>

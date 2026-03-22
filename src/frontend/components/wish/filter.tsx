@@ -1,4 +1,4 @@
-import { Tab, Tabs } from "@heroui/tabs";
+import { Tabs } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { Key } from "@react-types/shared";
 
@@ -49,12 +49,24 @@ export const WishFilter = ({
               : undefined
           }
           selectedKey={fullfiledValue}
-          size="sm"
           onSelectionChange={setFullfiledValue}
         >
-          <Tab key="all" title="Все" />
-          <Tab key="true" title="Исполненные" />
-          <Tab key="false" title="Неисполненные" />
+          <Tabs.ListContainer>
+            <Tabs.List className="*:h-6">
+              <Tabs.Tab id="all">
+                Все
+                <Tabs.Indicator />
+              </Tabs.Tab>
+              <Tabs.Tab id="true">
+                Исполненные
+                <Tabs.Indicator />
+              </Tabs.Tab>
+              <Tabs.Tab id="false">
+                Неисполненные
+                <Tabs.Indicator />
+              </Tabs.Tab>
+            </Tabs.List>
+          </Tabs.ListContainer>
         </Tabs>
         {!hidedFilters.includes("reserved") ? (
           <Tabs
@@ -64,12 +76,24 @@ export const WishFilter = ({
               fullfiledValue === "true" ? ["true", "false"] : undefined
             }
             selectedKey={reservedValue}
-            size="sm"
             onSelectionChange={setReservedValue}
           >
-            <Tab key="all" title="Все" />
-            <Tab key="true" title="Забронированные" />
-            <Tab key="false" title="Незабронированные" />
+            <Tabs.ListContainer>
+              <Tabs.List className="*:h-6">
+                <Tabs.Tab id="all">
+                  Все
+                  <Tabs.Indicator />
+                </Tabs.Tab>
+                <Tabs.Tab id="true">
+                  Забронированные
+                  <Tabs.Indicator />
+                </Tabs.Tab>
+                <Tabs.Tab id="false">
+                  Незабронированные
+                  <Tabs.Indicator />
+                </Tabs.Tab>
+              </Tabs.List>
+            </Tabs.ListContainer>
           </Tabs>
         ) : null}
       </div>
