@@ -1,8 +1,9 @@
 import { Chip } from "@heroui/react";
-import Image from "next/image";
 import { AiFillGift } from "react-icons/ai";
+import { twMerge } from "tailwind-merge";
 
 import Desirability from "../desirability";
+import { ResponsiveImage } from "../responsive-image";
 
 import WishlistStatus from "./wishlistStatus";
 
@@ -20,17 +21,12 @@ const CardImage = ({
   iconClassName?: string;
 }) => {
   return (
-    <div className={`relative ${className}`}>
-      <div
-        className={`bg-linear-to-br from-default to-default-100 rounded-large w-full flex h-full`}
-      >
+    <div className={twMerge("relative h-full", className)}>
+      <div className="bg-linear-to-br from-default to-default/50 rounded-large flex h-full w-full">
         {wish.images?.length ? (
-          <Image
-            unoptimized
+          <ResponsiveImage
             alt="Изображение карточки желания"
-            className="z-0 object-cover h-full w-full mx-auto"
-            fill={true}
-            sizes="auto, auto"
+            className="z-0 object-cover mx-auto h-full w-full"
             src={wish.images[0]}
           />
         ) : (

@@ -1,7 +1,8 @@
 import { useId, useState } from "react";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { Spinner } from "@heroui/react";
-import Image from "next/image";
+
+import { ResponsiveImage } from "./responsive-image";
 const UploadButton = ({
   previewUrl,
   className,
@@ -64,12 +65,10 @@ const UploadButton = ({
       ) : (
         <>
           {previewUrl ? (
-            <Image
+            <ResponsiveImage
               alt=""
               className={className + " z-2"}
-              height={0}
               src={previewUrl}
-              width={0}
             />
           ) : null}
 

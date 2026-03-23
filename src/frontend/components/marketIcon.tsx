@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { ResponsiveImage } from "./responsive-image";
 
 import { getDomainFromUrl } from "@/lib/url";
 
@@ -38,13 +38,11 @@ const MarketIcon = ({
     return null;
   }
   return (
-    <Image
-      unoptimized
+    <ResponsiveImage
       alt={ICON_BY_DOMAIN.get(domain) as string}
       className={`rounded-xl ${className}`}
       height={height}
       src={ICON_BY_DOMAIN.get(domain) as string}
-      width={height}
     />
   );
 };

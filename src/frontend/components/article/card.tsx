@@ -1,10 +1,9 @@
 "use client";
+import { Button, Card, Chip, Link } from "@heroui/react";
 import { observer } from "mobx-react-lite";
-import { Button, Card } from "@heroui/react";
-import { Chip } from "@heroui/react";
 import { useRouter } from "next/navigation";
-import { Link } from "@heroui/react";
-import Image from "next/image";
+
+import { ResponsiveImage } from "../responsive-image";
 
 import { IArticle } from "@/lib/models/article";
 export const ArticleCard = observer(
@@ -29,7 +28,7 @@ export const ArticleCard = observer(
           <Card className="w-full h-full">
             <Card.Content className="h-2/3 overflow-hidden p-0 rounded-xl">
               <div className="relative">
-                <Image
+                <ResponsiveImage
                   alt="Изображение"
                   className="object-cover mx-auto my-auto w-full h-60"
                   src={article.image}

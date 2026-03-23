@@ -1,8 +1,9 @@
 import { BlockToolData, OutputBlockData } from "@editorjs/editorjs";
 import { ReactNode } from "react";
-import { Image } from "@heroui/image";
 
 import { list } from "./list";
+
+import { ResponsiveImage } from "@/components/responsive-image";
 
 export function editorjsParse(blocks: OutputBlockData[]): ReactNode[] {
   let result = [];
@@ -59,8 +60,7 @@ function header(data: BlockToolData): ReactNode {
 function image(data: BlockToolData): ReactNode {
   return (
     <div>
-      <Image
-        removeWrapper
+      <ResponsiveImage
         alt={data.caption}
         className={`mx-auto ${data.stretched ? "w-full" : ""}`}
         src={data.file.url}
