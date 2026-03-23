@@ -19,15 +19,9 @@ const SelectWishlistModal = observer(
     excludeWishlists?: string[];
   }) => {
     return (
-      <Modal
-        className="min-h-32"
-        isOpen={isOpen}
-        placement="top-center"
-        size="3xl"
-        onOpenChange={onOpenChange}
-      >
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <Modal.Backdrop variant="blur">
-          <Modal.Container>
+          <Modal.Container className="min-h-32" placement="center" size="lg">
             <Modal.Dialog>
               <Modal.Header className="flex flex-col gap-1 text-center">
                 <Modal.Heading>Выберите вишлист</Modal.Heading>
@@ -109,7 +103,6 @@ const WishlistSelector = observer(
             aria-label="Move wish"
             className="text-center"
             disabledKeys={excludeWishlists}
-            emptyContent={<p className="text-center">Вишлистов нет</p>}
             onAction={async (key) => {
               setIsLoading(true);
               await onSelect(
