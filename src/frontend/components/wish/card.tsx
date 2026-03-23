@@ -1,10 +1,10 @@
 "use client";
 import { Card, Chip, toast, useOverlayState } from "@heroui/react";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import { Key, useState } from "react";
 
 import ConfirmationModal from "../confirmation";
+import { ResponsiveImage } from "../responsive-image";
 import { UserChip } from "../user";
 import SelectWishlistModal from "../wishlist/selectModal";
 
@@ -63,11 +63,9 @@ export const WishItem = observer(
     async function onCopy(wishlist: IWishlist) {
       await copyWish(wish.uuid || "", wishlist.uuid);
       copyModal.close();
-      toast("Желание скопировано");
-      // addToast({
-      //   title: "Желание скопировано",
-      //   description: `В вишлист "${wishlist.name}"`,
-      // });
+      toast("Желание скопировано", {
+        description: `В вишлист "${wishlist.name}"`,
+      });
     }
 
     async function handleOnAction(key: Key | string) {
@@ -129,11 +127,9 @@ export const WishItem = observer(
               }}
             >
               {wish.images && wish.images[0] ? (
-                <Image
-                  unoptimized
+                <ResponsiveImage
                   alt="Изображение желания"
                   className="object-cover bottom-[50%] z-0 blur-xl absolute rounded-large"
-                  fill={true}
                   src={wish.images[0]}
                 />
               ) : null}
@@ -157,7 +153,7 @@ export const WishItem = observer(
                   ) : null}
                 </div>
               </Card.Header>
-              <Card.Content className="p-0 h-full object-cover">
+              <Card.Content className="p-0 overflow-y-auto ">
                 <CardImage
                   removeWrapper
                   className="h-full"

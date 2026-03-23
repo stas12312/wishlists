@@ -78,7 +78,7 @@ const SecuritySection = () => {
                     return null;
                   }}
                   value={oldPassword}
-                  onValueChange={(value) => setOldPassword(value)}
+                  onChange={(e) => setOldPassword(e.target.value)}
                 />
               ) : null}
               <PasswordInput
@@ -99,7 +99,7 @@ const SecuritySection = () => {
                 onBlur={() => {
                   setErrors({ ...errors, newPassword: "" });
                 }}
-                onValueChange={(value) => setNewPassword(value)}
+                onChange={(e) => setNewPassword(e.target.value)}
               />
             </div>
             <span className="text-tiny text-danger">{errors.message}</span>

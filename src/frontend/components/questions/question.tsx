@@ -10,9 +10,9 @@ import {
 import { useRef, useState } from "react";
 import { AiFillGift } from "react-icons/ai";
 import { MdCheck, MdDelete, MdSend } from "react-icons/md";
-import Image from "next/image";
 
 import ConfirmationModal from "../confirmation";
+import { ResponsiveImage } from "../responsive-image";
 
 import {
   answerOnQuestion,
@@ -80,13 +80,10 @@ export const QuestionItem = ({
             <h2 className="text-2xl col-span-full">{question.wish?.name}</h2>
             <div className="col-span-1 flex flex-col gap-2">
               {question.wish?.images?.length ? (
-                <Image
+                <ResponsiveImage
                   alt="Изображение желаания"
                   className="object-cover h-60 md:h-full w-full rounded-3xl"
-                  height="0"
-                  sizes="100vw"
                   src={question.wish?.images[0]}
-                  width="0"
                 />
               ) : (
                 <AiFillGift

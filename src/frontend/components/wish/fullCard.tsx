@@ -1,5 +1,6 @@
-import { Avatar, Button, Chip, Drawer, Link, LinkIcon } from "@heroui/react";
+import { Avatar, Button, Chip, Drawer, Link } from "@heroui/react";
 import { observer } from "mobx-react-lite";
+import { MdOpenInNew } from "react-icons/md";
 
 import MarketIcon from "../marketIcon";
 import { QuestionList } from "../questions/list";
@@ -64,11 +65,12 @@ const WishFullCard = observer(
                   <Link
                     className="w-full button button--secondary button--lg no-underline"
                     href={wish.link}
+                    target="_blank"
                   >
                     <MarketIcon link={wish.link || ""} />
 
                     <span className="mx-auto my-2">Перейти в магазин</span>
-                    <LinkIcon className="my-auto" />
+                    <MdOpenInNew className="my-auto" />
                   </Link>
                 ) : null}
 

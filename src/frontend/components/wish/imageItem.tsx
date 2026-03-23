@@ -1,8 +1,9 @@
 "use client";
 import { Button, Card, Spinner, ProgressBar } from "@heroui/react";
-import Image from "next/image";
 import { ReactNode, useEffect, useState } from "react";
 import { MdDelete } from "react-icons/md";
+
+import { ResponsiveImage } from "../responsive-image";
 
 import { authManager } from "@/lib/clientAuth";
 import { readableBytes } from "@/lib/file";
@@ -42,12 +43,8 @@ export const ImageItem = ({
     }
   }, []);
 
-  const [isUploading, setIsUploading] = useState(false);
-
   const uploadFile = async () => {
     if (!uploadImage.file) return;
-
-    setIsUploading(true);
 
     const formData = new FormData();
     formData.append("file", uploadImage.file);
@@ -89,7 +86,6 @@ export const ImageItem = ({
         ? onUpload(uploadImage.key, JSON.parse(response).image_url)
         : null;
     } finally {
-      setIsUploading(false);
     }
   };
 
@@ -98,12 +94,10 @@ export const ImageItem = ({
       <Card.Content className="px-2 p-1 w-full flex touch-none">
         <div className="flex flex-row">
           {uploadImage.url ? (
-            <Image
+            <ResponsiveImage
               alt="Загруженное изображение"
               className="object-cover cursor-pointer h-16 w-16 rounded-xl"
-              height={50}
               src={uploadImage.url}
-              width={80}
             />
           ) : (
             <Spinner className="my-auto" />

@@ -1,9 +1,10 @@
 "use client";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 
-import { IArticle } from "@/lib/models/article";
+import { ResponsiveImage } from "../responsive-image";
+
 import { editorjsParse } from "@/lib/editorjs-parser/parser";
+import { IArticle } from "@/lib/models/article";
 
 export const ArticleDetails = observer(({ article }: { article: IArticle }) => {
   if (!article.content) {
@@ -14,7 +15,7 @@ export const ArticleDetails = observer(({ article }: { article: IArticle }) => {
   return (
     <div className="w-full">
       <div className="max-w-200 mx-auto">
-        <Image
+        <ResponsiveImage
           alt="Изображение статьи"
           className="mx-auto object-cover w-full rounded-xl"
           src={article.image}

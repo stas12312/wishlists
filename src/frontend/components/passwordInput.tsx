@@ -5,7 +5,6 @@ import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 export default function PasswordInput({
   value,
   onChange,
-  onValueChange,
   onBlur,
   isInvalid,
   label,
@@ -16,7 +15,6 @@ export default function PasswordInput({
 }: {
   value?: string;
   onChange?: { (e: React.ChangeEvent<HTMLInputElement>): void };
-  onValueChange?: { (value: string): void };
   onBlur?: { (e: React.ChangeEvent<HTMLInputElement>): void };
   errorMessage?: string;
   label: string;

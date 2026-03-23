@@ -1,8 +1,8 @@
 "use client";
 
 import { Card, Chip, Skeleton } from "@heroui/react";
-import { forwardRef, useState } from "react";
 import Link from "next/link";
+import { forwardRef, useState } from "react";
 
 import { VisibleChip } from "../visibleChip";
 

@@ -1,18 +1,18 @@
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
 import { Chip } from "@heroui/react";
 import { AiFillGift } from "react-icons/ai";
-import Image from "next/image";
+import { Navigation } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 import Desirability from "../desirability";
+import { ResponsiveImage } from "../responsive-image";
 
 import WishlistStatus from "./wishlistStatus";
 
+import { CURRENCY_BY_CODE } from "@/lib/currency";
+import { IWish } from "@/lib/models/wish";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { IWish } from "@/lib/models/wish";
-import { CURRENCY_BY_CODE } from "@/lib/currency";
 
 export const ImageSwiper = ({ wish }: { wish: IWish }) => {
   return (
@@ -23,7 +23,7 @@ export const ImageSwiper = ({ wish }: { wish: IWish }) => {
         </span>
       </div>
       <div
-        className={`bg-linear-to-br from-default to-default-100 rounded-large w-full flex h-full`}
+        className={`bg-linear-to-br from-default to-default-100 rounded-large w-full flex h-full rounded-3xl`}
       >
         {wish.images?.length ? (
           <Swiper
@@ -39,13 +39,9 @@ export const ImageSwiper = ({ wish }: { wish: IWish }) => {
             {wish.images.map((image) => {
               return (
                 <SwiperSlide key={image}>
-                  <div className="flex justify-center h-64">
-                    <Image
-                      unoptimized
-                      alt=""
-                      className="object-cover"
-                      fill={true}
-                      height={0}
+                  <div className="flex justify-center">
+                    <ResponsiveImage
+                      className="object-cover  rounded-3xl"
                       src={image}
                     />
                   </div>
@@ -60,12 +56,12 @@ export const ImageSwiper = ({ wish }: { wish: IWish }) => {
 
       <div className="flex bottom-1.5 px-1 w-full absolute z-10">
         {wish.desirability && wish.desirability > 1 ? (
-          <Chip>
+          <Chip size="lg">
             <Desirability onlyRead value={wish.desirability} />
           </Chip>
         ) : null}
         {wish.cost ? (
-          <Chip className="ml-auto mr-0">
+          <Chip className="ml-auto mr-0" size="lg">
             {wish.cost.toLocaleString() +
               ` ${CURRENCY_BY_CODE.get(wish.currency)?.symbol || CURRENCY_BY_CODE.get("RUB")?.symbol}`}
           </Chip>

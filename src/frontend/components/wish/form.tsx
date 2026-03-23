@@ -388,7 +388,3 @@ export default function WishForm(props: {
     </>
   );
 }
-
-function isNumeric(value: string) {
-  return /^\d+$/.test(value);
-}

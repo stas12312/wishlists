@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import Image from "next/image";
+
+import { ResponsiveImage } from "../responsive-image";
 
 import { itemVariants } from "./main";
 
@@ -27,13 +28,10 @@ export const DescriptionBlock = ({
       whileInView="show"
     >
       {imageUrl ? (
-        <Image
+        <ResponsiveImage
           alt="Изображение описания"
           className="shadow-md  border w-full rounded-3xl"
-          height="0"
-          sizes="100vw"
           src={imageUrl}
-          width="0"
         />
       ) : null}
 
