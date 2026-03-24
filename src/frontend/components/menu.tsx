@@ -44,7 +44,7 @@ const ITEMS: {
     title: "Друзья",
     href: "/friends",
     counterName: "requests",
-    selectedIconClassName: "text-primary",
+    selectedIconClassName: "text-accent",
   },
   {
     icon: <MdEventNote />,
@@ -105,7 +105,7 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
     );
   } else {
     return (
-      <div className="bg-white dark:bg-default/50 backdrop-blur-xl shadow-medium m-2 rounded-2xl overflow-hidden p-1 ring ring-gray-500/30">
+      <div className="bg-white dark:bg-default/50 backdrop-blur-xl shadow-medium m-2 rounded-3xl overflow-hidden p-1 ring ring-gray-500/30">
         {ITEMS.map((item) => (
           <DesktopMenuItem
             key={item.title}
@@ -121,7 +121,7 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
         <Separator className="my-2" />
         <Link
           key="Выход"
-          className="w-full flex gap-2 py-1 pl-3 rounded-xl ease-in items-center hover:bg-danger-soft-hover text-lg cursor-pointer text-danger  no-underline "
+          className="w-full flex gap-2 py-1 pl-3 rounded-3xl ease-in items-center hover:bg-danger-soft-hover text-lg cursor-pointer text-danger  no-underline "
           onPress={() => {
             userStore.logout();
             logout();
