@@ -1,4 +1,4 @@
-import { Modal, Spinner, ListBox, ListBoxItem } from "@heroui/react";
+import { Modal, Spinner, ListBox } from "@heroui/react";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 
@@ -22,7 +22,7 @@ const SelectWishlistModal = observer(
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <Modal.Backdrop variant="blur">
           <Modal.Container className="min-h-32" placement="center" size="lg">
-            <Modal.Dialog>
+            <Modal.Dialog className="relative">
               <Modal.Header className="flex flex-col gap-1 text-center">
                 <Modal.Heading>Выберите вишлист</Modal.Heading>
               </Modal.Header>
@@ -79,43 +79,42 @@ const WishlistSelector = observer(
     }
     const items = wishlists.map((wishlist) => {
       return (
-        <ListBoxItem
+        <ListBox.Item
           key={wishlist.uuid}
-          className="p-2 border-default-200 box-border my-0.5 border"
+          className="p-2 border-gray-600 box-border border flex flex-col rounded-3xl"
+          id={wishlist.uuid}
         >
-          <p className="text-lg text-ellipsis truncate overflow-hidden">
-            {wishlist.name}
-          </p>
-          <small className="text-tiny text-default-500">
-            {wishlist.description}
-          </small>
-        </ListBoxItem>
+          <p className="text-lg/4 font-bold text-center">{wishlist.name}</p>
+          <small className="text-sm/2 text-left">{wishlist.description}</small>
+        </ListBox.Item>
       );
     });
 
     return (
       <>
-        <div className="relative">
-          {isLoading ? (
-            <Spinner className="h-full mt-auto absolute z-20 bg-content1 w-full opacity-80" />
-          ) : null}
-          <ListBox
-            aria-label="Move wish"
-            className="text-center"
-            disabledKeys={excludeWishlists}
-            onAction={async (key) => {
-              setIsLoading(true);
-              await onSelect(
-                wishlists.filter((wishlist) => {
-                  return wishlist.uuid === key.toString();
-                })[0],
-              );
-              setIsLoading(false);
-            }}
-          >
-            {items}
-          </ListBox>
-        </div>
+        {isLoading ? (
+          <div className="min-h-20">
+            <Spinner className="absolute z-20 top-1/2 left-1/2" />
+          </div>
+        ) : (
+          <div>
+            <ListBox
+              aria-label="Move wish"
+              disabledKeys={excludeWishlists}
+              onAction={async (key) => {
+                setIsLoading(true);
+                await onSelect(
+                  wishlists.filter((wishlist) => {
+                    return wishlist.uuid === key.toString();
+                  })[0],
+                );
+                setIsLoading(false);
+              }}
+            >
+              {items}
+            </ListBox>
+          </div>
+        )}
       </>
     );
   },

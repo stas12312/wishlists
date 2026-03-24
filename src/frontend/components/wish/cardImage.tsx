@@ -49,7 +49,7 @@ const CardImage = ({
         ) : null}
         {wish.cost ? (
           <Chip
-            className="ml-auto mr-0 bg-default/60 backdrop-blur-lg borderborder-gray-500/30"
+            className="ml-auto mr-0 bg-default/60 backdrop-blur-lg border border-gray-500/30"
             size="lg"
           >
             {wish.cost.toLocaleString() +
