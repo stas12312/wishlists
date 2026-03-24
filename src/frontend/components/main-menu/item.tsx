@@ -54,7 +54,7 @@ export const DesktopMenuItem = observer(
     return (
       <Link
         key={item.title}
-        className={`w-full flex gap-2 py-1 pl-3 hover:transition-colors rounded-xl ease-in items-center hover:bg-default-hover text-lg ${params.isCurrent ? "bg-default" : null} no-underline `}
+        className={`w-full flex gap-2 py-1 pl-3 hover:transition-colors rounded-3xl ease-in items-center hover:bg-default-hover text-lg ${params.isCurrent ? "bg-default" : null} no-underline `}
         href={item.href}
       >
         <span
