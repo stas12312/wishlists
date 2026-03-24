@@ -35,7 +35,7 @@ const WishlistStatus = ({
             initial="initial"
             variants={defaultVariants}
           >
-            <Chip color="success" size="lg" variant="primary">
+            <Chip color="success" size={size} variant="primary">
               Забронировано
               {wish.actions.cancel_reserve ? " вами" : null}
             </Chip>

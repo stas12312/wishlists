@@ -16,7 +16,7 @@ export function WishItemMenu({
   const menuItems = getMenuItemsByActions(wish.actions);
   return (
     <Dropdown>
-      <MenuTrigger name="wish-menu" />
+      <MenuTrigger className="backdrop-blur-sm" name="wish-menu" />
       <Dropdown.Popover>
         <DropdownMenu aria-label="Wish actions" onAction={handeAction}>
           {menuItems.map((value) => (

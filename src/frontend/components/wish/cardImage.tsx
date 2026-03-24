@@ -21,8 +21,8 @@ const CardImage = ({
   iconClassName?: string;
 }) => {
   return (
-    <div className={twMerge("relative h-full", className)}>
-      <div className="bg-linear-to-br from-default to-default/50 rounded-large flex h-full w-full">
+    <div className={twMerge("relative h-full  rounded-3xl", className)}>
+      <div className="bg-linear-to-br from-default to-default/50 rounded-3xl flex h-full w-full">
         {wish.images?.length ? (
           <ResponsiveImage
             alt="Изображение карточки желания"
@@ -38,14 +38,20 @@ const CardImage = ({
           <WishlistStatus size="lg" wish={wish} />
         </span>
       </div>
-      <div className="flex absolute bottom-1.5 px-1 w-full z-10">
+      <div className="flex absolute bottom-2 px-3 w-full z-10">
         {wish.desirability && wish.desirability > 1 ? (
-          <Chip size="lg">
+          <Chip
+            className="bg-default/60 backdrop-blur-lg border border-gray-500/30"
+            size="lg"
+          >
             <Desirability onlyRead value={wish.desirability} />
           </Chip>
         ) : null}
         {wish.cost ? (
-          <Chip className="ml-auto mr-0" size="lg">
+          <Chip
+            className="ml-auto mr-0 bg-default/60 backdrop-blur-lg borderborder-gray-500/30"
+            size="lg"
+          >
             {wish.cost.toLocaleString() +
               ` ${CURRENCY_BY_CODE.get(wish.currency)?.symbol || CURRENCY_BY_CODE.get("RUB")?.symbol}`}
           </Chip>

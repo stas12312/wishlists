@@ -54,14 +54,17 @@ export const ImageSwiper = ({ wish }: { wish: IWish }) => {
         )}
       </div>
 
-      <div className="flex bottom-1.5 px-1 w-full absolute z-10">
+      <div className="flex bottom-2 px-3 w-full absolute z-10">
         {wish.desirability && wish.desirability > 1 ? (
-          <Chip size="lg">
+          <Chip className="bg-default/60  backdrop-blur-lg" size="lg">
             <Desirability onlyRead value={wish.desirability} />
           </Chip>
         ) : null}
         {wish.cost ? (
-          <Chip className="ml-auto mr-0" size="lg">
+          <Chip
+            className="ml-auto mr-0 bg-default/60 backdrop-blur-lg"
+            size="lg"
+          >
             {wish.cost.toLocaleString() +
               ` ${CURRENCY_BY_CODE.get(wish.currency)?.symbol || CURRENCY_BY_CODE.get("RUB")?.symbol}`}
           </Chip>
