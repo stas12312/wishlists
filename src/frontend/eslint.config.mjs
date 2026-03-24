@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { fixupConfigRules, fixupPluginRules } from "@eslint/compat";
 import { FlatCompat } from "@eslint/eslintrc";
 import js from "@eslint/js";
+import nextPlugin from "@next/eslint-plugin-next";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 import _import from "eslint-plugin-import";
@@ -12,6 +13,7 @@ import prettier from "eslint-plugin-prettier";
 import react from "eslint-plugin-react";
 import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
+import tseslint from "typescript-eslint";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,9 +29,23 @@ export default [
       "plugin:prettier/recommended",
       "plugin:react-hooks/recommended",
       "plugin:jsx-a11y/recommended",
-      "plugin:@next/next/recommended",
     ),
   ),
+  {
+    files: ["**/*.{ts,tsx}"],
+    plugins: {
+      "@next/next": nextPlugin,
+    },
+    rules: {
+      ...nextPlugin.configs.recommended.rules,
+    },
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: {
+        project: true,
+      },
+    },
+  },
   {
     ignores: [
       ".now/*",
