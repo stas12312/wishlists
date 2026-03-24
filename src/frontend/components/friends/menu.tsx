@@ -15,8 +15,8 @@ const FriendMenu = observer(
           <Dropdown.Popover>
             <Dropdown.Menu aria-label="Wish actions" onAction={handleAction}>
               <Dropdown.Item
-                key="delete"
                 className="text-danger"
+                id="delete"
                 variant="danger"
               >
                 <MdDelete />
