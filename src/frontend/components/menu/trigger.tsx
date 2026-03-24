@@ -1,5 +1,6 @@
 import { Popover } from "@heroui/react";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { twMerge } from "tailwind-merge";
 
 const MenuTrigger = ({
   className = "",
@@ -10,7 +11,10 @@ const MenuTrigger = ({
 }) => {
   return (
     <Popover.Trigger
-      className={`button button--ghost ${className}`}
+      className={twMerge(
+        "button bg-default/50 hover:bg-default/60 shadow-xl",
+        className,
+      )}
       data-qa={name}
     >
       <BsThreeDotsVertical />

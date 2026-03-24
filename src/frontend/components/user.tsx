@@ -12,6 +12,7 @@ import {
   toast,
 } from "@heroui/react";
 import Link from "next/link";
+import { twMerge } from "tailwind-merge";
 
 import { ThemeSwitcher } from "./themeSwitcher";
 import { UserAvatar } from "./userAvatar";
@@ -110,10 +111,10 @@ export const UserChip = ({
   const chipStyle = chipVariants({ variant: variant });
   return (
     <Link
-      className={`${chipStyle.base()} ${className}`}
+      className={twMerge(chipStyle.base(), className)}
       href={getUserLink(user.username)}
     >
-      <Avatar>
+      <Avatar size="sm">
         <Avatar.Image src={user.image} />
       </Avatar>
       {user.name}

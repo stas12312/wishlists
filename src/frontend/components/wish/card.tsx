@@ -118,7 +118,7 @@ export const WishItem = observer(
       <>
         <div className="md:hover:scale-[1.03] duration-200 relative">
           <Card
-            className={`flex-col ${withUser ? "h-80" : "h-70"} w-full ring-1 ring-gray-500/30 cursor-pointer p-0`}
+            className={`flex-col ${withUser ? "h-90" : "h-70"} w-full ring-1 ring-gray-500/30 cursor-pointer p-0`}
           >
             <button
               className="cursor-pointer card h-full p-0 gap-0"
@@ -136,24 +136,27 @@ export const WishItem = observer(
 
               <div className="bg-default/50 absolute z-0 inset-0 roundend-large backdrop-saturate-200 backdrop-contrast-125" />
 
-              <Card.Header className="flex-col items-start p-0 z-10">
-                <div className="flex flex-row justify-between w-full h-14 px-2">
-                  <p className="font-bold my-auto flex flex-col text-left overflow-hidden text-ellipsis truncate">
-                    <span className="text-xl" title={wish.name}>
+              <Card.Header className="flex-col items-start p-0 z-10 retative">
+                <div className="flex flex-row justify-between w-full h-14 px-2.5 pt-2">
+                  <div className="my-auto flex flex-col text-left overflow-hidden text-ellipsis truncate ">
+                    <span className="text-xl/5 font-bold" title={wish.name}>
                       {wish.name}
                     </span>
-                    <span className="text-gray text-sm" title={wish.comment}>
+                    <span
+                      className="text-gray text-[14px] text-sm"
+                      title={wish.comment}
+                    >
                       {wish.comment}
                     </span>
-                  </p>
+                  </div>
                   {showMenu(wish.actions) ? (
-                    <span className="flex items-center">
+                    <span className="flex items-center absolute top-2 right-2 border border-gray-500/30 rounded-3xl">
                       <WishItemMenu handeAction={handleOnAction} wish={wish} />
                     </span>
                   ) : null}
                 </div>
               </Card.Header>
-              <Card.Content className="p-0 overflow-y-auto ">
+              <Card.Content className="p-0 overflow-y-auto rounded-3xl">
                 <CardImage
                   removeWrapper
                   className="h-full"
@@ -162,8 +165,8 @@ export const WishItem = observer(
                 />
               </Card.Content>
               {withUser ? (
-                <Card.Footer className="flex justify-between">
-                  <UserChip user={wish.user} />
+                <Card.Footer className="flex justify-between p-2">
+                  <UserChip user={wish.user} variant="tertiary" />
                   {wish.wishlist.date ? (
                     <Chip color="warning">
                       {new Date(wish.wishlist.date).toLocaleDateString()}

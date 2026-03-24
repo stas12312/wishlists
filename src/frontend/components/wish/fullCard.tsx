@@ -1,13 +1,13 @@
-import { Avatar, Button, Chip, Drawer, Link } from "@heroui/react";
+import { Button, Drawer, Link } from "@heroui/react";
 import { observer } from "mobx-react-lite";
 import { MdOpenInNew } from "react-icons/md";
 
 import MarketIcon from "../marketIcon";
 import { QuestionList } from "../questions/list";
+import { UserChip } from "../user";
 
 import { ImageSwiper } from "./swiper";
 
-import { getUserLink } from "@/lib/label";
 import { IWish } from "@/lib/models/wish";
 import { getMenuItemsByActions } from "@/lib/wish/menu";
 import userStore from "@/store/userStore";
@@ -43,17 +43,10 @@ const WishFullCard = observer(
               <Drawer.Body className="flex flex-col gap-4">
                 {withUser ? (
                   <div className="mx-auto">
-                    <Link
+                    <UserChip
                       className="md:hover:scale-[1.03] transition"
-                      href={getUserLink(wish.user.username)}
-                    >
-                      <Chip>
-                        <Avatar>
-                          <Avatar.Image src={wish.user.image} />
-                        </Avatar>
-                        {wish.user.name}
-                      </Chip>
-                    </Link>
+                      user={wish.user}
+                    />
                   </div>
                 ) : null}
 
