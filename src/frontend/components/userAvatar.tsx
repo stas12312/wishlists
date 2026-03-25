@@ -10,7 +10,7 @@ export const UserAvatar = ({
   avatarClassName = "",
 }: {
   image?: string;
-  name: ReactNode;
+  name: string;
   className?: string;
   description?: ReactNode;
   size?: "sm" | "md" | "lg";
@@ -20,7 +20,7 @@ export const UserAvatar = ({
     <div className={`inline-flex items-center gap-2 ${className}`}>
       <Avatar className={avatarClassName} size={size}>
         <Avatar.Image alt="" src={image} />
-        <Avatar.Fallback>JG</Avatar.Fallback>
+        <Avatar.Fallback>{name.length ? name[0] : null}</Avatar.Fallback>
       </Avatar>
       <div className="flex flex-col items-start">
         <span className="text-sm">{name}</span>
