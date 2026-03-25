@@ -78,16 +78,16 @@ export const QuestionItem = ({
         {isWithWish ? (
           <>
             <h2 className="text-2xl col-span-full">{question.wish?.name}</h2>
-            <div className="col-span-1 flex flex-col gap-2">
+            <div className="col-span-1 flex flex-col gap-2 h-60 bg-linear-to-br from-default to-default/20 rounded-3xl">
               {question.wish?.images?.length ? (
                 <ResponsiveImage
                   alt="Изображение желаания"
-                  className="object-cover h-60 md:h-full w-full rounded-3xl"
+                  className="object-cover md:h-full w-full rounded-3xl "
                   src={question.wish?.images[0]}
                 />
               ) : (
                 <AiFillGift
-                  className={`text-8xl mx-auto my-auto bg-linear-to-br from-default to-default-100 w-full rounded-3xl h-40`}
+                  className={`text-8xl mx-auto my-auto  w-full rounded-3xl h-20`}
                 />
               )}
             </div>
