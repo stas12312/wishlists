@@ -39,28 +39,28 @@ const UserStatus = ({
       break;
     case FriendStatus.has_incoming_request:
       item = (
-        <Chip color="warning" size="lg">
+        <Chip color="warning" size="lg" variant="primary">
           Отправил вам заявку в друзья
         </Chip>
       );
       break;
     case FriendStatus.has_outcoming_request:
       item = (
-        <Chip color="warning" size="lg">
+        <Chip color="warning" size="lg" variant="primary">
           Заявка отправлена
         </Chip>
       );
       break;
     case FriendStatus.is_friend:
       item = (
-        <Chip color="success" size="lg">
+        <Chip color="success" size="lg" variant="primary">
           Ваш друг
         </Chip>
       );
       break;
     case FriendStatus.is_yourself:
       item = (
-        <Chip color="success" size="lg">
+        <Chip color="success" size="lg" variant="primary">
           Вы
         </Chip>
       );
