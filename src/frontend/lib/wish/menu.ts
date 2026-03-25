@@ -41,7 +41,7 @@ const ACTIONS: IWishMenuItem[] = [
   {
     actionKey: "edit",
     key: "move",
-    className: "text-primary",
+    className: "text-accent",
     title: "Перенести",
     icon: MdDriveFileMove,
     variant: "primary",
@@ -49,7 +49,7 @@ const ACTIONS: IWishMenuItem[] = [
   {
     actionKey: null,
     key: "copy",
-    className: "text-primary",
+    className: "text-accent",
     icon: MdContentCopy,
     variant: "primary",
 
@@ -59,7 +59,7 @@ const ACTIONS: IWishMenuItem[] = [
   },
   {
     key: "reserve",
-    className: "text-primary",
+    className: "text-accent",
     title: "Забронировать",
     icon: MdOutlineBookmarkAdded,
     variant: "tertiary",
@@ -73,21 +73,21 @@ const ACTIONS: IWishMenuItem[] = [
   },
   {
     key: "make_full",
-    className: "text-primary",
+    className: "text-accent",
     title: "Исполнено",
     icon: MdOutlineCheck,
     variant: "primary",
   },
   {
     key: "open_wishlist",
-    className: "text-primary",
+    className: "text-accent",
     title: "Открыть вишлист",
     icon: MdOutlineOpenInNew,
     variant: "primary",
   },
   {
     key: "cancel_full",
-    className: "text-primary",
+    className: "text-accent",
     title: "Не исполнено",
     icon: MdOutlineCancel,
     variant: "primary",
