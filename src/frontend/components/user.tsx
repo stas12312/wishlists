@@ -9,6 +9,7 @@ import {
   Dropdown,
   Label,
   Separator,
+  Skeleton,
   toast,
 } from "@heroui/react";
 import Link from "next/link";
@@ -41,22 +42,17 @@ export const UserItem = observer(() => {
       router.push("/settings");
     }
   }
-
   return (
     <>
-      {user ? (
+      {user.id ? (
         <Dropdown>
           <Dropdown.Trigger>
-            {userStore.isLoading ? (
-              <UserAvatar description={user.email} name={user.name} size="sm" />
-            ) : (
-              <UserAvatar
-                className="cursor-pointer"
-                description={user.email}
-                name={user.name}
-                size="sm"
-              />
-            )}
+            <UserAvatar
+              className="cursor-pointer"
+              description={user.email}
+              name={user.name}
+              size="md"
+            />
           </Dropdown.Trigger>
 
           <Dropdown.Popover placement="bottom end">
@@ -93,7 +89,15 @@ export const UserItem = observer(() => {
             </Dropdown.Menu>
           </Dropdown.Popover>
         </Dropdown>
-      ) : null}
+      ) : (
+        <div className="flex gap-2">
+          <Skeleton className="h-10 w-10 rounded-3xl" />
+          <div className="flex flex-col gap-2 my-auto">
+            <Skeleton className="h-4 w-20 rounded-3xl" />
+            <Skeleton className="h-3 w-24 rounded-3xl" />
+          </div>
+        </div>
+      )}
     </>
   );
 });
