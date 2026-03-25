@@ -13,7 +13,7 @@ export const QuestionPage = observer(() => {
   return (
     <div className="flex flex-col">
       <PageHeader title="Вопросы" />
-      <Tabs className="mx-auto">
+      <Tabs className="mx-auto w-full">
         <Tabs.ListContainer className="flex justify-center">
           <Tabs.List className="w-100">
             <Tabs.Tab id="asked-questions">
