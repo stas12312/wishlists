@@ -50,7 +50,7 @@ const UserCard = observer(({ username }: { username: string }) => {
   }, []);
 
   return (
-    <div className="flex justify-center flex-col my-4 gap-4">
+    <div className="justify-center  my-4 gap-4 rounded-3xl p-4">
       {isLoading ? (
         <CardSkeleton />
       ) : (
@@ -61,6 +61,7 @@ const UserCard = observer(({ username }: { username: string }) => {
           variants={defaultVariants}
         >
           <UserAvatar
+            avatarClassName={"h-[56px] w-[56px]"}
             description={
               <Link
                 className="text-lg text-accent"
@@ -69,14 +70,17 @@ const UserCard = observer(({ username }: { username: string }) => {
                 <span>{wrapUsername(user.username)}</span>
               </Link>
             }
+            image={user.image}
             name={<span className="text-2xl">{user.name}</span>}
+            size="lg"
           />
           <div className="mx-auto flex gap-1 mt-2 h-7">
             {user.birthday ? (
               <Chip
+                color="warning"
                 size="lg"
                 title={`День рождения ${getDisplayDate(user.birthday)}`}
-                variant="secondary"
+                variant="primary"
               >
                 <MdCake />
                 {getDisplayDate(user.birthday)}

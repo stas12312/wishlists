@@ -7,16 +7,18 @@ export const UserAvatar = ({
   className,
   description,
   size = "md",
+  avatarClassName = "",
 }: {
   image?: string;
   name: ReactNode;
   className?: string;
   description?: ReactNode;
   size?: "sm" | "md" | "lg";
+  avatarClassName?: string;
 }) => {
   return (
     <div className={`inline-flex items-center gap-2 ${className}`}>
-      <Avatar size={size}>
+      <Avatar className={avatarClassName} size={size}>
         <Avatar.Image alt="" src={image} />
         <Avatar.Fallback>JG</Avatar.Fallback>
       </Avatar>
