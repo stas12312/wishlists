@@ -1,3 +1,5 @@
+import { twMerge } from "tailwind-merge";
+
 import { ResponsiveImage } from "./responsive-image";
 
 import { getDomainFromUrl } from "@/lib/url";
@@ -22,11 +24,9 @@ export const ICON_BY_DOMAIN = new Map<string, string>([
 const MarketIcon = ({
   link,
   className = "",
-  height = 32,
 }: {
   link?: string;
   className?: string;
-  height?: number;
 }) => {
   if (!link) {
     return;
@@ -40,8 +40,7 @@ const MarketIcon = ({
   return (
     <ResponsiveImage
       alt={ICON_BY_DOMAIN.get(domain) as string}
-      className={`rounded-xl ${className}`}
-      height={height}
+      className={twMerge("rounded-3xl h-8", className)}
       src={ICON_BY_DOMAIN.get(domain) as string}
     />
   );
