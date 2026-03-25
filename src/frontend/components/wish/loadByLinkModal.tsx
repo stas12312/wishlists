@@ -3,6 +3,7 @@ import {
   Alert,
   Button,
   Chip,
+  ErrorMessage,
   FieldError,
   Form,
   InputGroup,
@@ -87,8 +88,11 @@ const LoadByLinkModal = ({
     <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
       <Modal.Backdrop variant="blur">
         <Modal.Container placement="center">
-          <Modal.Dialog>
-            <Modal.Header className="mx-auto">Автозаполнение</Modal.Header>
+          <Modal.Dialog className="max-w-180">
+            <Modal.Header className="mx-auto">
+              <Modal.CloseTrigger />
+              <Modal.Heading>Автозаполнение</Modal.Heading>
+            </Modal.Header>
             <Modal.Body className="p-1">
               <>
                 {!serviceError ? (
@@ -115,33 +119,33 @@ const LoadByLinkModal = ({
                           }
                           return null;
                         }}
+                        value={link}
                         variant="secondary"
+                        onChange={(value) => {
+                          setLink(value);
+                        }}
+                        onPaste={async (
+                          event: ClipboardEvent<HTMLInputElement>,
+                        ) => {
+                          event.preventDefault();
+                          const link = extractLink(
+                            event.clipboardData.getData("Text"),
+                          );
+                          setLink(link);
+
+                          await parseByUrl(link);
+                        }}
                       >
                         <Label>Ссылка на товар</Label>
                         <div className="flex gap-2">
                           <InputGroup className="w-full">
-                            <InputGroup.Input
-                              value={link}
-                              onChange={(e) => {
-                                setLink(e.target.value);
-                              }}
-                              onPaste={async (
-                                event: ClipboardEvent<HTMLInputElement>,
-                              ) => {
-                                event.preventDefault();
-                                const link = extractLink(
-                                  event.clipboardData.getData("Text"),
-                                );
-                                setLink(link);
-
-                                await parseByUrl(link);
-                              }}
-                            />
+                            <InputGroup.Input />
                           </InputGroup>
                           <MarketIcon className="my-auto" link={link} />
                         </div>
 
-                        <FieldError>{error}</FieldError>
+                        <FieldError />
+                        <ErrorMessage>{error}</ErrorMessage>
                       </TextField>
 
                       <Button fullWidth isPending={isLoading} type="submit">
@@ -218,8 +222,13 @@ const AvailableShops = ({
 
   return shops.map((value) => {
     return (
-      <Chip key={value.name} size="lg" title={value.name}>
-        <MarketIcon height={22} link={value.url} />
+      <Chip
+        key={value.name}
+        className="flex gap-2"
+        size="lg"
+        title={value.name}
+      >
+        <MarketIcon link={value.url} />
         {value.name}
       </Chip>
     );
