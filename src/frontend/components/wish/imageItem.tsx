@@ -100,7 +100,9 @@ export const ImageItem = ({
               src={uploadImage.url}
             />
           ) : (
-            <Spinner className="my-auto" />
+            <span className="h-16 w-16 flex">
+              <Spinner className="my-auto mx-auto" />
+            </span>
           )}
 
           <div className="w-full flex flex-row gap-1">
@@ -116,7 +118,11 @@ export const ImageItem = ({
                     aria-label="Uploading"
                     size="sm"
                     value={uploadProgress.percentage}
-                  />
+                  >
+                    <ProgressBar.Track>
+                      <ProgressBar.Fill />
+                    </ProgressBar.Track>
+                  </ProgressBar>
                 </div>
               ) : null}
             </div>
