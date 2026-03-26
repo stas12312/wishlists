@@ -25,7 +25,7 @@ export const MobileMenuItem = observer((props: IMenuItemProps) => {
   const item = props.item;
   const params = props.params;
   return (
-    <div className="h-full w-full p-4 flex justify-center rounded-xl">
+    <div className="h-full w-full py-4 flex justify-center rounded-3xl">
       <Badge.Anchor color="primary">
         <Link className={`flex flex-col no-underline`} href={item.href}>
           <div
@@ -37,7 +37,7 @@ export const MobileMenuItem = observer((props: IMenuItemProps) => {
           >
             {item.icon}
           </div>
-          <span className="text-tiny">{item.title}</span>
+          <span className="text-[14px]">{item.title}</span>
         </Link>
         {params.counter ? (
           <Badge color="accent" variant="primary">
