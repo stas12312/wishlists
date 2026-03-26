@@ -1,4 +1,11 @@
-import { Button, Input, Label, Modal, TextField } from "@heroui/react";
+import {
+  Button,
+  FieldError,
+  Input,
+  Label,
+  Modal,
+  TextField,
+} from "@heroui/react";
 import { ReactNode, useEffect, useRef, useState } from "react";
 
 const ConfirmationModal = ({
@@ -61,18 +68,20 @@ const ConfirmationModal = ({
             <Modal.Header className="flex flex-col gap-1 text-center">
               <Modal.Heading> {title}</Modal.Heading>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className="p-1">
               <div className="flex flex-col gap-2">
                 {message}
                 {confirmByText ? (
-                  <TextField>
+                  <TextField
+                    value={text}
+                    variant="secondary"
+                    onChange={(value) => {
+                      setText(value);
+                    }}
+                  >
                     <Label>{confirmLabel}</Label>
-                    <Input
-                      value={text}
-                      onChange={(e) => {
-                        setText(e.target.value);
-                      }}
-                    />
+                    <Input />
+                    <FieldError />
                   </TextField>
                 ) : null}
               </div>
