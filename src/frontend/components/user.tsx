@@ -55,7 +55,7 @@ export const UserItem = observer(() => {
             />
           </Dropdown.Trigger>
 
-          <Dropdown.Popover placement="bottom end">
+          <Dropdown.Popover className="min-w-62.5" placement="bottom end">
             <div className="p-2">
               <ThemeSwitcher />
             </div>
