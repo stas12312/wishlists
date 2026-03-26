@@ -35,6 +35,7 @@ const Filter = ({
           <Badge.Anchor>
             <Button
               isIconOnly
+              className="shadow-lg"
               data-qa="select-filters"
               variant="tertiary"
               onPress={filterOverlay.toggle}
