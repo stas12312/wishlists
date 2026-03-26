@@ -16,7 +16,7 @@ export const DeleteAccountButton = observer(() => {
     <>
       <Button
         fullWidth
-        variant="danger"
+        variant="danger-soft"
         onPress={async () => {
           setIsOpen(true);
         }}

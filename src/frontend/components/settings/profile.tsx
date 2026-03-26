@@ -1,5 +1,6 @@
 import {
   Button,
+  ErrorMessage,
   FieldError,
   Form,
   Input,
@@ -78,13 +79,14 @@ const ProfileForm = observer(() => {
     } else {
       setUser(updatedUser);
       userStore.reloadMe();
-      toast("Профиль обновлен");
+      toast.success("Профиль обновлен");
     }
     setIsProfileLoading(false);
   }
 
   return (
     <Form
+      className="flex flex-col"
       validationBehavior="native"
       validationErrors={errors}
       onSubmit={onSubmit}
@@ -98,17 +100,16 @@ const ProfileForm = observer(() => {
               return "Имя пользователя должно содержать не менее двух символов";
             }
           }}
+          value={user.username}
           variant="secondary"
+          onChange={(value) => {
+            setUser({ ...user, username: value });
+          }}
         >
           <Label>Имя пользователя</Label>
           <InputGroup>
             <InputGroup.Prefix>@</InputGroup.Prefix>
-            <InputGroup.Input
-              value={user.username}
-              onChange={(e) => {
-                setUser({ ...user, username: e.target.value });
-              }}
-            />
+            <InputGroup.Input />
           </InputGroup>
           <FieldError />
         </TextField>
@@ -120,15 +121,14 @@ const ProfileForm = observer(() => {
               return "Имя должно содержать не менее трех символов";
             }
           }}
+          value={user.name}
           variant="secondary"
+          onChange={(value) => {
+            setUser({ ...user, name: value });
+          }}
         >
           <Label>Имя</Label>
-          <Input
-            value={user.name}
-            onChange={(e) => {
-              setUser({ ...user, name: e.target.value });
-            }}
-          />
+          <Input />
           <FieldError />
         </TextField>
         <CustomDatePicker
@@ -145,13 +145,18 @@ const ProfileForm = observer(() => {
       <span className="text-sm">Изображение профиля</span>
       <UploadButton
         accept={ACCEPTED_FILE_EXTS}
-        className="h-25 w-30 object-cover"
+        className="h-25 w-30 object-cover rounded-3xl"
         handleFile={handleFile}
         isLoading={imageIsLoading}
         previewUrl={user.image}
       />
-      <span className="text-danger text-tiny">{errors.image}</span>
-      <Button fullWidth isPending={isProfileLoading} type="submit">
+      <ErrorMessage>{errors.image}</ErrorMessage>
+      <Button
+        fullWidth
+        className="mt-2"
+        isPending={isProfileLoading}
+        type="submit"
+      >
         Сохранить
       </Button>
     </Form>

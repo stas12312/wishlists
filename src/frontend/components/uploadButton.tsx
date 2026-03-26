@@ -1,6 +1,7 @@
 import { useId, useState } from "react";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { Spinner } from "@heroui/react";
+import { twMerge } from "tailwind-merge";
 
 import { ResponsiveImage } from "./responsive-image";
 const UploadButton = ({
@@ -48,10 +49,11 @@ const UploadButton = ({
   const id = useId();
   return (
     <label
-      className={
-        className +
-        ` cursor-pointer relative group bg-default rounded-xl hover:bg-default-200 ${isOver ? "outline-2 outline-dashed bg-default-200" : null}`
-      }
+      className={twMerge(
+        className,
+        "cursor-pointer relative group bg-default rounded-3xl hover:bg-default-200",
+        isOver ? "outline-2 outline-dashed bg-default/20" : "",
+      )}
       htmlFor={id}
       onDragEnter={onDragEnter}
       onDragLeave={onDragLeave}
@@ -60,20 +62,20 @@ const UploadButton = ({
     >
       {isLoading ? (
         <div className="w-full h-full flex justify-center">
-          <Spinner />
+          <Spinner className="my-auto mx-auto" />
         </div>
       ) : (
         <>
           {previewUrl ? (
             <ResponsiveImage
               alt=""
-              className={className + " z-2"}
+              className={className + " z-2 rounded-3xl"}
               src={previewUrl}
             />
           ) : null}
 
           {!isOver ? (
-            <span className="group-hover:opacity-90 w-full h-full duration-300 absolute flex top-0 justify-center hover:bg-default-300 bg-default-200 opacity-40 rounded-xl z-1">
+            <span className="group-hover:opacity-90 w-full h-full duration-300 absolute flex top-0 justify-center hover:bg-default/30 bg-default opacity-40 rounded-3xl z-1">
               <span className="absolute flex flex-col justify-center left-0 top-0 right-0 bottom-0 p-2">
                 <span className="flex justify-center text-2xl">
                   <MdOutlineFileUpload />
@@ -84,7 +86,7 @@ const UploadButton = ({
               </span>
             </span>
           ) : (
-            <span className="group-hover:opacity-90 w-full h-full duration-300 absolute flex top-0 justify-center hover:bg-default-300 bg-default-200 opacity-40 rounded-xl z-1" />
+            <span className="group-hover:opacity-90 w-full h-full duration-300 absolute flex top-0 justify-center hover:bg-default/30 bg-default/20 opacity-40 rounded-3xl z-1" />
           )}
 
           <input

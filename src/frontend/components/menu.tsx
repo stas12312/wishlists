@@ -105,7 +105,7 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
     );
   } else {
     return (
-      <div className="bg-white dark:bg-default/50 backdrop-blur-xl shadow-medium m-2 rounded-3xl overflow-hidden p-1 ring ring-gray-500/30">
+      <div className="bg-white dark:bg-default/50 backdrop-blur-xl shadow-md m-2 rounded-3xl overflow-hidden p-1">
         {ITEMS.map((item) => (
           <DesktopMenuItem
             key={item.title}
