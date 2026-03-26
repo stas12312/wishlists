@@ -50,7 +50,7 @@ export const WishlistItem = forwardRef(
                     ) : null}
 
                     <p
-                      className="uppercase text-large"
+                      className="uppercase text-lg my-auto ml-1"
                       title={cardWishlist.name}
                     >
                       {cardWishlist.name}
@@ -66,6 +66,7 @@ export const WishlistItem = forwardRef(
                 <div>
                   {edit ? (
                     <WishlistItemMenu
+                      className="h-8"
                       isEditable={true}
                       wishlist={cardWishlist}
                       onDelete={onDelete}
