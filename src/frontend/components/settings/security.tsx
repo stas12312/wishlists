@@ -42,7 +42,7 @@ const SecuritySection = () => {
       }
     } else {
       setErrors({});
-      toast("Пароль успешно изменен");
+      toast.success("Пароль успешно изменен");
       setOldPassword("");
       setNewPassword("");
       setHasPassword(true);
@@ -65,47 +65,48 @@ const SecuritySection = () => {
           </div>
         ) : (
           <>
-            <div className="flex flex-col md:flex-row w-full gap-4">
-              {hasPassword ? (
+            <div className="flex flex-col w-full gap-4">
+              <div className="flex flex-col md:flex-row w-full gap-4">
+                {hasPassword ? (
+                  <PasswordInput
+                    isRequired
+                    errorMessage={errors.message}
+                    label="Текущий пароль"
+                    name="old-password"
+                    validate={(value) => {
+                      if (value === "") {
+                        return "Заполните это поле";
+                      }
+                      return null;
+                    }}
+                    value={oldPassword}
+                    onChange={(e) => setOldPassword(e.target.value)}
+                  />
+                ) : null}
                 <PasswordInput
                   isRequired
-                  label="Текущий пароль"
-                  name="old-password"
+                  label="Новый пароль"
+                  name="new-password"
                   validate={(value) => {
                     if (value === "") {
                       return "Заполните это поле";
                     }
+                    if (value.length < 8) {
+                      return "Пароль должен содержать минимум 8 символов";
+                    }
                     return null;
                   }}
-                  value={oldPassword}
-                  onChange={(e) => setOldPassword(e.target.value)}
+                  value={newPassword}
+                  onBlur={() => {
+                    setErrors({ ...errors, newPassword: "" });
+                  }}
+                  onChange={(e) => setNewPassword(e.target.value)}
                 />
-              ) : null}
-              <PasswordInput
-                isRequired
-                errorMessage={errors.newPassword}
-                label="Новый пароль"
-                name="new-password"
-                validate={(value) => {
-                  if (value === "") {
-                    return "Заполните это поле";
-                  }
-                  if (value.length < 8) {
-                    return "Пароль должен содержать минимум 8 символов";
-                  }
-                  return null;
-                }}
-                value={newPassword}
-                onBlur={() => {
-                  setErrors({ ...errors, newPassword: "" });
-                }}
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
+              </div>
+              <Button fullWidth isPending={isLoading} type="submit">
+                Сменить пароль
+              </Button>
             </div>
-            <span className="text-tiny text-danger">{errors.message}</span>
-            <Button fullWidth isPending={isLoading} type="submit">
-              Сменить пароль
-            </Button>
           </>
         )}
       </Form>

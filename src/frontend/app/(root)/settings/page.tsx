@@ -18,8 +18,10 @@ export default function SettingsPage() {
           <SecuritySection />
         </SettingItem>
       </div>
-      <ExitButton />
-      <DeleteAccountButton />
+      <div className="flex flex-col gap-2 mt-2">
+        <ExitButton />
+        <DeleteAccountButton />
+      </div>
     </>
   );
 }

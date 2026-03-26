@@ -1,4 +1,10 @@
-import { FieldError, InputGroup, Label, TextField } from "@heroui/react";
+import {
+  ErrorMessage,
+  FieldError,
+  InputGroup,
+  Label,
+  TextField,
+} from "@heroui/react";
 import { useState } from "react";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 
@@ -24,9 +30,10 @@ export default function PasswordInput({
   validate?: { (value: any): string | null };
 }) {
   const [isVisible, setIsVisible] = useState(false);
-  errorMessage;
+
   return (
     <TextField
+      fullWidth
       isInvalid={isInvalid}
       isRequired={isRequired}
       name={name}
@@ -57,7 +64,8 @@ export default function PasswordInput({
           </button>
         </InputGroup.Suffix>
       </InputGroup>
-      <FieldError>{errorMessage}</FieldError>
+      <ErrorMessage>{errorMessage}</ErrorMessage>
+      <FieldError />
     </TextField>
   );
 }
