@@ -1,4 +1,4 @@
-import { Button } from "@heroui/react";
+import { Button, Separator } from "@heroui/react";
 import { Dropdown, DropdownItem, DropdownMenu } from "@heroui/react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -23,6 +23,10 @@ const items = [
   {
     name: "Желанности",
     key: "desirability",
+  },
+  {
+    name: "Separator",
+    key: "separator",
   },
   {
     name: "Возрастанию",
@@ -57,7 +61,7 @@ export const SortingSelector = ({
         initial="initial"
         variants={defaultVariants}
       >
-        <Button variant="tertiary">
+        <Button className="shadow-lg" variant="tertiary">
           <MdSort />
           {
             (
@@ -72,7 +76,6 @@ export const SortingSelector = ({
       <Dropdown.Popover>
         <DropdownMenu
           aria-label="Сортировка"
-          items={items}
           onAction={(action) => {
             if (action === "desc") {
               setDesc(true);
@@ -85,16 +88,20 @@ export const SortingSelector = ({
             setField(action.toString());
           }}
         >
-          {(item) => (
-            <DropdownItem key={item.key} id={item.key}>
-              {item.key == field || item.desk === desc ? (
-                <MdCheck />
-              ) : (
-                <span className="w-4" />
-              )}
-              {item.name}
-            </DropdownItem>
-          )}
+          {items.map((item) => {
+            return item.name === "Separator" ? (
+              <Separator key={item.key} variant="tertiary" />
+            ) : (
+              <DropdownItem key={item.key} id={item.key}>
+                {item.key == field || item.desk === desc ? (
+                  <MdCheck />
+                ) : (
+                  <span className="w-4" />
+                )}
+                {item.name}
+              </DropdownItem>
+            );
+          })}
         </DropdownMenu>
       </Dropdown.Popover>
     </Dropdown>
