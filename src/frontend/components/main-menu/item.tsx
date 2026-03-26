@@ -26,8 +26,11 @@ export const MobileMenuItem = observer((props: IMenuItemProps) => {
   const params = props.params;
   return (
     <div className="h-full w-full py-4 flex justify-center rounded-3xl">
-      <Badge.Anchor color="primary">
-        <Link className={`flex flex-col no-underline`} href={item.href}>
+      <Badge.Anchor className="h-full w-full" color="primary">
+        <Link
+          className={`h-full w-full flex flex-col no-underline`}
+          href={item.href}
+        >
           <div
             className={`text-3xl mx-auto ${
               params.isCurrent && item.selectedIconClassName
