@@ -41,11 +41,11 @@ export const VisibleChip = ({
     return (
       <Tooltip closeDelay={50} delay={0}>
         <Tooltip.Trigger>
-          <Chip color="default" size="lg" variant="primary">
+          <Chip className="h-8" color="default" size="lg" variant="primary">
             {info.icon}
           </Chip>
         </Tooltip.Trigger>
-        <Tooltip.Content>{info.title}</Tooltip.Content>
+        <Tooltip.Content className="text-sm">{info.title}</Tooltip.Content>
       </Tooltip>
     );
   } else {
