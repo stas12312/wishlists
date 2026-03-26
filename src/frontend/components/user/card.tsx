@@ -71,7 +71,7 @@ const UserCard = observer(({ username }: { username: string }) => {
               </Link>
             }
             image={user.image}
-            name={<span className="text-2xl">{user.name}</span>}
+            name={user.name}
             size="lg"
           />
           <div className="mx-auto flex gap-1 mt-2 h-7">
