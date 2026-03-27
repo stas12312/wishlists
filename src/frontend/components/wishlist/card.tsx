@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, Chip, Skeleton } from "@heroui/react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { forwardRef, useState } from "react";
 
 import { VisibleChip } from "../visibleChip";
@@ -28,6 +28,7 @@ export const WishlistItem = forwardRef(
   ) => {
     const [cardWishlist, setCardWishlist] = useState<IWishlist>(wishlist);
 
+    const router = useRouter();
     function onUpdate(wishlist: IWishlist): void {
       setCardWishlist(wishlist);
     }
@@ -35,9 +36,11 @@ export const WishlistItem = forwardRef(
     return (
       <div className="md:hover:scale-[1.03] duration-200">
         <Card ref={ref} className="p-0 flex-col h-40 " role="button">
-          <Link
+          <button
             className="cursor-pointer card h-full"
-            href={`/wishlists/${wishlist.uuid}`}
+            onClick={() => {
+              router.push(`/wishlists/${wishlist.uuid}`);
+            }}
           >
             <Card.Header className="flex-col items-start">
               <div className="flex flex-row justify-between w-full">
@@ -103,7 +106,7 @@ export const WishlistItem = forwardRef(
                 </span>
               </div>
             </Card.Content>
-          </Link>
+          </button>
         </Card>
       </div>
     );

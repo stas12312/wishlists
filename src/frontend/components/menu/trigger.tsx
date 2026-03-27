@@ -12,7 +12,7 @@ const MenuTrigger = ({
   return (
     <Popover.Trigger
       className={twMerge(
-        "button bg-default/50 hover:bg-default/60 shadow-xl",
+        "button bg-default/50 hover:bg-default/60 shadow-md",
         className,
       )}
       data-qa={name}
