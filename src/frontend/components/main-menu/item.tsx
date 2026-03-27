@@ -1,6 +1,7 @@
 import { Badge, Link } from "@heroui/react";
 import { observer } from "mobx-react-lite";
 import { twMerge } from "tailwind-merge";
+import clsx from "clsx";
 
 import { Counter } from "./counter";
 
@@ -29,7 +30,11 @@ export const MobileMenuItem = observer((props: IMenuItemProps) => {
     <div className="h-full w-full flex justify-center">
       <Badge.Anchor className="h-full w-full" color="primary">
         <Link
-          className="h-full w-full flex flex-col no-underline py-4 rounded-4xl outline-transparent"
+          className={clsx(
+            "h-full w-full flex flex-col no-underline py-4 rounded-4xl data-[focus-visible=true]:ring-0",
+            "data-[focus-visible=true]:shadow-transparent data-[focus-visible=true]:ring-offset-0",
+            "data-[focus-visible=true]:text-foreground/50",
+          )}
           href={item.href}
         >
           <div
