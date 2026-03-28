@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { IoMdHeart } from "react-icons/io";
+import { twMerge } from "tailwind-merge";
 
 export const Desirability = ({
   value,
@@ -52,7 +53,10 @@ export const Desirability = ({
             return (
               <button
                 key={index}
-                className={index <= (hover || value) ? "text-danger" : ""}
+                className={twMerge(
+                  index <= (hover || value) ? "text-danger" : "",
+                  "cursor-pointer",
+                )}
                 disabled={onlyRead}
                 type="button"
                 onClick={() => onChange(index)}
