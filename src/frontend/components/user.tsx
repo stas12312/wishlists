@@ -119,10 +119,10 @@ export const UserChip = ({
       className={twMerge(chipStyle.base(), className)}
       href={getUserLink(user.username)}
     >
-      <Avatar size="sm">
+      <Avatar size="md">
         <Avatar.Image src={user.image} />
       </Avatar>
-      {user.name}
+      <span className="text-sm">{user.name}</span>
     </Link>
   );
 };
