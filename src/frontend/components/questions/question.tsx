@@ -1,15 +1,19 @@
 import {
   Button,
   Chip,
+  FieldError,
   Form,
-  TextArea,
+  InputGroup,
+  Kbd,
   TextField,
   toast,
+  Tooltip,
   useOverlayState,
 } from "@heroui/react";
 import { useRef, useState } from "react";
 import { AiFillGift } from "react-icons/ai";
 import { MdCheck, MdDelete, MdSend } from "react-icons/md";
+import { twMerge } from "tailwind-merge";
 
 import ConfirmationModal from "../confirmation";
 import { ResponsiveImage } from "../responsive-image";
@@ -110,34 +114,62 @@ export const QuestionItem = ({
                 submitForm();
               }}
             >
-              <TextField fullWidth isRequired>
-                <TextArea
-                  className="rounded-2xl"
-                  maxLength={200}
-                  // maxRows={100}
-                  minLength={2}
-                  placeholder="Введите ответ"
-                  value={answer}
-                  onChange={(e) => {
-                    setAnswer(e.target.value);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && e.ctrlKey) {
-                      submitRef.current?.click();
-                    }
-                  }}
-                />
-              </TextField>
-
-              <Button
-                ref={submitRef}
-                isIconOnly
-                className="w-12 h-auto"
-                type="submit"
-                variant="primary"
+              <TextField
+                fullWidth
+                isRequired
+                className="flex flex-col"
+                value={answer}
+                onChange={(value) => {
+                  setAnswer(value);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && e.ctrlKey) {
+                    submitRef.current?.click();
+                  }
+                }}
               >
-                <MdSend />
-              </Button>
+                <InputGroup fullWidth className="flex flex-col">
+                  <InputGroup.TextArea
+                    className="rounded-2xl w-full resize-none"
+                    maxLength={200}
+                    minLength={2}
+                    placeholder="Введите ответ"
+                    rows={3}
+                  />
+                  <InputGroup.Suffix className="flex w-full py-2 h-auto">
+                    <p
+                      className={twMerge(
+                        "mt-auto",
+                        answer.length >= 200 || answer.length < 2
+                          ? "text-danger"
+                          : undefined,
+                        !answer.length ? "invisible" : "visible",
+                      )}
+                    >
+                      {answer.length} / 200 символов
+                    </p>
+                    <Tooltip closeDelay={0} delay={0}>
+                      <Button
+                        ref={submitRef}
+                        isIconOnly
+                        className="w-12 ml-auto"
+                        type="submit"
+                        variant="primary"
+                      >
+                        <MdSend />
+                      </Button>
+                      <Tooltip.Content className="flex text-sm p-2 gap-1.5">
+                        <p>Отправить</p>
+                        <Kbd>
+                          <Kbd.Abbr keyValue="ctrl" />
+                          <Kbd.Abbr keyValue="enter" />
+                        </Kbd>
+                      </Tooltip.Content>
+                    </Tooltip>
+                  </InputGroup.Suffix>
+                </InputGroup>
+                <FieldError />
+              </TextField>
             </Form>
           ) : null}
           {question.answer && question.answer.content ? (

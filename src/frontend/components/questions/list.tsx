@@ -1,6 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { useState, useEffect, useRef } from "react";
-import { Form, Button, TextField, TextArea, FieldError } from "@heroui/react";
+import { Form, Button, TextField, FieldError, InputGroup } from "@heroui/react";
+import { twMerge } from "tailwind-merge";
 
 import { AnimatedList } from "../cardsList/cardsList";
 import { InfinityLoader } from "../infinityLoader";
@@ -109,24 +110,42 @@ export const QuestionList = observer(
                 }}
               >
                 <TextField
+                  fullWidth
+                  value={newQuestion}
                   variant="secondary"
+                  onChange={(value) => {
+                    setNewQuestion(value);
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && e.ctrlKey) {
                       submitRef.current?.click();
                     }
                   }}
                 >
-                  <TextArea
-                    required
-                    className="rounded-3xl"
-                    maxLength={200}
-                    minLength={2}
-                    placeholder="Введите вопрос"
-                    value={newQuestion}
-                    onChange={(e) => {
-                      setNewQuestion(e.target.value);
-                    }}
-                  />
+                  <InputGroup className="flex flex-col">
+                    <InputGroup.TextArea
+                      required
+                      className="rounded-3xl w-full  resize-none"
+                      maxLength={200}
+                      minLength={2}
+                      placeholder="Введите вопрос"
+                      rows={3}
+                    />
+                    <InputGroup.Suffix>
+                      <p
+                        className={twMerge(
+                          "mt-auto py-2",
+                          newQuestion.length < 2 || newQuestion.length >= 200
+                            ? "text-danger"
+                            : undefined,
+                          !newQuestion.length ? "invisible" : "visible",
+                        )}
+                      >
+                        {newQuestion.length} / 200 символов
+                      </p>
+                    </InputGroup.Suffix>
+                  </InputGroup>
+
                   <FieldError />
                 </TextField>
 
