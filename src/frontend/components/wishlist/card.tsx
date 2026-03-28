@@ -3,6 +3,7 @@
 import { Card, Chip, Skeleton } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { forwardRef, useState } from "react";
+import { usePress } from "react-aria";
 
 import { VisibleChip } from "../visibleChip";
 
@@ -33,15 +34,19 @@ export const WishlistItem = forwardRef(
       setCardWishlist(wishlist);
     }
 
+    let { pressProps, isPressed } = usePress({
+      onPress: () => router.push(`/wishlists/${wishlist.uuid}`),
+    });
+
     return (
-      <div className="md:hover:scale-[1.03] duration-200">
-        <Card ref={ref} className="p-0 flex-col h-40 " role="button">
-          <button
-            className="cursor-pointer card h-full"
-            onClick={() => {
-              router.push(`/wishlists/${wishlist.uuid}`);
-            }}
-          >
+      <div className="md:hover:scale-[1.03] transition">
+        <Card
+          ref={ref}
+          className="p-0 flex-col h-40 data-[pressed=true]:scale-95 transition"
+          data-pressed={isPressed ? "true" : undefined}
+          role="button"
+        >
+          <button {...pressProps} className="cursor-pointer card h-full">
             <Card.Header className="flex-col items-start">
               <div className="flex flex-row justify-between w-full">
                 <div className="text-tiny font-bold flex flex-col text-left overflow-hidden truncate">

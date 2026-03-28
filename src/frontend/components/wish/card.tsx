@@ -2,6 +2,8 @@
 import { Card, Chip, toast, useOverlayState } from "@heroui/react";
 import { observer } from "mobx-react-lite";
 import { Key, useState } from "react";
+import { usePress } from "react-aria";
+import { twMerge } from "tailwind-merge";
 
 import ConfirmationModal from "../confirmation";
 import { ResponsiveImage } from "../responsive-image";
@@ -113,18 +115,24 @@ export const WishItem = observer(
         copyModal.open();
       }
     }
+    let { pressProps, isPressed } = usePress({
+      onPress: () => fullCardDrawer.open(),
+    });
 
     return (
       <>
-        <div className="md:hover:scale-[1.03] duration-200 relative">
+        <div className="md:hover:scale-[1.03] transition relative">
           <Card
-            className={`flex-col ${withUser ? "h-90" : "h-70"} w-full ring-1 ring-gray-500/30 cursor-pointer p-0`}
+            className={twMerge(
+              withUser ? "h-90" : "h-70",
+              "flex-col w-full ring-1 ring-gray-500/30 cursor-pointer p-0",
+              "data-[pressed=true]:scale-95 transition",
+            )}
+            data-pressed={isPressed ? "true" : undefined}
           >
             <button
+              {...pressProps}
               className="cursor-pointer card h-full p-0 gap-0"
-              onClick={() => {
-                fullCardDrawer.open();
-              }}
             >
               {wish.images && wish.images[0] ? (
                 <ResponsiveImage
