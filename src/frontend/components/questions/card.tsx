@@ -11,7 +11,7 @@ export const QuestionInfo = observer(() => {
 
   return (
     <Button
-      className="ring-1 ring-gray-500/50 shadow-medium roundend-2xl h-30 md:w-40 w-full mb-4"
+      className="ring-1 ring-gray-500/50 shadow-md roundend-2xl h-30 md:w-40 w-full mb-4"
       variant="ghost"
       onPress={() => {
         router.push("/questions");
