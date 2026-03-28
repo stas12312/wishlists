@@ -19,7 +19,7 @@ export const UserAvatar = ({
   return (
     <div className={`inline-flex items-center gap-2 ${className}`}>
       <Avatar className={avatarClassName} size={size}>
-        <Avatar.Image alt="" src={image} />
+        <Avatar.Image alt="" className="object-cover" src={image} />
         <Avatar.Fallback>{name.length ? name[0] : null}</Avatar.Fallback>
       </Avatar>
       <div className="flex flex-col items-start">
