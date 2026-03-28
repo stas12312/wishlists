@@ -7,6 +7,7 @@ import {
   Chip,
   Label,
   TextArea,
+  Surface,
 } from "@heroui/react";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
@@ -72,64 +73,76 @@ const ArticleForm = observer(
           <Chip
             className="my-auto"
             color={article.is_published ? "success" : "accent"}
+            size="lg"
           >
             {article.is_published ? "Опубликовано" : "Черовик"}
           </Chip>
           {article.id && !article.is_published ? (
-            <Button onPress={async () => await publishThisArticle()}>
+            <Button size="sm" onPress={async () => await publishThisArticle()}>
               Опубликовать
             </Button>
           ) : null}
           {article.id && article.is_published ? (
-            <Button onPress={async () => await unpublishThisArticle()}>
+            <Button
+              size="sm"
+              onPress={async () => await unpublishThisArticle()}
+            >
               Снять с публикации
             </Button>
           ) : null}
         </div>
         <Form className="w-210 flex flex-col" onSubmit={saveArticle}>
-          <TextField isRequired name="title" type="text">
+          <TextField
+            isRequired
+            name="title"
+            type="text"
+            value={article.title}
+            onChange={(value) => setArticle({ ...article, title: value })}
+          >
             <Label>Название</Label>
-            <Input
-              value={article.title}
-              onChange={(e) =>
-                setArticle({ ...article, title: e.target.value })
-              }
-            />
+            <Input />
           </TextField>
-          <TextField isRequired name="slug" type="text">
+          <TextField
+            isRequired
+            name="slug"
+            type="text"
+            value={article.slug}
+            onChange={(value) => setArticle({ ...article, slug: value })}
+          >
             <Label>Slug</Label>
-            <Input
-              value={article.slug}
-              onChange={(e) => setArticle({ ...article, slug: e.target.value })}
-            />
+            <Input />
           </TextField>
-          <TextField isRequired>
+          <TextField
+            isRequired
+            value={article.description}
+            onChange={(value) => setArticle({ ...article, description: value })}
+          >
             <Label>Описание</Label>
-            <TextArea
-              name="description"
-              value={article.description}
-              onChange={(e) =>
-                setArticle({ ...article, description: e.target.value })
-              }
-            />
+            <TextArea name="description" />
           </TextField>
+          <Surface className="rounded-3xl mt-4">
+            <Editor
+              holder="create-article"
+              value={editorData}
+              onChange={(data: any) => {
+                setEditorData(data);
+              }}
+            />
+          </Surface>
+          <div className="mt-4 flex">
+            <UploadButton
+              accept={["png", "jpeg"]}
+              className="h-64 bg-default-100 w-64"
+              handleFile={async (file) => {
+                setArticle({ ...article, image: await uploadFile(file) });
+              }}
+              previewUrl={article.image}
+            />
+          </div>
 
-          <Editor
-            holder="create-article"
-            value={editorData}
-            onChange={(data: any) => {
-              setEditorData(data);
-            }}
-          />
-          <UploadButton
-            accept={["png", "jpeg"]}
-            className="h-64 bg-default-100  w-64"
-            handleFile={async (file) => {
-              setArticle({ ...article, image: await uploadFile(file) });
-            }}
-            previewUrl={article.image}
-          />
-          <Button onPress={saveArticle}>Сохранить</Button>
+          <Button className="mt-4" onPress={saveArticle}>
+            Сохранить
+          </Button>
         </Form>
       </>
     );
