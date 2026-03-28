@@ -2,6 +2,7 @@ import { useId, useState } from "react";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { Spinner } from "@heroui/react";
 import { twMerge } from "tailwind-merge";
+import clsx from "clsx";
 
 import { ResponsiveImage } from "./responsive-image";
 const UploadButton = ({
@@ -75,8 +76,13 @@ const UploadButton = ({
           ) : null}
 
           {!isOver ? (
-            <span className="group-hover:opacity-90 w-full h-full duration-300 absolute flex top-0 justify-center hover:bg-default/30 bg-default opacity-40 rounded-3xl z-1">
-              <span className="absolute flex flex-col justify-center left-0 top-0 right-0 bottom-0 p-2">
+            <span
+              className={clsx(
+                "group-hover:opacity-90 w-full h-full duration-300 absolute flex top-0",
+                "justify-center hover:bg-default/30 bg-default opacity-40 rounded-3xl z-1",
+              )}
+            >
+              <span className="absolute flex flex-col justify-center left-0 top-0 right-0 bottom-0">
                 <span className="flex justify-center text-2xl">
                   <MdOutlineFileUpload />
                 </span>
@@ -86,7 +92,12 @@ const UploadButton = ({
               </span>
             </span>
           ) : (
-            <span className="group-hover:opacity-90 w-full h-full duration-300 absolute flex top-0 justify-center hover:bg-default/30 bg-default/20 opacity-40 rounded-3xl z-1" />
+            <span
+              className={clsx(
+                "group-hover:opacity-90 w-full h-full duration-300 absolute flex top-0 justify-center hover:bg-default/30",
+                "bg-default/20 opacity-40 rounded-3xl z-1",
+              )}
+            />
           )}
 
           <input

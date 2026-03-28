@@ -320,49 +320,54 @@ export default function WishForm(props: {
 
             {<MarketIcon className="my-auto" link={formData.link} />}
           </div>
-          <div className="flex flex-col justify-center items-center w-full bg-default rounded-xl p-1">
-            <span>Желанность</span>
-            <Desirability
-              size="xl"
-              value={formData.desirability}
-              onChange={(value) => {
-                setFormData({ ...formData, desirability: value });
-              }}
-            />
-          </div>
-          <UploadButton
-            accept={ACCEPTED_FILE_EXTS}
-            className="h-16 w-full object-cover"
-            handleFile={handleFile}
-            isLoading={imageIsLoading}
-            title={`Перетащите файл сюда или нажмите для выбора файла (Не более ${readableBytes(FILE_SIZE_LIMIT, false)})`}
-          />
-          <div className="flex sm:flex-row flex-col gap-4 w-full">
-            <div className="flex flex-col w-full">
-              <span className="text-danger text-tiny">
-                {errorMessages.image}
-              </span>
+          <div className="flex flex-col w-full">
+            <p className="text-foreground font-medium">Желанность</p>
+            <div className="flex flex-col justify-center items-center w-full bg-default rounded-xl py-2 mt-1">
+              <Desirability
+                size="xl"
+                value={formData.desirability}
+                onChange={(value) => {
+                  setFormData({ ...formData, desirability: value });
+                }}
+              />
             </div>
           </div>
-          <div className="w-full flex flex-col gap-1">
-            <ImagesContainer
-              images={uploadedImages}
-              setImages={setImages}
-              onDelete={(key) => {
-                setImages(uploadedImages.filter((item) => item.key != key));
-              }}
-              onUpload={(key, url) => {
-                setImages(
-                  uploadedImages.map((image) => {
-                    return {
-                      url: key == image.key ? url : image.url,
-                      key: image.key,
-                      file: undefined,
-                    };
-                  }),
-                );
-              }}
+          <div className="flex flex-col gap-1">
+            <p className="text-foreground font-medium">Изображения</p>
+            <UploadButton
+              accept={ACCEPTED_FILE_EXTS}
+              className="h-16 w-full object-cover"
+              handleFile={handleFile}
+              isLoading={imageIsLoading}
+              title={`Перетащите файл сюда или нажмите для выбора файла (Не более ${readableBytes(FILE_SIZE_LIMIT, false)})`}
             />
+            <div className="flex sm:flex-row flex-col gap-4 w-full">
+              <div className="flex flex-col w-full">
+                <span className="text-danger text-tiny">
+                  {errorMessages.image}
+                </span>
+              </div>
+            </div>
+            <div className="w-full flex flex-col gap-1">
+              <ImagesContainer
+                images={uploadedImages}
+                setImages={setImages}
+                onDelete={(key) => {
+                  setImages(uploadedImages.filter((item) => item.key != key));
+                }}
+                onUpload={(key, url) => {
+                  setImages(
+                    uploadedImages.map((image) => {
+                      return {
+                        url: key == image.key ? url : image.url,
+                        key: image.key,
+                        file: undefined,
+                      };
+                    }),
+                  );
+                }}
+              />
+            </div>
           </div>
 
           {errorMessages.details ? (
