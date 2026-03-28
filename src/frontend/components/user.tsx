@@ -120,7 +120,7 @@ export const UserChip = ({
       href={getUserLink(user.username)}
     >
       <Avatar size="md">
-        <Avatar.Image src={user.image} />
+        <Avatar.Image className="object-cover" src={user.image} />
       </Avatar>
       <span className="text-sm">{user.name}</span>
     </Link>

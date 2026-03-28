@@ -292,8 +292,9 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
           {!userStore.user.id ? (
             <div className="col-span-full flex justify-center mb-4">
               <div>
-                <Alert className="mx-auto" color="warning">
-                  <Alert.Content>
+                <Alert className="mx-auto" status="warning">
+                  <Alert.Indicator />
+                  <Alert.Content color="warning">
                     <Alert.Title>
                       Некоторые из желаний могут быть забронированы
                     </Alert.Title>
@@ -301,8 +302,8 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
                       Для отображения забронированных желаний войдите в свой
                       аккаунт
                     </Alert.Description>
-                    <LoginButton className="ml-4" />
                   </Alert.Content>
+                  <LoginButton className="ml-4 my-auto" />
                 </Alert>
               </div>
             </div>

@@ -72,6 +72,7 @@ const UserCard = observer(({ username }: { username: string }) => {
             }
             image={user.image}
             name={user.name}
+            nameClassName="text-xl"
             size="lg"
           />
           <div className="mx-auto flex gap-1 mt-2 h-7">
@@ -118,7 +119,7 @@ export default UserCard;
 
 const CardSkeleton = () => {
   return (
-    <div className="max-w-50 w-full flex flex-col mx-auto gap-1">
+    <div className="max-w-50 w-full flex flex-col mx-auto">
       <div className="flex gap-4 items-center mx-auto">
         <div>
           <Skeleton className="w-14 h-14 rounded-full" />
@@ -128,7 +129,6 @@ const CardSkeleton = () => {
           <Skeleton className="h-5 w-32 rounded-full" />
         </div>
       </div>
-
       <div className="mx-auto justify-center flex gap-1 mt-2 h-7">
         <Skeleton className="h-7 w-32 rounded-full" />
         <Skeleton className="h-7 w-32  rounded-full" />
