@@ -55,6 +55,11 @@ export const CustomDatePicker = ({
                 {(date) => <Calendar.Cell date={date} />}
               </Calendar.GridBody>
             </Calendar.Grid>
+            <Calendar.YearPickerGrid>
+              <Calendar.YearPickerGridBody>
+                {({ year }) => <Calendar.YearPickerCell year={year} />}
+              </Calendar.YearPickerGridBody>
+            </Calendar.YearPickerGrid>
           </Calendar>
         </DatePicker.Popover>
       </DatePicker>
