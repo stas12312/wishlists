@@ -33,7 +33,7 @@ export const MobileMenuItem = observer((props: IMenuItemProps) => {
           className={clsx(
             "h-full w-full flex flex-col no-underline py-4 rounded-4xl data-[focus-visible=true]:ring-0",
             "data-[focus-visible=true]:shadow-transparent data-[focus-visible=true]:ring-offset-0",
-            "data-[focus-visible=true]:text-foreground/50",
+            "data-[focus-visible=true]:text-foreground/50 focus:outline-0",
           )}
           href={item.href}
         >

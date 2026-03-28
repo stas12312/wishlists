@@ -17,7 +17,7 @@ export const HeaderBlock = () => {
   }, []);
 
   return (
-    <div className="bg-accent dark:bg-accent/30 h-3/4 lg:py-32 p-4 shadow-xl relative overflow-hidden rounded-3xl  -mx-3 md:mx-0 ">
+    <div className="bg-accent/50 dark:bg-accent/30 h-3/4 lg:py-32 p-4 shadow-xl relative overflow-hidden rounded-3xl -mx-3 md:mx-0 ">
       <div className="absolute h-32 w-32 md:h-96 md:w-96 bg-accent/60 -top-16 -left-16 md:-top-40 md:-left-40 rounded-full blur-3xl" />
       <div className="absolute h-32 w-32 md:h-96 md:w-96 bg-accent/60 -bottom-16 -right-16 md:-bottom-40 md:-right-40 rounded-full blur-3xl" />
       <motion.div className="flex lg:flex-row flex-col max-w-300 mx-auto gap-4">
@@ -61,7 +61,6 @@ export const HeaderBlock = () => {
           >
             <Tabs
               selectedKey={activeTab}
-              variant="secondary"
               onSelectionChange={(key) => setActiveTab(key.toString())}
             >
               <Tabs.ListContainer>
