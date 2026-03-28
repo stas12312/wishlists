@@ -156,7 +156,7 @@ function SignInForm() {
   }, [countDownDate]);
 
   return (
-    <Surface className="p-4 rounded-3xl box-border shadow-medium">
+    <Surface className="p-4 rounded-3xl box-border shadow-md">
       <Form
         className="flex flex-col gap-2 "
         id="register"

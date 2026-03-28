@@ -52,7 +52,7 @@ export const WishFilter = ({
           onSelectionChange={setFullfiledValue}
         >
           <Tabs.ListContainer>
-            <Tabs.List className="*:h-6">
+            <Tabs.List className="*:h-6 *:text-xs *:md:text-sm">
               <Tabs.Tab id="all">
                 Все
                 <Tabs.Indicator />
@@ -79,7 +79,7 @@ export const WishFilter = ({
             onSelectionChange={setReservedValue}
           >
             <Tabs.ListContainer>
-              <Tabs.List className="*:h-6">
+              <Tabs.List className="*:h-6 *:text-xs *:md:text-sm">
                 <Tabs.Tab id="all">
                   Все
                   <Tabs.Indicator />

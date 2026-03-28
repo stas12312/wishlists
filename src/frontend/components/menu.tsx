@@ -88,7 +88,7 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
 
   if (variant == "mobile") {
     return (
-      <div className="flex justify-between bg-white/50  dark:bg-default/50 backdrop-blur-xl fixed inset-x-0 bottom-0 z-50 shadow-medium my-4 mx-2 rounded-4xl md:hidden inset-shadow-md ring-1 ring-gray-500/20">
+      <div className="flex justify-between bg-white/50  dark:bg-default/50 backdrop-blur-xl fixed inset-x-0 bottom-0 z-50 shadow-md my-4 mx-2 rounded-4xl md:hidden inset-shadow-md ring-1 ring-gray-500/20">
         {ITEMS.map((item) => (
           <MobileMenuItem
             key={item.title}

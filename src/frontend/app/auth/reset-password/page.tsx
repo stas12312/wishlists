@@ -87,7 +87,7 @@ const RestorePassword = observer(() => {
   }
 
   return (
-    <Surface className="rounded-3xl box-border shadow-medium p-4">
+    <Surface className="rounded-3xl box-border shadow-md p-4">
       <Suspense>
         <Form
           className="gap-2 flex flex-col"

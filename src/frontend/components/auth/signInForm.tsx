@@ -55,7 +55,7 @@ const SignInForm = ({ providers }: { providers: IOAuthProvider[] }) => {
     setFormData({ ...formData, [name]: value });
   };
   return (
-    <Surface className="rounded-3xl box-border p-4 shadow-medium">
+    <Surface className="rounded-3xl box-border p-4 shadow-md shadow-md">
       <Form className="flex flex-col gap-2" id="login" onSubmit={handleSubmit}>
         <h2 className="text-center text-2xl">Вход в аккаунт</h2>
         <div>

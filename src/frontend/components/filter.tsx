@@ -53,7 +53,7 @@ const Filter = ({
           {children}
           <Button
             fullWidth
-            size="sm"
+            className="h-7 md:h-8"
             onPress={() => {
               applyFilter();
               filterOverlay.close();
