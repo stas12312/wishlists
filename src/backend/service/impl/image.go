@@ -9,9 +9,6 @@ import (
 	"net/http"
 	"path/filepath"
 	"strings"
-
-	"github.com/gofiber/fiber/v2/log"
-	"github.com/h2non/bimg"
 )
 
 type UUIDGenerator func() string
@@ -61,12 +58,6 @@ func (s *ImageServiceImpl) UploadByURL(url string) (string, error) {
 	}
 	return s.Upload(getNameFromUrl(url), response.Body)
 
-}
-
-func convertImage(image []byte) ([]byte, error) {
-	log.Info("Конвертация изображения")
-	converted, err := bimg.NewImage(image).Convert(bimg.WEBP)
-	return converted, err
 }
 
 func getNameFromUrl(url string) string {
