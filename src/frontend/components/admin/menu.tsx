@@ -1,5 +1,9 @@
 "use client";
-import { MdOutlineArticle, MdOutlineStarBorder } from "react-icons/md";
+import {
+  MdOutlineArticle,
+  MdOutlineStarBorder,
+  MdOutlineSupport,
+} from "react-icons/md";
 import { observer } from "mobx-react-lite";
 import { usePathname } from "next/navigation";
 
@@ -18,6 +22,12 @@ const AdminMenuItems: IMenuItem[] = [
     href: "/admin/articles",
     icon: <MdOutlineArticle />,
     selectedIconClassName: "text-red-500",
+  },
+  {
+    title: "Поддержка",
+    href: "/admin/tickets",
+    icon: <MdOutlineSupport />,
+    selectedIconClassName: "text-pink-500",
   },
 ];
 

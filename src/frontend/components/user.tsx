@@ -1,7 +1,12 @@
 "use client";
 import { observer } from "mobx-react-lite";
 import { Key, useEffect } from "react";
-import { MdLink, MdOutlineExitToApp, MdSettings } from "react-icons/md";
+import {
+  MdLink,
+  MdOutlineExitToApp,
+  MdSettings,
+  MdOutlineContactSupport,
+} from "react-icons/md";
 import { useRouter } from "next/navigation";
 import {
   Avatar,
@@ -41,6 +46,9 @@ export const UserItem = observer(() => {
     if (key == "settings") {
       router.push("/settings");
     }
+    if (key == "support") {
+      router.push("/tickets");
+    }
   }
   return (
     <>
@@ -73,6 +81,10 @@ export const UserItem = observer(() => {
               <Dropdown.Item id="settings">
                 <MdSettings />
                 <Label>Настройки</Label>
+              </Dropdown.Item>
+              <Dropdown.Item id="support">
+                <MdOutlineContactSupport />
+                <Label>Поддержка</Label>
               </Dropdown.Item>
               <Separator />
               <Dropdown.Item
@@ -119,9 +131,12 @@ export const UserChip = ({
       className={twMerge(chipStyle.base(), className)}
       href={getUserLink(user.username)}
     >
-      <Avatar size="md">
-        <Avatar.Image className="object-cover" src={user.image} />
-      </Avatar>
+      {user.image ? (
+        <Avatar size="md">
+          <Avatar.Image className="object-cover" src={user.image} />
+        </Avatar>
+      ) : null}
+
       <span className="text-sm">{user.name}</span>
     </Link>
   );
