@@ -84,12 +84,25 @@ func main() {
 	feedService := service.NewFeedService(feedRepository)
 	feedController := controller.NewFeedController(feedService)
 
-	adminController := controller.NewAdminController(userService, articleService)
-	articleController := controller.NewArticleController(articleService)
-
 	questionRepository := repository.NewQuestionRepositoryPostgres(db)
 	questionService := service.NewQuestionServiceImpl(wishlistService, questionRepository, websocketService)
 	questionController := controller.NewQuestionController(questionService)
+
+	messageRepository := repository.NewMessageRepositoryPostgres(db)
+	messageService := service.NewMessageServiceImpl(messageRepository)
+
+	ticketRepository := repository.NewTicketRepositoryPostgres(db)
+	ticketCategoryRepository := repository.NewTicketCategoryRepositoryPostgres(db)
+	ticketService := service.NewTicketServiceImpl(
+		ticketRepository,
+		ticketCategoryRepository,
+		messageService,
+		websocketService,
+	)
+	ticketController := controller.NewTicketController(ticketService)
+
+	adminController := controller.NewAdminController(userService, articleService, ticketService)
+	articleController := controller.NewArticleController(articleService)
 
 	api := app.Group("/api")
 
@@ -102,6 +115,7 @@ func main() {
 	adminController.Route(api)
 	articleController.Route(api)
 	questionController.Route(api)
+	ticketController.Route(api)
 
 	log.Fatal(app.Listen(":8080"))
 }

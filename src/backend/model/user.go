@@ -28,6 +28,14 @@ type UserShort struct {
 	Birthday NullDate `json:"birthday" db:"birthday"`
 }
 
+type UserDefault struct {
+	Id       int64    `json:"id" db:"user_id"`
+	Name     string   `json:"name" db:"name"`
+	Birthday NullDate `json:"birthday" db:"birthday"`
+	Image    string   `json:"image" db:"image"`
+	Username string   `json:"username" db:"username"`
+}
+
 type TokenPariResponse struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`

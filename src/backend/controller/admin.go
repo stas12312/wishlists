@@ -11,13 +11,14 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func NewAdminController(userService service.UserService, articleService service.ArticleService) *AdminController {
-	return &AdminController{userService: userService, articleService: articleService}
+func NewAdminController(userService service.UserService, articleService service.ArticleService, ticketService service.TicketService) *AdminController {
+	return &AdminController{userService: userService, articleService: articleService, ticketService: ticketService}
 }
 
 type AdminController struct {
 	userService    service.UserService
 	articleService service.ArticleService
+	ticketService  service.TicketService
 }
 
 func (c *AdminController) IsAdmin(ctx *fiber.Ctx) error {
@@ -127,6 +128,68 @@ func (c *AdminController) Unpublish(ctx *fiber.Ctx) error {
 	return ctx.JSON(model.Response{Data: "ok"})
 }
 
+func (c *AdminController) CreateCategory(ctx *fiber.Ctx) error {
+
+	categoryForCreate := &model.TicketCategory{}
+
+	err := ctx.BodyParser(categoryForCreate)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{Message: "Некорректные данные", Details: err.Error()})
+	}
+
+	newCategory, err := c.ticketService.CreateCategory(categoryForCreate)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(model.Response{Data: newCategory})
+}
+
+func (c *AdminController) ListCategories(ctx *fiber.Ctx) error {
+
+	categories, _ := c.ticketService.ListCategory()
+
+	return ctx.JSON(model.Response{Data: categories})
+}
+
+func (c *AdminController) ListTickets(ctx *fiber.Ctx) error {
+
+	tickets, err := c.ticketService.List(0)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{Message: err.Error()})
+	}
+	return ctx.JSON(model.Response{Data: tickets})
+}
+
+func (c *AdminController) GetTicket(ctx *fiber.Ctx) error {
+	id, _ := strconv.ParseInt(ctx.Params("id"), 10, 64)
+	ticket, err := c.ticketService.Get(0, id)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{Message: err.Error()})
+	}
+	return ctx.JSON(model.Response{Data: ticket})
+}
+
+func (c *AdminController) GetTicketConversation(ctx *fiber.Ctx) error {
+	id, _ := strconv.ParseInt(ctx.Params("id"), 10, 64)
+	messages, err := c.ticketService.GetConversation(0, id)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{Message: err.Error()})
+	}
+	return ctx.JSON(model.Response{Data: messages})
+}
+
+func (c *AdminController) AddTicketMessage(ctx *fiber.Ctx) error {
+	id, _ := strconv.ParseInt(ctx.Params("id"), 10, 64)
+	userId := GetUserIdFromCtx(ctx)
+	message := &model.Message{}
+	err := ctx.BodyParser(message)
+	messages, err := c.ticketService.AddMessageFromAdmin(userId, id, message)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{Message: err.Error()})
+	}
+	return ctx.JSON(model.Response{Data: messages})
+}
+
 func (c *AdminController) Route(router fiber.Router) {
 
 	adminGroup := router.Group("/admin", middleware.Protected(true))
@@ -141,5 +204,15 @@ func (c *AdminController) Route(router fiber.Router) {
 	articleGroup.Post("/:articleId/publish", c.Publish)
 	articleGroup.Post("/:articleId/unpublish", c.Unpublish)
 	articleGroup.Delete("/:articleId", c.DeleteArticle)
+
+	ticketsGroup := adminGroup.Group("/tickets", middleware.Protected(true), middleware.ForAdmin(c.userService))
+	ticketsGroup.Get("/", c.ListTickets)
+	ticketsGroup.Get("/:id", c.GetTicket)
+	ticketsGroup.Get("/:id/conversation", c.GetTicketConversation)
+	ticketsGroup.Post("/:id/conversation", c.AddTicketMessage)
+
+	categoriesGroup := ticketsGroup.Group("/categories")
+	categoriesGroup.Post("/", c.CreateCategory)
+	categoriesGroup.Get("/", c.ListCategories)
 
 }
