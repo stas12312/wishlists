@@ -5,23 +5,39 @@ import { MdAdd } from "react-icons/md";
 import { useRouter } from "next/navigation";
 
 import PageHeader from "../pageHeader";
+import { InfinityLoader } from "../infinityLoader";
+import { AnimatedList } from "../cardsList/cardsList";
+import { PageSpinner } from "../pageSpinner";
 
-import { TicketsList } from "./list";
+import { TicketItem } from "./item";
 
 import { getTickests as getTickets } from "@/lib/client-requests/ticket";
 import { ITicket } from "@/lib/models/ticket";
+import { INavigation } from "@/lib/models";
 
 export const TicketsPage = () => {
   const [tickets, setTickets] = useState<ITicket[]>([]);
-
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [navigation, setNavigation] = useState<INavigation>({
+    count: 25,
+    cursor: [""],
+  });
   const router = useRouter();
 
-  useEffect(() => {
-    async function fetchData() {
-      const data = await getTickets();
-      setTickets(data.data);
+  async function loadTickets() {
+    if (!hasMore) {
+      return;
     }
-    fetchData();
+    const data = await getTickets(navigation);
+    setTickets([...tickets, ...data.data]);
+    setNavigation(data.navigation);
+    setHasMore(data.data.length > 0);
+    setIsLoading(false);
+  }
+
+  useEffect(() => {
+    loadTickets();
   }, []);
 
   return (
@@ -36,8 +52,23 @@ export const TicketsPage = () => {
         Новое обращение
         <MdAdd />
       </Button>
-      <div className="my-2" />
-      <TicketsList tickets={tickets} />
+      {isLoading ? (
+        <PageSpinner />
+      ) : (
+        <>
+          <div className="my-2" />
+          <InfinityLoader onLoad={loadTickets}>
+            <AnimatedList
+              gridConfig="cols-1"
+              items={tickets.map((ticket) => {
+                return (
+                  <TicketItem key={ticket.id} withOpenLink ticket={ticket} />
+                );
+              })}
+            />
+          </InfinityLoader>
+        </>
+      )}
     </>
   );
 };

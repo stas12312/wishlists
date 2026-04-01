@@ -3,6 +3,7 @@ import { Chip, Link, Surface } from "@heroui/react";
 
 import { UserChip } from "../user";
 
+import { hexToRgba } from "@/lib/color";
 import { ITicket } from "@/lib/models/ticket";
 
 export const TicketItem = ({
@@ -21,18 +22,21 @@ export const TicketItem = ({
           {withAuthor ? (
             <UserChip className="h-10" user={ticket.author} />
           ) : null}
-          <div className="my-auto">{ticket.subject}</div>
+          <div className="my-auto font-bold text-lg">{ticket.subject}</div>
         </div>
 
         <div className="flex gap-1">
-          <Chip style={{ background: ticket.category.color }}>
+          <Chip
+            size="lg"
+            style={{ background: hexToRgba(ticket.category.color, 0.7) }}
+          >
             {ticket.category.title}
           </Chip>
-          <Chip>#{ticket.id}</Chip>
+          <Chip size="lg">#{ticket.id}</Chip>
         </div>
       </div>
       <div className="flex justify-between mt-4">
-        <Chip color={getStatus(ticket.status)[1]} variant="primary">
+        <Chip color={getStatus(ticket.status)[1]} size="lg" variant="primary">
           {getStatus(ticket.status)[0]}
         </Chip>
         {withOpenLink ? (
