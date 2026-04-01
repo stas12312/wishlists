@@ -7,17 +7,19 @@ import {
   TextField,
   Tooltip,
 } from "@heroui/react";
-import { useRef, useState } from "react";
+import { ReactNode, useRef, useState } from "react";
 import { MdSend } from "react-icons/md";
 import { twMerge } from "tailwind-merge";
 
 export const MessageForm = ({
   minLength = 1,
   maxLength = 1000,
+  footer,
   onSend,
 }: {
   minLength?: number;
   maxLength?: number;
+  footer?: ReactNode;
   onSend: { (message: string): void };
 }) => {
   const [message, setMessage] = useState("");
@@ -43,9 +45,9 @@ export const MessageForm = ({
           }
         }}
       >
-        <InputGroup className="flex flex-col">
+        <InputGroup className="flex flex-col  shadow-md rounded-3xl">
           <InputGroup.TextArea
-            className="rounded-3xl w-full  resize-none"
+            className="w-full  resize-none"
             maxLength={maxLength}
             minLength={minLength}
             placeholder="Ваше сообщение"
@@ -63,24 +65,27 @@ export const MessageForm = ({
             >
               {message.length} / {maxLength} символов
             </p>
-            <Tooltip closeDelay={0} delay={0}>
-              <Button
-                ref={submitRef}
-                isIconOnly
-                className="w-12 ml-auto"
-                type="submit"
-                variant="primary"
-              >
-                <MdSend />
-              </Button>
-              <Tooltip.Content className="flex text-sm p-2 gap-1.5 min-w-36 mr-2">
-                <p>Отправить</p>
-                <Kbd>
-                  <Kbd.Abbr keyValue="ctrl" />
-                  <Kbd.Abbr keyValue="enter" />
-                </Kbd>
-              </Tooltip.Content>
-            </Tooltip>
+            <div className="ml-auto flex gap-2">
+              {footer}
+              <Tooltip closeDelay={0} delay={0}>
+                <Button
+                  ref={submitRef}
+                  isIconOnly
+                  className="w-12"
+                  type="submit"
+                  variant="primary"
+                >
+                  <MdSend />
+                </Button>
+                <Tooltip.Content className="flex text-sm p-2 gap-1.5 min-w-36 mr-2">
+                  <p>Отправить</p>
+                  <Kbd>
+                    <Kbd.Abbr keyValue="ctrl" />
+                    <Kbd.Abbr keyValue="enter" />
+                  </Kbd>
+                </Tooltip.Content>
+              </Tooltip>
+            </div>
           </InputGroup.Suffix>
         </InputGroup>
         <FieldError />

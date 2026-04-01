@@ -1,8 +1,9 @@
 "use client";
-import { Button, Chip, Surface } from "@heroui/react";
+import { Button, Chip, Separator, Surface } from "@heroui/react";
 import { useEffect, useRef, useState } from "react";
-import { twMerge } from "tailwind-merge";
 import useWebSocket from "react-use-websocket";
+import { twMerge } from "tailwind-merge";
+import { MdDone } from "react-icons/md";
 
 import { CustomBreadcrumbs } from "../breadcrumbs";
 import { MessageForm } from "../input-message";
@@ -11,11 +12,11 @@ import { PageSpinner } from "../pageSpinner";
 
 import { TicketItem } from "./item";
 
+import { closeTicket } from "@/lib/client-requests/ticket";
 import { IError } from "@/lib/models";
 import { IResponse } from "@/lib/models/response";
 import { IMessage, ITicket } from "@/lib/models/ticket";
 import { getWebsocketUrl, isEvent, WSEvent } from "@/lib/socket";
-import { closeTicket } from "@/lib/client-requests/ticket";
 
 export const TicketDetailPage = ({
   ticketId,
@@ -44,19 +45,19 @@ export const TicketDetailPage = ({
       return isEvent(message, WSEvent.Update, `ticket_${ticketId}`);
     },
   });
+  async function fetchData() {
+    const data = await getTicketFunc(ticketId);
+    const messages = await getTicketMessageFunc(ticketId);
+    if ("message" in data) {
+      setError(data.message);
+    } else {
+      setTicket(data.data);
+      setMessages(messages);
+    }
+    setIsLoading(false);
+  }
 
   useEffect(() => {
-    async function fetchData() {
-      const data = await getTicketFunc(ticketId);
-      const messages = await getTicketMessageFunc(ticketId);
-      if ("message" in data) {
-        setError(data.message);
-      } else {
-        setTicket(data.data);
-        setMessages(messages);
-      }
-      setIsLoading(false);
-    }
     sendJsonMessage({
       event: WSEvent.Subscribe,
       channel: `ticket_${ticketId}`,
@@ -74,7 +75,7 @@ export const TicketDetailPage = ({
   }, [messages]);
 
   return (
-    <div className="px-4">
+    <div>
       <PageHeader>
         <CustomBreadcrumbs
           items={[
@@ -96,6 +97,7 @@ export const TicketDetailPage = ({
       ) : (
         <div className="flex flex-col max-w-400 mx-auto ">
           <TicketItem ticket={ticket} withAuthor={withAuthor} />
+
           <Surface className="mt-4 rounded-3xl px-4 py-2 flex flex-col  h-[calc(100vh-300px)] shadow-md">
             <div className="overflow-y-auto flex flex-col gap-4">
               {messages.map((message) => {
@@ -103,7 +105,7 @@ export const TicketDetailPage = ({
                   <Surface
                     key={message.id}
                     className={twMerge(
-                      "rounded-3xl px-4 py-2 max-w-1/2 min-w-40 h-auto mx-4 shadow-md",
+                      "rounded-3xl max-w-1/2 min-w-60 h-auto mx-4 shadow-md",
                       ticket.author_id == message.sender_id
                         ? " ml-auto"
                         : "mr-auto",
@@ -111,14 +113,10 @@ export const TicketDetailPage = ({
                     variant="secondary"
                   >
                     <div className="flex flex-col">
-                      {" "}
-                      {message.content}{" "}
-                      <Chip
-                        className="ml-auto"
-                        color="default"
-                        variant="primary"
-                      >
-                        {new Date(message.created_at).toLocaleString()}
+                      <span className="px-4 pt-2">{message.content}</span>
+
+                      <Chip className="ml-auto mr-2" variant="tertiary">
+                        {prepareDateString(message.created_at)}
                       </Chip>
                     </div>
                   </Surface>
@@ -128,16 +126,22 @@ export const TicketDetailPage = ({
             </div>
 
             <div className="mt-auto">
+              <Separator />
               <div className="mt-4">
                 <MessageForm maxLength={200} onSend={createMessage} />
               </div>
+            </div>
+            <div className="w-full flex justify-end">
               {ticket.status != "closed" ? (
                 <Button
-                  fullWidth
-                  className="mt-4"
-                  onPress={() => closeTicket(ticketId)}
+                  className="bg-success mt-2"
+                  onPress={async () => {
+                    closeTicket(ticketId);
+                    await fetchData();
+                  }}
                 >
-                  Вопрос решен
+                  Закрыть обращение
+                  <MdDone />
                 </Button>
               ) : null}
             </div>
@@ -147,3 +151,26 @@ export const TicketDetailPage = ({
     </div>
   );
 };
+
+function prepareDateString(rawDate: string): string {
+  const date = new Date(rawDate);
+  const now = new Date();
+  const isToday = date.toDateString() === now.toDateString();
+
+  if (isToday) {
+    return date.toLocaleTimeString(undefined, {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+  const isCurrentYear = date.getFullYear() === now.getFullYear();
+  const options = {
+    month: "2-digit" as "2-digit",
+    day: "2-digit" as "2-digit",
+    hour: "2-digit" as "2-digit",
+    minute: "2-digit" as "2-digit",
+    year: isCurrentYear ? undefined : ("numeric" as "numeric"),
+  };
+
+  return date.toLocaleString(undefined, options);
+}

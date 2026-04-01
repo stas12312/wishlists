@@ -18,6 +18,7 @@ import {
   getTicketCategories,
 } from "@/lib/client-requests/ticket";
 import { ITicketCategory, ITicketCreate } from "@/lib/models/ticket";
+import { hexToRgba } from "@/lib/color";
 
 export const CreateTicketForm = () => {
   const [categories, setCategories] = useState<ITicketCategory[]>([]);
@@ -104,10 +105,15 @@ const CategorySelect = ({
   value: number;
 }) => {
   return (
-    <Select isRequired value={value} onChange={(value) => setValue(value)}>
+    <Select
+      isRequired
+      placeholder="Выберите категорию"
+      value={value}
+      onChange={(value) => setValue(value)}
+    >
       <Label>Категория</Label>
       <Select.Trigger>
-        <Select.Value />
+        <Select.Value className="flex" />
         <Select.Indicator />
       </Select.Trigger>
       <Select.Popover>
@@ -119,7 +125,14 @@ const CategorySelect = ({
                 id={category.id}
                 textValue={category.title}
               >
-                <p style={{ color: category.color }}>{category.title}</p>
+                <p
+                  className="rounded-2xl p-1 px-2"
+                  style={{
+                    backgroundColor: hexToRgba(category.color, 0.7),
+                  }}
+                >
+                  {category.title}
+                </p>
                 <ListBox.ItemIndicator />
               </ListBox.Item>
             );
