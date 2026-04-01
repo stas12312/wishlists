@@ -50,7 +50,11 @@ export const MobileMenuItem = observer((props: IMenuItemProps) => {
           <span className="text-[14px]">{item.title}</span>
         </Link>
         {params.counter ? (
-          <Badge color="accent" variant="primary">
+          <Badge
+            className="mt-2.5 mr-4 text-center font-mono"
+            color="accent"
+            variant="primary"
+          >
             {params.counter}
           </Badge>
         ) : null}
