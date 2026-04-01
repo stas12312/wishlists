@@ -23,7 +23,7 @@ func (t TicketRepositoryPostgres) Create(ticket *model.Ticket) (*model.Ticket, e
 	return createdTicket, t.conn.Get(createdTicket, q, ticket.Subject, ticket.CategoryId, ticket.ConversationId, ticket.AuthorId)
 }
 
-func (t TicketRepositoryPostgres) List(userId int64, ticketId int64) ([]model.Ticket, error) {
+func (t TicketRepositoryPostgres) List(userId int64, ticketId int64, navigation model.Navigation, filters model.TicketFilters) ([]model.Ticket, error) {
 	q := `
 	SELECT 
 	    tickets.*,
@@ -37,17 +37,18 @@ func (t TicketRepositoryPostgres) List(userId int64, ticketId int64) ([]model.Ti
 		users.birthday AS "author.birthday",
 		users.username AS "author.username",
 		users.image AS "author.image"
-		
-	
 	FROM tickets
 	JOIN ticket_categories USING (category_id)
 	JOIN users ON users.user_id = tickets.author_id
 	WHERE 
 	    CASE WHEN $1 > 0 THEN author_id = $1 ELSE TRUE END
 		AND CASE WHEN $2 > 0 THEN ticket_id = $2 ELSE TRUE END
+		AND CASE WHEN $3 != '' THEN $3::timestamp > tickets.created_at ELSE TRUE END
+	ORDER BY created_at DESC
+	LIMIT $4
 `
 	tickets := []model.Ticket{}
-	return tickets, t.conn.Select(&tickets, q, userId, ticketId)
+	return tickets, t.conn.Select(&tickets, q, userId, ticketId, navigation.Cursor[0], navigation.Count)
 }
 
 func (t TicketRepositoryPostgres) Update(ticket *model.Ticket) (*model.Ticket, error) {
