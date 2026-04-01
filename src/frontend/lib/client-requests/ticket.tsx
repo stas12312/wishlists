@@ -1,4 +1,4 @@
-import { IError, ListResponse } from "../models";
+import { IError, INavigation, ListResponse } from "../models";
 import { IResponse } from "../models/response";
 import {
   IMessage,
@@ -9,8 +9,15 @@ import {
 
 import { clientAxios } from "./base";
 
-export async function getTickests(): Promise<ListResponse<ITicket>> {
-  const response = await clientAxios.get("/tickets");
+export async function getTickests(
+  navigation: INavigation,
+): Promise<ListResponse<ITicket>> {
+  const response = await clientAxios.get("/tickets", {
+    params: {
+      count: navigation.count,
+      cursor: navigation.cursor,
+    },
+  });
   return response.data;
 }
 

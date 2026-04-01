@@ -1,11 +1,18 @@
 import { clientAxios } from "../base";
 
-import { IError, ListResponse } from "@/lib/models";
+import { IError, INavigation, ListResponse } from "@/lib/models";
 import { IResponse } from "@/lib/models/response";
 import { IMessage, ITicket } from "@/lib/models/ticket";
 
-export async function getTicketsForAdmin(): Promise<ListResponse<ITicket>> {
-  const response = await clientAxios.get("/admin/tickets");
+export async function getTicketsForAdmin(
+  navigation: INavigation,
+): Promise<ListResponse<ITicket>> {
+  const response = await clientAxios.get("/admin/tickets", {
+    params: {
+      cursor: navigation.cursor,
+      count: navigation.count,
+    },
+  });
   return response.data;
 }
 
