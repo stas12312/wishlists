@@ -1,4 +1,6 @@
 import { cookies } from "next/headers";
+import clsx from "clsx";
+import { twMerge } from "tailwind-merge";
 
 import { Contacts } from "@/components/contacts";
 import Menu from "@/components/menu";
@@ -22,7 +24,7 @@ export default async function Layout({
             <div className="hidden md:block col-span-full flex-col w-80">
               <div className="sticky top-22 hidden md:block ml-2">
                 <Menu variant="desktop" />
-                <footer className="my-2 w-full px-2">
+                <footer className="my-2 w-full px-2 flex flex-col justify-center items-center gap-2">
                   <SupportButton className="mt-4 w-full" />
                   <Contacts />
                   <Version />
@@ -35,7 +37,7 @@ export default async function Layout({
           </div>
         </div>
       </div>
-      <span className={` ${isLogin ? "md:hidden" : ""}`}>
+      <span className={clsx(isLogin ? "md:hidden mb-30 md:mb-0" : "")}>
         {isLogin ? (
           <div className="mx-3">
             <SupportButton className="mt-2 w-full md:mx-0" />
@@ -43,7 +45,10 @@ export default async function Layout({
         ) : null}
 
         <footer
-          className={`flex items-center justify-between ${isLogin ? "mb-20 md:mb-0" : ""} px-3`}
+          className={twMerge(
+            "flex flex-col md:flex-row gap-4 items-center justify-between px-3",
+            isLogin ? "md:mb-0 mt-4" : "",
+          )}
         >
           <Contacts />
           <Version />
