@@ -152,12 +152,32 @@ func (c *AdminController) ListCategories(ctx *fiber.Ctx) error {
 }
 
 func (c *AdminController) ListTickets(ctx *fiber.Ctx) error {
+	navigation := model.Navigation{}
+	filters := model.TicketFilters{}
 
-	tickets, err := c.ticketService.List(0)
+	err := ctx.QueryParser(&navigation)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{Message: "Некорректная навигация", Details: err.Error()})
+	}
+
+	if navigation.Count < 1 || navigation.Count > 50 {
+		navigation.Count = 50
+	}
+
+	if len(navigation.Cursor) < 1 {
+		navigation.Cursor = []string{""}
+	}
+	tickets, err := c.ticketService.List(0, navigation, filters)
+
 	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{Message: err.Error()})
 	}
-	return ctx.JSON(model.Response{Data: tickets})
+
+	if len(tickets) > 0 {
+		navigation.Cursor = []string{tickets[len(tickets)-1].CreatedAt.Format(time.RFC3339Nano)}
+	}
+
+	return ctx.JSON(model.Response{Data: tickets, Navigation: navigation})
 }
 
 func (c *AdminController) GetTicket(ctx *fiber.Ctx) error {

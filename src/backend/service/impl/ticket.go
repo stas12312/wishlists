@@ -51,12 +51,12 @@ func (t *TicketServiceImpl) Create(ticket *model.Ticket, message *model.Message)
 	return t.ticketRepository.Create(ticket)
 }
 
-func (t *TicketServiceImpl) List(userId int64) ([]model.Ticket, error) {
-	return t.ticketRepository.List(userId, 0)
+func (t *TicketServiceImpl) List(userId int64, navigation model.Navigation, filters model.TicketFilters) ([]model.Ticket, error) {
+	return t.ticketRepository.List(userId, 0, navigation, filters)
 }
 
 func (t *TicketServiceImpl) Get(userId int64, id int64) (*model.Ticket, error) {
-	tickets, err := t.ticketRepository.List(userId, id)
+	tickets, err := t.ticketRepository.List(userId, id, model.Navigation{Cursor: []string{""}, Count: 1}, model.TicketFilters{})
 	if len(tickets) == 0 || err != nil {
 		return nil, apperror.NewError(apperror.NotFound, "Обращение на найдено")
 	}
