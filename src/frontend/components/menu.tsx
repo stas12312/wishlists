@@ -64,7 +64,8 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
     filter: (message) => {
       return (
         isEvent(message, WSEvent.ChangeIncomingFriendsRequests) ||
-        isEvent(message, WSEvent.ChangeQuestionCount)
+        isEvent(message, WSEvent.ChangeQuestionCount) ||
+        isEvent(message, WSEvent.ChangeTicketsCount)
       );
     },
   });

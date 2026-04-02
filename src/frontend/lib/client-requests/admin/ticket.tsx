@@ -35,12 +35,12 @@ export async function getTicketMessagesForAdmin(
 export async function addTicketMessageForAdmin(
   ticketId: number,
   content: string,
-): Promise<IMessage> {
+): Promise<IResponse<IMessage> | IError> {
   const response = await clientAxios.post(
     `/admin/tickets/${ticketId}/conversation`,
     {
       content: content,
     },
   );
-  return response.data.data;
+  return response.data;
 }

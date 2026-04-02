@@ -5,7 +5,7 @@ import {
   MdLink,
   MdOutlineExitToApp,
   MdSettings,
-  MdOutlineContactSupport,
+  MdSupportAgent,
 } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import {
@@ -22,11 +22,13 @@ import { twMerge } from "tailwind-merge";
 
 import { ThemeSwitcher } from "./themeSwitcher";
 import { UserAvatar } from "./userAvatar";
+import { Counter } from "./main-menu/counter";
 
 import userStore from "@/store/userStore";
 import { logout } from "@/lib/auth";
 import { IUser } from "@/lib/models/user";
 import { getUserLink } from "@/lib/label";
+import countersStore from "@/store/counterStore";
 export const UserItem = observer(() => {
   const user = userStore.user;
   let profileLink = "";
@@ -83,8 +85,11 @@ export const UserItem = observer(() => {
                 <Label>Настройки</Label>
               </Dropdown.Item>
               <Dropdown.Item id="support">
-                <MdOutlineContactSupport />
-                <Label>Поддержка</Label>
+                <MdSupportAgent />
+                <Label className="flex gap-2">
+                  <span className="my-auto">Поддержка</span>
+                  <Counter value={countersStore.ticketCounters} />
+                </Label>
               </Dropdown.Item>
               <Separator />
               <Dropdown.Item

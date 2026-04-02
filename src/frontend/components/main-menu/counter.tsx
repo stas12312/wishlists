@@ -7,7 +7,7 @@ export const Counter = ({ value }: { value: number }) => {
       color="accent"
       variant="primary"
     >
-      1
+      {value}
     </Chip>
   ) : (
     ""

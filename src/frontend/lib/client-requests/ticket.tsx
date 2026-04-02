@@ -48,13 +48,18 @@ export async function getTicketMessages(ticketId: number): Promise<IMessage[]> {
 export async function addTicketMessage(
   ticketId: number,
   content: string,
-): Promise<IMessage> {
+): Promise<IResponse<IMessage> | IError> {
   const response = await clientAxios.post(`/tickets/${ticketId}/conversation`, {
     content: content,
   });
-  return response.data.data;
+  return response.data;
 }
 
 export async function closeTicket(ticketId: number) {
   await clientAxios.post(`/tickets/${ticketId}/close`);
+}
+
+export async function getTicketCounters(): Promise<number> {
+  const response = await clientAxios.get("/tickets/counters");
+  return response.data.data.count;
 }

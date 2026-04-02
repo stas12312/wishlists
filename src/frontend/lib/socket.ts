@@ -10,6 +10,8 @@ export async function getWebsocketUrl(): Promise<string> {
 export enum WSEvent {
   ChangeIncomingFriendsRequests = "ChangeIncomingFriendsRequests",
   ChangeQuestionCount = "ChangeQuestionsCount",
+  ChangeTicketsCount = "ChangeTicketsCount",
+
   Update = "Update",
   Subscribe = "Subscribe",
   Unsubscribe = "Unsubscribe",
