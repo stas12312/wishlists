@@ -36,6 +36,7 @@ export const MessageForm = ({
       <TextField
         fullWidth
         isRequired
+        aria-label="Сообщение"
         value={message}
         variant="secondary"
         onChange={(value) => setMessage(value)}
@@ -65,26 +66,29 @@ export const MessageForm = ({
             >
               {message.length} / {maxLength} символов
             </p>
-            <div className="ml-auto flex gap-2">
+            <div className="ml-auto flex gap-2 h-9">
               {footer}
-              <Tooltip closeDelay={0} delay={0}>
-                <Button
-                  ref={submitRef}
-                  isIconOnly
-                  className="w-12"
-                  type="submit"
-                  variant="primary"
-                >
-                  <MdSend />
-                </Button>
-                <Tooltip.Content className="flex text-sm p-2 gap-1.5 min-w-36 mr-2">
-                  <p>Отправить</p>
-                  <Kbd>
-                    <Kbd.Abbr keyValue="ctrl" />
-                    <Kbd.Abbr keyValue="enter" />
-                  </Kbd>
-                </Tooltip.Content>
-              </Tooltip>
+              {message.length > 0 ? (
+                <Tooltip closeDelay={0} delay={0}>
+                  <Button
+                    ref={submitRef}
+                    isIconOnly
+                    className="w-12"
+                    type="submit"
+                    variant="primary"
+                  >
+                    <MdSend />
+                  </Button>
+
+                  <Tooltip.Content className="flex text-sm p-2 gap-1.5 min-w-36 mr-2">
+                    <p>Отправить</p>
+                    <Kbd>
+                      <Kbd.Abbr keyValue="ctrl" />
+                      <Kbd.Abbr keyValue="enter" />
+                    </Kbd>
+                  </Tooltip.Content>
+                </Tooltip>
+              ) : null}
             </div>
           </InputGroup.Suffix>
         </InputGroup>

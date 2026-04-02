@@ -1,9 +1,9 @@
 "use client";
-import { Button, Chip, Separator, Surface } from "@heroui/react";
+import { Button, Chip, Separator, Surface, toast } from "@heroui/react";
 import { useEffect, useRef, useState } from "react";
+import { MdDone } from "react-icons/md";
 import useWebSocket from "react-use-websocket";
 import { twMerge } from "tailwind-merge";
-import { MdDone } from "react-icons/md";
 
 import { CustomBreadcrumbs } from "../breadcrumbs";
 import { MessageForm } from "../input-message";
@@ -29,7 +29,7 @@ export const TicketDetailPage = ({
   getTicketFunc: { (ticketId: number): Promise<IResponse<ITicket> | IError> };
   getTicketMessageFunc: { (ticketId: number): Promise<IMessage[]> };
   addTicketMessageFunc: {
-    (ticketId: number, content: string): Promise<IMessage>;
+    (ticketId: number, content: string): Promise<IResponse<IMessage> | IError>;
   };
   withAuthor?: boolean;
 }) => {
@@ -38,6 +38,8 @@ export const TicketDetailPage = ({
   const [error, setError] = useState<string>();
   const [isLoading, setIsLoading] = useState(true);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isFirstScroll, setIsFirstScroll] = useState(true);
 
   const { lastJsonMessage, sendJsonMessage } = useWebSocket(getWebsocketUrl, {
     share: true,
@@ -45,6 +47,7 @@ export const TicketDetailPage = ({
       return isEvent(message, WSEvent.Update, `ticket_${ticketId}`);
     },
   });
+
   async function fetchData() {
     const data = await getTicketFunc(ticketId);
     const messages = await getTicketMessageFunc(ticketId);
@@ -67,11 +70,27 @@ export const TicketDetailPage = ({
 
   async function createMessage(message: string) {
     const result = await addTicketMessageFunc(ticketId, message);
-    setMessages([...messages, result]);
+    if ("message" in result) {
+      toast.danger(`Произошла ошибка при отправке сообщения`, {
+        description: result.message,
+      });
+    } else {
+      setMessages([...messages, result.data]);
+    }
   }
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    const el = containerRef.current;
+    if (!el) return;
+    if (isFirstScroll) {
+      el.scrollTop = el.scrollHeight;
+    } else {
+      bottomRef.current?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }
+
+    setIsFirstScroll(false);
   }, [messages]);
 
   return (
@@ -81,7 +100,7 @@ export const TicketDetailPage = ({
           items={[
             {
               title: "Поддержка",
-              href: "/tickets",
+              href: "../tickets",
             },
             {
               title: `Обращение #${ticketId}`,
@@ -99,7 +118,10 @@ export const TicketDetailPage = ({
           <TicketItem ticket={ticket} withAuthor={withAuthor} />
 
           <Surface className="mt-4 rounded-3xl px-4 py-2 flex flex-col  h-[calc(100vh-300px)] shadow-md">
-            <div className="overflow-y-auto flex flex-col gap-4">
+            <div
+              ref={containerRef}
+              className="overflow-y-auto flex flex-col gap-4"
+            >
               {messages.map((message) => {
                 return (
                   <Surface

@@ -1,5 +1,8 @@
 "use client";
 import { Chip, Link, Surface } from "@heroui/react";
+import { usePress } from "react-aria";
+import { useRouter } from "next/navigation";
+import { twMerge } from "tailwind-merge";
 
 import { UserChip } from "../user";
 
@@ -15,40 +18,61 @@ export const TicketItem = ({
   withOpenLink?: boolean;
   withAuthor?: boolean;
 }) => {
-  return (
-    <Surface className="rounded-3xl px-4 py-2 shadow-md">
-      <div className="flex justify-between">
-        <div className="flex gap-4">
-          {withAuthor ? (
-            <UserChip className="h-10" user={ticket.author} />
-          ) : null}
-          <div className="my-auto font-bold text-lg">{ticket.subject}</div>
-        </div>
+  const router = useRouter();
+  let { pressProps, isPressed } = usePress({
+    onPress: () => (withOpenLink ? router.push(`tickets/${ticket.id}`) : null),
+  });
 
-        <div className="flex gap-1">
-          <Chip
-            size="lg"
-            style={{ background: hexToRgba(ticket.category.color, 0.7) }}
-          >
-            {ticket.category.title}
-          </Chip>
-          <Chip size="lg">#{ticket.id}</Chip>
+  return (
+    <div
+      className={twMerge(
+        "transition",
+        withOpenLink ? " md:hover:scale-[1.01]" : null,
+      )}
+    >
+      <Surface
+        className={twMerge(
+          "rounded-3xl px-4 py-2 shadow-md transition",
+          withOpenLink
+            ? "data-[pressed=true]:scale-[0.98] cursor-pointer"
+            : "null",
+        )}
+        {...pressProps}
+        data-pressed={isPressed ? "true" : undefined}
+      >
+        <div className="flex justify-between ">
+          <div className="flex gap-4">
+            {withAuthor ? (
+              <UserChip className="h-10" user={ticket.author} />
+            ) : null}
+            <div className="my-auto font-bold text-lg">{ticket.subject}</div>
+          </div>
+
+          <div className="flex gap-1 flex-none w-auto h-8">
+            <Chip
+              size="lg"
+              style={{ background: hexToRgba(ticket.category.color, 0.7) }}
+            >
+              {ticket.category.title}
+            </Chip>
+            <Chip size="lg">#{ticket.id}</Chip>
+          </div>
         </div>
-      </div>
-      <div className="flex justify-between mt-4">
-        <Chip color={getStatus(ticket.status)[1]} size="lg" variant="primary">
-          {getStatus(ticket.status)[0]}
-        </Chip>
-        {withOpenLink ? (
-          <Link
-            className="no-underline text-accent hover:text-accent/80 transition"
-            href={`tickets/${ticket.id}`}
-          >
-            Открыть
-          </Link>
-        ) : null}
-      </div>
-    </Surface>
+        <div className="flex justify-between mt-4">
+          <Chip color={getStatus(ticket.status)[1]} size="lg" variant="primary">
+            {getStatus(ticket.status)[0]}
+          </Chip>
+          {withOpenLink ? (
+            <Link
+              className="no-underline text-accent hover:text-accent/80 transition my-auto"
+              href={`tickets/${ticket.id}`}
+            >
+              Открыть
+            </Link>
+          ) : null}
+        </div>
+      </Surface>
+    </div>
   );
 };
 
@@ -64,9 +88,9 @@ function getStatus(
     case "resolved":
       return ["Решено", "success"];
     case "closed":
-      return ["Закрыто", "success"];
+      return ["Закрыто", "default"];
     case "waiting_info":
-      return ["На уточнении", "warning"];
+      return ["Ожидает вашего ответа", "warning"];
     case "waiting_fix":
       return ["Ожидает исправление", "warning"];
   }
