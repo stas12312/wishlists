@@ -85,8 +85,9 @@ func (t *TicketServiceImpl) AddMessage(userId int64, ticketId int64, message *mo
 	if err != nil {
 		return nil, err
 	}
-	if ticket.Status == "waiting" || ticket.Status == "closed" {
+	if ticket.Status == "waiting_info" || ticket.Status == "closed" {
 		_, err = t.ticketRepository.Update(&model.Ticket{Id: ticketId, Status: "open"})
+		t.wsService.SendMessage(userId, model.WSMessage{Event: service.ChangeTicketsCount})
 		if err != nil {
 			return nil, err
 		}
@@ -110,7 +111,7 @@ func (t *TicketServiceImpl) AddMessageFromAdmin(userId int64, ticketId int64, me
 		if err != nil {
 			return nil, err
 		}
-		t.wsService.SendMessage(userId, model.WSMessage{Event: service.ChangeTicketsCount})
+		t.wsService.SendMessage(ticket.AuthorId, model.WSMessage{Event: service.ChangeTicketsCount})
 	}
 
 	createdMessage, err := t.messageService.CreateMessage(userId, ticket.ConversationId, message.Content)
