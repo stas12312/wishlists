@@ -9,6 +9,7 @@ import (
 const (
 	ChangeIncomingFriendsRequests = "ChangeIncomingFriendsRequests"
 	ChangeQuestionsCount          = "ChangeQuestionsCount"
+	ChangeTicketsCount            = "ChangeTicketsCount"
 
 	Subscribe   = "Subscribe"
 	Unsubscribe = "Unsubscribe"
