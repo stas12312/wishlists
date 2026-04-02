@@ -132,6 +132,18 @@ func (c *TicketController) Close(ctx *fiber.Ctx) error {
 	return ctx.JSON(model.Response{Data: "ok"})
 }
 
+func (c *TicketController) Counters(ctx *fiber.Ctx) error {
+	userId := GetUserIdFromCtx(ctx)
+	count, err := c.ticketService.GetCounters(userId)
+
+	if err != nil {
+		return ctx.Status(fiber.StatusNotFound).JSON(model.ErrorResponse{Message: "Ошибка", Details: err.Error()})
+	}
+
+	return ctx.JSON(model.Response{Data: map[string]interface{}{"count": count}})
+
+}
+
 func (c *TicketController) Route(router fiber.Router) {
 
 	group := router.Group("/tickets", middleware.Protected(true))
@@ -141,6 +153,7 @@ func (c *TicketController) Route(router fiber.Router) {
 
 	group.Post("", c.Create)
 	group.Get("", c.List)
+	group.Get("/counters", c.Counters)
 	group.Get("/:id", c.Get)
 	group.Post("/:id/close", c.Close)
 	group.Get("/:id/conversation", c.GetConversation)

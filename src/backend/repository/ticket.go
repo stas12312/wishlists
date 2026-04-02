@@ -8,4 +8,5 @@ type TicketRepository interface {
 	Get(id int64) (*model.Ticket, error)
 	Update(ticket *model.Ticket) (*model.Ticket, error)
 	Delete(id int64) error
+	GetCounters(userId int64) (int, error)
 }

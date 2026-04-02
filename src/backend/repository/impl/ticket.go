@@ -75,3 +75,15 @@ func (t TicketRepositoryPostgres) Delete(id int64) error {
 	//TODO implement me
 	panic("implement me")
 }
+
+func (t TicketRepositoryPostgres) GetCounters(userId int64) (int, error) {
+	q := `
+	SELECT COUNT(*)
+	FROM tickets
+	WHERE
+	    author_id = $1
+		AND status IN ('waiting_info', 'resolved')
+`
+	var count int
+	return count, t.conn.Get(&count, q, userId)
+}

@@ -12,4 +12,5 @@ type TicketService interface {
 	AddMessage(userId int64, ticketId int64, message *model.Message) (*model.Message, error)
 	AddMessageFromAdmin(userId int64, ticketId int64, message *model.Message) (*model.Message, error)
 	Close(userId int64, ticketId int64) error
+	GetCounters(userId int64) (int, error)
 }

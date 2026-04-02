@@ -110,6 +110,7 @@ func (t *TicketServiceImpl) AddMessageFromAdmin(userId int64, ticketId int64, me
 		if err != nil {
 			return nil, err
 		}
+		t.wsService.SendMessage(userId, model.WSMessage{Event: service.ChangeTicketsCount})
 	}
 
 	createdMessage, err := t.messageService.CreateMessage(userId, ticket.ConversationId, message.Content)
@@ -134,7 +135,12 @@ func (t *TicketServiceImpl) Close(userId int64, ticketId int64) error {
 	t.wsService.SendMessageToChannel(getChannelNameForTicket(ticketId), model.WSMessage{
 		Event: service.Update,
 	})
+	t.wsService.SendMessage(userId, model.WSMessage{Event: service.ChangeTicketsCount})
 	return nil
+}
+
+func (t *TicketServiceImpl) GetCounters(userId int64) (int, error) {
+	return t.ticketRepository.GetCounters(userId)
 }
 
 func splitMessage(content string) (string, string) {
