@@ -22,11 +22,11 @@ const FriendItem = ({
   });
   return (
     <Card
-      className="w-full cursor-pointer p-0 data-[pressed=true]:scale-95 transition"
+      className="w-full cursor-pointer p-3 data-[pressed=true]:scale-95 transition"
       {...pressProps}
       data-pressed={isPressed ? "true" : undefined}
     >
-      <Card.Content className="flex flex-row justify-between m-4">
+      <Card.Content className="flex flex-row justify-between">
         <span className="h-10 truncate">
           <UserAvatar
             className="cursor-pointer"
