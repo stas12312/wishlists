@@ -133,11 +133,15 @@ export const UserChip = ({
   const chipStyle = chipVariants({ variant: variant });
   return (
     <Link
-      className={twMerge(chipStyle.base(), className)}
+      className={twMerge(
+        chipStyle.base(),
+        className,
+        "pl-0.5 rounded-full h-8",
+      )}
       href={getUserLink(user.username)}
     >
       {user.image ? (
-        <Avatar size="md">
+        <Avatar className="h-7 w-7">
           <Avatar.Image className="object-cover" src={user.image} />
         </Avatar>
       ) : null}
