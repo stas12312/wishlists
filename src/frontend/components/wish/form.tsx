@@ -23,6 +23,7 @@ import Desirability from "../desirability";
 import IconsGroup from "../iconsGroup";
 import MarketIcon from "../marketIcon";
 import UploadButton from "../uploadButton";
+import { ButtonWithLoader } from "../button-with-loader";
 
 import { IUploadImage } from "./imageItem";
 import { ImagesContainer } from "./imagesContainer";
@@ -376,9 +377,14 @@ export default function WishForm(props: {
             <span />
           )}
 
-          <Button fullWidth isPending={isCreating} type="submit">
+          <ButtonWithLoader
+            fullWidth
+            isLoading={isCreating}
+            loaderText="Сохранение"
+            type="submit"
+          >
             Сохранить
-          </Button>
+          </ButtonWithLoader>
         </Form>
       </div>
       <div>

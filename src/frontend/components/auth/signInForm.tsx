@@ -13,6 +13,8 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, FormEvent } from "react";
 
+import { ButtonWithLoader } from "../button-with-loader";
+
 import { IOAuthProvider } from "@/lib/models/auth";
 import PasswordInput from "@/components/passwordInput";
 import { login } from "@/lib/client-requests/auth";
@@ -90,9 +92,9 @@ const SignInForm = ({ providers }: { providers: IOAuthProvider[] }) => {
         </div>
         <span className="text-danger text-sm text-center">{errorMessage}</span>
         <div>
-          <Button fullWidth isPending={isLoading} type="submit">
+          <ButtonWithLoader fullWidth isLoading={isLoading} type="submit">
             Войти
-          </Button>
+          </ButtonWithLoader>
         </div>
         <span className="grid grid-cols-5 md:grid-cols-4 mt-2">
           <Separator className="my-auto col-span-1" />

@@ -1,7 +1,6 @@
 "use client";
 import {
   Alert,
-  Button,
   Chip,
   ErrorMessage,
   FieldError,
@@ -10,12 +9,12 @@ import {
   Label,
   Modal,
   Skeleton,
-  Spinner,
   TextField,
 } from "@heroui/react";
 import { ClipboardEvent, useEffect, useRef, useState } from "react";
 
 import MarketIcon from "../marketIcon";
+import { ButtonWithLoader } from "../button-with-loader";
 
 import {
   getAvailableParser,
@@ -148,16 +147,14 @@ const LoadByLinkModal = ({
                         <ErrorMessage>{error}</ErrorMessage>
                       </TextField>
 
-                      <Button fullWidth isPending={isLoading} type="submit">
-                        {({ isPending }) => (
-                          <>
-                            {isPending ? (
-                              <Spinner color="current" size="sm" />
-                            ) : null}
-                            Загрузить
-                          </>
-                        )}
-                      </Button>
+                      <ButtonWithLoader
+                        fullWidth
+                        isLoading={isLoading}
+                        loaderText="Загрузка"
+                        type="submit"
+                      >
+                        Загрузить
+                      </ButtonWithLoader>
                     </div>
                   </Form>
                 ) : (

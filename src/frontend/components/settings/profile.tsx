@@ -16,6 +16,7 @@ import { MdContentCopy, MdLink } from "react-icons/md";
 
 import { CustomDatePicker } from "../datePicker";
 import UploadButton from "../uploadButton";
+import { ButtonWithLoader } from "../button-with-loader";
 
 import { uploadFile } from "@/lib/client-requests/file";
 import {
@@ -151,14 +152,15 @@ const ProfileForm = observer(() => {
         previewUrl={user.image}
       />
       <ErrorMessage>{errors.image}</ErrorMessage>
-      <Button
+      <ButtonWithLoader
         fullWidth
         className="mt-2"
-        isPending={isProfileLoading}
+        isLoading={isProfileLoading}
+        loaderText="Сохранение"
         type="submit"
       >
         Сохранить
-      </Button>
+      </ButtonWithLoader>
     </Form>
   );
 });
