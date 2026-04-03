@@ -1,6 +1,7 @@
 import { Chip } from "@heroui/react";
 import { AiFillGift } from "react-icons/ai";
 import { twMerge } from "tailwind-merge";
+import clsx from "clsx";
 
 import Desirability from "../desirability";
 import { ResponsiveImage } from "../responsive-image";
@@ -22,7 +23,13 @@ const CardImage = ({
 }) => {
   return (
     <div className={twMerge("relative h-full  rounded-3xl", className)}>
-      <div className="bg-linear-to-br from-default to-default/50 rounded-3xl flex h-full w-full">
+      <div
+        className={clsx(
+          "rounded-3xl flex h-full w-full",
+          "bg-[linear-gradient(180deg,#ffffff_0%,#f7f7f8_35%,#ececee_100%)]",
+          "dark:bg-[linear-gradient(180deg,#1c1c1e_0%,#2c2c2e_40%,#3a3a3c_100%)]",
+        )}
+      >
         {wish.images?.length ? (
           <ResponsiveImage
             alt="Изображение карточки желания"
