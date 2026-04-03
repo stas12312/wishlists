@@ -18,8 +18,8 @@ export const DateEvents = ({
       animate={{ opacity: 1, transition: { duration: 0.5 } }}
       initial={{ opacity: 0 }}
     >
-      <div className="bg-surface/50 backdrop-blur-xl sticky text-center top-1 z-20 md:float-left rounded-md p-2 my-4 mx-6 md:mx-0">
-        <p className="text-bold text-3xl ">{dateEvents.date}</p>
+      <div className="bg-surface/50 backdrop-blur-xl sticky text-center top-22 p-2 z-20 md:float-left rounded-3xl my-4 mx-6 md:mx-0">
+        <p className="text-bold text-3xl mx-2">{dateEvents.date}</p>
       </div>
 
       {dateEvents.users.map((userEvents) => {
