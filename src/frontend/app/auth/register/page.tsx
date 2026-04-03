@@ -19,6 +19,7 @@ import PasswordInput from "@/components/passwordInput";
 import { setTokens } from "@/lib/auth";
 import { confirmEmail, register } from "@/lib/client-requests/auth";
 import { IRegisterData } from "@/lib/models/auth";
+import { ButtonWithLoader } from "@/components/button-with-loader";
 
 const COUNT_DOWN_DURATION = 1000 * 30 + 500;
 
@@ -222,9 +223,9 @@ function SignInForm() {
               </Link>
             </span>
 
-            <Button fullWidth isPending={isLoading} type="submit">
+            <ButtonWithLoader fullWidth isLoading={isLoading} type="submit">
               Далее
-            </Button>
+            </ButtonWithLoader>
           </div>
         ) : null}
 
@@ -249,10 +250,10 @@ function SignInForm() {
             </div>
 
             <div className="flex flex-col gap-2 mt-2">
-              <Button
+              <ButtonWithLoader
                 fullWidth
                 isDisabled={countDown >= 0}
-                isPending={retryIsLoading}
+                isLoading={retryIsLoading}
                 variant="primary"
                 onPress={async () => {
                   setRetryIsLoading(true);
@@ -267,7 +268,7 @@ function SignInForm() {
                 {countDown >= 0 ? (
                   <>(Через {Math.floor(countDown / 1000)} сек.)</>
                 ) : null}{" "}
-              </Button>
+              </ButtonWithLoader>
               <Button
                 fullWidth
                 onPress={() => {

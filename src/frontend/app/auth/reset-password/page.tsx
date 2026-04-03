@@ -1,6 +1,5 @@
 "use client";
 import {
-  Button,
   FieldError,
   Form,
   Input,
@@ -22,6 +21,7 @@ import {
   restorePassword,
 } from "@/lib/client-requests/auth";
 import { IRegisterData, ITokens } from "@/lib/models/auth";
+import { ButtonWithLoader } from "@/components/button-with-loader";
 
 const RestorePassword = observer(() => {
   const [email, setEmail] = useState("");
@@ -151,9 +151,9 @@ const RestorePassword = observer(() => {
             }
           })()}
           {[0, 2].includes(step) ? (
-            <Button isPending={isLoading} type="submit">
+            <ButtonWithLoader isLoading={isLoading} type="submit">
               {step !== 2 ? "Далее" : "Сменить пароль"}
-            </Button>
+            </ButtonWithLoader>
           ) : null}
         </Form>
         <div className="text-center mt-4">

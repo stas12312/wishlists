@@ -1,11 +1,7 @@
 "use client";
 
-import { CalendarDate, getLocalTimeZone } from "@internationalized/date";
-import { FormEvent, Key, useEffect, useState } from "react";
-import { MdOutlinePublic, MdOutlinePublicOff, MdPerson } from "react-icons/md";
 import {
   Avatar,
-  Button,
   Chip,
   Form,
   Input,
@@ -15,15 +11,19 @@ import {
   TextArea,
   TextField,
 } from "@heroui/react";
+import { CalendarDate, getLocalTimeZone } from "@internationalized/date";
+import { FormEvent, Key, useEffect, useState } from "react";
+import { MdOutlinePublic, MdOutlinePublicOff, MdPerson } from "react-icons/md";
 
 import { CustomDatePicker } from "../datePicker";
 import { UserAvatar } from "../userAvatar";
+import { ButtonWithLoader } from "../button-with-loader";
 
 import { getFriends } from "@/lib/client-requests/friend";
 import { createWishList, updateWishlist } from "@/lib/client-requests/wishlist";
-import { IWishlist, Visible } from "@/lib/models/wishlist";
-import { IUser } from "@/lib/models/user";
 import { dateStringToCalendarDate } from "@/lib/date";
+import { IUser } from "@/lib/models/user";
+import { IWishlist, Visible } from "@/lib/models/wishlist";
 
 const visibleItems = [
   { key: "1", label: "Всем по ссылке", icon: <MdOutlinePublic /> },
@@ -272,9 +272,14 @@ export function WishlistCreateForm({
           </Select.Popover>
         </Select>
       ) : null}
-      <Button fullWidth isPending={isCreating} type="submit">
+      <ButtonWithLoader
+        fullWidth
+        isLoading={isCreating}
+        loaderText="Сохранение"
+        type="submit"
+      >
         Сохранить
-      </Button>
+      </ButtonWithLoader>
     </Form>
   );
 }

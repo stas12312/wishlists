@@ -1,7 +1,8 @@
-import { Button, Form, Spinner, toast } from "@heroui/react";
+import { Form, Spinner, toast } from "@heroui/react";
 import { FormEvent, useEffect, useState } from "react";
 
 import PasswordInput from "../passwordInput";
+import { ButtonWithLoader } from "../button-with-loader";
 
 import { changePassword, getAuthInfo } from "@/lib/client-requests/user";
 
@@ -103,9 +104,14 @@ const SecuritySection = () => {
                   onChange={(e) => setNewPassword(e.target.value)}
                 />
               </div>
-              <Button fullWidth isPending={isLoading} type="submit">
+              <ButtonWithLoader
+                fullWidth
+                isLoading={isLoading}
+                loaderText="Сохранение"
+                type="submit"
+              >
                 Сменить пароль
-              </Button>
+              </ButtonWithLoader>
             </div>
           </>
         )}

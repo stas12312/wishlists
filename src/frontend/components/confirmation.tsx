@@ -7,6 +7,7 @@ import {
   TextField,
 } from "@heroui/react";
 import { ReactNode, useEffect, useRef, useState } from "react";
+import { ButtonWithLoader } from "./button-with-loader";
 
 const ConfirmationModal = ({
   onConfirm,
@@ -95,10 +96,10 @@ const ConfirmationModal = ({
               >
                 {declineName}
               </Button>
-              <Button
+              <ButtonWithLoader
                 ref={buttonRef}
                 isDisabled={confirmByText && !(confirmText == text)}
-                isPending={isLoading}
+                isLoading={isLoading}
                 variant="danger-soft"
                 onPress={async () => {
                   setIsLoading(true);
@@ -107,7 +108,7 @@ const ConfirmationModal = ({
                 }}
               >
                 {confirmName}
-              </Button>
+              </ButtonWithLoader>
             </Modal.Footer>
           </Modal.Dialog>
         </Modal.Container>
