@@ -2,6 +2,7 @@ import { Chip } from "@heroui/react";
 import { AiFillGift } from "react-icons/ai";
 import { Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import clsx from "clsx";
 
 import Desirability from "../desirability";
 import { ResponsiveImage } from "../responsive-image";
@@ -23,7 +24,11 @@ export const ImageSwiper = ({ wish }: { wish: IWish }) => {
         </span>
       </div>
       <div
-        className={`bg-linear-to-br from-default to-default-100 rounded-large w-full flex h-full rounded-3xl`}
+        className={clsx(
+          "w-full flex h-full rounded-3xl",
+          "bg-[linear-gradient(180deg,#ffffff_0%,#f7f7f8_35%,#ececee_100%)]",
+          "dark:bg-[linear-gradient(180deg,#1c1c1e_0%,#2c2c2e_40%,#3a3a3c_100%)]",
+        )}
       >
         {wish.images?.length ? (
           <Swiper
@@ -41,7 +46,7 @@ export const ImageSwiper = ({ wish }: { wish: IWish }) => {
                 <SwiperSlide key={image}>
                   <div className="flex justify-center">
                     <ResponsiveImage
-                      className="object-cover  rounded-3xl"
+                      className="object-cover rounded-3xl"
                       src={image}
                     />
                   </div>
