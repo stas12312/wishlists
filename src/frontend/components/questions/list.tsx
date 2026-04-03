@@ -1,11 +1,10 @@
 import { observer } from "mobx-react-lite";
-import { useState, useEffect, useRef } from "react";
-import { Form, Button, TextField, FieldError, InputGroup } from "@heroui/react";
-import { twMerge } from "tailwind-merge";
+import { useState, useEffect } from "react";
 
 import { AnimatedList } from "../cardsList/cardsList";
 import { InfinityLoader } from "../infinityLoader";
 import { PageSpinner } from "../pageSpinner";
+import { MessageForm } from "../input-message";
 
 import { QuestionItem } from "./question";
 
@@ -36,18 +35,14 @@ export const QuestionList = observer(
     emptyMessage?: string;
     withTitle?: boolean;
   }) => {
-    const [newQuestion, setNewQuestion] = useState<string>("");
-    const submitRef = useRef<HTMLButtonElement>(null);
-
-    const submitForm = async () => {
+    const sendMessage = async (message: string) => {
       if (!wishUUID) {
         return;
       }
       const result = await createQuestion({
-        content: newQuestion,
+        content: message,
         wish_uuid: wishUUID,
       });
-      setNewQuestion("");
       setQuestions([result, ...questions]);
     };
 
@@ -100,65 +95,13 @@ export const QuestionList = observer(
             </h2>
           ) : null}
           {withAskForm ? (
-            <div>
-              <Form
-                className="mt-2"
-                validationBehavior="native"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  submitForm();
-                }}
-              >
-                <TextField
-                  fullWidth
-                  value={newQuestion}
-                  variant="secondary"
-                  onChange={(value) => {
-                    setNewQuestion(value);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && e.ctrlKey) {
-                      submitRef.current?.click();
-                    }
-                  }}
-                >
-                  <InputGroup className="flex flex-col">
-                    <InputGroup.TextArea
-                      required
-                      className="rounded-3xl w-full  resize-none"
-                      maxLength={200}
-                      minLength={2}
-                      placeholder="Введите вопрос"
-                      rows={3}
-                    />
-                    <InputGroup.Suffix>
-                      <p
-                        className={twMerge(
-                          "mt-auto py-2",
-                          newQuestion.length < 2 || newQuestion.length >= 200
-                            ? "text-danger"
-                            : undefined,
-                          !newQuestion.length ? "invisible" : "visible",
-                        )}
-                      >
-                        {newQuestion.length} / 200 символов
-                      </p>
-                    </InputGroup.Suffix>
-                  </InputGroup>
-
-                  <FieldError />
-                </TextField>
-
-                <Button
-                  ref={submitRef}
-                  fullWidth
-                  className="mt-2"
-                  type="submit"
-                  variant="primary"
-                >
-                  Задать вопрос
-                </Button>
-              </Form>
+            <div className="mt-2">
+              <MessageForm
+                maxLength={200}
+                minLength={2}
+                rows={3}
+                onSend={sendMessage}
+              />
             </div>
           ) : null}
         </div>

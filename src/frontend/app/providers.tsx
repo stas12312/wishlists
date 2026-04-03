@@ -18,7 +18,7 @@ export function Providers({ children }: ProvidersProps) {
     <>
       <Toast.Provider className="bottom-30 md:bottom-4" />
       <RouterProvider navigate={router.push}>
-        <NextThemesProvider attribute="class" defaultTheme="light">
+        <NextThemesProvider attribute="class" defaultTheme="system">
           {children}
         </NextThemesProvider>
       </RouterProvider>
