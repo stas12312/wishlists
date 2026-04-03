@@ -174,7 +174,7 @@ export const WishItem = observer(
               </Card.Content>
               {withUser ? (
                 <Card.Footer className="flex justify-between p-2">
-                  <UserChip user={wish.user} variant="tertiary" />
+                  <UserChip user={wish.user} variant="secondary" />
                   {wish.wishlist.date ? (
                     <Chip color="warning" size="lg" variant="primary">
                       {new Date(wish.wishlist.date).toLocaleDateString()}
