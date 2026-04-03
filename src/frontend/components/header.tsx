@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { MdBolt } from "react-icons/md";
 import { useEffect, useRef, useState } from "react";
+import clsx from "clsx";
 
 import { Logo } from "./logo";
 import { ActiveIcon } from "./activeIcon";
@@ -9,7 +10,7 @@ import { UserItem } from "./user";
 import Login from "./login";
 
 export const Header = ({ isLogin }: { isLogin: boolean }) => {
-  const [isVisible, setIsVisible] = useState(true);
+  const [, setIsVisible] = useState(true);
   const lastScrollY = useRef(0);
   const [showBg, setShowBg] = useState(false);
 
@@ -47,7 +48,14 @@ export const Header = ({ isLogin }: { isLogin: boolean }) => {
 
   return (
     <header
-      className={`flex z-50 justify-between justify rounded-3xl m-2 items-center sticky top-2 ${showBg ? "bg-white/50 dark:bg-default/50 backdrop-blur-xl shadow-md ring-gray-500/10 ring-1 " : ""}  py-3 ${isVisible ? "opacity-100" : "opacity-0"} duration-400 mx-4`}
+      className={clsx(
+        "flex z-50 justify-between justify rounded-3xl m-2 items-center sticky top-2",
+        showBg
+          ? "bg-white/50 dark:bg-default/50 backdrop-blur-xl shadow-md ring-gray-500/10 ring-1 "
+          : null,
+        "opacity-100",
+        "py-3 duration-400 mx-4",
+      )}
     >
       <div className="w-60 shrink-0 hidden md:flex pl-4">
         <Logo />
