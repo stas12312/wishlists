@@ -16,8 +16,20 @@ class CountersStore {
   }
 
   getCounters = flow(function* (this: CountersStore) {
-    this.friendCounters = yield getFriendsCounters();
+    yield this.updateFriendsCounters();
+    yield this.updateQuestionCounters();
+    yield this.updateTicketCounters();
+  });
+
+  updateQuestionCounters = flow(function* (this: CountersStore) {
     this.questionCounters = yield getQuestionCounters();
+  });
+
+  updateFriendsCounters = flow(function* (this: CountersStore) {
+    this.friendCounters = yield getFriendsCounters();
+  });
+
+  updateTicketCounters = flow(function* (this: CountersStore) {
     this.ticketCounters = yield getTicketCounters();
   });
 

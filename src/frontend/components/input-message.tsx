@@ -14,11 +14,13 @@ import { twMerge } from "tailwind-merge";
 export const MessageForm = ({
   minLength = 1,
   maxLength = 1000,
+  rows = 3,
   footer,
   onSend,
 }: {
   minLength?: number;
   maxLength?: number;
+  rows?: number;
   footer?: ReactNode;
   onSend: { (message: string): void };
 }) => {
@@ -46,13 +48,13 @@ export const MessageForm = ({
           }
         }}
       >
-        <InputGroup className="flex flex-col  shadow-md rounded-3xl">
+        <InputGroup className="flex flex-col shadow-md rounded-3xl">
           <InputGroup.TextArea
             className="w-full  resize-none"
             maxLength={maxLength}
             minLength={minLength}
             placeholder="Ваше сообщение"
-            rows={3}
+            rows={rows}
           />
           <InputGroup.Suffix className="flex w-full py-2">
             <p
