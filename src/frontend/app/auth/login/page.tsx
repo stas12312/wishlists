@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 import { ReactNode } from "react";
 
-import SignInForm from "@/components/auth/signInForm";
-import { Yandex } from "@/components/logo/yandex";
+import SignInForm from "@/components/auth/SignInForm";
+import { Yandex } from "@/components/logo/YandexLogo";
 import { getOgImageUrl } from "@/lib/label";
 import { getOAuthProviders } from "@/lib/server-requests/auth";
 

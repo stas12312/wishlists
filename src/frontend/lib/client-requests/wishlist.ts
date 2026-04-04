@@ -3,7 +3,7 @@ import { IWishlist } from "../models/wishlist";
 
 import { clientAxios } from "./base";
 
-import { IWishlistFilter } from "@/components/wishlist/list";
+import { IWishlistFilter } from "@/components/wishlist/Wishlist";
 
 export async function createWishList(wishlist: IWishlist): Promise<IWishlist> {
   const response = await clientAxios.post("/wishlists", wishlist);

@@ -2,8 +2,8 @@ import { notFound } from "next/navigation";
 import { ReactNode } from "react";
 
 import { checkIsAdmin } from "@/lib/server-requests/admin";
-import { AdminMenu } from "@/components/admin/menu";
-import { Header } from "@/components/header";
+import { AdminMenu } from "@/components/admin/AdminMenu";
+import { Header } from "@/components/Header";
 
 export const dynamic = "force-dynamic";
 

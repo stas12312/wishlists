@@ -1,10 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 
-import PageHeader from "@/components/pageHeader";
+import PageHeader from "@/components/PageHeader";
 import { ITicket } from "@/lib/models/ticket";
-import { TicketsList } from "@/components/tickets/list";
-import { InfinityLoader } from "@/components/infinityLoader";
+import { TicketsList } from "@/components/ticket/TicketList";
+import { InfinityLoader } from "@/components/InfinityLoader";
 import { getTicketsForAdmin } from "@/lib/client-requests/admin/ticket";
 import { INavigation } from "@/lib/models";
 

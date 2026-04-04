@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 
-import { getOgImage } from "@/components/ogImage";
+import { getOgImage } from "@/components/OGImage";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;

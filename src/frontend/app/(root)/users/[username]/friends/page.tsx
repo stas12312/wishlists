@@ -1,5 +1,5 @@
-import FriendsList from "@/components/friends/list";
-import PageHeader from "@/components/pageHeader";
+import FriendsList from "@/components/friend/FriendList";
+import PageHeader from "@/components/PageHeader";
 
 const UserFriendsPage = async ({
   params,

@@ -1,6 +1,6 @@
-import { CustomBreadcrumbs } from "@/components/breadcrumbs";
-import PageHeader from "@/components/pageHeader";
-import { CreateTicketForm } from "@/components/tickets/form";
+import { CustomBreadcrumbs } from "@/components/BreadCrumbs";
+import PageHeader from "@/components/PageHeader";
+import { CreateTicketForm } from "@/components/ticket/TicketForm";
 
 export default function Page() {
   return (

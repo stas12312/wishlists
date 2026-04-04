@@ -6,9 +6,9 @@ import { IoMdLink } from "react-icons/io";
 import userStore from "@/store/userStore";
 import countersStore from "@/store/counterStore";
 import { getUserLink } from "@/lib/label";
-import FriendsList from "@/components/friends/list";
-import PageHeader from "@/components/pageHeader";
-import FriendRequestsItems from "@/components/friends/requests";
+import FriendsList from "@/components/friend/FriendList";
+import PageHeader from "@/components/PageHeader";
+import FriendRequestsItems from "@/components/friend/FriendRequests";
 
 const FriendsPage = observer(() => {
   const incomingCounts = countersStore.friendCounters.incoming_requests;

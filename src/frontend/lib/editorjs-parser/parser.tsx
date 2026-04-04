@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 
 import { list } from "./list";
 
-import { ResponsiveImage } from "@/components/responsive-image";
+import { ResponsiveImage } from "@/components/ResponsiveImage";
 
 export function editorjsParse(blocks: OutputBlockData[]): ReactNode[] {
   let result = [];

@@ -1,4 +1,4 @@
-import { getOgImage } from "@/components/ogImage";
+import { getOgImage } from "@/components/OGImage";
 import { getWishlist } from "@/lib/client-requests/wishlist";
 
 export const runtime = "edge";

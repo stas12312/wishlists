@@ -14,12 +14,12 @@ import {
 import { redirect, useSearchParams } from "next/navigation";
 import { FormEvent, Suspense, useEffect, useRef, useState } from "react";
 
-import CodeInput from "@/components/codeInput";
-import PasswordInput from "@/components/passwordInput";
+import CodeInput from "@/components/CodeInput";
+import PasswordInput from "@/components/PasswordInput";
 import { setTokens } from "@/lib/auth";
 import { confirmEmail, register } from "@/lib/client-requests/auth";
 import { IRegisterData } from "@/lib/models/auth";
-import { ButtonWithLoader } from "@/components/button-with-loader";
+import { ButtonWithLoader } from "@/components/ButtonWithLoader";
 
 const COUNT_DOWN_DURATION = 1000 * 30 + 500;
 

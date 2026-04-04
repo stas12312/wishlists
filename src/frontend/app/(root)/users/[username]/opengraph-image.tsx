@@ -1,4 +1,4 @@
-import { getOgImage } from "@/components/ogImage";
+import { getOgImage } from "@/components/OGImage";
 import { getUserByUsername } from "@/lib/client-requests/user";
 
 export const runtime = "edge";

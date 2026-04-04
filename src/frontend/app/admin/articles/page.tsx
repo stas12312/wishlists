@@ -2,15 +2,15 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import AddCardButton from "@/components/addCardButton";
-import { AnimatedList } from "@/components/cardsList/cardsList";
-import PageHeader from "@/components/pageHeader";
+import AddCardButton from "@/components/AddCardButton";
+import { AnimatedList } from "@/components/animated-list/AnimatedList";
+import PageHeader from "@/components/PageHeader";
 import { getAdminArticles } from "@/lib/client-requests/article";
 import { IArticle } from "@/lib/models/article";
 import { INavigation } from "@/lib/models";
-import { ArticleCard } from "@/components/article/card";
-import { PageSpinner } from "@/components/pageSpinner";
-import { InfinityLoader } from "@/components/infinityLoader";
+import { ArticleCard } from "@/components/article/ArticleCard";
+import { PageSpinner } from "@/components/PageSpinner";
+import { InfinityLoader } from "@/components/InfinityLoader";
 
 export default function Page() {
   const route = useRouter();

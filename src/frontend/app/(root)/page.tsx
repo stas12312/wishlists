@@ -1,7 +1,7 @@
-import Landing from "@/components/landing/main";
-import { Wishlists } from "@/components/wishlist/list";
+import Landing from "@/components/landing/Landing";
+import { Wishlists } from "@/components/wishlist/Wishlist";
 import { getUserFromCookies } from "@/lib/auth";
-import PageHeader from "@/components/pageHeader";
+import PageHeader from "@/components/PageHeader";
 
 export default async function Home() {
   const userId = await getUserFromCookies();

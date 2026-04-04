@@ -1,4 +1,4 @@
-import { getOgImage } from "@/components/ogImage";
+import { getOgImage } from "@/components/OGImage";
 
 export const runtime = "edge";
 export const alt = "Блог";

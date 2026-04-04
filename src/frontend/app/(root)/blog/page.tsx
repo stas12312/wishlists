@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
-import { ArticlesList } from "@/components/article/list";
-import PageHeader from "@/components/pageHeader";
+import { ArticlesList } from "@/components/article/ArticleList";
+import PageHeader from "@/components/PageHeader";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
