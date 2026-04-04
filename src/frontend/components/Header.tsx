@@ -9,10 +9,14 @@ import Login from "./auth/Login";
 import { Logo } from "./Logo";
 import { UserItem } from "./user/UserProfile";
 
+import { useHeader } from "@/providers/HeaderProviders";
+
 export const Header = ({ isLogin }: { isLogin: boolean }) => {
-  const [, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(true);
   const lastScrollY = useRef(0);
   const [showBg, setShowBg] = useState(false);
+
+  const { setVisible } = useHeader();
 
   useEffect(() => {
     let ticking = false;
@@ -24,13 +28,16 @@ export const Header = ({ isLogin }: { isLogin: boolean }) => {
           setShowBg(currentScrollY > 0);
           if (currentScrollY > lastScrollY.current) {
             setIsVisible(false);
+            setVisible(false);
           } else {
             setIsVisible(true);
+            setVisible(true);
           }
           lastScrollY.current = currentScrollY;
 
           if (currentScrollY <= 100) {
             setIsVisible(true);
+            setVisible(true);
           }
 
           ticking = false;
@@ -53,7 +60,7 @@ export const Header = ({ isLogin }: { isLogin: boolean }) => {
         showBg
           ? "bg-white/50 dark:bg-default/50 backdrop-blur-xl shadow-md ring-gray-500/10 ring-1 "
           : null,
-        "opacity-100",
+        isVisible ? "opacity-100" : "opacity-0",
         "py-3 duration-400 mx-4",
       )}
     >
