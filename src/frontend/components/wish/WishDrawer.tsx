@@ -4,13 +4,13 @@ import { MdOpenInNew } from "react-icons/md";
 
 import MarketIcon from "../MarketIcon";
 import { QuestionList } from "../question/QuestionList";
-import { UserChip } from "../user/UserProfile";
 
 import { ImageSwiper } from "./WishImageSwiper";
 
 import { IWish } from "@/lib/models/wish";
 import { getMenuItemsByActions } from "@/lib/wish/menu";
 import userStore from "@/store/userStore";
+import { UserChip } from "@/components/user/UserChip";
 
 const WishFullCard = observer(
   ({

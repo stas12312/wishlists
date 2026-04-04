@@ -7,7 +7,6 @@ import { twMerge } from "tailwind-merge";
 
 import ConfirmationModal from "../ConfirmationModal";
 import { ResponsiveImage } from "../ResponsiveImage";
-import { UserChip } from "../user/UserProfile";
 import SelectWishlistModal from "../wishlist/WishlistSelectorModal";
 
 import CardImage from "./WishCardImage";
@@ -27,6 +26,7 @@ import {
 } from "@/lib/client-requests/wish";
 import { IWish, IWishActions } from "@/lib/models/wish";
 import { IWishlist } from "@/lib/models/wishlist";
+import { UserChip } from "@/components/user/UserChip";
 export const WishItem = observer(
   ({
     wish,

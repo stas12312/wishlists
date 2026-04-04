@@ -1,15 +1,6 @@
 "use client";
-import {
-  Avatar,
-  chipVariants,
-  Dropdown,
-  Label,
-  Separator,
-  Skeleton,
-  toast,
-} from "@heroui/react";
+import { Dropdown, Label, Separator, Skeleton, toast } from "@heroui/react";
 import { observer } from "mobx-react-lite";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Key, useEffect } from "react";
 import {
@@ -18,7 +9,6 @@ import {
   MdSettings,
   MdSupportAgent,
 } from "react-icons/md";
-import { twMerge } from "tailwind-merge";
 
 import { ThemeSwitcher } from "../ThemeSwitcher";
 import { Counter } from "../main-menu/MenuCounter";
@@ -26,10 +16,9 @@ import { Counter } from "../main-menu/MenuCounter";
 import { UserAvatar } from "./UserAvatar";
 
 import { logout } from "@/lib/auth";
-import { getUserLink } from "@/lib/label";
-import { IUser } from "@/lib/models/user";
 import countersStore from "@/store/counterStore";
 import userStore from "@/store/userStore";
+
 export const UserItem = observer(() => {
   const user = userStore.user;
   let profileLink = "";
@@ -120,34 +109,3 @@ export const UserItem = observer(() => {
     </>
   );
 });
-
-export const UserChip = ({
-  user,
-  className,
-  variant,
-}: {
-  user: IUser;
-  className?: string;
-  href?: string;
-  variant?: "primary" | "secondary" | "soft" | "tertiary" | undefined;
-}) => {
-  const chipStyle = chipVariants({ variant: variant });
-  return (
-    <Link
-      className={twMerge(
-        chipStyle.base(),
-        className,
-        "pl-0.5 rounded-full h-8",
-      )}
-      href={getUserLink(user.username)}
-    >
-      {user.image ? (
-        <Avatar className="h-7 w-7">
-          <Avatar.Image className="object-cover" src={user.image} />
-        </Avatar>
-      ) : null}
-
-      <span className="text-sm">{user.name}</span>
-    </Link>
-  );
-};
