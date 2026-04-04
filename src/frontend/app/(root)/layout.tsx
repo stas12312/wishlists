@@ -7,6 +7,7 @@ import { Header } from "@/components/Header";
 import Menu from "@/components/Menu";
 import { SupportButton } from "@/components/SupportButton";
 import Version from "@/components/Version";
+import { LeftPanel } from "@/components/left-panel/LeftPanel";
 export default async function Layout({
   children,
 }: {
@@ -21,16 +22,14 @@ export default async function Layout({
 
         <div className="gap-1 pb-4 flex mt-4">
           {isLogin ? (
-            <div className="hidden md:block col-span-full flex-col w-80">
-              <div className="sticky top-22 hidden md:block ml-2">
-                <Menu variant="desktop" />
-                <footer className="my-2 w-full px-2 flex flex-col justify-center items-center gap-2">
-                  <SupportButton className="mt-4 w-full" />
-                  <Contacts />
-                  <Version />
-                </footer>
-              </div>
-            </div>
+            <LeftPanel>
+              <Menu variant="desktop" />
+              <footer className="my-2 w-full px-2 flex flex-col justify-center items-center gap-2">
+                <SupportButton className="mt-4 w-full" />
+                <Contacts />
+                <Version />
+              </footer>
+            </LeftPanel>
           ) : null}
           <div className="px-3 md:px-4 lg:px-4 py-3 w-full">
             <main>{children}</main>

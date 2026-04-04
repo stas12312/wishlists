@@ -5,6 +5,8 @@ import { RouterProvider } from "@react-aria/utils";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { useRouter } from "next/navigation";
 import * as React from "react";
+
+import { HeaderProvider } from "@/providers/HeaderProviders";
 type ThemeProviderProps = React.ComponentProps<typeof NextThemesProvider>;
 
 export interface ProvidersProps {
@@ -18,9 +20,11 @@ export function Providers({ children }: ProvidersProps) {
     <>
       <Toast.Provider className="bottom-30 md:bottom-4" />
       <RouterProvider navigate={router.push}>
-        <NextThemesProvider attribute="class" defaultTheme="system">
-          {children}
-        </NextThemesProvider>
+        <HeaderProvider>
+          <NextThemesProvider attribute="class" defaultTheme="system">
+            {children}
+          </NextThemesProvider>
+        </HeaderProvider>
       </RouterProvider>
     </>
   );
