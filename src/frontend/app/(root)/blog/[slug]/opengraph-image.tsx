@@ -1,4 +1,4 @@
-import { getOgImage } from "@/components/ogImage";
+import { getOgImage } from "@/components/OGImage";
 import { getArticleBySlug } from "@/lib/server-requests/article";
 
 export const runtime = "edge";

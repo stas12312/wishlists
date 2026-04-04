@@ -1,10 +1,13 @@
 "use client";
 
-import PageHeader from "@/components/pageHeader";
-import SettingItem from "@/components/settings/item";
-import SecuritySection from "@/components/settings/security";
-import { ProfileSection } from "@/components/settings/profile";
-import { DeleteAccountButton, ExitButton } from "@/components/settings/buttons";
+import PageHeader from "@/components/PageHeader";
+import SettingItem from "@/components/setting/SettingItem";
+import SecuritySection from "@/components/setting/SettingSecurity";
+import { ProfileSection } from "@/components/setting/SettingProfile";
+import {
+  DeleteAccountButton,
+  ExitButton,
+} from "@/components/setting/SettingsButton";
 
 export default function SettingsPage() {
   return (

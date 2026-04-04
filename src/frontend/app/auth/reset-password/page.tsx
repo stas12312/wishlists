@@ -12,8 +12,8 @@ import { observer } from "mobx-react-lite";
 import { redirect, useSearchParams } from "next/navigation";
 import { FormEvent, Suspense, useEffect, useState } from "react";
 
-import CodeInput from "@/components/codeInput";
-import PasswordInput from "@/components/passwordInput";
+import CodeInput from "@/components/CodeInput";
+import PasswordInput from "@/components/PasswordInput";
 import { setTokens } from "@/lib/auth";
 import {
   checkCode,
@@ -21,7 +21,7 @@ import {
   restorePassword,
 } from "@/lib/client-requests/auth";
 import { IRegisterData, ITokens } from "@/lib/models/auth";
-import { ButtonWithLoader } from "@/components/button-with-loader";
+import { ButtonWithLoader } from "@/components/ButtonWithLoader";
 
 const RestorePassword = observer(() => {
   const [email, setEmail] = useState("");

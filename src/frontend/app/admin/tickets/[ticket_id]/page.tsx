@@ -1,4 +1,4 @@
-import { AdminTicketDetailPage } from "@/components/admin/admin-ticket-detail";
+import { AdminTicketDetailPage } from "@/components/admin/AdminTicketDetail";
 
 const Page = async ({ params }: { params: Promise<{ ticket_id: number }> }) => {
   const ticketId = (await params).ticket_id;

@@ -7,7 +7,7 @@ import { Providers } from "./providers";
 
 import { fontSans } from "@/config/fonts";
 import { siteConfig } from "@/config/site";
-import { Metrika } from "@/components/yandexMetrika";
+import { Metrika } from "@/components/YandexMetrika";
 import { getOgImageUrl } from "@/lib/label";
 
 export const metadata: Metadata = {

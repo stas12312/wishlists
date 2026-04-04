@@ -1,9 +1,9 @@
 import { Metadata } from "next";
 
-import { ArticleDetails } from "@/components/article/details";
-import PageHeader from "@/components/pageHeader";
+import { ArticleDetails } from "@/components/article/ArticleDetail";
+import PageHeader from "@/components/PageHeader";
 import { getArticleBySlug } from "@/lib/server-requests/article";
-import { CustomBreadcrumbs } from "@/components/breadcrumbs";
+import { CustomBreadcrumbs } from "@/components/BreadCrumbs";
 
 export async function generateMetadata({
   params,

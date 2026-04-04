@@ -1,4 +1,4 @@
-import UserCard from "@/components/user/card";
+import UserCard from "@/components/user/UserCard";
 
 export default async function Layout({
   params,

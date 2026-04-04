@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 
-import Wishes from "@/components/wishlist/detail";
+import Wishes from "@/components/wishlist/WishlistDetail";
 import { getWishlist } from "@/lib/server-requests/wishlist";
 
 export async function generateMetadata({

@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 
 import { getUserByUsername } from "@/lib/server-requests/user";
-import PageHeader from "@/components/pageHeader";
-import { Wishlists } from "@/components/wishlist/list";
+import PageHeader from "@/components/PageHeader";
+import { Wishlists } from "@/components/wishlist/Wishlist";
 
 export async function generateMetadata({
   params,

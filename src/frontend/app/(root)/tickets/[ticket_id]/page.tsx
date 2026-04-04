@@ -1,4 +1,4 @@
-import { UserTicketDetailPage } from "@/components/tickets/user-ticket-detail";
+import { UserTicketDetailPage } from "@/components/ticket/TicketUserDetail";
 
 const Page = async ({ params }: { params: Promise<{ ticket_id: number }> }) => {
   const ticketId = (await params).ticket_id;
