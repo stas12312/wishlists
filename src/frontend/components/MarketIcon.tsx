@@ -1,6 +1,6 @@
 import { twMerge } from "tailwind-merge";
 
-import { ResponsiveImage } from "./ResponsiveImage";
+import { ResponsiveImage } from "./responsive-image";
 
 import { getDomainFromUrl } from "@/lib/url";
 

@@ -7,9 +7,9 @@ import { useEffect, useState } from "react";
 import useWebSocket from "react-use-websocket";
 
 import AddCardButton from "../AddCardButton";
-import { CustomBreadcrumbs } from "../BreadCrumbs";
+import { CustomBreadcrumbs } from "../Breadcrumbs";
 import { AnimatedList } from "../animated-list/AnimatedList";
-import { LoginButton } from "../Login";
+import { LoginButton } from "../auth/Login";
 import PageHeader from "../PageHeader";
 import { PageSpinner } from "../PageSpinner";
 import UserCard from "../user/UserCard";

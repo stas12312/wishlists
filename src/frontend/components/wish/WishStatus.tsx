@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { IWish } from "@/lib/models/wish";
 import { defaultVariants } from "@/lib/animations/default";
 
-const WishlistStatus = ({
+const WishStatus = ({
   wish,
   size = "md",
 }: {
@@ -46,4 +46,4 @@ const WishlistStatus = ({
   );
 };
 
-export default WishlistStatus;
+export default WishStatus;
