@@ -7,7 +7,7 @@ import { MdBolt } from "react-icons/md";
 import { ActiveIcon } from "./ActiveIcon";
 import Login from "./auth/Login";
 import { Logo } from "./Logo";
-import { UserItem } from "./user/U";
+import { UserItem } from "./user/UserProfile";
 
 export const Header = ({ isLogin }: { isLogin: boolean }) => {
   const [, setIsVisible] = useState(true);
