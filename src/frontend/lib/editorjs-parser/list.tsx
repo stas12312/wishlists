@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { ReactNode } from "react";
 
 interface IListMeta {
@@ -17,7 +18,7 @@ export function list(data: IListItem): ReactNode {
   }
   const items = data.items;
   return (
-    <ol className={`pl-8 text-lg ${counterStyle}`}>
+    <ol className={clsx("pl-4 text-lg", counterStyle)}>
       {items.map((item, i: number) => (
         <li key={i} className="mark my-2">
           <span dangerouslySetInnerHTML={{ __html: item.content }} />
