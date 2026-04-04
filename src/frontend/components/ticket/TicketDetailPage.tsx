@@ -62,12 +62,21 @@ export const TicketDetailPage = ({
   }
 
   useEffect(() => {
+    fetchData();
+  }, [lastJsonMessage]);
+
+  useEffect(() => {
     sendJsonMessage({
       event: WSEvent.Subscribe,
       channel: `ticket_${ticketId}`,
     });
-    fetchData();
-  }, [lastJsonMessage]);
+    return () => {
+      sendJsonMessage({
+        event: WSEvent.Unsubscribe,
+        channel: `ticket_${ticketId}`,
+      });
+    };
+  }, []);
 
   async function createMessage(message: string) {
     const result = await addTicketMessageFunc(ticketId, message);
