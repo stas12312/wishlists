@@ -1,13 +1,13 @@
 import { Separator } from "@heroui/react";
 import { motion } from "framer-motion";
 
-import { UserChip } from "../user/UserProfile";
 import { WishItem } from "../wish/WishCard";
 import { AnimatedList } from "../animated-list/AnimatedList";
 
 import { IUserInfo } from "./FeedList";
 
 import { IWish } from "@/lib/models/wish";
+import { UserChip } from "@/components/user/UserChip";
 
 export const UserEvents = ({
   userInfo,

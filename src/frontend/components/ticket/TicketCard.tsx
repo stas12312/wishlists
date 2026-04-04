@@ -4,10 +4,9 @@ import { usePress } from "react-aria";
 import { useRouter } from "next/navigation";
 import { twMerge } from "tailwind-merge";
 
-import { UserChip } from "../user/UserProfile";
-
 import { hexToRgba } from "@/lib/color";
 import { ITicket } from "@/lib/models/ticket";
+import { UserChip } from "@/components/user/UserChip";
 
 export const TicketItem = ({
   ticket,
