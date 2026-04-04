@@ -25,12 +25,12 @@ export const UserChip = ({
       )}
       href={getUserLink(user.username)}
     >
-      {user.image ? (
-        <Avatar className="h-7 w-7">
-          <Avatar.Image className="object-cover" src={user.image} />
-          <Avatar.Fallback>{user.name ? user.name[0] : null}</Avatar.Fallback>
-        </Avatar>
-      ) : null}
+      <Avatar className="h-7 w-7">
+        <Avatar.Image className="object-cover" src={user.image} />
+        <Avatar.Fallback>
+          {user.name.length ? user.name[0] : null}
+        </Avatar.Fallback>
+      </Avatar>
 
       <span className="text-sm">{user.name}</span>
     </Link>
