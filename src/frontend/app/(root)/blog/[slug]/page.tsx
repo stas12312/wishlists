@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import { ArticleDetails } from "@/components/article/ArticleDetail";
 import PageHeader from "@/components/PageHeader";
 import { getArticleBySlug } from "@/lib/server-requests/article";
-import { CustomBreadcrumbs } from "@/components/BreadCrumbs";
+import { CustomBreadcrumbs } from "@/components/Breadcrumbs";
 
 export async function generateMetadata({
   params,

@@ -1,12 +1,12 @@
-import { cookies } from "next/headers";
 import clsx from "clsx";
+import { cookies } from "next/headers";
 import { twMerge } from "tailwind-merge";
 
 import { Contacts } from "@/components/Contacts";
-import Menu from "@/components/Menu";
-import Version from "@/components/Version";
-import { SupportButton } from "@/components/SupportButton";
 import { Header } from "@/components/Header";
+import Menu from "@/components/Menu";
+import { SupportButton } from "@/components/SupportButton";
+import Version from "@/components/Version";
 export default async function Layout({
   children,
 }: {

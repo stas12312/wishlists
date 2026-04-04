@@ -6,7 +6,7 @@ import clsx from "clsx";
 import Desirability from "../desirability/DesirabilitySelector";
 import { ResponsiveImage } from "../ResponsiveImage";
 
-import WishlistStatus from "./WishlistStatus";
+import WishStatus from "./WishStatus";
 
 import { CURRENCY_BY_CODE } from "@/lib/currency";
 import { IWish } from "@/lib/models/wish";
@@ -42,7 +42,7 @@ const CardImage = ({
       </div>
       <div className="absolute top-1.5 flex flex-col items-center w-full">
         <span className="mx-auto">
-          <WishlistStatus size="lg" wish={wish} />
+          <WishStatus size="lg" wish={wish} />
         </span>
       </div>
       <div className="flex absolute bottom-2 px-3 w-full z-10">

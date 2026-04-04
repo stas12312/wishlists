@@ -7,7 +7,7 @@ import clsx from "clsx";
 import Desirability from "../desirability/DesirabilitySelector";
 import { ResponsiveImage } from "../ResponsiveImage";
 
-import WishlistStatus from "./WishlistStatus";
+import WishStatus from "./WishStatus";
 
 import { CURRENCY_BY_CODE } from "@/lib/currency";
 import { IWish } from "@/lib/models/wish";
@@ -20,7 +20,7 @@ export const ImageSwiper = ({ wish }: { wish: IWish }) => {
     <div className="relative">
       <div className="flex flex-col items-center w-full absolute z-10 mt-1">
         <span className="mx-auto">
-          <WishlistStatus size="lg" wish={wish} />
+          <WishStatus size="lg" wish={wish} />
         </span>
       </div>
       <div

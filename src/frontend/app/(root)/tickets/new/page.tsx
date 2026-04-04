@@ -1,4 +1,4 @@
-import { CustomBreadcrumbs } from "@/components/BreadCrumbs";
+import { CustomBreadcrumbs } from "@/components/Breadcrumbs";
 import PageHeader from "@/components/PageHeader";
 import { CreateTicketForm } from "@/components/ticket/TicketForm";
 

@@ -5,7 +5,7 @@ import { MdDone } from "react-icons/md";
 import useWebSocket from "react-use-websocket";
 import { twMerge } from "tailwind-merge";
 
-import { CustomBreadcrumbs } from "../BreadCrumbs";
+import { CustomBreadcrumbs } from "../Breadcrumbs";
 import { MessageForm } from "../MessageForm";
 import PageHeader from "../PageHeader";
 import { PageSpinner } from "../PageSpinner";
