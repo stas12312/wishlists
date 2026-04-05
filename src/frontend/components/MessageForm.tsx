@@ -16,12 +16,14 @@ export const MessageForm = ({
   maxLength = 1000,
   rows = 3,
   footer,
+  placeholder = "Введите сообщение",
   onSend,
 }: {
   minLength?: number;
   maxLength?: number;
   rows?: number;
   footer?: ReactNode;
+  placeholder?: string;
   onSend: { (message: string): void };
 }) => {
   const [message, setMessage] = useState("");
@@ -53,7 +55,7 @@ export const MessageForm = ({
             className="w-full  resize-none"
             maxLength={maxLength}
             minLength={minLength}
-            placeholder="Ваше сообщение"
+            placeholder={placeholder}
             rows={rows}
           />
           <InputGroup.Suffix className="flex w-full py-2">

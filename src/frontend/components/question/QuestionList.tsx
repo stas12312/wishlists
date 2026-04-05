@@ -83,13 +83,13 @@ export const QuestionList = observer(
     }, []);
 
     if (isLoading) {
-      return <PageSpinner />;
+      return withTitle ? null : <PageSpinner />;
     }
 
     return (
       <>
         <div>
-          {withTitle && questions.length > 0 ? (
+          {(withTitle && questions.length > 0) || withAskForm ? (
             <h2 className="text-2xl text-center">
               Вопросы {questions.length ? `(${questions.length})` : null}
             </h2>
@@ -99,6 +99,7 @@ export const QuestionList = observer(
               <MessageForm
                 maxLength={200}
                 minLength={2}
+                placeholder="Введите вопрос"
                 rows={3}
                 onSend={sendMessage}
               />
