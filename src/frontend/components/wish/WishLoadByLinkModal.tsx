@@ -84,88 +84,86 @@ const LoadByLinkModal = ({
   }, []);
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-      <Modal.Backdrop variant="blur">
-        <Modal.Container placement="center">
-          <Modal.Dialog className="max-w-180">
-            <Modal.Header className="mx-auto">
-              <Modal.CloseTrigger />
-              <Modal.Heading>Автозаполнение</Modal.Heading>
-            </Modal.Header>
-            <Modal.Body className="p-1">
-              <>
-                {!serviceError ? (
-                  <Form
-                    id="load-by-link"
-                    onSubmit={async (event) => {
-                      event.preventDefault();
-                      await parseByUrl(link);
-                    }}
-                  >
-                    <ShopsBlock onError={setServiceError} />
+    <Modal.Backdrop isOpen={isOpen} variant="blur" onOpenChange={onOpenChange}>
+      <Modal.Container placement="center">
+        <Modal.Dialog className="max-w-180">
+          <Modal.Header className="mx-auto">
+            <Modal.CloseTrigger />
+            <Modal.Heading>Автозаполнение</Modal.Heading>
+          </Modal.Header>
+          <Modal.Body className="p-1">
+            <>
+              {!serviceError ? (
+                <Form
+                  id="load-by-link"
+                  onSubmit={async (event) => {
+                    event.preventDefault();
+                    await parseByUrl(link);
+                  }}
+                >
+                  <ShopsBlock onError={setServiceError} />
 
-                    <div className=" w-full  flex flex-col gap-2">
-                      <TextField
-                        fullWidth
-                        isRequired
-                        isDisabled={isLoading}
-                        validate={(value) => {
-                          if (value === "") {
-                            return "Заполните это поле";
-                          }
-                          if (value && !isURL(value)) {
-                            return "Некорректная ссылка";
-                          }
-                          return null;
-                        }}
-                        value={link}
-                        variant="secondary"
-                        onChange={(value) => {
-                          setLink(value);
-                        }}
-                        onPaste={async (
-                          event: ClipboardEvent<HTMLInputElement>,
-                        ) => {
-                          event.preventDefault();
-                          const link = extractLink(
-                            event.clipboardData.getData("Text"),
-                          );
-                          setLink(link);
+                  <div className=" w-full  flex flex-col gap-2">
+                    <TextField
+                      fullWidth
+                      isRequired
+                      isDisabled={isLoading}
+                      validate={(value) => {
+                        if (value === "") {
+                          return "Заполните это поле";
+                        }
+                        if (value && !isURL(value)) {
+                          return "Некорректная ссылка";
+                        }
+                        return null;
+                      }}
+                      value={link}
+                      variant="secondary"
+                      onChange={(value) => {
+                        setLink(value);
+                      }}
+                      onPaste={async (
+                        event: ClipboardEvent<HTMLInputElement>,
+                      ) => {
+                        event.preventDefault();
+                        const link = extractLink(
+                          event.clipboardData.getData("Text"),
+                        );
+                        setLink(link);
 
-                          await parseByUrl(link);
-                        }}
-                      >
-                        <Label>Ссылка на товар</Label>
-                        <div className="flex gap-2">
-                          <InputGroup className="w-full">
-                            <InputGroup.Input />
-                          </InputGroup>
-                          <MarketIcon className="my-auto" link={link} />
-                        </div>
+                        await parseByUrl(link);
+                      }}
+                    >
+                      <Label>Ссылка на товар</Label>
+                      <div className="flex gap-2">
+                        <InputGroup className="w-full">
+                          <InputGroup.Input />
+                        </InputGroup>
+                        <MarketIcon className="my-auto" link={link} />
+                      </div>
 
-                        <FieldError />
-                        <ErrorMessage>{error}</ErrorMessage>
-                      </TextField>
+                      <FieldError />
+                      <ErrorMessage>{error}</ErrorMessage>
+                    </TextField>
 
-                      <ButtonWithLoader
-                        fullWidth
-                        isLoading={isLoading}
-                        loaderText="Загрузка"
-                        type="submit"
-                      >
-                        Загрузить
-                      </ButtonWithLoader>
-                    </div>
-                  </Form>
-                ) : (
-                  <Alert color="danger" title={serviceError} />
-                )}
-              </>
-            </Modal.Body>
-          </Modal.Dialog>
-        </Modal.Container>
-      </Modal.Backdrop>
-    </Modal>
+                    <ButtonWithLoader
+                      fullWidth
+                      isLoading={isLoading}
+                      loaderText="Загрузка"
+                      type="submit"
+                    >
+                      Загрузить
+                    </ButtonWithLoader>
+                  </div>
+                </Form>
+              ) : (
+                <Alert color="danger" title={serviceError} />
+              )}
+            </>
+          </Modal.Body>
+        </Modal.Dialog>
+      </Modal.Container>
+    </Modal.Backdrop>
   );
 };
 

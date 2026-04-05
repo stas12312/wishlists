@@ -18,26 +18,28 @@ export default function WishSaveModal({
   wish?: IWish | undefined;
 }) {
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-      <Modal.Backdrop>
-        <Modal.Container placement="center">
-          <Modal.Dialog className="max-w-200 w-full">
-            <Modal.CloseTrigger />
-            <ModalHeader className="flex flex-col gap-1 text-center">
-              <Modal.Heading>
-                {wish ? "Редактирование желания" : "Добавление желания"}
-              </Modal.Heading>
-            </ModalHeader>
-            <ModalBody className="p-1">
-              <WishForm
-                wish={wish}
-                wishlistUUID={wishlistUUID}
-                onCreate={onUpdate}
-              />
-            </ModalBody>
-          </Modal.Dialog>
-        </Modal.Container>
-      </Modal.Backdrop>
-    </Modal>
+    <Modal.Backdrop
+      isOpen={isOpen}
+      variant="opaque"
+      onOpenChange={onOpenChange}
+    >
+      <Modal.Container placement="center">
+        <Modal.Dialog className="max-w-200 w-full">
+          <Modal.CloseTrigger />
+          <ModalHeader className="flex flex-col gap-1 text-center">
+            <Modal.Heading>
+              {wish ? "Редактирование желания" : "Добавление желания"}
+            </Modal.Heading>
+          </ModalHeader>
+          <ModalBody className="p-1">
+            <WishForm
+              wish={wish}
+              wishlistUUID={wishlistUUID}
+              onCreate={onUpdate}
+            />
+          </ModalBody>
+        </Modal.Dialog>
+      </Modal.Container>
+    </Modal.Backdrop>
   );
 }
