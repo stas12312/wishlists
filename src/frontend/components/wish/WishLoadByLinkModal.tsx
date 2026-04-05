@@ -188,15 +188,13 @@ const ShopsBlock = ({ onError }: { onError: { (error: string): void } }) => {
   }, []);
 
   return (
-    <Alert
-      color="primary"
-      title="На данный момент поддерживается заполнение из"
-    >
-      <div title="На данный момент поддерживается заполнение из">
-        <div className="flex gap-1 mt-2 flex-wrap">
+    <Alert status="accent">
+      <Alert.Content className="flex flex-col items-center">
+        <Alert.Title>На данный момент поддерживается заполнение из</Alert.Title>
+        <Alert.Description className="flex gap-1 mt-2 flex-wrap justify-center">
           <AvailableShops isLoading={listIsLoading} shops={availableParser} />
-        </div>
-      </div>
+        </Alert.Description>
+      </Alert.Content>
     </Alert>
   );
 };
@@ -221,12 +219,14 @@ const AvailableShops = ({
     return (
       <Chip
         key={value.name}
-        className="flex gap-2"
+        className="flex gap-2 shadow-md rounded-full px-1"
+        color="default"
         size="lg"
         title={value.name}
+        variant="primary"
       >
         <MarketIcon link={value.url} />
-        {value.name}
+        <span className="mr-2">{value.name}</span>
       </Chip>
     );
   });
