@@ -3,13 +3,13 @@ import { Alert, Chip, Skeleton, toast, useOverlayState } from "@heroui/react";
 import { motion } from "framer-motion";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useWebSocket from "react-use-websocket";
 
 import AddCardButton from "../AddCardButton";
-import { CustomBreadcrumbs } from "../Breadcrumbs";
 import { AnimatedList } from "../animated-list/AnimatedList";
 import { LoginButton } from "../auth/Login";
+import { CustomBreadcrumbs } from "../Breadcrumbs";
 import PageHeader from "../PageHeader";
 import { PageSpinner } from "../PageSpinner";
 import UserCard from "../user/UserCard";
@@ -146,19 +146,50 @@ const WishlistDetail = observer(
   },
 );
 
+interface IPriceInfo {
+  minPrice: number;
+  maxPrice: number;
+}
+
 const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
   const router = useRouter();
   const [items, setItems] = useState<IWish[]>([]);
   const [visibleItems, setVisibleItems] = useState<IWish[]>([]);
   const [statistic, setStatistic] = useState<IStatistic>({} as IStatistic);
+
+  const priceInfo = useMemo<IPriceInfo>(() => {
+    return items.reduce<IPriceInfo>(
+      (acc, item) => ({
+        minPrice: Math.min(acc.minPrice, item.cost ?? 0),
+        maxPrice: Math.max(acc.maxPrice, item.cost ?? 0),
+      }),
+      {
+        minPrice: Infinity,
+        maxPrice: -Infinity,
+      },
+    );
+  }, [items]);
+
+  useEffect(() => {
+    setFilters((prev) => ({
+      ...prev,
+      priceFrom: priceInfo.minPrice,
+      priceTo: priceInfo.maxPrice,
+    }));
+  }, [priceInfo]);
+
   const [sorting, setSorting] = useState<ISorting>({
     field: "created_at",
     desc: true,
   });
+
   const [filters, setFilters] = useState<IWishFilter>({
     fullfiled: "all",
     reserved: "all",
+    priceFrom: priceInfo.minPrice,
+    priceTo: priceInfo.maxPrice,
   });
+
   const [wishlist, setWishlist] = useState<IWishlist>({} as IWishlist);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState({} as IError);
@@ -181,7 +212,6 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
     setStatistic(calcStatistic(items));
     const filteredWishes = filterWishes(items, filters);
     const sortedWishes = sortWishes(filteredWishes, sorting);
-
     setVisibleItems(sortedWishes);
   }, [items, sorting, filters]);
 
@@ -314,6 +344,13 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
                 hidedFilters={
                   isEditable || !userStore.user.id ? ["reserved"] : undefined
                 }
+                initValues={{
+                  priceFrom: priceInfo.minPrice,
+                  priceTo: priceInfo.maxPrice,
+                  fullfiled: "all",
+                  reserved: "all",
+                  currency: items[0].currency ?? "RUB",
+                }}
                 onChangeFilter={(newFilter: IWishFilter) => {
                   if (!isEqual(newFilter, filters)) setFilters(newFilter);
                 }}
@@ -377,7 +414,9 @@ function filterWishes(items: IWish[], filters: IWishFilter) {
   for (let item of items) {
     if (
       isFilterByFullfiled(filters.fullfiled, item) &&
-      isFilterByReserved(filters.reserved, item)
+      isFilterByReserved(filters.reserved, item) &&
+      (item.cost ?? 0) >= filters.priceFrom &&
+      (item.cost ?? 0) <= filters.priceTo
     ) {
       result.push(item);
     }
