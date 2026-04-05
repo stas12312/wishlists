@@ -16,22 +16,17 @@ export default function WishlistSaveModal({
   wishlist?: IWishlist | undefined;
 }) {
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-      <Modal.Backdrop>
-        <Modal.Container placement="center">
-          <Modal.Dialog>
-            <Modal.Header className="flex flex-col gap-1 text-center">
-              {wishlist ? "Редактирование вишлиста" : "Добавление вишлиста"}
-            </Modal.Header>
-            <Modal.Body className="p-1">
-              <WishlistCreateForm
-                wishlist={wishlist}
-                onCreate={onSaveWishlist}
-              />
-            </Modal.Body>
-          </Modal.Dialog>
-        </Modal.Container>
-      </Modal.Backdrop>
-    </Modal>
+    <Modal.Backdrop isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal.Container placement="center">
+        <Modal.Dialog>
+          <Modal.Header className="flex flex-col gap-1 text-center">
+            {wishlist ? "Редактирование вишлиста" : "Добавление вишлиста"}
+          </Modal.Header>
+          <Modal.Body className="p-1">
+            <WishlistCreateForm wishlist={wishlist} onCreate={onSaveWishlist} />
+          </Modal.Body>
+        </Modal.Dialog>
+      </Modal.Container>
+    </Modal.Backdrop>
   );
 }

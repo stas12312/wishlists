@@ -19,23 +19,25 @@ const SelectWishlistModal = observer(
     excludeWishlists?: string[];
   }) => {
     return (
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-        <Modal.Backdrop variant="blur">
-          <Modal.Container className="min-h-32" placement="center" size="lg">
-            <Modal.Dialog className="relative">
-              <Modal.Header className="flex flex-col gap-1 text-center">
-                <Modal.Heading>Выберите вишлист</Modal.Heading>
-              </Modal.Header>
-              <Modal.Body>
-                <WishlistSelector
-                  excludeWishlists={excludeWishlists}
-                  onSelect={onSelect}
-                />
-              </Modal.Body>
-            </Modal.Dialog>
-          </Modal.Container>
-        </Modal.Backdrop>
-      </Modal>
+      <Modal.Backdrop
+        isOpen={isOpen}
+        variant="blur"
+        onOpenChange={onOpenChange}
+      >
+        <Modal.Container className="min-h-32" placement="center" size="lg">
+          <Modal.Dialog className="relative">
+            <Modal.Header className="flex flex-col gap-1 text-center">
+              <Modal.Heading>Выберите вишлист</Modal.Heading>
+            </Modal.Header>
+            <Modal.Body>
+              <WishlistSelector
+                excludeWishlists={excludeWishlists}
+                onSelect={onSelect}
+              />
+            </Modal.Body>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
     );
   },
 );
