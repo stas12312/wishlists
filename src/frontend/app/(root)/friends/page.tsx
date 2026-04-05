@@ -22,11 +22,11 @@ const FriendsPage = observer(() => {
               Мои друзья
               <Tabs.Indicator />
             </Tabs.Tab>
-            <Tabs.Tab id="reqeusts">
+            <Tabs.Tab className="flex gap-1" id="reqeusts">
               <>
                 {"Заявки "}
                 {incomingCounts ? (
-                  <Chip variant="primary">
+                  <Chip className="font-mono" color="accent" variant="primary">
                     {incomingCounts.toLocaleString()}
                   </Chip>
                 ) : null}
