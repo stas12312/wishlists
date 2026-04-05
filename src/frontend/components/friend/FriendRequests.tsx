@@ -1,24 +1,22 @@
-import { Button, Card, toast } from "@heroui/react";
+import { Button, toast } from "@heroui/react";
 import { observer } from "mobx-react-lite";
-import { useRouter } from "next/navigation";
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import useWebSocket from "react-use-websocket";
 
 import { PageSpinner } from "../PageSpinner";
-import { UserAvatar } from "../user/UserAvatar";
 
-import userStore from "@/store/userStore";
-import countersStore from "@/store/counterStore";
+import { FriendRequestItem } from "./FriendRequestItem";
+
 import {
   applyFriendRequest,
   declineFriendRequest,
+  deleteFriendRequest,
   getFriendRequests,
 } from "@/lib/client-requests/friend";
-import { deleteFriendRequest } from "@/lib/client-requests/friend";
 import { IFriendRequest } from "@/lib/models";
-import { IUser } from "@/lib/models/user";
-import { getUserLink } from "@/lib/label";
 import { getWebsocketUrl, isEvent, WSEvent } from "@/lib/socket";
+import countersStore from "@/store/counterStore";
+import userStore from "@/store/userStore";
 
 const FriendRequestsItems = observer(() => {
   const [requests, setRequests] = useState<IFriendRequest[]>([]);
@@ -59,7 +57,7 @@ const FriendRequestsItems = observer(() => {
   const inpomingItems = incomingRequests.map((r) => (
     <FriendRequestItem key={r.from_user.id} user={r.from_user}>
       <Button
-        variant="ghost"
+        variant="primary"
         onPress={async () => {
           const result = await applyFriendRequest(r.from_user.id);
           if (result && "code" in result) {
@@ -74,7 +72,7 @@ const FriendRequestsItems = observer(() => {
         Принять
       </Button>
       <Button
-        variant="ghost"
+        variant="danger-soft"
         onPress={async () => {
           const result = await declineFriendRequest(r.from_user.id);
           if (result && "code" in result) {
@@ -94,7 +92,7 @@ const FriendRequestsItems = observer(() => {
   const outcomingItems = outcomingRequests.map((r) => (
     <FriendRequestItem key={r.to_user.id} user={r.to_user}>
       <Button
-        variant="ghost"
+        variant="danger-soft"
         onPress={async () => {
           const result = await deleteFriendRequest(r.to_user.id);
           if (result && "code" in result) {
@@ -131,28 +129,3 @@ const FriendRequestsItems = observer(() => {
 });
 
 export default FriendRequestsItems;
-
-const FriendRequestItem = observer(
-  ({ user, children }: { user: IUser; children?: ReactNode }) => {
-    const router = useRouter();
-    return (
-      <Card className="max-w-250 mx-auto w-full">
-        <Card.Content className="flex flex-row gap-4 justify-between">
-          <Button
-            onClick={() => {
-              router.push(getUserLink(user.username));
-            }}
-          >
-            <UserAvatar
-              className="cursor-pointer"
-              description={user.username}
-              name={user.name}
-            />
-          </Button>
-
-          <div className="flex gap-1">{children}</div>
-        </Card.Content>
-      </Card>
-    );
-  },
-);
