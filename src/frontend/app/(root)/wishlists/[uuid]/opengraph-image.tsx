@@ -6,8 +6,13 @@ export const alt = "Вишлист";
 
 export const contentType = "image/png";
 
-export default async function Image({ params }: { params: { uuid: string } }) {
-  const wishlist = await getWishlist(params.uuid);
+export default async function Image({
+  params,
+}: {
+  params: Promise<{ uuid: string }>;
+}) {
+  const { uuid } = await params;
+  const wishlist = await getWishlist(uuid);
 
   let title = "Вишлист";
   let description = "";
