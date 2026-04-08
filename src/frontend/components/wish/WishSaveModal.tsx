@@ -24,7 +24,7 @@ export default function WishSaveModal({
       onOpenChange={onOpenChange}
     >
       <Modal.Container placement="center">
-        <Modal.Dialog className="max-w-200 w-full">
+        <Modal.Dialog className="max-w-200 w-full px-2 md:px-4">
           <Modal.CloseTrigger />
           <ModalHeader className="flex flex-col gap-1 text-center">
             <Modal.Heading>

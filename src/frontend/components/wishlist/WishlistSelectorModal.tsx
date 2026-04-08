@@ -25,7 +25,7 @@ const SelectWishlistModal = observer(
         onOpenChange={onOpenChange}
       >
         <Modal.Container className="min-h-32" placement="center" size="lg">
-          <Modal.Dialog className="relative">
+          <Modal.Dialog className="relative px-2 md:px-4">
             <Modal.Header className="flex flex-col gap-1 text-center">
               <Modal.Heading>Выберите вишлист</Modal.Heading>
             </Modal.Header>

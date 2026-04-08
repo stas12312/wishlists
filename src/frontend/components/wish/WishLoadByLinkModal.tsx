@@ -86,7 +86,7 @@ const LoadByLinkModal = ({
   return (
     <Modal.Backdrop isOpen={isOpen} variant="blur" onOpenChange={onOpenChange}>
       <Modal.Container placement="center">
-        <Modal.Dialog className="max-w-180">
+        <Modal.Dialog className="max-w-180 px-2 md:px-4">
           <Modal.Header className="mx-auto">
             <Modal.CloseTrigger />
             <Modal.Heading>Автозаполнение</Modal.Heading>
