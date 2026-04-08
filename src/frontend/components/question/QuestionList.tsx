@@ -1,21 +1,22 @@
 import { observer } from "mobx-react-lite";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Alert } from "@heroui/react";
 
 import { AnimatedList } from "../animated-list/AnimatedList";
 import { InfinityLoader } from "../InfinityLoader";
-import { PageSpinner } from "../PageSpinner";
 import { MessageForm } from "../MessageForm";
+import { PageSpinner } from "../PageSpinner";
 
 import { QuestionItem } from "./QuestionItem";
 
-import { IQuestion } from "@/lib/models/question";
-import { INavigation } from "@/lib/models";
 import {
   createQuestion,
   getAskedQuestions,
   getForMeQuestions,
   getQuestionsForWish,
 } from "@/lib/client-requests/question";
+import { INavigation } from "@/lib/models";
+import { IQuestion } from "@/lib/models/question";
 
 export const QuestionList = observer(
   ({
@@ -95,7 +96,7 @@ export const QuestionList = observer(
             </h2>
           ) : null}
           {withAskForm ? (
-            <div className="mt-2">
+            <div className="mt-2 w-full">
               <MessageForm
                 maxLength={200}
                 minLength={2}
@@ -103,6 +104,18 @@ export const QuestionList = observer(
                 rows={3}
                 onSend={sendMessage}
               />
+              <Alert
+                className="surface surface--secondary mt-2"
+                status="warning"
+              >
+                <Alert.Indicator />
+                <Alert.Content>
+                  <Alert.Title>Вопрос отправляется анонимно</Alert.Title>
+                  <Alert.Description>
+                    Ваше имя никто не увидит
+                  </Alert.Description>
+                </Alert.Content>
+              </Alert>
             </div>
           ) : null}
         </div>
