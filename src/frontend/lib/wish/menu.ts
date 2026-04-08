@@ -62,7 +62,7 @@ const ACTIONS: IWishMenuItem[] = [
     className: "text-accent",
     title: "Забронировать",
     icon: MdOutlineBookmarkAdded,
-    variant: "tertiary",
+    variant: "primary",
   },
   {
     key: "cancel_reserve",
