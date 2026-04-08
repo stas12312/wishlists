@@ -87,10 +87,6 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
   });
 
   useEffect(() => {
-    if (!items) {
-      return;
-    }
-
     setStatistic(calcStatistic(items));
     const filteredWishes = filterWishes(items, filters);
     const sortedWishes = sortWishes(filteredWishes, sorting);
@@ -128,6 +124,9 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
   }, []);
 
   useEffect(() => {
+    if (lastJsonMessage === null) {
+      return;
+    }
     async function fetchWishes() {
       const wishes = await getWishes(wishlistUUID);
       setItems(wishes);
