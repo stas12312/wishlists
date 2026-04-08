@@ -18,7 +18,7 @@ export default function WishlistSaveModal({
   return (
     <Modal.Backdrop isOpen={isOpen} onOpenChange={onOpenChange}>
       <Modal.Container placement="center">
-        <Modal.Dialog>
+        <Modal.Dialog className="px-2 md:px-4">
           <Modal.Header className="flex flex-col gap-1 text-center">
             {wishlist ? "Редактирование вишлиста" : "Добавление вишлиста"}
           </Modal.Header>
