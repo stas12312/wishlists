@@ -9,8 +9,9 @@ export const contentType = "image/png";
 export default async function Image({
   params,
 }: {
-  params: { username: string };
+  params: Promise<{ username: string }>;
 }) {
-  const user = await getUserByUsername(params.username);
+  const { username } = await params;
+  const user = await getUserByUsername(username);
   return await getOgImage(user.name, "", "Профиль пользователя");
 }

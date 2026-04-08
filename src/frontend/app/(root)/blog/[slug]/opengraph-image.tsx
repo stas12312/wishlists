@@ -6,8 +6,12 @@ export const alt = "Блог";
 
 export const contentType = "image/png";
 
-export default async function Image({ params }: { params: { slug: string } }) {
-  const slug = (await params).slug;
+export default async function Image({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
   const article = await getArticleBySlug(slug);
 
   let title = "Блог";
