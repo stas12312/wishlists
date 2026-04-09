@@ -26,6 +26,7 @@ const UserCard = observer(({ username }: { username: string }) => {
   const [user, setUser] = useState<IUser>({} as IUser);
   const [friendStatus, setFriendStatus] = useState(0);
   const [friendsCount, setFriendsCount] = useState(0);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     async function fetchData() {
@@ -35,6 +36,13 @@ const UserCard = observer(({ username }: { username: string }) => {
         me.id ? getUserFriendsCount(username) : null,
       ]);
       const responseUser = responses[0];
+
+      if ("message" in responseUser) {
+        setError(responseUser.message);
+        setIsLoading(false);
+        return;
+      }
+
       if (userStore.user.id) {
         setFriendsCount(responses[1] ?? 0);
       }
@@ -47,6 +55,10 @@ const UserCard = observer(({ username }: { username: string }) => {
     }
     fetchData();
   }, []);
+
+  if (error) {
+    return <h2 className="text-center text-2xl my-4 text-bold">{error}</h2>;
+  }
 
   return (
     <div className="justify-center  my-4 gap-4 rounded-3xl p-4">
