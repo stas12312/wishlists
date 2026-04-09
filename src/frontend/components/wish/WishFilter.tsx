@@ -24,8 +24,8 @@ export const WishFilter = ({
 }) => {
   const [fullfiledValue, setFullfiledValue] = useState<Key>("all");
   const [reservedValue, setReservedValue] = useState<Key>("all");
-  const [priceFrom, setPriceFrom] = useState<number>(initValues.priceFrom);
-  const [priceTo, setPriceTo] = useState<number>(initValues.priceTo);
+  const [priceFrom, setPriceFrom] = useState<number | undefined>();
+  const [priceTo, setPriceTo] = useState<number | undefined>();
 
   useEffect(() => {
     if (fullfiledValue === "true") {
@@ -41,11 +41,18 @@ export const WishFilter = ({
         onChangeFilter({
           fullfiled: fullfiledValue as filterValue,
           reserved: reservedValue as filterValue,
-          priceFrom: priceFrom,
-          priceTo: priceTo,
+          priceFrom: priceFrom ?? -Infinity,
+          priceTo: priceTo ?? Infinity,
         });
       }}
-      isShowBadge={!(fullfiledValue === "all" && reservedValue === "all")}
+      isShowBadge={
+        !(
+          fullfiledValue === "all" &&
+          reservedValue === "all" &&
+          priceFrom === undefined &&
+          priceTo === undefined
+        )
+      }
     >
       <div className="flex flex-wrap flex-col gap-2">
         <Tabs
@@ -107,16 +114,24 @@ export const WishFilter = ({
         {initValues.priceTo > 0 &&
         initValues.priceTo !== initValues.priceFrom ? (
           <Slider
-            defaultValue={[priceFrom, priceTo]}
+            defaultValue={[initValues.priceFrom, initValues.priceTo]}
             formatOptions={{ style: "currency", currency: initValues.currency }}
             maxValue={initValues.priceTo}
             minValue={initValues.priceFrom}
-            value={[priceFrom, priceTo]}
+            value={[
+              priceFrom ?? initValues.priceFrom,
+              priceTo ?? initValues.priceTo,
+            ]}
             onChange={(values) => {
               if (!Array.isArray(values)) {
                 return;
               }
-              setPriceFrom(values[0]), setPriceTo(values[1]);
+              setPriceFrom(
+                values[0] === initValues.priceFrom ? undefined : values[0],
+              );
+              setPriceTo(
+                values[1] === initValues.priceTo ? undefined : values[1],
+              );
             }}
           >
             <Label>Цена</Label>
