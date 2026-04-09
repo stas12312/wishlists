@@ -44,7 +44,9 @@ export async function getUserFriends(
   return response.data.data;
 }
 
-export async function getUserByUsername(username: string): Promise<IUser> {
+export async function getUserByUsername(
+  username: string,
+): Promise<IUser | IError> {
   const response = await clientAxios.get(`user/${username}`);
   return response.data;
 }

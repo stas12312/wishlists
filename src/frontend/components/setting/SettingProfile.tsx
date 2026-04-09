@@ -170,6 +170,9 @@ async function isUsernameIsExists(
   userId: number,
 ): Promise<boolean> {
   const existsUser = await getUserByUsername(username);
+  if ("message" in existsUser) {
+    return false;
+  }
   return existsUser.id !== undefined && existsUser.id != userId;
 }
 
