@@ -12,7 +12,7 @@ const FriendMenu = observer(
       <span className="flex items-center">
         <Dropdown>
           <MenuTrigger name="friend-menu" />
-          <Dropdown.Popover>
+          <Dropdown.Popover className="mr-2">
             <Dropdown.Menu aria-label="Wish actions" onAction={handleAction}>
               <Dropdown.Item
                 className="text-danger"
