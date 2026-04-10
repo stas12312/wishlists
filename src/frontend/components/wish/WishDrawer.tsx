@@ -53,12 +53,11 @@ const WishFullCard = observer(
 
               {wish.link ? (
                 <Link
-                  className="w-full button button--secondary button--lg no-underline"
+                  className="w-full button button--secondary button--lg no-underline pl-1"
                   href={wish.link}
                   target="_blank"
                 >
                   <MarketIcon link={wish.link || ""} />
-
                   <span className="mx-auto my-2">Перейти в магазин</span>
                   <MdOpenInNew className="my-auto" />
                 </Link>
