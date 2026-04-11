@@ -1,8 +1,8 @@
 import { Chip } from "@heroui/react";
+import clsx from "clsx";
 import { AiFillGift } from "react-icons/ai";
 import { Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import clsx from "clsx";
 
 import Desirability from "../desirability/DesirabilitySelector";
 import { ResponsiveImage } from "../ResponsiveImage";
@@ -44,11 +44,8 @@ export const ImageSwiper = ({ wish }: { wish: IWish }) => {
             {wish.images.map((image) => {
               return (
                 <SwiperSlide key={image}>
-                  <div className="flex justify-center">
-                    <ResponsiveImage
-                      className="object-cover rounded-3xl"
-                      src={image}
-                    />
+                  <div className="flex justify-center items-center">
+                    <ResponsiveImage src={image} />
                   </div>
                 </SwiperSlide>
               );

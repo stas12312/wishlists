@@ -39,8 +39,9 @@ const MarketIcon = ({
   }
   return (
     <ResponsiveImage
+      fill
       alt={ICON_BY_DOMAIN.get(domain) as string}
-      className={twMerge("rounded-3xl h-8", className)}
+      className={twMerge("h-8 w-8", className)}
       src={ICON_BY_DOMAIN.get(domain) as string}
     />
   );

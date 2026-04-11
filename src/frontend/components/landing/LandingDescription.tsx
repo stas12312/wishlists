@@ -30,7 +30,7 @@ export const DescriptionBlock = ({
       {imageUrl ? (
         <ResponsiveImage
           alt="Изображение описания"
-          className="shadow-md  border w-full rounded-3xl"
+          className="shadow-md border w-full rounded-3xl"
           src={imageUrl}
         />
       ) : null}

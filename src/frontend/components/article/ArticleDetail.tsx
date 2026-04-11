@@ -17,7 +17,7 @@ export const ArticleDetails = observer(({ article }: { article: IArticle }) => {
       <div className="max-w-200 mx-auto">
         <ResponsiveImage
           alt="Изображение статьи"
-          className="mx-auto object-cover w-full rounded-xl"
+          className="mx-auto w-full"
           src={article.image}
         />
         {blocks.map((block, i) => (
