@@ -135,11 +135,13 @@ export const WishItem = observer(
               className="cursor-pointer card h-full p-0 gap-0"
             >
               {wish.images && wish.images[0] ? (
-                <ResponsiveImage
-                  alt="Изображение желания"
-                  className="object-cover bottom-[50%] z-0 blur-xl absolute rounded-large"
-                  src={wish.images[0]}
-                />
+                <div className="absolute bottom-[50%]">
+                  <ResponsiveImage
+                    alt="Изображение желания"
+                    className="z-0 blur-xl"
+                    src={wish.images[0]}
+                  />
+                </div>
               ) : null}
 
               <div className="bg-default/50 absolute z-0 inset-0 roundend-large backdrop-saturate-200 backdrop-contrast-125" />
@@ -166,7 +168,6 @@ export const WishItem = observer(
               </Card.Header>
               <Card.Content className="p-0 overflow-y-auto rounded-3xl">
                 <CardImage
-                  removeWrapper
                   className="h-full"
                   iconClassName="h-full"
                   wish={wish}

@@ -1,5 +1,5 @@
 "use client";
-import { Button, Card, Spinner, ProgressBar } from "@heroui/react";
+import { Button, Card, ProgressBar, Spinner } from "@heroui/react";
 import { ReactNode, useEffect, useState } from "react";
 import { MdDelete } from "react-icons/md";
 
@@ -95,8 +95,9 @@ export const ImageItem = ({
         <div className="flex flex-row">
           {uploadImage.url ? (
             <ResponsiveImage
+              fill
               alt="Загруженное изображение"
-              className="object-cover cursor-pointer h-16 w-16 rounded-xl"
+              className="cursor-pointer h-16 w-16"
               src={uploadImage.url}
             />
           ) : (

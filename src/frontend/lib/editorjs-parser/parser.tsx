@@ -61,6 +61,7 @@ function image(data: BlockToolData): ReactNode {
   return (
     <div>
       <ResponsiveImage
+        fill
         alt={data.caption}
         className={`mx-auto ${data.stretched ? "w-full" : ""}`}
         src={data.file.url}

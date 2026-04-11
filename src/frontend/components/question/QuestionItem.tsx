@@ -1,12 +1,12 @@
 import { Button, Chip, Surface, toast, useOverlayState } from "@heroui/react";
+import { observer } from "mobx-react-lite";
 import { AiFillGift } from "react-icons/ai";
 import { MdCheck, MdDelete } from "react-icons/md";
 import { twMerge } from "tailwind-merge";
-import { observer } from "mobx-react-lite";
 
 import ConfirmationModal from "../ConfirmationModal";
-import { ResponsiveImage } from "../ResponsiveImage";
 import { MessageForm } from "../MessageForm";
+import { ResponsiveImage } from "../ResponsiveImage";
 
 import {
   answerOnQuestion,
@@ -14,8 +14,8 @@ import {
   deleteQuestion,
   markQuestionClose,
 } from "@/lib/client-requests/question";
-import { IQuestion, QuestionStatus } from "@/lib/models/question";
 import { prepareDateString } from "@/lib/date";
+import { IQuestion, QuestionStatus } from "@/lib/models/question";
 import countersStore from "@/store/counterStore";
 
 export const QuestionItem = observer(
@@ -81,8 +81,9 @@ export const QuestionItem = observer(
               <div className="col-span-1 flex flex-col gap-2 h-60 bg-linear-to-br from-default to-default/20 rounded-3xl">
                 {question.wish?.images?.length ? (
                   <ResponsiveImage
-                    alt="Изображение желаания"
-                    className="object-cover md:h-full w-full rounded-3xl overflow-y-hidden"
+                    fill
+                    alt="Изображение желания"
+                    className="md:h-full w-full rounded-3xl overflow-y-hidden"
                     src={question.wish?.images[0]}
                   />
                 ) : (

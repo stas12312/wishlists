@@ -38,6 +38,7 @@ export const ArticleCard = observer(
             <Card.Content className="h-2/3 overflow-hidden rounded-xl">
               <div className="relative">
                 <ResponsiveImage
+                  fill
                   alt="Изображение"
                   className="object-cover mx-auto my-auto w-full h-60"
                   src={article.image}

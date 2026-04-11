@@ -17,27 +17,31 @@ const CardImage = ({
   iconClassName,
 }: {
   wish: IWish;
-  removeWrapper?: boolean;
   className?: string;
   iconClassName?: string;
 }) => {
   return (
-    <div className={twMerge("relative h-full  rounded-3xl", className)}>
-      <div
-        className={clsx(
-          "rounded-3xl flex h-full w-full",
-          "bg-[linear-gradient(180deg,#ffffff_0%,#f7f7f8_35%,#ececee_100%)]",
-          "dark:bg-[linear-gradient(180deg,#1c1c1e_0%,#2c2c2e_40%,#3a3a3c_100%)]",
-        )}
-      >
+    <div className={twMerge("relative h-full rounded-3xl", className)}>
+      <div className="rounded-3xl flex h-full w-full">
         {wish.images?.length ? (
           <ResponsiveImage
+            fill
             alt="Изображение карточки желания"
-            className="z-0 object-cover mx-auto h-full w-full"
+            className="z-0 mx-auto h-full w-full"
             src={wish.images[0]}
           />
         ) : (
-          <AiFillGift className={`text-8xl mx-auto my-auto ${iconClassName}`} />
+          <div
+            className={clsx(
+              "w-full h-full",
+              "bg-[linear-gradient(180deg,#ffffff_0%,#f7f7f8_35%,#ececee_100%)]",
+              "dark:bg-[linear-gradient(180deg,#1c1c1e_0%,#2c2c2e_40%,#3a3a3c_100%)]",
+            )}
+          >
+            <AiFillGift
+              className={twMerge("text-8xl mx-auto my-auto", iconClassName)}
+            />
+          </div>
         )}
       </div>
       <div className="absolute top-1.5 flex flex-col items-center w-full">

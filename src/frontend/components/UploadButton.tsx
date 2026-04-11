@@ -1,8 +1,8 @@
+import { Spinner } from "@heroui/react";
+import clsx from "clsx";
 import { useId, useState } from "react";
 import { MdOutlineFileUpload } from "react-icons/md";
-import { Spinner } from "@heroui/react";
 import { twMerge } from "tailwind-merge";
-import clsx from "clsx";
 
 import { ResponsiveImage } from "./ResponsiveImage";
 const UploadButton = ({
@@ -69,6 +69,7 @@ const UploadButton = ({
         <>
           {previewUrl ? (
             <ResponsiveImage
+              fill
               alt=""
               className={className + " z-2 rounded-3xl"}
               src={previewUrl}
