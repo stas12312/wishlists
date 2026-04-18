@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { logout, refreshTokenIfNeed } from "./lib/auth";
+import { refreshTokenIfNeed } from "./lib/auth";
 
 export default async function proxy(request: NextRequest) {
   const requestedUrl = request.nextUrl.pathname;
@@ -23,7 +23,8 @@ export default async function proxy(request: NextRequest) {
         request.cookies.set("access_token", accessToken);
       }
     } catch {
-      await logout();
+      request.cookies.delete("access_token");
+      request.cookies.delete("refresh_token");
       return NextResponse.redirect(authUrl);
     }
   }
