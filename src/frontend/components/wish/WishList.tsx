@@ -14,8 +14,8 @@ import { WishlistDetail } from "../wishlist/WishlistDetail";
 
 import { WishItem } from "./WishCard";
 import { IWishFilter, WishFilter } from "./WishFilter";
-import WishSaveModal from "./WishSaveModal";
 import { ISorting, SortingSelector } from "./WishSortingSelector";
+import WishSaveModal from "./WishSaveModal";
 
 import { getWishes } from "@/lib/client-requests/wish";
 import {
@@ -242,13 +242,6 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
               />
             </div>
           ) : null}
-
-          <WishSaveModal
-            isOpen={isOpen}
-            wishlistUUID={wishlistUUID}
-            onOpenChange={toggle}
-            onUpdate={onCreateWish}
-          />
           <AnimatedList
             items={[
               isEditable && wishlist.is_active ? (
@@ -267,6 +260,13 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
                 />
               )),
             ]}
+          />
+
+          <WishSaveModal
+            isOpen={isOpen}
+            wishlistUUID={wishlistUUID}
+            onOpenChange={toggle}
+            onUpdate={onCreateWish}
           />
         </>
       )}
