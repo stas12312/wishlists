@@ -1,8 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { BsStars } from "react-icons/bs";
-import { Tabs } from "@heroui/react";
-import { MdOutlineDesktopMac, MdOutlineSmartphone } from "react-icons/md";
 import { ReactNode, useEffect, useState } from "react";
+import { Tabs } from "@heroui/react";
+import { BsStars } from "react-icons/bs";
+import { MdOutlineDesktopMac, MdOutlineSmartphone } from "react-icons/md";
 
 import { StartButton } from "./LandingButton";
 import { Video } from "./LandingVideo";
@@ -17,9 +17,9 @@ export const HeaderBlock = () => {
   }, []);
 
   return (
-    <div className="bg-accent/50 dark:bg-accent/30 h-3/4 lg:py-32 p-4 shadow-xl relative overflow-hidden rounded-3xl -mx-3 md:mx-0 ">
-      <div className="absolute h-32 w-32 md:h-96 md:w-96 bg-accent/60 -top-16 -left-16 md:-top-40 md:-left-40 rounded-full blur-3xl" />
-      <div className="absolute h-32 w-32 md:h-96 md:w-96 bg-accent/60 -bottom-16 -right-16 md:-bottom-40 md:-right-40 rounded-full blur-3xl" />
+    <div className="bg-accent/50 dark:bg-accent/30 h-3/4 lg:py-32 p-4 shadow-xl relative overflow-hidden rounded-3xl -mx-3 md:mx-0 isolate">
+      <div className="absolute h-32 w-32 md:h-96 md:w-96 bg-accent/60 -top-16 -left-16 md:-top-40 md:-left-40 blur-3xl transform-[translateZ(0)]" />
+      <div className="absolute h-32 w-32 md:h-96 md:w-96 bg-accent/60 -bottom-16 -right-16 md:-bottom-40 md:-right-40 blur-3xl transform-[translateZ(0)]" />
       <motion.div className="flex lg:flex-row flex-col max-w-300 mx-auto gap-4">
         <motion.div
           animate={{
