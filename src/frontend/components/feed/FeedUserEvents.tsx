@@ -25,7 +25,7 @@ export const UserEvents = ({
         initial={{ opacity: 0 }}
       >
         <UserChip
-          className="flex gap-2 shadow-md hover:bg-surface-secondary transition"
+          className="flex gap-2 shadow-md hover:bg-surface-secondary transition mb-2"
           user={userInfo.user}
           variant="secondary"
         />

@@ -121,11 +121,11 @@ export const WishItem = observer(
 
     return (
       <>
-        <div className="md:hover:scale-[1.03] transition relative">
+        <div className="md:hover:scale-[1.03] transition">
           <Card
             className={twMerge(
               withUser ? "h-90" : "h-70",
-              "flex-col w-full ring-1 ring-gray-500/30 cursor-pointer p-0",
+              "flex-col w-full ring-1 ring-gray-500/30 cursor-pointer p-0 relative overflow-hidden",
               "data-[pressed=true]:scale-95 transition",
             )}
             data-pressed={isPressed ? "true" : undefined}
@@ -135,7 +135,7 @@ export const WishItem = observer(
               className="cursor-pointer card h-full p-0 gap-0"
             >
               {wish.images && wish.images[0] ? (
-                <div className="absolute bottom-[50%]">
+                <div className="absolute bottom-[50%] transform-[translateZ(0)]">
                   <ResponsiveImage
                     alt="Изображение желания"
                     className="z-0 blur-xl"
@@ -148,7 +148,7 @@ export const WishItem = observer(
 
               <Card.Header className="flex-col items-start p-0 z-10 retative">
                 <div className="flex flex-row justify-between w-full h-14 px-2.5 pt-2">
-                  <div className="my-auto flex flex-col text-left overflow-hidden text-ellipsis truncate ">
+                  <div className="my-auto flex flex-col text-left overflow-hidden text-ellipsis truncate">
                     <span className="text-xl/5 font-bold" title={wish.name}>
                       {wish.name}
                     </span>
