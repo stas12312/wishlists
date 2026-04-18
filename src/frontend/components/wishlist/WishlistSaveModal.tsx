@@ -20,7 +20,9 @@ export default function WishlistSaveModal({
       <Modal.Container placement="center">
         <Modal.Dialog className="px-2 md:px-4">
           <Modal.Header className="flex flex-col gap-1 text-center">
-            {wishlist ? "Редактирование вишлиста" : "Добавление вишлиста"}
+            <Modal.Heading>
+              {wishlist ? "Редактирование вишлиста" : "Добавление вишлиста"}
+            </Modal.Heading>
           </Modal.Header>
           <Modal.Body className="p-1">
             <WishlistCreateForm wishlist={wishlist} onCreate={onSaveWishlist} />
