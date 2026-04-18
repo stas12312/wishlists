@@ -253,7 +253,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
             items={[
               isEditable && wishlist.is_active ? (
                 <AddCardButton
-                  className="md:h-70 w-full"
+                  className="h-40 md:h-70 w-full"
                   title="Добавить желание"
                   onPress={open}
                 />
