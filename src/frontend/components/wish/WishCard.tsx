@@ -115,73 +115,67 @@ export const WishItem = observer(
         copyModal.open();
       }
     }
-    let { pressProps, isPressed } = usePress({
+    let { pressProps } = usePress({
       onPress: () => fullCardDrawer.open(),
     });
 
     return (
       <>
-        <div className="md:hover:scale-[1.03] transition">
-          <Card
-            className={twMerge(
-              withUser ? "h-90" : "h-70",
-              "flex-col w-full ring-1 ring-gray-500/30 p-0 relative cursor-pointer gap-0",
-              "data-[pressed=true]:scale-95 transition",
-            )}
-            data-pressed={isPressed ? "true" : undefined}
-            {...pressProps}
-          >
-            {wish.images && wish.images[0] ? (
-              <div className="absolute bottom-[50%] transform-[translateZ(0)]">
-                <ResponsiveImage
-                  alt="Изображение желания"
-                  className="z-0 blur-xl"
-                  src={wish.images[0]}
-                />
-              </div>
-            ) : null}
-
-            <div className="bg-default/50 absolute z-0 inset-0 roundend-3xl backdrop-saturate-200 backdrop-contrast-125" />
-
-            <Card.Header className="flex-col items-start p-0 z-10 retative">
-              <div className="flex flex-row justify-between w-full h-14 px-2.5 pt-2">
-                <div className="my-auto flex flex-col text-left overflow-hidden text-ellipsis truncate">
-                  <span className="text-xl/5 font-bold" title={wish.name}>
-                    {wish.name}
-                  </span>
-                  <span
-                    className="text-gray text-[14px] text-sm"
-                    title={wish.comment}
-                  >
-                    {wish.comment}
-                  </span>
-                </div>
-                {showMenu(wish.actions) ? (
-                  <span className="flex items-center absolute top-2 right-2 border border-gray-500/30 rounded-3xl">
-                    <WishItemMenu handeAction={handleOnAction} wish={wish} />
-                  </span>
-                ) : null}
-              </div>
-            </Card.Header>
-            <Card.Content>
-              <CardImage
-                className="h-full"
-                iconClassName="h-full"
-                wish={wish}
+        <Card
+          className={twMerge(
+            withUser ? "h-90" : "h-70",
+            "flex-col w-full ring-1 ring-gray-500/30 p-0 relative cursor-pointer gap-0",
+            "hover:scale-[1.03] active:scale-[0.97]",
+            "transition-transform will-change-transform transform-gpu",
+          )}
+          {...pressProps}
+        >
+          {wish.images && wish.images[0] ? (
+            <div className="absolute bottom-[50%] transform-[translateZ(0)]">
+              <ResponsiveImage
+                alt="Изображение желания"
+                className="z-0 blur-xl"
+                src={wish.images[0]}
               />
-            </Card.Content>
-            {withUser ? (
-              <Card.Footer className="flex justify-between p-2">
-                <UserChip user={wish.user} variant="secondary" />
-                {wish.wishlist.date ? (
-                  <Chip color="warning" size="lg" variant="primary">
-                    {new Date(wish.wishlist.date).toLocaleDateString()}
-                  </Chip>
-                ) : null}
-              </Card.Footer>
-            ) : null}
-          </Card>
-        </div>
+            </div>
+          ) : null}
+
+          <div className="bg-default/50 absolute z-0 inset-0 roundend-3xl backdrop-saturate-200 backdrop-contrast-125" />
+
+          <Card.Header className="flex-col items-start p-0 z-10 retative">
+            <div className="flex flex-row justify-between w-full h-14 px-2.5 pt-2">
+              <div className="my-auto flex flex-col text-left overflow-hidden text-ellipsis truncate">
+                <span className="text-xl/5 font-bold" title={wish.name}>
+                  {wish.name}
+                </span>
+                <span
+                  className="text-gray text-[14px] text-sm"
+                  title={wish.comment}
+                >
+                  {wish.comment}
+                </span>
+              </div>
+              {showMenu(wish.actions) ? (
+                <span className="flex items-center absolute top-2 right-2 border border-gray-500/30 rounded-3xl">
+                  <WishItemMenu handeAction={handleOnAction} wish={wish} />
+                </span>
+              ) : null}
+            </div>
+          </Card.Header>
+          <Card.Content>
+            <CardImage className="h-full" iconClassName="h-full" wish={wish} />
+          </Card.Content>
+          {withUser ? (
+            <Card.Footer className="flex justify-between p-2">
+              <UserChip user={wish.user} variant="secondary" />
+              {wish.wishlist.date ? (
+                <Chip color="warning" size="lg" variant="primary">
+                  {new Date(wish.wishlist.date).toLocaleDateString()}
+                </Chip>
+              ) : null}
+            </Card.Footer>
+          ) : null}
+        </Card>
         <WishFullCard
           handeAction={handleOnAction}
           isOpen={fullCardDrawer.isOpen}

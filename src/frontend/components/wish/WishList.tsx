@@ -2,7 +2,7 @@
 import { Alert, Skeleton, toast, useOverlayState } from "@heroui/react";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { startTransition, useEffect, useMemo, useState } from "react";
 import useWebSocket from "react-use-websocket";
 
 import AddCardButton from "../AddCardButton";
@@ -14,8 +14,8 @@ import { WishlistDetail } from "../wishlist/WishlistDetail";
 
 import { WishItem } from "./WishCard";
 import { IWishFilter, WishFilter } from "./WishFilter";
-import { ISorting, SortingSelector } from "./WishSortingSelector";
 import WishSaveModal from "./WishSaveModal";
+import { ISorting, SortingSelector } from "./WishSortingSelector";
 
 import { getWishes } from "@/lib/client-requests/wish";
 import {
@@ -87,10 +87,13 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
   });
 
   useEffect(() => {
+    startTransition(() => {
+      const filteredWishes = filterWishes(items, filters);
+      const sortedWishes = sortWishes(filteredWishes, sorting);
+      setVisibleItems(sortedWishes);
+    });
+
     setStatistic(calcStatistic(items));
-    const filteredWishes = filterWishes(items, filters);
-    const sortedWishes = sortWishes(filteredWishes, sorting);
-    setVisibleItems(sortedWishes);
   }, [items, sorting, filters]);
 
   useEffect(() => {
@@ -246,6 +249,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
             items={[
               isEditable && wishlist.is_active ? (
                 <AddCardButton
+                  key="add-button"
                   className="h-40 md:h-70 w-full"
                   title="Добавить желание"
                   onPress={open}

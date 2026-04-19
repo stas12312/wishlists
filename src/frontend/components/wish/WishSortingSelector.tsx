@@ -1,9 +1,18 @@
-import { Button, Separator } from "@heroui/react";
-import { Dropdown, DropdownItem, DropdownMenu } from "@heroui/react";
+import {
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  Separator,
+} from "@heroui/react";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { MdArrowDownward, MdArrowUpward, MdCheck } from "react-icons/md";
-import { MdSort } from "react-icons/md";
+import { useState } from "react";
+import {
+  MdArrowDownward,
+  MdArrowUpward,
+  MdCheck,
+  MdSort,
+} from "react-icons/md";
 
 import { defaultVariants } from "@/lib/animations/default";
 export interface ISorting {
@@ -50,10 +59,6 @@ export const SortingSelector = ({
   const [field, setField] = useState(defaultField);
   const [desc, setDesc] = useState(true);
 
-  useEffect(() => {
-    onChangeSorting({ field: field, desc: desc });
-  }, [field, desc]);
-
   return (
     <Dropdown>
       <motion.span
@@ -77,15 +82,24 @@ export const SortingSelector = ({
         <DropdownMenu
           aria-label="Сортировка"
           onAction={(action) => {
-            if (action === "desc") {
-              setDesc(true);
-              return;
-            }
+            let newDesc = desc;
+            let newField = field;
             if (action === "abs") {
-              setDesc(false);
-              return;
+              newDesc = false;
+            } else if (action === "desc") {
+              newDesc = true;
+            } else {
+              newField = action.toString();
             }
-            setField(action.toString());
+            if (newDesc != desc) {
+              setDesc(newDesc);
+            }
+            if (newField != field) {
+              setField(newField);
+            }
+            if (newDesc != desc || newField != field) {
+              onChangeSorting({ field: newField, desc: newDesc });
+            }
           }}
         >
           {items.map((item) => {
