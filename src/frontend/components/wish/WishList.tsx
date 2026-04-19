@@ -2,7 +2,7 @@
 import { Alert, Skeleton, toast, useOverlayState } from "@heroui/react";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
-import { startTransition, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useWebSocket from "react-use-websocket";
 
 import AddCardButton from "../AddCardButton";
@@ -44,8 +44,6 @@ export interface IStatistic {
 const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
   const router = useRouter();
   const [items, setItems] = useState<IWish[]>([]);
-  const [visibleItems, setVisibleItems] = useState<IWish[]>([]);
-  const [statistic, setStatistic] = useState<IStatistic>({} as IStatistic);
 
   const priceInfo = useMemo<IPriceInfo>(() => {
     return items.reduce<IPriceInfo>(
@@ -86,14 +84,14 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
     ...defaultParams,
   });
 
-  useEffect(() => {
-    startTransition(() => {
-      const filteredWishes = filterWishes(items, filters);
-      const sortedWishes = sortWishes(filteredWishes, sorting);
-      setVisibleItems(sortedWishes);
-      setStatistic(calcStatistic(items));
-    });
-  }, [items, sorting, filters]);
+  const visibleItems = useMemo(() => {
+    const filtered = filterWishes(items, filters);
+    return sortWishes(filtered, sorting);
+  }, [items, filters, sorting]);
+
+  const statistic = useMemo(() => {
+    return calcStatistic(items);
+  }, [items]);
 
   useEffect(() => {
     async function fetchWishlists() {
@@ -106,7 +104,6 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
       } else {
         const responseWishes = response[0];
         setItems(responseWishes);
-        setVisibleItems(responseWishes);
         setWishlist(response[1]);
         setIsLoading(false);
         sendJsonMessage({
