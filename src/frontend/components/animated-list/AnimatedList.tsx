@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { observer } from "mobx-react-lite";
 import { ReactElement } from "react";
+import { twMerge } from "tailwind-merge";
 
 import { containerVariants, itemVariants } from "./animations";
 
@@ -19,7 +20,11 @@ export const AnimatedList = observer(
     return (
       <motion.div
         animate="show"
-        className={`${withGrid ? "grid gap-4 col-span-full" : null}  ${gridConfig} ${className}`}
+        className={twMerge(
+          withGrid ? "grid gap-4 col-span-full" : null,
+          gridConfig,
+          className,
+        )}
         initial="hidden"
         variants={containerVariants}
       >

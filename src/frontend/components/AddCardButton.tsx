@@ -1,4 +1,3 @@
-import { Card } from "@heroui/react";
 import { usePress } from "react-aria";
 import { IoMdAdd } from "react-icons/io";
 import { twMerge } from "tailwind-merge";
@@ -11,28 +10,24 @@ const AddCardButton = ({
   className: string;
   title: string;
 }) => {
-  let { pressProps, isPressed } = usePress({
+  let { pressProps } = usePress({
     onPress: onPress,
   });
   return (
-    <div className="md:hover:scale-[1.03] transition">
-      <Card
-        className={twMerge(
-          "transition bg-background border border-sky-500 hover:border-sky-700 text-sky-500 hover:text-sky-700 z-10",
-          "data-[pressed=true]:scale-95 transition",
-          className,
-        )}
-        data-pressed={isPressed ? "true" : undefined}
-      >
-        <button className="cursor-pointer h-full" {...pressProps}>
-          <Card.Content>
-            <div className="mx-auto flex flex-col my-auto">
-              <IoMdAdd className="my-auto text-4xl mx-auto" />
-              <span className="">{title}</span>
-            </div>
-          </Card.Content>
-        </button>
-      </Card>
+    <div
+      className={twMerge(
+        "rounded-3xl flex items-center cursor-pointer",
+        "bg-background border border-sky-500 hover:border-sky-700 text-sky-500 hover:text-sky-700",
+        "hover:scale-[1.03] active:scale-[0.97]",
+        "transition-all will-change-transform transform-gpu origin-center",
+        className,
+      )}
+      {...pressProps}
+    >
+      <div className="mx-auto flex flex-col my-auto">
+        <IoMdAdd className="my-auto text-4xl mx-auto" />
+        <span className="">{title}</span>
+      </div>
     </div>
   );
 };
