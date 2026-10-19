@@ -33,7 +33,7 @@ const CardImage = ({
         ) : (
           <div
             className={clsx(
-              "w-full h-full",
+              "w-full h-full rounded-3xl",
               "bg-[linear-gradient(180deg,#ffffff_0%,#f7f7f8_35%,#ececee_100%)]",
               "dark:bg-[linear-gradient(180deg,#1c1c1e_0%,#2c2c2e_40%,#3a3a3c_100%)]",
             )}
