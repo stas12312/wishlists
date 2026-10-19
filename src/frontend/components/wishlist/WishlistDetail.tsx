@@ -105,10 +105,14 @@ export const WishlistDetail = observer(
               animate={{ opacity: 1, transition: { duration: 0.5 } }}
               initial={{ opacity: 0 }}
             >
-              <Alert
-                color="danger"
-                title="Вишлист архивирован и не доступен другим пользователям"
-              />
+              <Alert status="danger">
+                <Alert.Indicator />
+                <Alert.Content>
+                  <Alert.Title>
+                    Вишлист архивирован и не доступен другим пользователям
+                  </Alert.Title>
+                </Alert.Content>
+              </Alert>
             </motion.div>
           ) : null}
         </PageHeader>
