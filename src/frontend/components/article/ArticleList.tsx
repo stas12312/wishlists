@@ -47,7 +47,7 @@ export const ArticlesList = observer(() => {
   }
 
   return (
-    <InfinityLoader onLoad={loadData}>
+    <InfinityLoader hasMore={!isLoadedAll} onLoad={loadData}>
       <AnimatedList
         gridConfig="grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
         items={[

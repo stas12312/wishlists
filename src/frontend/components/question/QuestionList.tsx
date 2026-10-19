@@ -123,7 +123,7 @@ export const QuestionList = observer(
           {questions.length === 0 && emptyMessage ? (
             <p className="text-2xl w-full text-center mt-4">{emptyMessage}</p>
           ) : (
-            <InfinityLoader onLoad={() => fetchData()}>
+            <InfinityLoader hasMore={hasMore} onLoad={fetchData}>
               <AnimatedList
                 className="flex flex-col gap-2"
                 items={questions.map((item, i) => (
