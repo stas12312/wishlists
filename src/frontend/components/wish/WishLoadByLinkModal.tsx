@@ -157,7 +157,12 @@ const LoadByLinkModal = ({
                   </div>
                 </Form>
               ) : (
-                <Alert color="danger" title={serviceError} />
+                <Alert status="danger">
+                  <Alert.Indicator />
+                  <Alert.Content>
+                    <Alert.Title>{serviceError}</Alert.Title>
+                  </Alert.Content>
+                </Alert>
               )}
             </>
           </Modal.Body>
