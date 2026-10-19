@@ -13,6 +13,7 @@ export const ResponsiveImage = ({
   src,
   alt = "Изображение",
   className = "",
+  imageClassName = "",
   height = "0",
   width = "0",
   fill = false,
@@ -20,6 +21,7 @@ export const ResponsiveImage = ({
   src: string;
   alt?: string;
   className?: string;
+  imageClassName?: string;
   height?: number | `${number}` | undefined;
   width?: number | `${number}` | undefined;
   fill?: boolean;
@@ -48,6 +50,7 @@ export const ResponsiveImage = ({
         className={twMerge(
           "h-auto w-auto transition-opacity duration-300 rounded-3xl object-cover",
           isLoading ? "opacity-0" : "opacity-100",
+          imageClassName,
         )}
         sizes="100vw"
         src={src}

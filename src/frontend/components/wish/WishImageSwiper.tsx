@@ -33,7 +33,6 @@ export const ImageSwiper = ({ wish }: { wish: IWish }) => {
         {wish.images?.length ? (
           <Swiper
             navigation
-            autoHeight={true}
             centeredSlides={true}
             className="w-full m-auto"
             modules={[Navigation]}
@@ -44,9 +43,12 @@ export const ImageSwiper = ({ wish }: { wish: IWish }) => {
             {wish.images.map((image) => {
               return (
                 <SwiperSlide key={image}>
-                  <div className="flex justify-center items-center">
-                    <ResponsiveImage src={image} />
-                  </div>
+                  <ResponsiveImage
+                    fill
+                    className="w-full aspect-square"
+                    imageClassName="object-contain"
+                    src={image}
+                  />
                 </SwiperSlide>
               );
             })}

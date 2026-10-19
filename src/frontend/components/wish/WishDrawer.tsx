@@ -37,7 +37,7 @@ const WishFullCard = observer(
               <Drawer.Heading className="text-2xl">{wish.name}</Drawer.Heading>
             </Drawer.Header>
 
-            <Drawer.Body className="flex flex-col gap-4">
+            <Drawer.Body className="flex flex-col gap-4 [scrollbar-gutter:stable]">
               {withUser ? (
                 <div className="mx-auto">
                   <UserChip
