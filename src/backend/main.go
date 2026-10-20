@@ -101,7 +101,7 @@ func main() {
 	)
 	ticketController := controller.NewTicketController(ticketService)
 
-	adminController := controller.NewAdminController(userService, articleService, ticketService)
+	adminController := controller.NewAdminController(userService, articleService, ticketService, appConfig)
 	articleController := controller.NewArticleController(articleService)
 
 	api := app.Group("/api")

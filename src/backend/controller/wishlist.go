@@ -6,6 +6,7 @@ import (
 	"main/middleware"
 	"main/model"
 	"main/service"
+	"net/url"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -310,49 +311,16 @@ func (c *WishlistController) MoveWishHandler(ctx *fiber.Ctx) error {
 }
 
 func (c *WishlistController) ParseShopUrl(ctx *fiber.Ctx) error {
-	agent := fiber.Post(fmt.Sprintf("%s/parse", c.Config.ParseServiceUrl))
-	agent.ContentType("application/json")
-	agent.Body(ctx.Body())
-	statusCode, body, errs := agent.Bytes()
-
-	if len(errs) > 0 {
-		return ctx.Status(fiber.StatusInternalServerError).
-			JSON(model.ErrorResponse{Message: "Сервис времменно недоступен"})
-	}
-	ctx.Set("Content-Type", "application/json")
-	return ctx.Status(statusCode).Send(body)
-
+	return proxyToParseService(ctx, c.Config.ParseServiceUrl, "/parse")
 }
 
 func (c *WishlistController) GetParseStatus(ctx *fiber.Ctx) error {
-
-	taskId := ctx.Params("task_id")
-
-	agent := fiber.Get(fmt.Sprintf("%s/parse/%s/status", c.Config.ParseServiceUrl, taskId))
-	agent.ContentType("application/json")
-	agent.Body(ctx.Body())
-	statusCode, body, errs := agent.Bytes()
-
-	if len(errs) > 0 {
-		return ctx.Status(fiber.StatusInternalServerError).
-			JSON(model.ErrorResponse{Message: "Сервис времменно недоступен"})
-	}
-	ctx.Set("Content-Type", "application/json")
-	return ctx.Status(statusCode).Send(body)
+	taskId := url.PathEscape(ctx.Params("task_id"))
+	return proxyToParseService(ctx, c.Config.ParseServiceUrl, fmt.Sprintf("/parse/%s/status", taskId))
 }
 
 func (c *WishlistController) GetAvailableParsers(ctx *fiber.Ctx) error {
-	agent := fiber.Get(fmt.Sprintf("%s/parsers", c.Config.ParseServiceUrl))
-	agent.ContentType("application/json")
-	agent.Body(ctx.Body())
-	statusCode, body, errs := agent.Bytes()
-
-	if len(errs) > 0 {
-		return ctx.Status(fiber.StatusInternalServerError).
-			JSON(model.ErrorResponse{Message: "Сервис времменно недоступен"})
-	}
-	ctx.Set("Content-Type", "application/json")
-	return ctx.Status(statusCode).Send(body)
+	return proxyToParseService(ctx, c.Config.ParseServiceUrl, "/parsers")
 }
 
 func (c *WishlistController) CopyWish(ctx *fiber.Ctx) error {
