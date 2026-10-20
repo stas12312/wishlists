@@ -34,8 +34,9 @@ module.exports = withSentryConfig(
     reactComponentAnnotation: {
       enabled: true,
     },
+    // Sourcemaps загружаются в Sentry отдельным джобом CI, из образа они удаляются в Dockerfile
     sourcemaps: {
-        deleteSourcemapsAfterUpload: true
+        deleteSourcemapsAfterUpload: false
     },
     sentryUrl: SENTRY_CONF[0],
     hideSourceMaps: true,
