@@ -21,15 +21,15 @@ export const UserEvents = ({
       <Separator className="my-4" />
       <motion.div
         animate={{ opacity: 1, transition: { duration: 0.5 } }}
-        className="flex flex-col items-center justify md:flex-row"
+        className="flex flex-col items-center gap-2 md:flex-row"
         initial={{ opacity: 0 }}
       >
         <UserChip
-          className="flex gap-2 shadow-md hover:bg-surface-secondary transition mb-2"
+          className="flex gap-2 shadow-md hover:bg-surface-secondary transition"
           user={userInfo.user}
           variant="secondary"
         />
-        <span className="text-bold ml-2">добавил(а) желания</span>
+        <span className="text-bold">добавил(а) желания</span>
       </motion.div>
       <div className="mx-auto my-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
         <AnimatedList
