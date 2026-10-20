@@ -10,7 +10,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "6432:5432"
+      - "127.0.0.1:6432:5432"
   redis:
     image: redis:7-alpine
     restart: always
