@@ -1,9 +1,0 @@
-node_modules
-.next
-.git
-.vscode
-.idea
-Dockerfile
-.dockerignore
-*.tsbuildinfo
-npm-debug.log*
