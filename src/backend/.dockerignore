@@ -1,0 +1,4 @@
+tmp
+Dockerfile
+.dockerignore
+*_test.go

@@ -1,4 +1,4 @@
-FROM golang:1.26.1 AS base
+FROM golang:1.26.1-trixie AS base
 
 RUN apt update \
     && apt install -y \
@@ -32,16 +32,15 @@ RUN CGO_ENABLED=1 GOOS=linux go build -o /server
 
 
 # Копирование необходимых файлов в итоговую сборку
-FROM debian:latest
+FROM debian:trixie-slim
 
 RUN apt update \
-    && apt install -y \
+    && apt install -y --no-install-recommends \
     ca-certificates \
     curl \
     tzdata \
-    libvips \
-    libvips-dev \
-    && update-ca-certificates
+    libvips42t64 \
+    && rm -rf /var/lib/apt/lists/*
 
 
 COPY --from=builder /server /server
