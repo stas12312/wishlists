@@ -2,23 +2,27 @@ package controller
 
 import (
 	"context"
+	"fmt"
+	"main/config"
 	"main/middleware"
 	"main/model"
 	"main/service"
+	"net/url"
 	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-func NewAdminController(userService service.UserService, articleService service.ArticleService, ticketService service.TicketService) *AdminController {
-	return &AdminController{userService: userService, articleService: articleService, ticketService: ticketService}
+func NewAdminController(userService service.UserService, articleService service.ArticleService, ticketService service.TicketService, config *config.Config) *AdminController {
+	return &AdminController{userService: userService, articleService: articleService, ticketService: ticketService, config: config}
 }
 
 type AdminController struct {
 	userService    service.UserService
 	articleService service.ArticleService
 	ticketService  service.TicketService
+	config         *config.Config
 }
 
 func (c *AdminController) IsAdmin(ctx *fiber.Ctx) error {
@@ -210,6 +214,27 @@ func (c *AdminController) AddTicketMessage(ctx *fiber.Ctx) error {
 	return ctx.JSON(model.Response{Data: messages})
 }
 
+func (c *AdminController) GetParseStatus(ctx *fiber.Ctx) error {
+	return proxyToParseService(ctx, c.config.ParseServiceUrl, "/status")
+}
+
+func (c *AdminController) GetParseShops(ctx *fiber.Ctx) error {
+	return proxyToParseService(ctx, c.config.ParseServiceUrl, "/status/shops")
+}
+
+func (c *AdminController) GetParseStats(ctx *fiber.Ctx) error {
+	return proxyToParseService(ctx, c.config.ParseServiceUrl, "/stats")
+}
+
+func (c *AdminController) GetParseEvents(ctx *fiber.Ctx) error {
+	return proxyToParseService(ctx, c.config.ParseServiceUrl, "/stats/events")
+}
+
+func (c *AdminController) GetParseEventScreenshot(ctx *fiber.Ctx) error {
+	taskId := url.PathEscape(ctx.Params("task_id"))
+	return proxyToParseService(ctx, c.config.ParseServiceUrl, fmt.Sprintf("/stats/events/%s/screenshot", taskId))
+}
+
 func (c *AdminController) Route(router fiber.Router) {
 
 	adminGroup := router.Group("/admin", middleware.Protected(true))
@@ -234,5 +259,12 @@ func (c *AdminController) Route(router fiber.Router) {
 	categoriesGroup := ticketsGroup.Group("/categories")
 	categoriesGroup.Post("/", c.CreateCategory)
 	categoriesGroup.Get("/", c.ListCategories)
+
+	parseGroup := adminGroup.Group("/parse", middleware.ForAdmin(c.userService))
+	parseGroup.Get("/status", c.GetParseStatus)
+	parseGroup.Get("/shops", c.GetParseShops)
+	parseGroup.Get("/stats", c.GetParseStats)
+	parseGroup.Get("/events", c.GetParseEvents)
+	parseGroup.Get("/events/:task_id/screenshot", c.GetParseEventScreenshot)
 
 }
