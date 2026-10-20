@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import PageHeader from "@/components/PageHeader";
 import { ITicket } from "@/lib/models/ticket";
@@ -26,13 +26,11 @@ export default function Page() {
     setHasMore(data.data.length > 0);
   }
 
-  useEffect(() => {
-    loadTickets();
-  }, []);
+  // Первую страницу загружает InfinityLoader: на пустой странице сентинел виден сразу
   return (
     <>
       <PageHeader title="Обращения" />
-      <InfinityLoader onLoad={loadTickets}>
+      <InfinityLoader hasMore={hasMore} onLoad={loadTickets}>
         <TicketsList withAuthor tickets={tickets} />
       </InfinityLoader>
     </>

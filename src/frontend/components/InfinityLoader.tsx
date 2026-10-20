@@ -1,35 +1,24 @@
-import { createRef, ReactNode, useEffect, useRef } from "react";
+import { ReactNode } from "react";
+
+import { useInfiniteLoader } from "@/lib/hooks/useInfiniteLoader";
 
 export const InfinityLoader = ({
   children,
   onLoad,
+  hasMore,
+  sentinelClassName,
 }: {
   children: ReactNode;
-  onLoad: { (): void };
+  onLoad: { (): Promise<unknown> | void };
+  hasMore: boolean;
+  sentinelClassName?: string;
 }) => {
-  const observerLoader = useRef<IntersectionObserver | null>(null);
-  const lastItem = createRef<HTMLDivElement>();
+  const sentinelRef = useInfiniteLoader(onLoad, { hasMore });
 
-  useEffect(() => {
-    if (observerLoader.current) {
-      observerLoader.current.disconnect();
-    }
-    observerLoader.current = new IntersectionObserver(
-      async (entries: any[]) => {
-        if (entries[0].isIntersecting) {
-          await onLoad();
-        }
-      },
-    );
-
-    if (lastItem.current) {
-      observerLoader.current.observe(lastItem.current);
-    }
-  }, [lastItem]);
   return (
     <>
       {children}
-      <div ref={lastItem} />
+      <div ref={sentinelRef} className={sentinelClassName} />
     </>
   );
 };

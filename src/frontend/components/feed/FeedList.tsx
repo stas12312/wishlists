@@ -1,7 +1,8 @@
 "use client";
 import { observer } from "mobx-react-lite";
-import { createRef, useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
+import { InfinityLoader } from "../InfinityLoader";
 import { PageSpinner } from "../PageSpinner";
 
 import { DateEvents } from "./FeedDateEvents";
@@ -25,82 +26,56 @@ export interface IDateInfo {
 const COUNT = 25;
 
 const FeedList = observer(() => {
-  const [items, setItems] = useState([] as IWish[]);
-  const lastItem = createRef<HTMLDivElement>();
-  const [groupedData, setGroupedData] = useState([] as IDateInfo[]);
-  const [cursor, setCursor] = useState(["", ""]);
+  const [items, setItems] = useState<IWish[]>([]);
   const [hasMore, setHasMore] = useState(true);
-  const observerLoader = useRef<IntersectionObserver | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    setItems(items);
-    setGroupedData(makeAgregateData(items));
-  }, [items]);
+  const cursorRef = useRef<Cursor>(["", ""]);
+  const groupedData = useMemo(() => makeAgregateData(items), [items]);
 
   useEffect(() => {
     async function fetch() {
-      await fetchFeed(true, cursor);
+      await fetchFeed(true);
       setIsLoading(false);
     }
     fetch();
   }, []);
 
   function onUpdate(wish: IWish) {
-    const newWishes = [...items];
-    const index = newWishes.findIndex((i) => i.uuid == wish.uuid);
-    newWishes[index] = wish;
-    setItems(newWishes);
+    setItems((prev) => prev.map((i) => (i.uuid == wish.uuid ? wish : i)));
   }
 
-  async function fetchFeed(firstRequest: boolean = false, cursor: Cursor) {
+  async function fetchFeed(firstRequest: boolean) {
+    if (firstRequest) {
+      cursorRef.current = ["", ""];
+    }
     const result = await getFeed({
-      cursor: cursor,
+      cursor: cursorRef.current,
       count: COUNT,
     });
-    let newItems = result.data;
-    if (!firstRequest) {
-      newItems = items.concat(newItems);
-    }
-    setItems(newItems);
-    setGroupedData(makeAgregateData(newItems));
-    setCursor(result.navigation.cursor);
+    cursorRef.current = result.navigation.cursor;
+    setItems((prev) => (firstRequest ? result.data : prev.concat(result.data)));
     setHasMore(result.data.length === COUNT);
   }
-
-  const actionInSight = (entries: any[]) => {
-    if (entries[0].isIntersecting && hasMore) {
-      fetchFeed(false, cursor);
-    }
-  };
-
-  useEffect(() => {
-    if (observerLoader.current) {
-      observerLoader.current.disconnect();
-    }
-
-    observerLoader.current = new IntersectionObserver(actionInSight);
-    if (lastItem.current) {
-      observerLoader.current.observe(lastItem.current);
-    }
-  }, [lastItem]);
 
   return (
     <>
       <PageHeader dividerClassName="mt-2" title="Лента" />
       {items.length ? (
         <div>
-          {groupedData.map((dateEvents) => {
-            return (
-              <DateEvents
-                key={dateEvents.date}
-                dateEvents={dateEvents}
-                onUpdateEvent={onUpdate}
-              />
-            );
-          })}
-
-          <div ref={lastItem} />
+          <InfinityLoader
+            hasMore={hasMore && !isLoading}
+            onLoad={() => fetchFeed(false)}
+          >
+            {groupedData.map((dateEvents) => {
+              return (
+                <DateEvents
+                  key={dateEvents.date}
+                  dateEvents={dateEvents}
+                  onUpdateEvent={onUpdate}
+                />
+              );
+            })}
+          </InfinityLoader>
         </div>
       ) : (
         <>

@@ -57,7 +57,7 @@ export const TicketsPage = () => {
       ) : (
         <>
           <div className="my-2" />
-          <InfinityLoader onLoad={loadTickets}>
+          <InfinityLoader hasMore={hasMore} onLoad={loadTickets}>
             <AnimatedList
               gridConfig="cols-1"
               items={tickets.map((ticket) => {

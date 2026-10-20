@@ -51,7 +51,7 @@ export default function Page() {
   return (
     <>
       <PageHeader title="Статьи" />
-      <InfinityLoader onLoad={loadData}>
+      <InfinityLoader hasMore={!isLoadedAll} onLoad={loadData}>
         <div className="p-4">
           <AnimatedList
             items={[
