@@ -1,4 +1,5 @@
-FROM node:20 AS base
+FROM node:20-alpine AS base
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json package-lock.json ./
 
@@ -35,18 +36,18 @@ ENV SENTRY_RELEASE $version
 
 RUN npm run build
 
-FROM node:20-alpine3.19 as release
+FROM node:20-alpine AS release
 WORKDIR /app
 
 ARG sentry_conf
 ENV SENTRY_CONF $sentry_conf
+ENV NODE_ENV production
+ENV PORT 3000
+ENV HOSTNAME 0.0.0.0
 
-COPY --from=base /app/node_modules ./node_modules
-COPY --from=base /app/package.json ./package.json
-COPY --from=base /app/.next ./.next
-
-COPY --from=base /app/next.config.js ./next.config.js
+COPY --from=base /app/.next/standalone ./
+COPY --from=base /app/.next/static ./.next/static
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["node", "server.js"]
