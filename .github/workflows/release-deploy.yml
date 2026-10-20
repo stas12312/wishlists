@@ -57,11 +57,15 @@ jobs:
     steps:
       - name: executing remote ssh commands using password
         uses: appleboy/ssh-action@master
+        env:
+          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
         with:
           host: ${{ secrets.PROD_SERVER_HOST }}
           username: ${{ secrets.PROD_SERVER_USER }}
           key: ${{ secrets.PROD_SERVER_PRIVATE_KEY }}
+          envs: REGISTRY_USERNAME,REGISTRY_PASSWORD
           script: |
-            echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login ${{ env.REGISTRY }} --username "${{ secrets.REGISTRY_USERNAME }}" --password-stdin
+            echo "$REGISTRY_PASSWORD" | docker login ${{ env.REGISTRY }} --username "$REGISTRY_USERNAME" --password-stdin
             cd ${{ secrets.PROD_PROJECT_PATH }}
-            docker-compose pull && docker-compose up -d
+            docker compose pull && docker compose up -d
