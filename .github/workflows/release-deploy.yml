@@ -39,17 +39,53 @@ jobs:
           context: "{{defaultContext}}:${{ matrix.context }}"
           push: true
           tags: ${{ env.REGISTRY }}/${{ matrix.tag }}:release
-          build-args: |
+          build-args: &build-args |
             build_time=${{ steps.date.outputs.build_date }}
             version=${{ github.ref_name }}
             base_url=${{ secrets.PROD_BASE_URL }}
             yandex_metrika_id=${{ secrets.PROD_YANDEX_METRIKA_ID }}
             static_url=${{ secrets.PROD_STATIC_URL }}
             sentry_dsn=${{ secrets.SENTRY_DSN }}
-            sentry_auth_token=${{ secrets.PROD_SENTRY_AUTH_TOKEN }}
             ws_url=${{ secrets.PROD_WS_URL }}
             donate_url=${{ secrets.DONATE_URL }}
             sentry_conf=${{ secrets.PROD_SENTRY_CONF }}
+      # Слои берутся из кэша предыдущего шага, повторной сборки нет
+      - name: Export sourcemaps
+        if: matrix.tag == 'ui'
+        uses: docker/build-push-action@v6
+        with:
+          context: "{{defaultContext}}:${{ matrix.context }}"
+          target: sourcemaps
+          outputs: type=local,dest=sourcemaps
+          build-args: *build-args
+      - name: Save sourcemaps
+        if: matrix.tag == 'ui'
+        uses: actions/upload-artifact@v4
+        with:
+          name: sourcemaps
+          path: sourcemaps
+          retention-days: 1
+
+  # Не блокирует деплой: выполняется параллельно с ним
+  upload-sourcemaps:
+    runs-on: ubuntu-latest
+    needs: [ build-images ]
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: sourcemaps
+          path: sourcemaps
+      - name: Upload sourcemaps to Sentry
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.PROD_SENTRY_AUTH_TOKEN }}
+          SENTRY_CONF: ${{ secrets.PROD_SENTRY_CONF }}
+          SENTRY_RELEASE: ${{ github.ref_name }}
+        run: |
+          IFS=';' read -r SENTRY_URL SENTRY_ORG SENTRY_PROJECT <<< "$SENTRY_CONF"
+          export SENTRY_URL SENTRY_ORG SENTRY_PROJECT
+          npx --yes @sentry/cli@2.58.5 releases new "$SENTRY_RELEASE"
+          npx --yes @sentry/cli@2.58.5 sourcemaps upload --release "$SENTRY_RELEASE" sourcemaps
+          npx --yes @sentry/cli@2.58.5 releases finalize "$SENTRY_RELEASE"
 
   deploy:
     runs-on: ubuntu-latest
