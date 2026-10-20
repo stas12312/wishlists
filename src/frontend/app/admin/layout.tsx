@@ -20,7 +20,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
           <div className="w-75 px-4">
             <AdminMenu />
           </div>
-          <div className="w-full">{children}</div>
+          <div className="w-full min-w-0 pr-4 pb-6">{children}</div>
         </div>
       </main>
     </>

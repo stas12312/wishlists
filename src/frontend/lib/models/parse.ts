@@ -23,3 +23,82 @@ export interface ShopParam {
   url: string;
   name: string;
 }
+
+export type ServiceStatus = "OK" | "DEGRADED" | "DOWN";
+
+export type ShopParseStatus = "OK" | "BLOCKED" | "ERROR" | "UNKNOWN";
+
+export type ParseOutcome =
+  | "WAITING"
+  | "RUNNING"
+  | "PARSED"
+  | "CACHED"
+  | "PARSE_ERROR"
+  | "ANTIBOT"
+  | "OUT_OF_STOCK";
+
+export type ParseOutcomeCounters = Record<ParseOutcome, number> & {
+  requests: number;
+};
+
+export interface ShopParseState extends ParseOutcomeCounters {
+  shop: string;
+  status: ShopParseStatus;
+  last_parsed_at: string | null;
+  last_success_at: string | null;
+  last_error: string | null;
+}
+
+export interface ParseServiceStatus {
+  status: "OK" | "DOWN";
+  redis: boolean;
+  workers: {
+    online: number;
+    names: string[];
+    active_tasks: number;
+  };
+  queue: number | null;
+}
+
+export interface ParseShopsStatus {
+  status: "OK" | "DEGRADED";
+  shops: ShopParseState[];
+}
+
+export type ParseStatsCounters = ParseOutcomeCounters & {
+  // Секунд
+  avg_duration: number | null;
+};
+
+export interface ParseStats {
+  date_from: string;
+  date_to: string;
+  total: ParseStatsCounters;
+  shops: (ParseStatsCounters & { shop: string })[];
+  days: (ParseStatsCounters & { date: string })[];
+}
+
+export interface ParseEvent {
+  url: string;
+  shop: string;
+  outcome: ParseOutcome;
+  created_at: string;
+  task_id: string;
+  duration: number | null;
+  error: string | null;
+  queued_at?: string | null;
+  // Секунд от прихода ссылки до итога: ожидание в очереди и парсинг
+  total_duration?: number | null;
+  has_screenshot?: boolean;
+}
+
+export interface ParseEventsFilter {
+  outcome?: ParseOutcome;
+  shop?: string;
+  limit?: number;
+}
+
+export interface ParseEvents {
+  total: number;
+  items: ParseEvent[];
+}
