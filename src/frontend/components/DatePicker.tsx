@@ -1,4 +1,10 @@
-import { DatePicker, Label, DateField, Calendar } from "@heroui/react";
+import {
+  DatePicker,
+  Label,
+  DateField,
+  Calendar,
+  FieldError,
+} from "@heroui/react";
 import { CalendarDate } from "@internationalized/date";
 import { I18nProvider } from "@react-aria/i18n";
 
@@ -7,6 +13,7 @@ export const CustomDatePicker = ({
   onChange,
   label,
   name,
+  minValue,
   maxValue,
   variant = "primary",
 }: {
@@ -14,6 +21,7 @@ export const CustomDatePicker = ({
   onChange: { (date: CalendarDate | null): void };
   label: string;
   name: string;
+  minValue?: CalendarDate | null;
   maxValue?: CalendarDate | null;
   variant?: "primary" | "secondary";
 }) => {
@@ -22,6 +30,7 @@ export const CustomDatePicker = ({
       <DatePicker
         className="text-left"
         maxValue={maxValue}
+        minValue={minValue}
         name={name}
         value={value}
         onChange={onChange}
@@ -37,6 +46,7 @@ export const CustomDatePicker = ({
             </DatePicker.Trigger>
           </DateField.Suffix>
         </DateField.Group>
+        <FieldError />
         <DatePicker.Popover>
           <Calendar aria-label="Выберите дату">
             <Calendar.Header>

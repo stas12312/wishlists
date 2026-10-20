@@ -11,7 +11,12 @@ import {
   TextArea,
   TextField,
 } from "@heroui/react";
-import { CalendarDate, getLocalTimeZone } from "@internationalized/date";
+import {
+  CalendarDate,
+  getLocalTimeZone,
+  minDate,
+  today,
+} from "@internationalized/date";
 import { FormEvent, Key, useEffect, useState } from "react";
 import { MdOutlinePublic, MdOutlinePublicOff, MdPerson } from "react-icons/md";
 
@@ -55,6 +60,13 @@ export function WishlistCreateForm({
     visible_user_ids: wishlist?.visible_user_ids || [],
   });
   const [friends, setFriends] = useState<IUser[]>([]);
+
+  // Уже сохраненная прошедшая дата не должна блокировать редактирование вишлиста
+  const initialDate = dateStringToCalendarDate(wishlist?.date || null);
+  const todayDate = today(getLocalTimeZone());
+  const minEventDate = initialDate
+    ? minDate(initialDate, todayDate)
+    : todayDate;
 
   const [isCreating, setIsCreateing] = useState(false);
 
@@ -138,6 +150,7 @@ export function WishlistCreateForm({
 
       <CustomDatePicker
         label="Дата события"
+        minValue={minEventDate}
         name="date"
         value={dateStringToCalendarDate(formData.date)}
         variant="secondary"
