@@ -1,0 +1,5 @@
+services:
+  backend:
+    image: mywishlists.registry.twcstorage.ru/backend:tested
+  frontend:
+    image: mywishlists.registry.twcstorage.ru/ui:tested

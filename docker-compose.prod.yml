@@ -15,7 +15,7 @@ services:
     volumes:
       - redis_data:/data
   backend:
-    image: ghcr.io/stas12312/wishlists/backend:release
+    image: mywishlists.registry.twcstorage.ru/backend:release
     restart: always
     networks:
       - default
@@ -28,7 +28,7 @@ services:
       - db
       - redis
   frontend:
-    image: ghcr.io/stas12312/wishlists/ui:release
+    image: mywishlists.registry.twcstorage.ru/ui:release
     ports:
       - ${UI_PORT}:3000
     env_file:
