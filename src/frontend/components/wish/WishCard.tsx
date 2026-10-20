@@ -27,6 +27,7 @@ import {
 import { IWish, IWishActions } from "@/lib/models/wish";
 import { IWishlist } from "@/lib/models/wishlist";
 import { UserChip } from "@/components/user/UserChip";
+import { getMenuItemsByActions } from "@/lib/wish/menu";
 export const WishItem = observer(
   ({
     wish,
@@ -216,5 +217,5 @@ export const WishItem = observer(
 );
 
 function showMenu(actions: IWishActions): boolean {
-  return actions.edit || actions.cancel_reserve || actions.reserve;
+  return getMenuItemsByActions(actions).length > 0;
 }
