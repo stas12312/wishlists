@@ -124,7 +124,7 @@ export const WishItem = observer(
         <Card
           className={twMerge(
             withUser ? "h-90" : "h-70",
-            "flex-col w-full ring-1 ring-gray-500/30 p-0 relative cursor-pointer gap-0",
+            "flex-col w-full ring-1 ring-gray-500/30 p-0 relative overflow-hidden isolate cursor-pointer gap-0",
             "hover:scale-[1.03] active:scale-[0.97]",
             "transition-transform will-change-transform transform-gpu",
           )}
@@ -140,9 +140,9 @@ export const WishItem = observer(
             </div>
           ) : null}
 
-          <div className="bg-default/50 absolute z-0 inset-0 roundend-3xl backdrop-saturate-200 backdrop-contrast-125" />
+          <div className="bg-default/50 absolute z-0 inset-0 rounded-3xl backdrop-saturate-200 backdrop-contrast-125" />
 
-          <Card.Header className="flex-col items-start p-0 z-10 retative">
+          <Card.Header className="flex-col items-start p-0 z-10 relative">
             <div className="flex flex-row justify-between w-full h-14 px-2.5 pt-2">
               <div className="my-auto flex flex-col text-left overflow-hidden text-ellipsis truncate">
                 <span className="text-xl/5 font-bold" title={wish.name}>
