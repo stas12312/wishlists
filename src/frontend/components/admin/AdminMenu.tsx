@@ -2,6 +2,7 @@
 import {
   MdOutlineArticle,
   MdOutlineStarBorder,
+  MdOutlineStorefront,
   MdOutlineSupport,
 } from "react-icons/md";
 import { observer } from "mobx-react-lite";
@@ -28,6 +29,12 @@ const AdminMenuItems: IMenuItem[] = [
     href: "/admin/tickets",
     icon: <MdOutlineSupport />,
     selectedIconClassName: "text-pink-500",
+  },
+  {
+    title: "Парсинг",
+    href: "/admin/parse",
+    icon: <MdOutlineStorefront />,
+    selectedIconClassName: "text-green-500",
   },
 ];
 
