@@ -5,7 +5,9 @@ import { MdClose, MdRefresh } from "react-icons/md";
 
 import { ButtonWithLoader } from "../ButtonWithLoader";
 
+import { ParseCheckModal } from "./ParseCheckModal";
 import { ParseEventsTable } from "./ParseEventsTable";
+import { ParseProxiesPanel } from "./ParseProxiesPanel";
 import { ParseShopsTable } from "./ParseShopsTable";
 import { ChipColor, ShopName, StatusChip } from "./parseCommon";
 import { useParseData } from "./useParseData";
@@ -122,6 +124,7 @@ export const ParseStatusPanel = () => {
   );
   const [reportPeriod, setReportPeriod] = useState(DEFAULT_REPORT_PERIOD);
   const [isSettingsReady, setIsSettingsReady] = useState(false);
+  const [isCheckOpen, setIsCheckOpen] = useState(false);
 
   useEffect(() => {
     setRefreshInterval(
@@ -151,6 +154,8 @@ export const ParseStatusPanel = () => {
     status,
     serviceStatus,
     shopsStatus,
+    proxies,
+    loadProxies,
     stats,
     events,
     shopUrls,
@@ -224,6 +229,18 @@ export const ParseStatusPanel = () => {
           </Alert.Content>
         </Alert>
       ) : null}
+
+      <ParseCheckModal
+        isOpen={isCheckOpen}
+        onClose={() => setIsCheckOpen(false)}
+        onFinish={refresh}
+      />
+
+      <ParseProxiesPanel
+        proxies={proxies}
+        onCheck={() => setIsCheckOpen(true)}
+        onReload={loadProxies}
+      />
 
       <div className="flex flex-wrap items-center gap-2">
         <h2 className="text-xl">Магазины</h2>

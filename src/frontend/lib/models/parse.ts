@@ -70,6 +70,22 @@ export type ParseStatsCounters = ParseOutcomeCounters & {
   avg_duration: number | null;
 };
 
+export interface ParseProxy {
+  id: string;
+  // Пароль сервис парсинга скрывает
+  url: string;
+  added_at: string;
+  active: boolean;
+  stats: Partial<Record<ParseOutcome, number>>;
+}
+
+export interface ParseProxies {
+  active: string | null;
+  // PROXY_URL из настроек сервиса: используется, пока пул пуст
+  fallback: string | null;
+  items: ParseProxy[];
+}
+
 export interface ParseStats {
   date_from: string;
   date_to: string;

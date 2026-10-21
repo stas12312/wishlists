@@ -3,6 +3,7 @@ import { clientAxios } from "../base";
 import {
   ParseEvents,
   ParseEventsFilter,
+  ParseProxies,
   ParseServiceStatus,
   ParseShopsStatus,
   ParseStats,
@@ -45,6 +46,44 @@ export async function getParseEvents(
   });
   return response.status == 200 ? response.data : null;
 }
+
+export async function getParseProxies(): Promise<ParseProxies | null> {
+  const response = await clientAxios.get(
+    "/admin/parse/proxies",
+    acceptAnyStatus,
+  );
+  return response.status == 200 ? response.data : null;
+}
+
+// Возвращают текст ошибки или null, если запрос выполнен
+async function proxyAction(
+  method: "post" | "delete",
+  path: string,
+  data?: object,
+): Promise<string | null> {
+  const response = await clientAxios.request({
+    method,
+    url: `/admin/parse/proxies${path}`,
+    data,
+    ...acceptAnyStatus,
+  });
+  if (response.status >= 200 && response.status < 300) {
+    return null;
+  }
+  return (
+    response.data?.detail ?? response.data?.message ?? "Не удалось выполнить"
+  );
+}
+
+export const addParseProxy = (url: string) => proxyAction("post", "", { url });
+
+export const activateParseProxy = (id: string) =>
+  proxyAction("post", `/${encodeURIComponent(id)}/activate`);
+
+export const rotateParseProxy = () => proxyAction("post", "/rotate");
+
+export const deleteParseProxy = (id: string) =>
+  proxyAction("delete", `/${encodeURIComponent(id)}`);
 
 export async function getParseEventScreenshot(
   taskId: string,

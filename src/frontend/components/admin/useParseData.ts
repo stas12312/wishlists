@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   getParseEvents,
+  getParseProxies,
   getParseServiceStatus,
   getParseShopsStatus,
   getParseStats,
@@ -10,6 +11,7 @@ import { getAvailableParser } from "@/lib/client-requests/parse";
 import {
   ParseEvents,
   ParseOutcome,
+  ParseProxies,
   ParseServiceStatus,
   ParseShopsStatus,
   ParseStats,
@@ -63,6 +65,7 @@ export function useParseData({
 }) {
   const [status, setStatus] = useState<ParseServiceStatus | null>();
   const [shopsStatus, setShopsStatus] = useState<ParseShopsStatus | null>();
+  const [proxies, setProxies] = useState<ParseProxies | null>();
   const [stats, setStats] = useState<ParseStats | null>();
   const [events, setEvents] = useState<ParseEvents | null>();
   // При смене фильтра прежние данные остаются под лоадером до прихода новых
@@ -85,6 +88,7 @@ export function useParseData({
 
   const loadStatus = useLatestLoader(getParseServiceStatus, setStatus);
   const loadShops = useLatestLoader(getParseShopsStatus, setShopsStatus);
+  const loadProxies = useLatestLoader(getParseProxies, setProxies);
 
   const loadStatsData = useCallback(
     () => getParseStats(...getReportDates(reportPeriod)),
@@ -117,13 +121,19 @@ export function useParseData({
     isRefreshing.current = true;
     setIsLoading(true);
     try {
-      await Promise.all([loadStatus(), loadShops(), loadStats(), loadEvents()]);
+      await Promise.all([
+        loadStatus(),
+        loadShops(),
+        loadProxies(),
+        loadStats(),
+        loadEvents(),
+      ]);
       setUpdatedAt(new Date());
     } finally {
       setIsLoading(false);
       isRefreshing.current = false;
     }
-  }, [loadStatus, loadShops, loadStats, loadEvents]);
+  }, [loadStatus, loadShops, loadProxies, loadStats, loadEvents]);
 
   // Таймер обновления не перезапускается при смене фильтра и всегда вызывает актуальный refresh
   const refreshRef = useRef(refresh);
@@ -142,7 +152,8 @@ export function useParseData({
   useEffect(() => {
     loadStatus();
     loadShops();
-  }, [loadStatus, loadShops]);
+    loadProxies();
+  }, [loadStatus, loadShops, loadProxies]);
 
   useEffect(() => {
     if (!isEnabled) {
@@ -172,6 +183,8 @@ export function useParseData({
     status,
     serviceStatus,
     shopsStatus,
+    proxies,
+    loadProxies,
     stats,
     events,
     shopUrls,
