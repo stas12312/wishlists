@@ -235,6 +235,28 @@ func (c *AdminController) GetParseEventScreenshot(ctx *fiber.Ctx) error {
 	return proxyToParseService(ctx, c.config.ParseServiceUrl, fmt.Sprintf("/stats/events/%s/screenshot", taskId))
 }
 
+func (c *AdminController) GetParseProxies(ctx *fiber.Ctx) error {
+	return proxyToParseService(ctx, c.config.ParseServiceUrl, "/proxies")
+}
+
+func (c *AdminController) AddParseProxy(ctx *fiber.Ctx) error {
+	return proxyToParseService(ctx, c.config.ParseServiceUrl, "/proxies")
+}
+
+func (c *AdminController) RotateParseProxy(ctx *fiber.Ctx) error {
+	return proxyToParseService(ctx, c.config.ParseServiceUrl, "/proxies/rotate")
+}
+
+func (c *AdminController) ActivateParseProxy(ctx *fiber.Ctx) error {
+	proxyId := url.PathEscape(ctx.Params("proxy_id"))
+	return proxyToParseService(ctx, c.config.ParseServiceUrl, fmt.Sprintf("/proxies/%s/activate", proxyId))
+}
+
+func (c *AdminController) DeleteParseProxy(ctx *fiber.Ctx) error {
+	proxyId := url.PathEscape(ctx.Params("proxy_id"))
+	return proxyToParseService(ctx, c.config.ParseServiceUrl, fmt.Sprintf("/proxies/%s", proxyId))
+}
+
 func (c *AdminController) Route(router fiber.Router) {
 
 	adminGroup := router.Group("/admin", middleware.Protected(true))
@@ -266,5 +288,10 @@ func (c *AdminController) Route(router fiber.Router) {
 	parseGroup.Get("/stats", c.GetParseStats)
 	parseGroup.Get("/events", c.GetParseEvents)
 	parseGroup.Get("/events/:task_id/screenshot", c.GetParseEventScreenshot)
+	parseGroup.Get("/proxies", c.GetParseProxies)
+	parseGroup.Post("/proxies", c.AddParseProxy)
+	parseGroup.Post("/proxies/rotate", c.RotateParseProxy)
+	parseGroup.Post("/proxies/:proxy_id/activate", c.ActivateParseProxy)
+	parseGroup.Delete("/proxies/:proxy_id", c.DeleteParseProxy)
 
 }
