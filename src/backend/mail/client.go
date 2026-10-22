@@ -10,7 +10,8 @@ import (
 )
 
 var TemplateByName = map[string]string{
-	"code": "./mail/template/code.html",
+	"code":           "./mail/template/code.html",
+	"ticket_message": "./mail/template/ticket_message.html",
 }
 
 //go:generate mockery --name Client

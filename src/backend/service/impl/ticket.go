@@ -2,8 +2,10 @@ package impl
 
 import (
 	"fmt"
+	"html"
 	"io"
 	apperror "main/error"
+	"main/mail"
 	"main/model"
 	"main/repository"
 	"main/service"
@@ -11,6 +13,8 @@ import (
 	"regexp"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/gofiber/fiber/v2/log"
 )
 
 var statusCommandRe = regexp.MustCompile(`(?m)^[ \t]*/status[ \t]+(\w+)[ \t]*\r?$`)
@@ -22,6 +26,7 @@ const (
 	maxAttachmentSize       = 5 * 1024 * 1024
 	maxAttachmentNameLength = 255
 	attachmentsDir          = "tickets"
+	maxNotificationLength   = 1000
 )
 
 var attachmentExtensions = map[string]bool{
@@ -57,6 +62,9 @@ func NewTicketServiceImpl(
 	fileRepository repository.ImageRepository,
 	uuidGenerator UUIDGenerator,
 	filesDomain string,
+	userRepository repository.UserRepository,
+	mailClient mail.MailClient,
+	baseUrl string,
 ) *TicketServiceImpl {
 	return &TicketServiceImpl{
 		ticketRepository:         ticketRepository,
@@ -66,6 +74,9 @@ func NewTicketServiceImpl(
 		fileRepository:           fileRepository,
 		uuidGenerator:            uuidGenerator,
 		attachmentsUrlPrefix:     fmt.Sprintf("%s/%s/", filesDomain, attachmentsDir),
+		userRepository:           userRepository,
+		mailClient:               mailClient,
+		baseUrl:                  baseUrl,
 	}
 }
 
@@ -77,6 +88,9 @@ type TicketServiceImpl struct {
 	fileRepository           repository.ImageRepository
 	uuidGenerator            UUIDGenerator
 	attachmentsUrlPrefix     string
+	userRepository           repository.UserRepository
+	mailClient               mail.MailClient
+	baseUrl                  string
 }
 
 func (t *TicketServiceImpl) CreateCategory(ticketCategory *model.TicketCategory) (*model.TicketCategory, error) {
@@ -100,7 +114,12 @@ func (t *TicketServiceImpl) Create(ticket *model.Ticket, message *model.Message)
 		return nil, err
 	}
 	ticket.ConversationId = conversation.Id
-	return t.ticketRepository.Create(ticket)
+	createdTicket, err := t.ticketRepository.Create(ticket)
+	if err != nil {
+		return nil, err
+	}
+	t.notifyAdmins(createdTicket.Id, "Новое обращение в поддержку", message)
+	return createdTicket, nil
 }
 
 func (t *TicketServiceImpl) List(userId int64, navigation model.Navigation, filters model.TicketFilters) ([]model.Ticket, error) {
@@ -150,6 +169,7 @@ func (t *TicketServiceImpl) AddMessage(userId int64, ticketId int64, message *mo
 	t.wsService.SendMessageToChannel(getChannelNameForTicket(ticketId), model.WSMessage{
 		Event: service.Update,
 	})
+	t.notifyAdmins(ticketId, "Новое сообщение в обращении", createdMessage)
 	return createdMessage, nil
 }
 
@@ -261,6 +281,63 @@ func (t *TicketServiceImpl) Close(userId int64, ticketId int64) error {
 
 func (t *TicketServiceImpl) GetCounters(userId int64) (int, error) {
 	return t.ticketRepository.GetCounters(userId)
+}
+
+// notifyAdmins отправляет администраторам письмо о сообщении пользователя.
+// Ошибки только логируются: сообщение уже сохранено и не должно откатываться из-за почты
+func (t *TicketServiceImpl) notifyAdmins(ticketId int64, title string, message *model.Message) {
+	ticket, err := t.Get(0, ticketId)
+	if err != nil {
+		log.Error(fmt.Sprintf("Failed to get ticket %d for admin notification: %s", ticketId, err))
+		return
+	}
+	emails, err := t.userRepository.ListAdminEmails()
+	if err != nil {
+		log.Error(fmt.Sprintf("Failed to get admin emails: %s", err))
+		return
+	}
+	if len(emails) == 0 {
+		return
+	}
+	body, err := getTicketMessageMail(ticket, title, message, t.baseUrl)
+	if err != nil {
+		log.Error(fmt.Sprintf("Failed to build ticket message mail: %s", err))
+		return
+	}
+	subject := fmt.Sprintf("%s #%d: %s", title, ticket.Id, ticket.Subject)
+	if err = t.mailClient.Send(emails, subject, body); err != nil {
+		log.Error(fmt.Sprintf("Failed to send admin notification for ticket %d: %s", ticketId, err))
+	}
+}
+
+func getTicketMessageMail(ticket *model.Ticket, title string, message *model.Message, baseUrl string) (string, error) {
+	template, err := mail.LoadTemplate("ticket_message")
+	if err != nil {
+		return "", err
+	}
+
+	content := message.Content
+	if utf8.RuneCountInString(content) > maxNotificationLength {
+		content = string([]rune(content)[:maxNotificationLength]) + "…"
+	}
+	if len(message.Attachments) > 0 {
+		content = strings.TrimSpace(fmt.Sprintf("%s\n\nВложений: %d", content, len(message.Attachments)))
+	}
+
+	return mail.CompileTemplate(template, map[string]string{
+		"title":   fmt.Sprintf("%s #%d: %s", title, ticket.Id, escapeMailText(ticket.Subject)),
+		"author":  fmt.Sprintf("От: %s (@%s)", escapeMailText(ticket.Author.Name), escapeMailText(ticket.Author.Username)),
+		"content": strings.ReplaceAll(escapeMailText(content), "\n", "<br>"),
+		"link":    fmt.Sprintf("%s/admin/tickets/%d", baseUrl, ticket.Id),
+	}), nil
+}
+
+// escapeMailText экранирует пользовательский текст для HTML письма.
+// Фигурные скобки тоже экранируются, иначе CompileTemplate подставит в текст значения других плейсхолдеров
+func escapeMailText(text string) string {
+	text = html.EscapeString(text)
+	text = strings.ReplaceAll(text, "{", "&#123;")
+	return strings.ReplaceAll(text, "}", "&#125;")
 }
 
 // splitMessage вырезает из сообщения команду смены статуса — отдельную строку вида "/status waiting_info".
