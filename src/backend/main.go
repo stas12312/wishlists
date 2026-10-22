@@ -104,6 +104,9 @@ func main() {
 		imageRepository,
 		uuid.NewString,
 		appConfig.S3.Domain,
+		repository.NewUserRepositoryImpl(postgresDB),
+		mailClient,
+		appConfig.BaseUrl,
 	)
 	ticketController := controller.NewTicketController(ticketService)
 

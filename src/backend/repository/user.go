@@ -11,4 +11,5 @@ type UserRepository interface {
 	Create(email string, hash string, name string, isActive bool, image string, birthday model.NullDate) (*model.User, error)
 	Update(*model.User) (*model.User, error)
 	UpdatePassword(userId int64, hashPassword string) error
+	ListAdminEmails() ([]string, error)
 }

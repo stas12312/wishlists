@@ -124,3 +124,17 @@ func (r *UserRepositoryPostgres) UpdatePassword(userId int64, hashPassword strin
 	_, err := r.Exec(query, userId, hashPassword)
 	return err
 }
+
+func (r *UserRepositoryPostgres) ListAdminEmails() ([]string, error) {
+	query := `
+	SELECT email
+	FROM users
+	WHERE
+	    is_admin
+	    AND email IS NOT NULL
+`
+
+	emails := make([]string, 0)
+	err := r.Select(&emails, query)
+	return emails, err
+}

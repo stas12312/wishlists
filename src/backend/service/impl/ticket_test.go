@@ -112,7 +112,7 @@ func TestTicketServiceImpl_UploadAttachment(t *testing.T) {
 			if size == 0 {
 				size = 4
 			}
-			s := NewTicketServiceImpl(nil, nil, nil, nil, fileRepository, func() string { return "UUID" }, "https://cdn")
+			s := NewTicketServiceImpl(nil, nil, nil, nil, fileRepository, func() string { return "UUID" }, "https://cdn", nil, nil, "")
 
 			got, err := s.UploadAttachment(tt.filename, size, file)
 			if (err != nil) != tt.wantErr {
@@ -182,7 +182,7 @@ func TestTicketServiceImpl_ValidateMessage(t *testing.T) {
 			wantErr: true,
 		},
 	}
-	s := NewTicketServiceImpl(nil, nil, nil, nil, nil, nil, "https://cdn")
+	s := NewTicketServiceImpl(nil, nil, nil, nil, nil, nil, "https://cdn", nil, nil, "")
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := s.validateMessage(&tt.message)
@@ -190,5 +190,13 @@ func TestTicketServiceImpl_ValidateMessage(t *testing.T) {
 				t.Errorf("validateMessage() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
+	}
+}
+
+func TestEscapeMailText(t *testing.T) {
+	got := escapeMailText(`<a href="x">{link}</a>`)
+	want := "&lt;a href=&#34;x&#34;&gt;&#123;link&#125;&lt;/a&gt;"
+	if got != want {
+		t.Errorf("escapeMailText() = %q, want %q", got, want)
 	}
 }
