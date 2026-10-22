@@ -69,6 +69,32 @@ const STATUS_BUTTON_CLASSES: Record<
   },
 };
 
+const URL_RE = /(https?:\/\/[^\s<>"']+)/g;
+const URL_TRAILING_PUNCTUATION_RE = /[.,;:!?)\]}»]+$/;
+
+function linkify(text: string) {
+  return text.split(URL_RE).map((part, index) => {
+    if (index % 2 === 0) return part;
+
+    const trailing = part.match(URL_TRAILING_PUNCTUATION_RE)?.[0] ?? "";
+    const url = part.slice(0, part.length - trailing.length);
+
+    return (
+      <span key={index}>
+        <a
+          className="text-accent underline break-all"
+          href={url}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          {url}
+        </a>
+        {trailing}
+      </span>
+    );
+  });
+}
+
 function setStatusCommand(message: string, status: TicketStatus): string {
   const text = message.replace(STATUS_COMMAND_RE, "").trimEnd();
 
@@ -217,7 +243,7 @@ export const TicketDetailPage = ({
                     <div className="flex flex-col">
                       {message.content ? (
                         <span className="px-4 pt-2 whitespace-pre-wrap wrap-break-word">
-                          {message.content}
+                          {linkify(message.content)}
                         </span>
                       ) : null}
                       <MessageAttachments
