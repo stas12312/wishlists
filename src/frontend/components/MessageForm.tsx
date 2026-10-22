@@ -18,6 +18,8 @@ export const MessageForm = ({
   footer,
   placeholder = "Введите сообщение",
   onSend,
+  value,
+  onValueChange,
 }: {
   minLength?: number;
   maxLength?: number;
@@ -25,8 +27,12 @@ export const MessageForm = ({
   footer?: ReactNode;
   placeholder?: string;
   onSend: { (message: string): void };
+  value?: string;
+  onValueChange?: { (message: string): void };
 }) => {
-  const [message, setMessage] = useState("");
+  const [innerMessage, setInnerMessage] = useState("");
+  const message = value ?? innerMessage;
+  const setMessage = onValueChange ?? setInnerMessage;
   const submitRef = useRef<HTMLButtonElement>(null);
   return (
     <Form
