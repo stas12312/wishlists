@@ -235,6 +235,11 @@ func (c *AdminController) GetParseEventScreenshot(ctx *fiber.Ctx) error {
 	return proxyToParseService(ctx, c.config.ParseServiceUrl, fmt.Sprintf("/stats/events/%s/screenshot", taskId))
 }
 
+func (c *AdminController) GetParseEventTraceback(ctx *fiber.Ctx) error {
+	taskId := url.PathEscape(ctx.Params("task_id"))
+	return proxyToParseService(ctx, c.config.ParseServiceUrl, fmt.Sprintf("/stats/events/%s/traceback", taskId))
+}
+
 func (c *AdminController) GetParseProxies(ctx *fiber.Ctx) error {
 	return proxyToParseService(ctx, c.config.ParseServiceUrl, "/proxies")
 }
@@ -293,6 +298,7 @@ func (c *AdminController) Route(router fiber.Router) {
 	parseGroup.Get("/stats", c.GetParseStats)
 	parseGroup.Get("/events", c.GetParseEvents)
 	parseGroup.Get("/events/:task_id/screenshot", c.GetParseEventScreenshot)
+	parseGroup.Get("/events/:task_id/traceback", c.GetParseEventTraceback)
 	parseGroup.Get("/proxies", c.GetParseProxies)
 	parseGroup.Post("/proxies", c.AddParseProxy)
 	parseGroup.Post("/proxies/rotate", c.RotateParseProxy)
