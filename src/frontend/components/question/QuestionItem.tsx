@@ -321,9 +321,7 @@ const QuestionLine = ({
       <div
         className={twMerge(
           "flex flex-col min-w-60 rounded-3xl px-4 py-2",
-          isMine
-            ? "bg-accent text-accent-foreground"
-            : "bg-default/60",
+          isMine ? "bg-accent text-accent-foreground" : "bg-default/60",
         )}
       >
         <p className="whitespace-pre-wrap break-words">{content}</p>
