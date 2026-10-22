@@ -15,8 +15,11 @@ import (
 
 var statusCommandRe = regexp.MustCompile(`(?m)^[ \t]*/status[ \t]+(\w+)[ \t]*\r?$`)
 
+var attachmentKeyRe = regexp.MustCompile(`^[0-9A-Za-z-]+\.[0-9a-z]+$`)
+
 const (
 	maxAttachmentsCount     = 5
+	maxAttachmentSize       = 5 * 1024 * 1024
 	maxAttachmentNameLength = 255
 	attachmentsDir          = "tickets"
 )
@@ -188,11 +191,14 @@ func (t *TicketServiceImpl) UploadAttachment(filename string, size int64, file i
 	if !attachmentExtensions[extension] {
 		return nil, apperror.NewError(apperror.ValidateError, "Недопустимый тип файла")
 	}
+	if size > maxAttachmentSize {
+		return nil, apperror.NewError(apperror.ValidateError, "Размер файла превышает 5 МБ")
+	}
 	if utf8.RuneCountInString(name) > maxAttachmentNameLength {
 		name = string([]rune(name)[:maxAttachmentNameLength-len(extension)]) + extension
 	}
 
-	url, err := t.fileRepository.Upload(fmt.Sprintf("%s/%s%s", attachmentsDir, t.uuidGenerator(), extension), file)
+	url, err := t.fileRepository.UploadAttachment(fmt.Sprintf("%s/%s%s", attachmentsDir, t.uuidGenerator(), extension), name, file)
 	if err != nil {
 		return nil, err
 	}
@@ -209,12 +215,32 @@ func (t *TicketServiceImpl) validateMessage(message *model.Message) error {
 	if len(message.Attachments) > maxAttachmentsCount {
 		return apperror.NewError(apperror.ValidateError, fmt.Sprintf("Можно прикрепить не более %d файлов", maxAttachmentsCount))
 	}
-	for _, attachment := range message.Attachments {
-		if !strings.HasPrefix(attachment.Url, t.attachmentsUrlPrefix) || strings.Contains(attachment.Url, "..") {
+	for i := range message.Attachments {
+		if !t.isValidAttachment(&message.Attachments[i]) {
 			return apperror.NewError(apperror.ValidateError, "Некорректное вложение")
 		}
 	}
 	return nil
+}
+
+func (t *TicketServiceImpl) isValidAttachment(attachment *model.Attachment) bool {
+	// Ключ должен быть плоским именем файла без «/», «%» и «..», иначе CDN может нормализовать путь за пределы каталога
+	key, found := strings.CutPrefix(attachment.Url, t.attachmentsUrlPrefix)
+	if !found || !attachmentKeyRe.MatchString(key) {
+		return false
+	}
+	extension := filepath.Ext(key)
+	if !attachmentExtensions[extension] {
+		return false
+	}
+
+	attachment.Name = strings.TrimSpace(attachment.Name)
+	nameLength := utf8.RuneCountInString(attachment.Name)
+	if nameLength == 0 || nameLength > maxAttachmentNameLength ||
+		strings.ToLower(filepath.Ext(attachment.Name)) != extension {
+		return false
+	}
+	return attachment.Size > 0 && attachment.Size <= maxAttachmentSize
 }
 
 func (t *TicketServiceImpl) Close(userId int64, ticketId int64) error {

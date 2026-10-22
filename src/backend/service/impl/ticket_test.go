@@ -68,6 +68,7 @@ func TestTicketServiceImpl_UploadAttachment(t *testing.T) {
 		filename string
 		wantKey  string
 		wantName string
+		size     int64
 		wantErr  bool
 	}{
 		{
@@ -93,17 +94,27 @@ func TestTicketServiceImpl_UploadAttachment(t *testing.T) {
 			filename: "page.html",
 			wantErr:  true,
 		},
+		{
+			name:     "Слишком большой файл",
+			filename: "big.zip",
+			size:     5*1024*1024 + 1,
+			wantErr:  true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			fileRepository := mocks.NewImageRepository(t)
 			file := bytes.NewBufferString("data")
 			if !tt.wantErr {
-				fileRepository.On("Upload", tt.wantKey, file).Once().Return("https://cdn/"+tt.wantKey, nil)
+				fileRepository.On("UploadAttachment", tt.wantKey, tt.wantName, file).Once().Return("https://cdn/"+tt.wantKey, nil)
+			}
+			size := tt.size
+			if size == 0 {
+				size = 4
 			}
 			s := NewTicketServiceImpl(nil, nil, nil, nil, fileRepository, func() string { return "UUID" }, "https://cdn")
 
-			got, err := s.UploadAttachment(tt.filename, 4, file)
+			got, err := s.UploadAttachment(tt.filename, size, file)
 			if (err != nil) != tt.wantErr {
 				t.Fatalf("UploadAttachment() error = %v, wantErr %v", err, tt.wantErr)
 			}
@@ -135,7 +146,32 @@ func TestTicketServiceImpl_ValidateMessage(t *testing.T) {
 		},
 		{
 			name:    "Файл вне каталога вложений",
-			message: model.Message{Attachments: model.Attachments{{Url: "https://cdn/tickets/../images/x.png"}}},
+			message: model.Message{Attachments: model.Attachments{{Url: "https://cdn/tickets/../images/x.png", Name: "x.png", Size: 1}}},
+			wantErr: true,
+		},
+		{
+			name:    "Закодированный выход из каталога",
+			message: model.Message{Attachments: model.Attachments{{Url: "https://cdn/tickets/%2e%2e/images/x.png", Name: "x.png", Size: 1}}},
+			wantErr: true,
+		},
+		{
+			name:    "Расширение имени не совпадает с файлом",
+			message: model.Message{Attachments: model.Attachments{{Url: attachment.Url, Name: "a.pdf", Size: 1}}},
+			wantErr: true,
+		},
+		{
+			name:    "Пустое имя",
+			message: model.Message{Attachments: model.Attachments{{Url: attachment.Url, Name: " ", Size: 1}}},
+			wantErr: true,
+		},
+		{
+			name:    "Слишком длинное имя",
+			message: model.Message{Attachments: model.Attachments{{Url: attachment.Url, Name: strings.Repeat("я", 300) + ".png", Size: 1}}},
+			wantErr: true,
+		},
+		{
+			name:    "Некорректный размер",
+			message: model.Message{Attachments: model.Attachments{{Url: attachment.Url, Name: "a.png", Size: 0}}},
 			wantErr: true,
 		},
 		{

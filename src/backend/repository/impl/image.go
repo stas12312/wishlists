@@ -5,6 +5,7 @@ import (
 	"io"
 	"main/config"
 	"mime"
+	"net/url"
 	"path/filepath"
 	"strings"
 
@@ -45,14 +46,27 @@ type S3ImageRepository struct {
 }
 
 func (r *S3ImageRepository) Upload(filename string, file io.Reader) (string, error) {
+	return r.upload(filename, file, nil)
+}
+
+func (r *S3ImageRepository) UploadAttachment(filename string, name string, file io.Reader) (string, error) {
+	return r.upload(filename, file, aws.String("inline; filename*=UTF-8''"+url.PathEscape(name)))
+}
+
+func (r *S3ImageRepository) upload(filename string, file io.Reader, contentDisposition *string) (string, error) {
+	contentType := mime.TypeByExtension(filepath.Ext(filename))
+	if contentType == "" {
+		contentType = "application/octet-stream"
+	}
+
 	uploader := manager.NewUploader(r.Client)
 	_, err := uploader.Upload(context.TODO(), &s3.PutObjectInput{
-		Bucket:       aws.String(r.Bucket),
-		Key:          aws.String(filename),
-		Body:         file,
-		CacheControl: aws.String("max-age=15552000,immutable"),
-		ContentType:  aws.String(mime.TypeByExtension(filepath.Ext(filename))),
+		Bucket:             aws.String(r.Bucket),
+		Key:                aws.String(filename),
+		Body:               file,
+		CacheControl:       aws.String("max-age=15552000,immutable"),
+		ContentType:        aws.String(contentType),
+		ContentDisposition: contentDisposition,
 	})
 	return strings.Join([]string{r.Domain, filename}, "/"), err
-
 }
