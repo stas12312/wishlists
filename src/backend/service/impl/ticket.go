@@ -6,8 +6,19 @@ import (
 	"main/model"
 	"main/repository"
 	"main/service"
+	"regexp"
 	"strings"
 )
+
+var statusCommandRe = regexp.MustCompile(`(?m)^[ \t]*/status[ \t]+(\w+)[ \t]*\r?$`)
+
+var ticketStatuses = map[string]bool{
+	"open":         true,
+	"resolved":     true,
+	"closed":       true,
+	"waiting_info": true,
+	"waiting_fix":  true,
+}
 
 func NewTicketServiceImpl(
 	ticketRepository repository.TicketRepository,
@@ -104,6 +115,12 @@ func (t *TicketServiceImpl) AddMessageFromAdmin(userId int64, ticketId int64, me
 		return nil, err
 	}
 	content, status := splitMessage(message.Content)
+	if status != "" && !ticketStatuses[status] {
+		return nil, apperror.NewError(apperror.ValidateError, fmt.Sprintf("Неизвестный статус обращения: %s", status))
+	}
+	if content == "" {
+		return nil, apperror.NewError(apperror.ValidateError, "Сообщение не может быть пустым")
+	}
 	message.Content = content
 
 	if status != "" {
@@ -144,12 +161,15 @@ func (t *TicketServiceImpl) GetCounters(userId int64) (int, error) {
 	return t.ticketRepository.GetCounters(userId)
 }
 
+// splitMessage вырезает из сообщения команду смены статуса — отдельную строку вида "/status waiting_info".
+// Если команд несколько, применяется последняя.
 func splitMessage(content string) (string, string) {
-	parts := strings.Split(content, "//")
-	if len(parts) != 2 {
-		return parts[0], ""
+	matches := statusCommandRe.FindAllStringSubmatch(content, -1)
+	if len(matches) == 0 {
+		return strings.TrimSpace(content), ""
 	}
-	return parts[0], parts[1]
+	content = statusCommandRe.ReplaceAllString(content, "")
+	return strings.TrimSpace(content), matches[len(matches)-1][1]
 }
 
 func getChannelNameForTicket(ticketId int64) string {
