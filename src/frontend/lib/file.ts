@@ -1,7 +1,7 @@
 export const FILE_SIZE_LIMIT = 5 * 1024 * 1024; // 5 МБ
 
 export function isValidFile(file: File, acceptedFormats: string[]): boolean {
-  const ext = getFileExt(file.name);
+  const ext = getFileExt(file.name).toLowerCase();
   return acceptedFormats.indexOf(ext) !== -1;
 }
 

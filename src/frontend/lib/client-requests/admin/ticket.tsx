@@ -2,7 +2,7 @@ import { clientAxios } from "../base";
 
 import { IError, INavigation, ListResponse } from "@/lib/models";
 import { IResponse } from "@/lib/models/response";
-import { IMessage, ITicket } from "@/lib/models/ticket";
+import { IAttachment, IMessage, ITicket } from "@/lib/models/ticket";
 
 export async function getTicketsForAdmin(
   navigation: INavigation,
@@ -35,11 +35,13 @@ export async function getTicketMessagesForAdmin(
 export async function addTicketMessageForAdmin(
   ticketId: number,
   content: string,
+  attachments: IAttachment[],
 ): Promise<IResponse<IMessage> | IError> {
   const response = await clientAxios.post(
     `/admin/tickets/${ticketId}/conversation`,
     {
       content: content,
+      attachments: attachments,
     },
   );
   return response.data;

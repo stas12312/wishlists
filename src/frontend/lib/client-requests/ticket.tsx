@@ -1,6 +1,7 @@
 import { IError, INavigation, ListResponse } from "../models";
 import { IResponse } from "../models/response";
 import {
+  IAttachment,
   IMessage,
   ITicket,
   ITicketCategory,
@@ -48,10 +49,21 @@ export async function getTicketMessages(ticketId: number): Promise<IMessage[]> {
 export async function addTicketMessage(
   ticketId: number,
   content: string,
+  attachments: IAttachment[],
 ): Promise<IResponse<IMessage> | IError> {
   const response = await clientAxios.post(`/tickets/${ticketId}/conversation`, {
     content: content,
+    attachments: attachments,
   });
+  return response.data;
+}
+
+export async function uploadTicketAttachment(
+  file: File,
+): Promise<IResponse<IAttachment> | IError> {
+  const form = new FormData();
+  form.append("file", file);
+  const response = await clientAxios.post("/tickets/attachments", form);
   return response.data;
 }
 

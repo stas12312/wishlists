@@ -20,6 +20,9 @@ export const MessageForm = ({
   onSend,
   value,
   onValueChange,
+  allowEmpty = false,
+  isSendDisabled = false,
+  isCompact = false,
 }: {
   minLength?: number;
   maxLength?: number;
@@ -29,6 +32,9 @@ export const MessageForm = ({
   onSend: { (message: string): void };
   value?: string;
   onValueChange?: { (message: string): void };
+  allowEmpty?: boolean;
+  isSendDisabled?: boolean;
+  isCompact?: boolean;
 }) => {
   const [innerMessage, setInnerMessage] = useState("");
   const message = value ?? innerMessage;
@@ -39,14 +45,17 @@ export const MessageForm = ({
       className="mt-auto"
       onSubmit={(e) => {
         e.preventDefault();
+        if (isSendDisabled) {
+          return;
+        }
         onSend(message);
         setMessage("");
       }}
     >
       <TextField
         fullWidth
-        isRequired
         aria-label="Сообщение"
+        isRequired={!allowEmpty}
         value={message}
         variant="secondary"
         onChange={(value) => setMessage(value)}
@@ -56,19 +65,34 @@ export const MessageForm = ({
           }
         }}
       >
-        <InputGroup className="flex flex-col shadow-md rounded-3xl">
+        <InputGroup
+          className={twMerge(
+            "flex flex-col shadow-md rounded-3xl",
+            isCompact && "flex-row items-end",
+          )}
+        >
           <InputGroup.TextArea
-            className="w-full  resize-none"
+            className={twMerge(
+              "w-full  resize-none",
+              isCompact && "field-sizing-content max-h-40 min-h-12 py-3 pl-4",
+            )}
             maxLength={maxLength}
-            minLength={minLength}
+            minLength={allowEmpty ? 0 : minLength}
             placeholder={placeholder}
             rows={rows}
           />
-          <InputGroup.Suffix className="flex w-full py-2">
+          <InputGroup.Suffix
+            className={twMerge(
+              "flex w-full py-2",
+              isCompact && "w-auto self-end py-1.5 pl-0 pr-1.5",
+            )}
+          >
             <p
               className={twMerge(
                 "mt-auto",
-                message.length >= maxLength || message.length < minLength
+                isCompact && "hidden",
+                message.length >= maxLength ||
+                  (!allowEmpty && message.length < minLength)
                   ? "text-danger"
                   : undefined,
                 !message.length ? "invisible" : "visible",
@@ -78,12 +102,13 @@ export const MessageForm = ({
             </p>
             <div className="ml-auto flex gap-2 h-9">
               {footer}
-              {message.length > 0 ? (
+              {message.length > 0 || allowEmpty ? (
                 <Tooltip closeDelay={0} delay={0}>
                   <Button
                     ref={submitRef}
                     isIconOnly
                     className="w-12"
+                    isDisabled={isSendDisabled}
                     type="submit"
                     variant="primary"
                   >
