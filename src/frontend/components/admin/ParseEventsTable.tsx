@@ -1,9 +1,9 @@
 "use client";
-import { Link, Table, Tabs } from "@heroui/react";
+import { Link, Popover, Table, Tabs } from "@heroui/react";
 import { useState } from "react";
-import { MdOutlineScreenshotMonitor } from "react-icons/md";
+import { MdOutlineBugReport, MdOutlineScreenshotMonitor } from "react-icons/md";
 
-import { ParseScreenshotModal } from "./ParseScreenshotModal";
+import { ParseErrorModal } from "./ParseErrorModal";
 import {
   ChipColor,
   EmptyState,
@@ -28,6 +28,14 @@ const OUTCOMES: Record<ParseOutcome, [string, ChipColor]> = {
 
 const ALL_OUTCOMES = "ALL";
 
+// Полный адрес с логином показывается в подсказке, чтобы не расширять таблицу
+const proxyLabel = (event: ParseEvent) => {
+  if (event.proxy_id) {
+    return event.proxy_id;
+  }
+  return event.proxy ? "PROXY_URL" : "—";
+};
+
 export const ParseEventsTable = ({
   events,
   outcome,
@@ -40,8 +48,8 @@ export const ParseEventsTable = ({
   onChangeOutcome: (outcome?: ParseOutcome) => void;
 }) => {
   // Событие остаётся после закрытия, чтобы окно не пустело на время анимации
-  const [screenshotEvent, setScreenshotEvent] = useState<ParseEvent>();
-  const [isScreenshotOpen, setIsScreenshotOpen] = useState(false);
+  const [errorEvent, setErrorEvent] = useState<ParseEvent>();
+  const [isErrorOpen, setIsErrorOpen] = useState(false);
 
   return (
     <>
@@ -79,6 +87,7 @@ export const ParseEventsTable = ({
                 <Table.Column>Парсинг</Table.Column>
                 <Table.Column>Всего</Table.Column>
                 <Table.Column>Ссылка</Table.Column>
+                <Table.Column>Прокси</Table.Column>
                 <Table.Column>Ошибка</Table.Column>
               </Table.Header>
               <Table.Body
@@ -109,17 +118,49 @@ export const ParseEventsTable = ({
                         {item.url}
                       </Link>
                     </Table.Cell>
+                    <Table.Cell className="whitespace-nowrap">
+                      {item.proxy ? (
+                        <Popover>
+                          <Popover.Trigger
+                            aria-label="Адрес прокси"
+                            className="cursor-pointer underline decoration-dotted underline-offset-4"
+                          >
+                            <span
+                              className={
+                                item.proxy_id ? "font-mono" : undefined
+                              }
+                            >
+                              {proxyLabel(item)}
+                            </span>
+                          </Popover.Trigger>
+                          <Popover.Content className="max-w-md">
+                            <Popover.Dialog>
+                              <Popover.Arrow />
+                              <p className="break-all font-mono text-sm select-all">
+                                {item.proxy}
+                              </p>
+                            </Popover.Dialog>
+                          </Popover.Content>
+                        </Popover>
+                      ) : (
+                        proxyLabel(item)
+                      )}
+                    </Table.Cell>
                     <Table.Cell className="max-w-80 break-words">
-                      {item.has_screenshot ? (
+                      {item.has_screenshot || item.has_traceback ? (
                         <Link
                           className="inline cursor-pointer text-left"
                           onPress={() => {
-                            setScreenshotEvent(item);
-                            setIsScreenshotOpen(true);
+                            setErrorEvent(item);
+                            setIsErrorOpen(true);
                           }}
                         >
-                          <MdOutlineScreenshotMonitor className="mr-1 inline-block h-[1.1em] w-[1.1em] align-[-0.2em]" />
-                          {item.error ?? "Скриншот страницы"}
+                          {item.has_screenshot ? (
+                            <MdOutlineScreenshotMonitor className="mr-1 inline-block h-[1.1em] w-[1.1em] align-[-0.2em]" />
+                          ) : (
+                            <MdOutlineBugReport className="mr-1 inline-block h-[1.1em] w-[1.1em] align-[-0.2em]" />
+                          )}
+                          {item.error ?? "Подробности ошибки"}
                         </Link>
                       ) : (
                         (item.error ?? "—")
@@ -132,15 +173,10 @@ export const ParseEventsTable = ({
           </Table.ScrollContainer>
         </Table>
       </LoadingOverlay>
-      <ParseScreenshotModal
-        isOpen={isScreenshotOpen}
-        taskId={screenshotEvent?.task_id}
-        title={
-          screenshotEvent
-            ? `${screenshotEvent.shop}: ${screenshotEvent.url}`
-            : undefined
-        }
-        onClose={() => setIsScreenshotOpen(false)}
+      <ParseErrorModal
+        event={errorEvent}
+        isOpen={isErrorOpen}
+        onClose={() => setIsErrorOpen(false)}
       />
     </>
   );

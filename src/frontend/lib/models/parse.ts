@@ -117,7 +117,12 @@ export interface ParseEvent {
   queued_at?: string | null;
   // Секунд от прихода ссылки до итога: ожидание в очереди и парсинг
   total_duration?: number | null;
+  // null при прямом подключении и для CACHED; proxy_id null и для PROXY_URL из настроек
+  proxy_id?: string | null;
+  // Пароль сервис парсинга скрывает
+  proxy?: string | null;
   has_screenshot?: boolean;
+  has_traceback?: boolean;
 }
 
 export interface ParseEventsFilter {
