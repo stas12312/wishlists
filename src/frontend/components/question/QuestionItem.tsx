@@ -187,9 +187,10 @@ export const QuestionItem = observer(
         <>
           <Surface
             className={twMerge(
-              "rounded-3xl p-3 shadow-md bg-surface-secondary/50",
+              "rounded-3xl p-3 shadow-md bg-surface",
               needsRead && "ring-2 ring-accent",
               needsAnswer && "ring-2 ring-warning",
+              !needsRead && !needsAnswer && "ring-1 ring-gray-500/30",
             )}
           >
             {question.wish?.uuid ? (
@@ -221,7 +222,7 @@ export const QuestionItem = observer(
 
     return (
       <>
-        <Surface className="rounded-3xl p-2 flex flex-col gap-2 shadow-md bg-surface-secondary/50">
+        <Surface className="rounded-3xl p-2 flex flex-col gap-2 shadow-md bg-surface ring-1 ring-gray-500/30">
           <div className="flex flex-col w-full gap-2 h-full my-auto">
             <QuestionContent
               content={question.content}
@@ -320,7 +321,9 @@ const QuestionLine = ({
       <div
         className={twMerge(
           "flex flex-col min-w-60 rounded-3xl px-4 py-2",
-          isMine ? "bg-accent text-accent-foreground" : "bg-default/60",
+          isMine
+            ? "bg-accent text-accent-foreground"
+            : "bg-default/60",
         )}
       >
         <p className="whitespace-pre-wrap break-words">{content}</p>
