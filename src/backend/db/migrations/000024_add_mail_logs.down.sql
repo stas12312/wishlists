@@ -1,0 +1,5 @@
+DROP INDEX IF EXISTS idx_mail_logs_status_id;
+
+DROP TABLE IF EXISTS mail_logs;
+
+DROP TYPE IF EXISTS MAIL_STATUS_ENUM;
