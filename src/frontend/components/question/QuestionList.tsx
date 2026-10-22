@@ -1,6 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { Alert } from "@heroui/react";
+import { twMerge } from "tailwind-merge";
 
 import { AnimatedList } from "../animated-list/AnimatedList";
 import { InfinityLoader } from "../InfinityLoader";
@@ -87,6 +88,26 @@ export const QuestionList = observer(
       return withTitle ? null : <PageSpinner />;
     }
 
+    const items = questions.map((item) => (
+      <QuestionItem
+        key={item.id}
+        isWithWish={isWithWish}
+        question={item}
+        onDeleteQuestion={(questionId) => {
+          setQuestions((prev) =>
+            prev.filter((question) => question.id != questionId),
+          );
+        }}
+        onUpdateQuestion={(updated) => {
+          setQuestions((prev) =>
+            prev.map((question) =>
+              question.id == updated.id ? updated : question,
+            ),
+          );
+        }}
+      />
+    ));
+
     return (
       <>
         <div>
@@ -125,25 +146,12 @@ export const QuestionList = observer(
           ) : (
             <InfinityLoader hasMore={hasMore} onLoad={fetchData}>
               <AnimatedList
-                className="flex flex-col gap-2"
-                items={questions.map((item, i) => (
-                  <QuestionItem
-                    key={item.id}
-                    isWithWish={isWithWish}
-                    question={item}
-                    onDeleteQuestion={(questionId) => {
-                      setQuestions(
-                        questions.filter(
-                          (question) => question.id != questionId,
-                        ),
-                      );
-                    }}
-                    onUpdateQuestion={(question) => {
-                      questions[i] = question;
-                      setQuestions([...questions]);
-                    }}
-                  />
-                ))}
+                className={twMerge(
+                  "flex flex-col gap-2",
+                  isWithWish ? "mt-4" : null,
+                )}
+                items={items}
+                layout="position"
                 withGrid={false}
               />
             </InfinityLoader>

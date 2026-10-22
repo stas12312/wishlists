@@ -19,12 +19,14 @@ const WishFullCard = observer(
     handeAction,
     wish,
     withUser = false,
+    withQuestions = true,
   }: {
     isOpen: boolean;
     onOpenChange: { (): void };
     handeAction: { (action: string): void };
     wish: IWish;
     withUser?: boolean;
+    withQuestions?: boolean;
   }) => {
     const menuItems = getMenuItemsByActions(wish.actions);
     return (
@@ -82,7 +84,7 @@ const WishFullCard = observer(
                   </Button>
                 ))}
               </div>
-              {wish.uuid ? (
+              {withQuestions && wish.uuid ? (
                 <QuestionList
                   withTitle
                   wishUUID={wish.uuid}

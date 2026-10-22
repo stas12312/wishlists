@@ -14,17 +14,17 @@ export const QuestionPage = observer(() => {
     <div className="flex flex-col">
       <PageHeader title="Вопросы" />
       <Tabs className="mx-auto w-full">
-        <Tabs.ListContainer className="flex justify-center">
-          <Tabs.List className="w-100">
+        <Tabs.ListContainer className="w-fit mx-auto">
+          <Tabs.List className="w-80">
             <Tabs.Tab id="asked-questions">
-              <span className="flex gap-2">
+              <span className="flex gap-2 whitespace-nowrap">
                 <p>Мои</p>
                 <Counter value={countersStore.questionCounters.answered} />
               </span>
               <Tabs.Indicator />
             </Tabs.Tab>
             <Tabs.Tab id="for-me-questions">
-              <span className="flex gap-2">
+              <span className="flex gap-2 whitespace-nowrap">
                 <p>Задали мне</p>
                 <Counter value={countersStore.questionCounters.waiting} />
               </span>

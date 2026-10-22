@@ -11,11 +11,13 @@ export const AnimatedList = observer(
     gridConfig = "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5",
     className,
     withGrid = true,
+    layout = true,
   }: {
     items: Array<ReactElement | null>;
     gridConfig?: string;
     className?: string;
     withGrid?: boolean;
+    layout?: boolean | "position";
   }) => {
     return (
       <motion.div
@@ -36,7 +38,6 @@ export const AnimatedList = observer(
             return (
               <motion.div
                 key={item.key}
-                layout
                 animate={{
                   opacity: 1,
                   transform: "translateY(0px)",
@@ -47,6 +48,7 @@ export const AnimatedList = observer(
                   transform: "translateY(-20px)",
                   transition: { duration: 0.1 },
                 }}
+                layout={layout}
                 variants={itemVariants}
               >
                 {item}
