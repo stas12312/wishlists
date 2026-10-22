@@ -77,6 +77,18 @@ export interface ParseProxy {
   added_at: string;
   active: boolean;
   stats: Partial<Record<ParseOutcome, number>>;
+  // null — прокси не проверялся
+  working: boolean | null;
+  check: ParseProxyCheck | null;
+}
+
+export interface ParseProxyCheck {
+  ok: boolean;
+  checked_at: string;
+  latency_ms: number | null;
+  // Внешний IP, который видит сервис проверки
+  ip: string | null;
+  error: string | null;
 }
 
 export interface ParseProxies {
