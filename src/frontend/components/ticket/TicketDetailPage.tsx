@@ -10,7 +10,7 @@ import { MessageForm } from "../MessageForm";
 import PageHeader from "../PageHeader";
 import { PageSpinner } from "../PageSpinner";
 
-import { TicketItem } from "./TicketCard";
+import { getStatus, TicketItem } from "./TicketCard";
 
 import { closeTicket } from "@/lib/client-requests/ticket";
 import { IError } from "@/lib/models";
@@ -30,6 +30,32 @@ const STATUS_COMMANDS: { status: TicketStatus; title: string }[] = [
 ];
 
 const STATUS_COMMAND_RE = /^[ \t]*\/status[ \t]+\w+[ \t]*$/gm;
+
+const STATUS_BUTTON_CLASSES: Record<
+  ReturnType<typeof getStatus>[1] & string,
+  { idle: string; active: string }
+> = {
+  accent: {
+    idle: "bg-accent/15 text-accent hover:bg-accent/25",
+    active: "bg-accent text-accent-foreground",
+  },
+  success: {
+    idle: "bg-success/15 text-success hover:bg-success/25",
+    active: "bg-success text-success-foreground",
+  },
+  warning: {
+    idle: "bg-warning/15 text-warning hover:bg-warning/25",
+    active: "bg-warning text-warning-foreground",
+  },
+  danger: {
+    idle: "bg-danger/15 text-danger hover:bg-danger/25",
+    active: "bg-danger text-danger-foreground",
+  },
+  default: {
+    idle: "bg-default text-foreground hover:bg-default-hover",
+    active: "bg-foreground text-background",
+  },
+};
 
 function setStatusCommand(message: string, status: TicketStatus): string {
   const text = message.replace(STATUS_COMMAND_RE, "").trimEnd();
@@ -187,10 +213,12 @@ export const TicketDetailPage = ({
                   {STATUS_COMMANDS.map(({ status, title }) => (
                     <Button
                       key={status}
-                      size="sm"
-                      variant={
-                        ticket.status == status ? "tertiary" : "secondary"
+                      className={
+                        STATUS_BUTTON_CLASSES[
+                          getStatus(status)[1] ?? "default"
+                        ][ticket.status == status ? "active" : "idle"]
                       }
+                      size="sm"
                       onPress={() =>
                         setDraft((value) => setStatusCommand(value, status))
                       }

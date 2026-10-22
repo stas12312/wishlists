@@ -73,7 +73,7 @@ export const TicketItem = ({
   );
 };
 
-function getStatus(
+export function getStatus(
   status: string,
 ): [
   string,
