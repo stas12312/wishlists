@@ -75,13 +75,19 @@ export function useTicketAttachments() {
     });
   }
 
-  function clear() {
-    items.forEach((item) => {
-      if (item.previewUrl) {
-        URL.revokeObjectURL(item.previewUrl);
-      }
-    });
-    setItems([]);
+  // Убирает только отправленные вложения: пока шёл запрос, пользователь мог прикрепить новые
+  function clearSent(sent: IAttachment[]) {
+    setItems((items) =>
+      items.filter((item) => {
+        if (!item.attachment || !sent.includes(item.attachment)) {
+          return true;
+        }
+        if (item.previewUrl) {
+          URL.revokeObjectURL(item.previewUrl);
+        }
+        return false;
+      }),
+    );
   }
 
   function add(files: File[]) {
@@ -118,7 +124,7 @@ export function useTicketAttachments() {
     isUploading: items.some((item) => !item.attachment),
     add,
     remove,
-    clear,
+    clearSent,
   };
 }
 
@@ -182,6 +188,8 @@ const AttachmentThumbnail = ({
         <img
           alt={name}
           className="h-full w-full object-cover"
+          decoding="async"
+          loading="lazy"
           src={previewUrl}
         />
       ) : (
@@ -254,9 +262,9 @@ export const MessageAttachments = ({
   }
   return (
     <div className={twMerge("flex flex-col gap-1", className)}>
-      {attachments.map((attachment) => (
+      {attachments.map((attachment, index) => (
         <a
-          key={attachment.url}
+          key={`${index}-${attachment.url}`}
           className="flex items-center gap-3 rounded-3xl bg-default/50 p-1 pr-4 hover:bg-default"
           href={attachment.url}
           rel="noopener noreferrer"

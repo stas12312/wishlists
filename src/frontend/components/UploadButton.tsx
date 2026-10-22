@@ -10,28 +10,39 @@ const UploadButton = ({
   className,
   accept,
   handleFile,
+  handleFiles,
   isLoading = false,
   title = "загрузить",
 }: {
   previewUrl?: string | undefined;
   className: string;
   accept: string[];
-  handleFile: { (file: File): void };
+  handleFile?: { (file: File): void };
+  handleFiles?: { (files: File[]): void };
   isLoading?: boolean;
   title?: string;
 }) => {
   const [isOver, setIsOver] = useState(false);
 
-  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    if (e.target.files?.length) {
-      await handleFile(e.target.files[0]);
+  async function processFiles(files: FileList | null) {
+    if (!files?.length) {
+      return;
     }
+    if (handleFiles) {
+      handleFiles(Array.from(files));
+    } else {
+      await handleFile?.(files[0]);
+    }
+  }
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    await processFiles(e.target.files);
   }
 
   function onDrop(e: React.DragEvent<HTMLLabelElement>) {
     e.preventDefault();
     e.stopPropagation();
-    handleFile(e.dataTransfer.files[0]);
+    processFiles(e.dataTransfer.files);
     setIsOver(false);
   }
 
@@ -109,6 +120,7 @@ const UploadButton = ({
               .join(",")}
             className="hidden"
             id={id}
+            multiple={!!handleFiles}
             type="file"
             onChange={(e) => {
               handleFileChange(e);

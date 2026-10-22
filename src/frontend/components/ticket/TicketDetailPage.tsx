@@ -143,10 +143,11 @@ export const TicketDetailPage = ({
   }, []);
 
   async function createMessage(message: string) {
+    const sentAttachments = attachments.attachments;
     const result = await addTicketMessageFunc(
       ticketId,
       message,
-      attachments.attachments,
+      sentAttachments,
     );
     if ("message" in result) {
       toast.danger(`Произошла ошибка при отправке сообщения`, {
@@ -154,7 +155,7 @@ export const TicketDetailPage = ({
       });
     } else {
       setMessages([...messages, result.data]);
-      attachments.clear();
+      attachments.clearSent(sentAttachments);
     }
   }
 
