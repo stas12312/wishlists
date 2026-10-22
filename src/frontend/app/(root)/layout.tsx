@@ -6,6 +6,7 @@ import { Contacts } from "@/components/Contacts";
 import { Header } from "@/components/Header";
 import Menu from "@/components/Menu";
 import { SupportButton } from "@/components/SupportButton";
+import { SupportLink } from "@/components/SupportLink";
 import Version from "@/components/Version";
 import { LeftPanel } from "@/components/left-panel/LeftPanel";
 export default async function Layout({
@@ -26,6 +27,7 @@ export default async function Layout({
               <Menu variant="desktop" />
               <footer className="my-2 w-full px-2 flex flex-col justify-center items-center gap-2">
                 <SupportButton className="mt-4 w-full" />
+                <SupportLink className="w-full" />
                 <Contacts />
                 <Version />
               </footer>
@@ -38,8 +40,9 @@ export default async function Layout({
       </div>
       <span className={clsx(isLogin ? "md:hidden mb-30 md:mb-0" : "")}>
         {isLogin ? (
-          <div className="mx-3">
-            <SupportButton className="mt-2 w-full md:mx-0" />
+          <div className="mx-3 mt-2 flex flex-col gap-2">
+            <SupportButton className="w-full md:mx-0" />
+            <SupportLink className="w-full" />
           </div>
         ) : null}
 
