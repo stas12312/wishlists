@@ -31,7 +31,8 @@ func main() {
 		JSONEncoder:  json.Marshal,
 		JSONDecoder:  json.Unmarshal,
 		ErrorHandler: apperror.AppErrorHandler,
-		BodyLimit:    5 * 1024 * 1024,
+		// Запас сверх лимита файла в 5 МБ на служебные данные multipart
+		BodyLimit: 6 * 1024 * 1024,
 	})
 
 	appConfig := config.NewConfig()
