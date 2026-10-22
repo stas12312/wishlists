@@ -6,7 +6,7 @@ export const SupportButton = ({ className = "" }: { className?: string }) => {
     <a
       className={buttonVariants({
         variant: "primary",
-        className: `bg-linear-to-r dark:from-amber-800 dark:to-amber-700 from-amber-400 to-amber-300 shadow-sm ${className}`,
+        className: `bg-linear-to-r dark:from-amber-800 dark:to-amber-700 from-amber-400 to-amber-300 text-amber-950 dark:text-amber-50 shadow-sm ${className}`,
       })}
       href={process.env.NEXT_PUBLIC_DONATE_URL}
       rel="noopener noreferrer"

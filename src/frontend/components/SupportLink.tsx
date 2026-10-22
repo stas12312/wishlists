@@ -11,7 +11,10 @@ export const SupportLink = observer(
   ({ className = "" }: { className?: string }) => {
     return (
       <NextLink
-        className={buttonVariants({ variant: "secondary", className })}
+        className={buttonVariants({
+          variant: "secondary",
+          className: `text-foreground dark:text-accent-soft-foreground ${className}`,
+        })}
         href="/tickets"
       >
         <MdSupportAgent />
