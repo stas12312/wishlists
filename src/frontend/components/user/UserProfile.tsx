@@ -50,6 +50,7 @@ export const UserItem = observer(() => {
             <UserAvatar
               className="cursor-pointer"
               description={user.email}
+              hasBadge={!!countersStore.ticketCounters}
               image={user.image}
               name={user.name}
               size="md"
