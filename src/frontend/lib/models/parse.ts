@@ -123,6 +123,8 @@ export interface ParseEvent {
   proxy?: string | null;
   has_screenshot?: boolean;
   has_traceback?: boolean;
+  // Тело ответа API, на котором упал разбор (гибридные парсеры)
+  has_response?: boolean;
 }
 
 export interface ParseEventsFilter {

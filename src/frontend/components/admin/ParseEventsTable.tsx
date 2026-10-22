@@ -1,7 +1,11 @@
 "use client";
 import { Link, Popover, Table, Tabs } from "@heroui/react";
 import { useState } from "react";
-import { MdOutlineBugReport, MdOutlineScreenshotMonitor } from "react-icons/md";
+import {
+  MdOutlineBugReport,
+  MdOutlineDataObject,
+  MdOutlineScreenshotMonitor,
+} from "react-icons/md";
 
 import { ParseErrorModal } from "./ParseErrorModal";
 import {
@@ -147,7 +151,9 @@ export const ParseEventsTable = ({
                       )}
                     </Table.Cell>
                     <Table.Cell className="max-w-80 break-words">
-                      {item.has_screenshot || item.has_traceback ? (
+                      {item.has_screenshot ||
+                      item.has_response ||
+                      item.has_traceback ? (
                         <Link
                           className="inline cursor-pointer text-left"
                           onPress={() => {
@@ -157,6 +163,8 @@ export const ParseEventsTable = ({
                         >
                           {item.has_screenshot ? (
                             <MdOutlineScreenshotMonitor className="mr-1 inline-block h-[1.1em] w-[1.1em] align-[-0.2em]" />
+                          ) : item.has_response ? (
+                            <MdOutlineDataObject className="mr-1 inline-block h-[1.1em] w-[1.1em] align-[-0.2em]" />
                           ) : (
                             <MdOutlineBugReport className="mr-1 inline-block h-[1.1em] w-[1.1em] align-[-0.2em]" />
                           )}
