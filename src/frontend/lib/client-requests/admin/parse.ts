@@ -75,10 +75,15 @@ async function proxyAction(
   );
 }
 
-export const addParseProxy = (url: string) => proxyAction("post", "", { url });
+// Сервис парсинга перед добавлением проверяет прокси запросом через него
+export const addParseProxy = (url: string, check = true) =>
+  proxyAction("post", check ? "" : "?check=false", { url });
 
 export const activateParseProxy = (id: string) =>
   proxyAction("post", `/${encodeURIComponent(id)}/activate`);
+
+export const checkParseProxy = (id: string) =>
+  proxyAction("post", `/${encodeURIComponent(id)}/check`);
 
 export const rotateParseProxy = () => proxyAction("post", "/rotate");
 
