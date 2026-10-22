@@ -252,6 +252,11 @@ func (c *AdminController) ActivateParseProxy(ctx *fiber.Ctx) error {
 	return proxyToParseService(ctx, c.config.ParseServiceUrl, fmt.Sprintf("/proxies/%s/activate", proxyId))
 }
 
+func (c *AdminController) CheckParseProxy(ctx *fiber.Ctx) error {
+	proxyId := url.PathEscape(ctx.Params("proxy_id"))
+	return proxyToParseService(ctx, c.config.ParseServiceUrl, fmt.Sprintf("/proxies/%s/check", proxyId))
+}
+
 func (c *AdminController) DeleteParseProxy(ctx *fiber.Ctx) error {
 	proxyId := url.PathEscape(ctx.Params("proxy_id"))
 	return proxyToParseService(ctx, c.config.ParseServiceUrl, fmt.Sprintf("/proxies/%s", proxyId))
@@ -292,6 +297,7 @@ func (c *AdminController) Route(router fiber.Router) {
 	parseGroup.Post("/proxies", c.AddParseProxy)
 	parseGroup.Post("/proxies/rotate", c.RotateParseProxy)
 	parseGroup.Post("/proxies/:proxy_id/activate", c.ActivateParseProxy)
+	parseGroup.Post("/proxies/:proxy_id/check", c.CheckParseProxy)
 	parseGroup.Delete("/proxies/:proxy_id", c.DeleteParseProxy)
 
 }
