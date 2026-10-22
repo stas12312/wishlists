@@ -55,7 +55,9 @@ func main() {
 	websocketController := controller.NewWebSocketController(websocketService)
 
 	codeRepository := repository.NewConfirmCodeRedis(redisClient, 60*time.Minute)
-	mailClient := impl.NewSMPTClient(&appConfig.SMTP)
+	mailLogRepository := repository.NewMailLogRepositoryPostgres(db)
+	mailLogService := service.NewMailLogService(mailLogRepository)
+	mailClient := impl.NewLoggingClient(impl.NewSMPTClient(&appConfig.SMTP), mailLogRepository)
 	userService := service.NewUserService(uof, codeRepository, mailClient, appConfig, oAuthManager)
 	userController := controller.NewUserController(&userService, appConfig)
 
@@ -105,7 +107,7 @@ func main() {
 	)
 	ticketController := controller.NewTicketController(ticketService)
 
-	adminController := controller.NewAdminController(userService, articleService, ticketService, appConfig)
+	adminController := controller.NewAdminController(userService, articleService, ticketService, mailLogService, appConfig)
 	articleController := controller.NewArticleController(articleService)
 
 	api := app.Group("/api")

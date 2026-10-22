@@ -14,14 +14,15 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func NewAdminController(userService service.UserService, articleService service.ArticleService, ticketService service.TicketService, config *config.Config) *AdminController {
-	return &AdminController{userService: userService, articleService: articleService, ticketService: ticketService, config: config}
+func NewAdminController(userService service.UserService, articleService service.ArticleService, ticketService service.TicketService, mailLogService service.MailLogService, config *config.Config) *AdminController {
+	return &AdminController{userService: userService, articleService: articleService, ticketService: ticketService, mailLogService: mailLogService, config: config}
 }
 
 type AdminController struct {
 	userService    service.UserService
 	articleService service.ArticleService
 	ticketService  service.TicketService
+	mailLogService service.MailLogService
 	config         *config.Config
 }
 
@@ -214,6 +215,62 @@ func (c *AdminController) AddTicketMessage(ctx *fiber.Ctx) error {
 	return ctx.JSON(model.Response{Data: messages})
 }
 
+func (c *AdminController) ListMailLogs(ctx *fiber.Ctx) error {
+	navigation := model.Navigation{}
+	filters := model.MailLogFilters{}
+
+	if err := ctx.QueryParser(&navigation); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{Message: "Некорректная навигация", Details: err.Error()})
+	}
+	if err := ctx.QueryParser(&filters); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{Message: "Некорректные фильтры", Details: err.Error()})
+	}
+
+	switch filters.Status {
+	case "", model.MailStatusPending, model.MailStatusSent, model.MailStatusFailed:
+	default:
+		return ctx.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{Message: "Некорректный статус"})
+	}
+
+	if navigation.Count < 1 || navigation.Count > 50 {
+		navigation.Count = 50
+	}
+	if len(navigation.Cursor) < 1 {
+		navigation.Cursor = []string{""}
+	}
+	if _, err := strconv.ParseInt(navigation.Cursor[0], 10, 64); navigation.Cursor[0] != "" && err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{Message: "Некорректная навигация", Details: err.Error()})
+	}
+
+	mailLogs, err := c.mailLogService.List(filters, navigation)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{Message: err.Error()})
+	}
+
+	if len(mailLogs) > 0 {
+		navigation.Cursor = []string{strconv.FormatInt(mailLogs[len(mailLogs)-1].Id, 10)}
+	}
+
+	return ctx.JSON(model.Response{Data: mailLogs, Navigation: navigation})
+}
+
+func (c *AdminController) GetMailLog(ctx *fiber.Ctx) error {
+	id, _ := strconv.ParseInt(ctx.Params("id"), 10, 64)
+	mailLog, err := c.mailLogService.Get(id)
+	if err != nil {
+		return ctx.Status(fiber.StatusNotFound).JSON(model.ErrorResponse{Message: "Письмо не найдено"})
+	}
+	return ctx.JSON(model.Response{Data: mailLog})
+}
+
+func (c *AdminController) ClearMailBodies(ctx *fiber.Ctx) error {
+	cleared, err := c.mailLogService.ClearOldBodies()
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{Message: err.Error()})
+	}
+	return ctx.JSON(model.Response{Data: fiber.Map{"cleared": cleared}})
+}
+
 func (c *AdminController) GetParseStatus(ctx *fiber.Ctx) error {
 	return proxyToParseService(ctx, c.config.ParseServiceUrl, "/status")
 }
@@ -291,6 +348,11 @@ func (c *AdminController) Route(router fiber.Router) {
 	categoriesGroup := ticketsGroup.Group("/categories")
 	categoriesGroup.Post("/", c.CreateCategory)
 	categoriesGroup.Get("/", c.ListCategories)
+
+	mailsGroup := adminGroup.Group("/mails", middleware.ForAdmin(c.userService))
+	mailsGroup.Get("/", c.ListMailLogs)
+	mailsGroup.Post("/clear", c.ClearMailBodies)
+	mailsGroup.Get("/:id", c.GetMailLog)
 
 	parseGroup := adminGroup.Group("/parse", middleware.ForAdmin(c.userService))
 	parseGroup.Get("/status", c.GetParseStatus)
