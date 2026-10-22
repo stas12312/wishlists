@@ -13,12 +13,22 @@ import {
 import { Key, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import UploadButton from "../UploadButton";
+
+import {
+  ATTACHMENT_FORMATS,
+  MAX_ATTACHMENTS_COUNT,
+  PendingAttachments,
+  useTicketAttachments,
+} from "./TicketAttachments";
+
 import {
   createTicket,
   getTicketCategories,
 } from "@/lib/client-requests/ticket";
 import { ITicketCategory, ITicketCreate } from "@/lib/models/ticket";
 import { hexToRgba } from "@/lib/color";
+import { FILE_SIZE_LIMIT, readableBytes } from "@/lib/file";
 
 export const CreateTicketForm = () => {
   const [categories, setCategories] = useState<ITicketCategory[]>([]);
@@ -26,7 +36,9 @@ export const CreateTicketForm = () => {
     subject: "",
     category_id: 0,
     content: "",
+    attachments: [],
   });
+  const attachments = useTicketAttachments();
 
   const router = useRouter();
   useEffect(() => {
@@ -39,7 +51,7 @@ export const CreateTicketForm = () => {
   }, []);
 
   async function onSubmit() {
-    await createTicket(ticket);
+    await createTicket({ ...ticket, attachments: attachments.attachments });
     router.push("/tickets");
     toast.success("Обращение создано");
   }
@@ -88,7 +100,22 @@ export const CreateTicketForm = () => {
         </InputGroup>
         <FieldError />
       </TextField>
-      <Button fullWidth type="submit">
+      <div className="flex flex-col gap-1 w-full">
+        <p className="text-foreground font-medium">Файлы</p>
+        {attachments.items.length < MAX_ATTACHMENTS_COUNT ? (
+          <UploadButton
+            accept={ATTACHMENT_FORMATS}
+            className="h-16 w-full"
+            handleFile={(file) => attachments.add([file])}
+            title={`Перетащите файл сюда или нажмите для выбора файла (Не более ${readableBytes(FILE_SIZE_LIMIT, false)}, до ${MAX_ATTACHMENTS_COUNT} файлов)`}
+          />
+        ) : null}
+        <PendingAttachments
+          items={attachments.items}
+          onRemove={attachments.remove}
+        />
+      </div>
+      <Button fullWidth isDisabled={attachments.isUploading} type="submit">
         Создать
       </Button>
     </Form>

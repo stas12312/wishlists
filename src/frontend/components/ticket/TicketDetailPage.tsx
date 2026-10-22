@@ -10,12 +10,24 @@ import { MessageForm } from "../MessageForm";
 import PageHeader from "../PageHeader";
 import { PageSpinner } from "../PageSpinner";
 
+import {
+  AttachButton,
+  MAX_ATTACHMENTS_COUNT,
+  MessageAttachments,
+  PendingAttachments,
+  useTicketAttachments,
+} from "./TicketAttachments";
 import { getStatus, TicketItem } from "./TicketCard";
 
 import { closeTicket } from "@/lib/client-requests/ticket";
 import { IError } from "@/lib/models";
 import { IResponse } from "@/lib/models/response";
-import { IMessage, ITicket, TicketStatus } from "@/lib/models/ticket";
+import {
+  IAttachment,
+  IMessage,
+  ITicket,
+  TicketStatus,
+} from "@/lib/models/ticket";
 import { getWebsocketUrl, isEvent, WSEvent } from "@/lib/socket";
 import { prepareDateString } from "@/lib/date";
 
@@ -75,7 +87,11 @@ export const TicketDetailPage = ({
   getTicketFunc: { (ticketId: number): Promise<IResponse<ITicket> | IError> };
   getTicketMessageFunc: { (ticketId: number): Promise<IMessage[]> };
   addTicketMessageFunc: {
-    (ticketId: number, content: string): Promise<IResponse<IMessage> | IError>;
+    (
+      ticketId: number,
+      content: string,
+      attachments: IAttachment[],
+    ): Promise<IResponse<IMessage> | IError>;
   };
   withAuthor?: boolean;
   withStatusCommands?: boolean;
@@ -88,6 +104,7 @@ export const TicketDetailPage = ({
   const bottomRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isFirstScroll, setIsFirstScroll] = useState(true);
+  const attachments = useTicketAttachments();
 
   const { lastJsonMessage, sendJsonMessage } = useWebSocket(getWebsocketUrl, {
     share: true,
@@ -126,13 +143,18 @@ export const TicketDetailPage = ({
   }, []);
 
   async function createMessage(message: string) {
-    const result = await addTicketMessageFunc(ticketId, message);
+    const result = await addTicketMessageFunc(
+      ticketId,
+      message,
+      attachments.attachments,
+    );
     if ("message" in result) {
       toast.danger(`Произошла ошибка при отправке сообщения`, {
         description: result.message,
       });
     } else {
       setMessages([...messages, result.data]);
+      attachments.clear();
     }
   }
 
@@ -192,9 +214,15 @@ export const TicketDetailPage = ({
                     variant="secondary"
                   >
                     <div className="flex flex-col">
-                      <span className="px-4 pt-2 whitespace-pre-wrap wrap-break-word">
-                        {message.content}
-                      </span>
+                      {message.content ? (
+                        <span className="px-4 pt-2 whitespace-pre-wrap wrap-break-word">
+                          {message.content}
+                        </span>
+                      ) : null}
+                      <MessageAttachments
+                        attachments={message.attachments}
+                        className="px-4 pt-2"
+                      />
 
                       <Chip className="ml-auto mr-2" variant="tertiary">
                         {prepareDateString(message.created_at)}
@@ -230,11 +258,31 @@ export const TicketDetailPage = ({
               ) : null}
               <div className="mt-4">
                 <MessageForm
+                  isCompact
+                  allowEmpty={attachments.attachments.length > 0}
+                  footer={
+                    <AttachButton
+                      isDisabled={
+                        attachments.items.length >= MAX_ATTACHMENTS_COUNT
+                      }
+                      onSelect={attachments.add}
+                    />
+                  }
+                  isSendDisabled={attachments.isUploading}
                   maxLength={MESSAGE_MAX_LENGTH}
+                  rows={1}
                   value={draft}
                   onSend={createMessage}
                   onValueChange={setDraft}
                 />
+                {attachments.items.length ? (
+                  <div className="mt-2">
+                    <PendingAttachments
+                      items={attachments.items}
+                      onRemove={attachments.remove}
+                    />
+                  </div>
+                ) : null}
               </div>
             </div>
             <div className="w-full flex justify-end">

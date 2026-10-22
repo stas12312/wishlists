@@ -29,6 +29,13 @@ export interface ITicketCreate {
   subject: string;
   category_id: number;
   content: string;
+  attachments: IAttachment[];
+}
+
+export interface IAttachment {
+  url: string;
+  name: string;
+  size: number;
 }
 
 export interface IMessage {
@@ -36,4 +43,5 @@ export interface IMessage {
   content: string;
   created_at: string;
   sender_id: number;
+  attachments: IAttachment[];
 }
