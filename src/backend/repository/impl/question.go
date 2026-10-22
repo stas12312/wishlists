@@ -37,9 +37,12 @@ func (r *QuestionRepositoryPostgres) ListBy(wishUUID string, userId int64, autho
 			answer.answer_id AS "answer.answer_id"
 		FROM questions
 		LEFT JOIN answers AS answer USING (question_id)
-		WHERE 
+		JOIN wishes ON wishes.wish_uuid = questions.wish_uuid
+		WHERE
+		    wishes.is_active IS TRUE
+		  	AND
 		    CASE
-		        WHEN $1 != '' THEN wish_uuid = $1::uuid
+		        WHEN $1 != '' THEN questions.wish_uuid = $1::uuid
 		        WHEN $2 != 0 THEN questions.answered_id = $2
 		        WHEN $3 != 0 THEN questions.author_id = $3
 		        ELSE TRUE
@@ -75,15 +78,19 @@ func (r *QuestionRepositoryPostgres) Counters(userId int64) (int, int, error) {
 		SELECT (
 			SELECT COUNT(*)
 			FROM questions
-			WHERE 
+			JOIN wishes USING (wish_uuid)
+			WHERE
 			    answered_id = $1
+				AND wishes.is_active IS TRUE
 				AND status = 'open'
 		) AS waiting,
 		(
 		    SELECT COUNT(*)
 			FROM questions
-			WHERE 
+			JOIN wishes USING (wish_uuid)
+			WHERE
 			    author_id = $1
+				AND wishes.is_active IS TRUE
 				AND status = 'resolved'
 			    
 		) AS answered
