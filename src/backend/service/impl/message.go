@@ -17,12 +17,13 @@ func (m MessageServiceImpl) CreateConversation() (*model.Conversation, error) {
 	return m.repository.CreateConversation()
 }
 
-func (m MessageServiceImpl) CreateMessage(userId int64, conversationId int64, content string) (*model.Message, error) {
+func (m MessageServiceImpl) CreateMessage(userId int64, conversationId int64, content string, attachments model.Attachments) (*model.Message, error) {
 
 	message := &model.Message{
 		ConversationId: conversationId,
 		Content:        content,
 		SenderId:       userId,
+		Attachments:    attachments,
 	}
 
 	return m.repository.CreateMessage(message)

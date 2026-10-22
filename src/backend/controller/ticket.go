@@ -120,6 +120,27 @@ func (c *TicketController) AddMessage(ctx *fiber.Ctx) error {
 	return ctx.JSON(model.Response{Data: createdMessage})
 }
 
+func (c *TicketController) UploadAttachment(ctx *fiber.Ctx) error {
+	fileHeader, err := ctx.FormFile("file")
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Ошибка при загрузке файла", Details: err.Error()})
+	}
+
+	file, err := fileHeader.Open()
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(model.ErrorResponse{Message: "Ошибка при загрузке файла", Details: err.Error()})
+	}
+	defer file.Close()
+
+	attachment, err := c.ticketService.UploadAttachment(fileHeader.Filename, fileHeader.Size, file)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(model.Response{Data: attachment})
+}
+
 func (c *TicketController) Close(ctx *fiber.Ctx) error {
 	userId := GetUserIdFromCtx(ctx)
 	ticketId, _ := strconv.ParseInt(ctx.Params("id"), 10, 64)
@@ -154,6 +175,7 @@ func (c *TicketController) Route(router fiber.Router) {
 	group.Post("", c.Create)
 	group.Get("", c.List)
 	group.Get("/counters", c.Counters)
+	group.Post("/attachments", c.UploadAttachment)
 	group.Get("/:id", c.Get)
 	group.Post("/:id/close", c.Close)
 	group.Get("/:id/conversation", c.GetConversation)

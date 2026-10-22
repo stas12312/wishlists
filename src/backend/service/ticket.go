@@ -1,6 +1,9 @@
 package service
 
-import "main/model"
+import (
+	"io"
+	"main/model"
+)
 
 type TicketService interface {
 	Create(ticket *model.Ticket, message *model.Message) (*model.Ticket, error)
@@ -13,4 +16,5 @@ type TicketService interface {
 	AddMessageFromAdmin(userId int64, ticketId int64, message *model.Message) (*model.Message, error)
 	Close(userId int64, ticketId int64) error
 	GetCounters(userId int64) (int, error)
+	UploadAttachment(filename string, size int64, file io.Reader) (*model.Attachment, error)
 }

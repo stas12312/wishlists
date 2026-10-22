@@ -21,14 +21,14 @@ func (r *MessageRepositoryPostgres) CreateConversation() (*model.Conversation, e
 
 func (r *MessageRepositoryPostgres) CreateMessage(message *model.Message) (*model.Message, error) {
 	q := `
-	INSERT INTO messages (conversation_id, content, sender_id) 
-	VALUES ($1, $2, $3)
+	INSERT INTO messages (conversation_id, content, sender_id, attachments)
+	VALUES ($1, $2, $3, $4)
 	RETURNING *
 	`
 
 	createdMessage := &model.Message{}
 
-	return createdMessage, r.conn.Get(createdMessage, q, message.ConversationId, message.Content, message.SenderId)
+	return createdMessage, r.conn.Get(createdMessage, q, message.ConversationId, message.Content, message.SenderId, message.Attachments)
 }
 
 func (r *MessageRepositoryPostgres) ListMessages(conversationId int64) ([]model.Message, error) {
@@ -36,6 +36,7 @@ func (r *MessageRepositoryPostgres) ListMessages(conversationId int64) ([]model.
 	SELECT *
 	FROM messages
 	WHERE conversation_id = $1
+	ORDER BY message_id
 `
 	messages := []model.Message{}
 	return messages, r.conn.Select(&messages, q, conversationId)
