@@ -109,3 +109,13 @@ export async function getParseEventTraceback(
   );
   return response.status == 200 ? response.data : null;
 }
+
+export async function getParseEventResponse(
+  taskId: string,
+): Promise<string | null> {
+  const response = await clientAxios.get(
+    `/admin/parse/events/${encodeURIComponent(taskId)}/response`,
+    { ...acceptAnyStatus, responseType: "text" },
+  );
+  return response.status == 200 ? response.data : null;
+}

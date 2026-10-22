@@ -3,6 +3,7 @@ import { Modal, Spinner, Tabs } from "@heroui/react";
 import { ReactNode, useEffect, useState } from "react";
 
 import {
+  getParseEventResponse,
   getParseEventScreenshot,
   getParseEventTraceback,
 } from "@/lib/client-requests/admin/parse";
@@ -16,6 +17,20 @@ const loadScreenshotUrl = (taskId: string) =>
   );
 
 const revokeScreenshotUrl = (url: string) => URL.revokeObjectURL(url);
+
+// Ответ сохраняется как есть: обычно JSON, но может быть и HTML заглушки
+const formatResponse = (text: string) => {
+  try {
+    return JSON.stringify(JSON.parse(text), null, 2);
+  } catch {
+    return text;
+  }
+};
+
+const loadResponse = (taskId: string) =>
+  getParseEventResponse(taskId).then((text) =>
+    text === null ? null : formatResponse(text),
+  );
 
 // Результат привязан к taskId, поэтому при смене задачи сразу виден лоадер,
 // а не данные предыдущей
@@ -91,6 +106,13 @@ export const ParseErrorModal = ({
     event?.has_traceback ? event.task_id : undefined,
     getParseEventTraceback,
   );
+  const response = useTaskFile(
+    event?.has_response ? event.task_id : undefined,
+    loadResponse,
+  );
+  // Гибридные парсеры берут данные из API, и вместо скриншота страницы
+  // у них сохраняется ответ, на котором упал разбор
+  const pageTab = event?.has_response ? "response" : "screenshot";
 
   return (
     <Modal.Backdrop
@@ -110,15 +132,27 @@ export const ParseErrorModal = ({
             <Tabs
               key={event?.task_id}
               defaultSelectedKey={
-                event?.has_screenshot ? "screenshot" : "traceback"
+                event?.has_screenshot || event?.has_response
+                  ? pageTab
+                  : "traceback"
               }
             >
               <Tabs.ListContainer>
                 <Tabs.List aria-label="Подробности ошибки">
-                  <Tabs.Tab id="screenshot" isDisabled={!event?.has_screenshot}>
-                    Скриншот
-                    <Tabs.Indicator />
-                  </Tabs.Tab>
+                  {pageTab == "response" ? (
+                    <Tabs.Tab id="response">
+                      Ответ API
+                      <Tabs.Indicator />
+                    </Tabs.Tab>
+                  ) : (
+                    <Tabs.Tab
+                      id="screenshot"
+                      isDisabled={!event?.has_screenshot}
+                    >
+                      Скриншот
+                      <Tabs.Indicator />
+                    </Tabs.Tab>
+                  )}
                   <Tabs.Tab id="traceback" isDisabled={!event?.has_traceback}>
                     Traceback
                     <Tabs.Indicator />
@@ -137,6 +171,18 @@ export const ParseErrorModal = ({
                       className="max-h-[75vh] w-auto rounded-xl"
                       src={url}
                     />
+                  )}
+                </FileContent>
+              </Tabs.Panel>
+              <Tabs.Panel className="flex justify-center" id="response">
+                <FileContent
+                  unavailableText="Ответ API недоступен: истёк срок хранения"
+                  value={response}
+                >
+                  {(text) => (
+                    <pre className="max-h-[75vh] w-full overflow-auto whitespace-pre-wrap break-all rounded-xl bg-surface-secondary p-3 font-mono text-xs">
+                      {text}
+                    </pre>
                   )}
                 </FileContent>
               </Tabs.Panel>
