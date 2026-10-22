@@ -50,7 +50,7 @@ const StatusSkeleton = () => {
   return (
     <>
       {STATUS_SKELETON_WIDTHS.map((width, index) => (
-        <Skeleton key={index} className={`h-6 rounded-full ${width}`} />
+        <Skeleton key={index} className={`h-7 rounded-full ${width}`} />
       ))}
     </>
   );
@@ -177,15 +177,22 @@ export const ParseStatusPanel = () => {
       <div className="flex flex-wrap items-center gap-2">
         {status && serviceStatus ? (
           <>
-            <StatusChip statuses={SERVICE_STATUSES} value={serviceStatus} />
-            <Chip color={status.redis ? "default" : "danger"}>
+            <StatusChip
+              size="lg"
+              statuses={SERVICE_STATUSES}
+              value={serviceStatus}
+            />
+            <Chip color={status.redis ? "default" : "danger"} size="lg">
               Redis: {status.redis ? "доступен" : "недоступен"}
             </Chip>
-            <Chip color={status.workers.online ? "default" : "danger"}>
+            <Chip
+              color={status.workers.online ? "default" : "danger"}
+              size="lg"
+            >
               Воркеры: {status.workers.online}
             </Chip>
-            <Chip>Задач в работе: {status.workers.active_tasks}</Chip>
-            <Chip>Очередь: {status.queue ?? "—"}</Chip>
+            <Chip size="lg">Задач в работе: {status.workers.active_tasks}</Chip>
+            <Chip size="lg">Очередь: {status.queue ?? "—"}</Chip>
           </>
         ) : status === undefined ? (
           <StatusSkeleton />
