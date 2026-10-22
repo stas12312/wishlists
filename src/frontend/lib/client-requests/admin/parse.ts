@@ -99,3 +99,13 @@ export async function getParseEventScreenshot(
   );
   return response.status == 200 ? response.data : null;
 }
+
+export async function getParseEventTraceback(
+  taskId: string,
+): Promise<string | null> {
+  const response = await clientAxios.get(
+    `/admin/parse/events/${encodeURIComponent(taskId)}/traceback`,
+    { ...acceptAnyStatus, responseType: "text" },
+  );
+  return response.status == 200 ? response.data : null;
+}
