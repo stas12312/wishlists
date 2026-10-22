@@ -98,6 +98,9 @@ func main() {
 		ticketCategoryRepository,
 		messageService,
 		websocketService,
+		imageRepository,
+		uuid.NewString,
+		appConfig.S3.Domain,
 	)
 	ticketController := controller.NewTicketController(ticketService)
 
