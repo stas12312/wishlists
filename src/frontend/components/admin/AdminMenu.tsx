@@ -1,6 +1,7 @@
 "use client";
 import {
   MdOutlineArticle,
+  MdOutlineMail,
   MdOutlineStarBorder,
   MdOutlineStorefront,
   MdOutlineSupport,
@@ -29,6 +30,12 @@ const AdminMenuItems: IMenuItem[] = [
     href: "/admin/tickets",
     icon: <MdOutlineSupport />,
     selectedIconClassName: "text-pink-500",
+  },
+  {
+    title: "Письма",
+    href: "/admin/mails",
+    icon: <MdOutlineMail />,
+    selectedIconClassName: "text-blue-500",
   },
   {
     title: "Парсинг",
