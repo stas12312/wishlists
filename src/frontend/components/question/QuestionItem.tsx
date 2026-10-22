@@ -1,12 +1,13 @@
 import { Button, Chip, Surface, toast, useOverlayState } from "@heroui/react";
+import { motion } from "framer-motion";
 import { observer } from "mobx-react-lite";
-import { AiFillGift } from "react-icons/ai";
 import { MdCheck, MdDelete } from "react-icons/md";
 import { twMerge } from "tailwind-merge";
 
 import ConfirmationModal from "../ConfirmationModal";
 import { MessageForm } from "../MessageForm";
-import { ResponsiveImage } from "../ResponsiveImage";
+
+import { QuestionWish } from "./QuestionWish";
 
 import {
   answerOnQuestion,
@@ -37,8 +38,22 @@ export const QuestionItem = observer(
       if (!value) {
         return;
       }
+      onUpdateQuestion({
+        ...question,
+        status: QuestionStatus.resolved,
+        answer: {
+          id: 0,
+          content: value,
+          created_at: new Date().toISOString(),
+        },
+      });
       const result = await answerOnQuestion(question.id ?? 0, value);
-      onUpdateQuestion(result);
+      if ("message" in result) {
+        toast.danger(result.message);
+        onUpdateQuestion(question);
+        return;
+      }
+      onUpdateQuestion({ ...result, wish: result.wish ?? question.wish });
       await countersStore.updateQuestionCounters();
     };
 
@@ -67,87 +82,29 @@ export const QuestionItem = observer(
       toast.success("Вопрос закрыт");
     }
 
-    return (
-      <>
-        <Surface
-          className={twMerge(
-            "rounded-3xl p-2 flex flex-col gap-2 shadow-md bg-surface-secondary/50",
-            isWithWish ? "md:grid md:grid-cols-5" : null,
-          )}
-        >
-          {isWithWish ? (
-            <>
-              <h2 className="text-2xl col-span-full">{question.wish?.name}</h2>
-              <div className="col-span-1 flex flex-col gap-2 h-60 bg-linear-to-br from-default to-default/20 rounded-3xl">
-                {question.wish?.images?.length ? (
-                  <ResponsiveImage
-                    fill
-                    alt="Изображение желания"
-                    className="md:h-full w-full rounded-3xl overflow-y-hidden"
-                    src={question.wish?.images[0]}
-                  />
-                ) : (
-                  <AiFillGift
-                    className={`text-8xl mx-auto my-auto  w-full rounded-3xl h-20`}
-                  />
-                )}
-              </div>
-            </>
-          ) : null}
-          <div className="flex flex-col w-full gap-2 col-span-4 h-full my-auto">
-            <QuestionContent
-              content={question.content}
-              createdAt={question.created_at ?? ""}
-              withDeleteButton={question.actions?.delete}
-              onDelete={confirmDeleteQuestion.open}
-            />
+    const closeQuestion = () => {
+      markClose();
+      onUpdateQuestion({
+        ...question,
+        status: QuestionStatus.closed,
+      });
+    };
 
-            {question.actions?.answer && question.answer?.content === null ? (
-              <div className="ml-10 w-auto">
-                <MessageForm
-                  maxLength={200}
-                  minLength={2}
-                  rows={2}
-                  onSend={async (value) => {
-                    await sendAnswer(value);
-                  }}
-                />
-              </div>
-            ) : null}
-            {question.answer && question.answer.content ? (
-              <QuestionContent
-                className="ml-10"
-                content={question.answer.content}
-                createdAt={question.answer.created_at}
-                withDeleteButton={question.actions?.answer}
-                onDelete={confirmDeleteAnswer.open}
-              />
-            ) : null}
-            {question.actions?.delete &&
-            question.status === QuestionStatus.resolved ? (
-              <div className="mt-auto ml-auto flex gap-2 items-center">
-                <Chip color="accent" size="lg">
-                  Получен ответ
-                </Chip>
-                <Button
-                  isIconOnly
-                  className="bg-success h-7"
-                  data-qa="mark-closed"
-                  variant="primary"
-                  onPress={() => {
-                    markClose();
-                    onUpdateQuestion({
-                      ...question,
-                      status: QuestionStatus.closed,
-                    });
-                  }}
-                >
-                  <MdCheck />
-                </Button>
-              </div>
-            ) : null}
-          </div>
-        </Surface>
+    const answerForm =
+      question.actions?.answer && question.answer?.content === null ? (
+        <MessageForm
+          isCompact
+          maxLength={200}
+          minLength={2}
+          placeholder="Введите ответ"
+          onSend={async (value) => {
+            await sendAnswer(value);
+          }}
+        />
+      ) : null;
+
+    const deleteModals = (
+      <>
         <ConfirmationModal
           isOpen={confirmDeleteQuestion.isOpen}
           message="Вы хотите удалить вопрос?"
@@ -173,8 +130,224 @@ export const QuestionItem = observer(
         />
       </>
     );
+
+    if (isWithWish) {
+      const thread = (
+        <>
+          <QuestionLine
+            content={question.content}
+            createdAt={question.created_at ?? ""}
+            isMine={question.actions?.delete}
+          />
+          {question.answer && question.answer.content ? (
+            <QuestionLine
+              className="ml-4"
+              content={question.answer.content}
+              createdAt={question.answer.created_at}
+              isMine={question.actions?.answer}
+              withDeleteButton={question.actions?.answer}
+              onDelete={confirmDeleteAnswer.open}
+            />
+          ) : null}
+          {answerForm}
+          {question.actions?.delete &&
+          question.status === QuestionStatus.resolved ? (
+            <Button
+              className="self-end"
+              data-qa="mark-closed"
+              size="sm"
+              variant="primary"
+              onPress={closeQuestion}
+            >
+              <MdCheck />
+              Прочитано
+            </Button>
+          ) : null}
+        </>
+      );
+
+      const status = <QuestionStatusChip question={question} />;
+      const actions = question.actions?.delete ? (
+        <Button
+          isIconOnly
+          data-qa="delete-question"
+          size="sm"
+          variant="danger-soft"
+          onPress={confirmDeleteQuestion.open}
+        >
+          <MdDelete />
+        </Button>
+      ) : null;
+
+      const needsRead =
+        question.actions?.delete && question.status === QuestionStatus.resolved;
+      const needsAnswer = question.actions?.answer && !question.answer?.content;
+
+      return (
+        <>
+          <Surface
+            className={twMerge(
+              "rounded-3xl p-3 shadow-md bg-surface-secondary/50",
+              needsRead && "ring-2 ring-accent",
+              needsAnswer && "ring-2 ring-warning",
+            )}
+          >
+            {question.wish?.uuid ? (
+              <QuestionWish
+                actions={actions}
+                status={status}
+                wish={{
+                  ...question.wish,
+                  actions: { ...question.wish.actions, open_wishlist: true },
+                }}
+                onUpdate={(wish) => onUpdateQuestion({ ...question, wish })}
+              >
+                {thread}
+              </QuestionWish>
+            ) : (
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2 self-end">
+                  {status}
+                  {actions}
+                </div>
+                {thread}
+              </div>
+            )}
+          </Surface>
+          {deleteModals}
+        </>
+      );
+    }
+
+    return (
+      <>
+        <Surface className="rounded-3xl p-2 flex flex-col gap-2 shadow-md bg-surface-secondary/50">
+          <div className="flex flex-col w-full gap-2 h-full my-auto">
+            <QuestionContent
+              content={question.content}
+              createdAt={question.created_at ?? ""}
+              withDeleteButton={question.actions?.delete}
+              onDelete={confirmDeleteQuestion.open}
+            />
+
+            {answerForm ? (
+              <div className="ml-10 w-auto">{answerForm}</div>
+            ) : null}
+            {question.answer && question.answer.content ? (
+              <QuestionContent
+                className="ml-10"
+                content={question.answer.content}
+                createdAt={question.answer.created_at}
+                withDeleteButton={question.actions?.answer}
+                onDelete={confirmDeleteAnswer.open}
+              />
+            ) : null}
+            {question.actions?.delete &&
+            question.status === QuestionStatus.resolved ? (
+              <div className="mt-auto ml-auto flex gap-2 items-center">
+                <Chip color="accent" size="lg">
+                  Получен ответ
+                </Chip>
+                <Button
+                  isIconOnly
+                  className="bg-success h-7"
+                  data-qa="mark-closed"
+                  variant="primary"
+                  onPress={closeQuestion}
+                >
+                  <MdCheck />
+                </Button>
+              </div>
+            ) : null}
+          </div>
+        </Surface>
+        {deleteModals}
+      </>
+    );
   },
 );
+
+const QuestionStatusChip = ({ question }: { question: IQuestion }) => {
+  if (question.actions?.answer && !question.answer?.content) {
+    return (
+      <Chip color="warning" size="lg">
+        Нужен ответ
+      </Chip>
+    );
+  }
+  if (!question.actions?.delete) {
+    return null;
+  }
+  if (question.status === QuestionStatus.open) {
+    return (
+      <Chip color="warning" size="lg">
+        Ждёт ответа
+      </Chip>
+    );
+  }
+  if (question.status === QuestionStatus.resolved) {
+    return (
+      <Chip color="accent" size="lg">
+        Получен ответ
+      </Chip>
+    );
+  }
+  return null;
+};
+
+const QuestionLine = ({
+  content,
+  createdAt,
+  isMine = false,
+  withDeleteButton = false,
+  onDelete,
+  className,
+}: {
+  content: string;
+  createdAt: string;
+  isMine?: boolean;
+  withDeleteButton?: boolean;
+  onDelete?: { (): void };
+  className?: string;
+}) => {
+  return (
+    <motion.div
+      animate={{ opacity: 1, y: 0 }}
+      className={twMerge("flex items-center gap-2", className)}
+      initial={{ opacity: 0, y: 4 }}
+      transition={{ duration: 0.2 }}
+    >
+      <div
+        className={twMerge(
+          "flex flex-col min-w-60 rounded-3xl px-4 py-2",
+          isMine ? "bg-accent text-accent-foreground" : "bg-default/60",
+        )}
+      >
+        <p className="whitespace-pre-wrap break-words">{content}</p>
+        <span
+          className={twMerge(
+            "self-end text-tiny",
+            isMine ? "text-accent-foreground/70" : "text-muted",
+          )}
+        >
+          {prepareDateString(createdAt)}
+        </span>
+      </div>
+      {withDeleteButton ? (
+        <Button
+          isIconOnly
+          className="size-6 min-w-6 shrink-0"
+          data-qa="delete-answer"
+          size="sm"
+          variant="danger-soft"
+          onPress={onDelete}
+        >
+          <MdDelete />
+        </Button>
+      ) : null}
+    </motion.div>
+  );
+};
 
 const QuestionContent = ({
   content,
@@ -194,7 +367,7 @@ const QuestionContent = ({
       className={`${className} rounded-3xl flex flex-col justify-between bg-default px-2  min-h-10 py-1 gap-1`}
     >
       <div className="flex">
-        <p className="my-auto w-full whitespace-pre-wrap break-all px-1">
+        <p className="my-auto w-full whitespace-pre-wrap break-words px-1">
           {content}
         </p>
 

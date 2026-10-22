@@ -42,10 +42,13 @@ export async function getForMeQuestions(
 export async function answerOnQuestion(
   questionId: number,
   answer: string,
-): Promise<IQuestion> {
+): Promise<IQuestion | IError> {
   const response = await clientAxios.post(`/questions/${questionId}/answer`, {
     content: answer,
   });
+  if ("message" in response.data) {
+    return response.data;
+  }
   return response.data.data;
 }
 
@@ -63,6 +66,9 @@ export async function deleteAnswer(
   questionId: number,
 ): Promise<IQuestion | IError> {
   const response = await clientAxios.delete(`/questions/${questionId}/answer`);
+  if ("message" in response.data) {
+    return response.data;
+  }
   return response.data.data;
 }
 
