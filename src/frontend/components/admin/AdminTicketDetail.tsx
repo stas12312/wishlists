@@ -11,6 +11,7 @@ export const AdminTicketDetailPage = ({ ticketId }: { ticketId: number }) => {
   return (
     <TicketDetailPage
       withAuthor
+      withStatusCommands
       addTicketMessageFunc={addTicketMessageForAdmin}
       getTicketFunc={getTicketForAdmin}
       getTicketMessageFunc={getTicketMessagesForAdmin}

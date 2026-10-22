@@ -15,9 +15,27 @@ import { TicketItem } from "./TicketCard";
 import { closeTicket } from "@/lib/client-requests/ticket";
 import { IError } from "@/lib/models";
 import { IResponse } from "@/lib/models/response";
-import { IMessage, ITicket } from "@/lib/models/ticket";
+import { IMessage, ITicket, TicketStatus } from "@/lib/models/ticket";
 import { getWebsocketUrl, isEvent, WSEvent } from "@/lib/socket";
 import { prepareDateString } from "@/lib/date";
+
+const MESSAGE_MAX_LENGTH = 2000;
+
+const STATUS_COMMANDS: { status: TicketStatus; title: string }[] = [
+  { status: "waiting_info", title: "Запросить информацию" },
+  { status: "waiting_fix", title: "Ожидает исправления" },
+  { status: "resolved", title: "Решено" },
+  { status: "closed", title: "Закрыть" },
+  { status: "open", title: "Открыть" },
+];
+
+const STATUS_COMMAND_RE = /^[ \t]*\/status[ \t]+\w+[ \t]*$/gm;
+
+function setStatusCommand(message: string, status: TicketStatus): string {
+  const text = message.replace(STATUS_COMMAND_RE, "").trimEnd();
+
+  return text ? `${text}\n/status ${status}` : `/status ${status}`;
+}
 
 export const TicketDetailPage = ({
   ticketId,
@@ -25,6 +43,7 @@ export const TicketDetailPage = ({
   getTicketMessageFunc,
   addTicketMessageFunc,
   withAuthor = false,
+  withStatusCommands = false,
 }: {
   ticketId: number;
   getTicketFunc: { (ticketId: number): Promise<IResponse<ITicket> | IError> };
@@ -33,8 +52,10 @@ export const TicketDetailPage = ({
     (ticketId: number, content: string): Promise<IResponse<IMessage> | IError>;
   };
   withAuthor?: boolean;
+  withStatusCommands?: boolean;
 }) => {
   const [ticket, setTicket] = useState<ITicket>();
+  const [draft, setDraft] = useState("");
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [error, setError] = useState<string>();
   const [isLoading, setIsLoading] = useState(true);
@@ -145,7 +166,9 @@ export const TicketDetailPage = ({
                     variant="secondary"
                   >
                     <div className="flex flex-col">
-                      <span className="px-4 pt-2">{message.content}</span>
+                      <span className="px-4 pt-2 whitespace-pre-wrap wrap-break-word">
+                        {message.content}
+                      </span>
 
                       <Chip className="ml-auto mr-2" variant="tertiary">
                         {prepareDateString(message.created_at)}
@@ -159,8 +182,31 @@ export const TicketDetailPage = ({
 
             <div className="mt-auto">
               <Separator />
+              {withStatusCommands ? (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {STATUS_COMMANDS.map(({ status, title }) => (
+                    <Button
+                      key={status}
+                      size="sm"
+                      variant={
+                        ticket.status == status ? "tertiary" : "secondary"
+                      }
+                      onPress={() =>
+                        setDraft((value) => setStatusCommand(value, status))
+                      }
+                    >
+                      {title}
+                    </Button>
+                  ))}
+                </div>
+              ) : null}
               <div className="mt-4">
-                <MessageForm maxLength={200} onSend={createMessage} />
+                <MessageForm
+                  maxLength={MESSAGE_MAX_LENGTH}
+                  value={draft}
+                  onSend={createMessage}
+                  onValueChange={setDraft}
+                />
               </div>
             </div>
             <div className="w-full flex justify-end">

@@ -6,11 +6,18 @@ export interface ITicketCategory {
   color: string;
 }
 
+export type TicketStatus =
+  | "open"
+  | "resolved"
+  | "closed"
+  | "waiting_info"
+  | "waiting_fix";
+
 export interface ITicket {
   id: number;
   subject: string;
   category_id: number;
-  status: "open" | "closed";
+  status: TicketStatus;
   created_at: string;
   closed_at: string;
   category: ITicketCategory;
