@@ -22,9 +22,11 @@ export async function getTickests(
   return response.data;
 }
 
-export async function createTicket(ticket: ITicketCreate): Promise<ITicket> {
+export async function createTicket(
+  ticket: ITicketCreate,
+): Promise<IResponse<ITicket> | IError> {
   const response = await clientAxios.post("/tickets", ticket);
-  return response.data.data;
+  return response.data;
 }
 
 export async function getTicketCategories(): Promise<

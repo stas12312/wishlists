@@ -51,7 +51,16 @@ export const CreateTicketForm = () => {
   }, []);
 
   async function onSubmit() {
-    await createTicket({ ...ticket, attachments: attachments.attachments });
+    const result = await createTicket({
+      ...ticket,
+      attachments: attachments.attachments,
+    });
+    if ("message" in result) {
+      toast.danger("Произошла ошибка при создании обращения", {
+        description: result.message,
+      });
+      return;
+    }
     router.push("/tickets");
     toast.success("Обращение создано");
   }
@@ -106,8 +115,8 @@ export const CreateTicketForm = () => {
           <UploadButton
             accept={ATTACHMENT_FORMATS}
             className="h-16 w-full"
-            handleFile={(file) => attachments.add([file])}
-            title={`Перетащите файл сюда или нажмите для выбора файла (Не более ${readableBytes(FILE_SIZE_LIMIT, false)}, до ${MAX_ATTACHMENTS_COUNT} файлов)`}
+            handleFiles={attachments.add}
+            title={`Перетащите файлы сюда или нажмите для выбора (Не более ${readableBytes(FILE_SIZE_LIMIT, false)}, до ${MAX_ATTACHMENTS_COUNT} файлов)`}
           />
         ) : null}
         <PendingAttachments
