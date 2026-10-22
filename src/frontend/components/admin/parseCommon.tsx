@@ -11,13 +11,20 @@ export type ChipColor = "default" | "accent" | "success" | "warning" | "danger";
 export const StatusChip = ({
   statuses,
   value,
+  size,
 }: {
   statuses: Record<string, [string, ChipColor]>;
   value: string;
+  size?: "sm" | "md" | "lg";
 }) => {
   const [label, color] = statuses[value] ?? [value, "default"];
   return (
-    <Chip className="whitespace-nowrap" color={color} variant="soft">
+    <Chip
+      className="whitespace-nowrap"
+      color={color}
+      size={size}
+      variant="soft"
+    >
       {label}
     </Chip>
   );
