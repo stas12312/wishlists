@@ -109,16 +109,25 @@ func (r *WishRepositoryPostgres) ListBy(wishlistUuid string, wishUUIDs []string)
 		SELECT 
 		    wishes.*, 
 		    wishlists.user_id, 
-		    wishes.presenter_id IS NOT NULL AS is_reserved
+		    wishes.presenter_id IS NOT NULL AS is_reserved,
+
+		    users.name AS "user.name",
+		    users.image AS "user.image",
+		    users.username AS "user.username",
+		    users.user_id AS "user.user_id",
+
+		    wishlists.name AS "wishlist.name",
+		    wishlists.date AS "wishlist.date"
 		FROM wishes
 		JOIN wishlists USING (wishlist_uuid)
+		JOIN users USING (user_id)
 		WHERE
 		    CASE 
 		        WHEN $1 != '' THEN wishlist_uuid = $1::uuid
 		    	WHEN $2 != '{}'::uuid[] THEN wish_uuid = ANY($2::uuid[])
 			END
 			AND wishes.is_active = True
-		ORDER BY created_at DESC 
+		ORDER BY wishes.created_at DESC 
 `
 	wishes := &[]model.Wish{}
 
