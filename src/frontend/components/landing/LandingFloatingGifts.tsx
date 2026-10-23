@@ -13,7 +13,7 @@ const GIFTS_COUNT = 8;
 const EMOJIS = ["🎁", "🎁", "🎁", "🎀", "🎉"];
 const POINTER_SHIFT = 40;
 const SCROLL_SHIFT = 300;
-// Free space beside the max-w-300 content column; negative on narrow screens, which hides gifts
+// Свободное место по бокам от колонки контента max-w-300; на узких экранах оно отрицательное, и подарки скрываются
 const SIDE_MARGIN = "(100% - 75rem) / 2";
 
 type Gift = {
@@ -36,9 +36,9 @@ const createGifts = (): Gift[] =>
   Array.from({ length: GIFTS_COUNT }, (_, id) => ({
     id,
     emoji: EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
-    // Alternate sides and spread evenly down the page so gifts accompany the whole scroll
+    // Чередуем стороны и равномерно распределяем подарки по высоте, чтобы они сопровождали всю прокрутку
     isLeft: id % 2 === 0,
-    // Alternate between the outer and inner half of the margin so gifts on one side don't line up in a column
+    // Чередуем внешнюю и внутреннюю половину поля, чтобы подарки на одной стороне не выстраивались в столбик
     marginOffset:
       Math.floor(id / 2) % 2 === 0
         ? randomBetween(0.15, 0.45)
@@ -66,7 +66,7 @@ const FloatingGift = ({
     offset: ["start end", "end start"],
   });
 
-  // Closer gifts (higher depth) move more, which creates the parallax effect
+  // Ближние подарки (с большей глубиной) смещаются сильнее, так получается эффект параллакса
   const x = useTransform(pointerX, (v) => v * gift.depth * POINTER_SHIFT);
   const y = useTransform(
     [pointerY, scrollYProgress],
@@ -121,7 +121,7 @@ const FloatingGift = ({
 
 export const FloatingGifts = () => {
   const shouldReduceMotion = useReducedMotion();
-  // Generated on the client only to avoid hydration mismatch
+  // Генерируем только на клиенте, чтобы не было расхождения при гидратации
   const [gifts, setGifts] = useState<Gift[]>([]);
   const rawPointerX = useMotionValue(0);
   const rawPointerY = useMotionValue(0);
