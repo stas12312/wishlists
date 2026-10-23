@@ -35,6 +35,7 @@ export const ReservedWishes = observer(() => {
   const components = wishes.map((wish: IWish) => (
     <div key={wish.uuid}>
       <WishItem
+        hideReservedStatus
         wish={{ ...wish, actions: { ...wish.actions, open_wishlist: true } }}
         withUser={true}
         onDelete={() => {}}

@@ -1271,7 +1271,7 @@ const WishlistScene = ({
         >
           <RoundButton
             ref={setTarget("share")}
-            className="size-9 shadow-none"
+            className="size-9 bg-accent text-accent-foreground shadow-none"
             isPressed={isPressed("share")}
           >
             <MdOutlineShare className="text-[16px]" />
@@ -1450,8 +1450,10 @@ const WishCard = ({
           className={twMerge("h-full", isMobile ? "text-7xl" : "text-6xl")}
           wish={wish}
         />
-        <div className="absolute inset-x-0 top-0 z-10 overflow-hidden rounded-t-3xl">
-          <WishStatus banner wish={statusWish} />
+        <div className="absolute top-1.5 z-10 flex flex-col items-center w-full">
+          <span className="mx-auto">
+            <WishStatus size="lg" wish={statusWish} />
+          </span>
         </div>
         {canReserve ? (
           <motion.span

@@ -118,7 +118,7 @@ export const WishlistDetail = observer(
                   isIconOnly
                   aria-label="Поделиться"
                   className="rounded-full"
-                  variant="tertiary"
+                  variant="primary"
                   onPress={shareWishlist}
                 >
                   <MdOutlineShare className="text-lg" />
