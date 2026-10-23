@@ -5,7 +5,7 @@ import { BsStars } from "react-icons/bs";
 import { MdOutlineDesktopMac, MdOutlineSmartphone } from "react-icons/md";
 
 import { StartButton } from "./LandingButton";
-import { Video } from "./LandingVideo";
+import { LandingDemo } from "./LandingDemo";
 
 import { defaultVariants } from "@/lib/animations/default";
 
@@ -17,28 +17,33 @@ export const HeaderBlock = () => {
   }, []);
 
   return (
-    <div className="bg-accent/50 dark:bg-accent/30 h-3/4 lg:py-32 p-4 shadow-xl relative overflow-hidden rounded-3xl -mx-3 md:mx-0 isolate">
-      <div className="absolute h-32 w-32 md:h-96 md:w-96 bg-accent/60 -top-16 -left-16 md:-top-40 md:-left-40 blur-3xl transform-[translateZ(0)]" />
-      <div className="absolute h-32 w-32 md:h-96 md:w-96 bg-accent/60 -bottom-16 -right-16 md:-bottom-40 md:-right-40 blur-3xl transform-[translateZ(0)]" />
-      <motion.div className="flex lg:flex-row flex-col max-w-300 mx-auto gap-4">
+    <div className="bg-linear-to-br from-accent/60 via-accent/35 to-accent/15 dark:from-accent/40 dark:via-accent/20 dark:to-accent/5 lg:py-24 p-4 shadow-xl ring-1 ring-accent/20 relative overflow-hidden rounded-3xl -mx-3 md:mx-0 isolate">
+      <div className="absolute -z-10 rounded-full size-48 md:size-112 bg-accent/40 -top-24 -left-24 md:-top-56 md:-left-56 blur-3xl transform-[translateZ(0)]" />
+      <div className="absolute -z-10 rounded-full size-64 md:size-160 bg-accent/30 top-1/2 left-1/2 lg:left-2/3 -translate-x-1/2 -translate-y-1/2 blur-3xl transform-[translateZ(0)]" />
+      <motion.div className="flex lg:flex-row flex-col lg:items-center max-w-300 mx-auto gap-4 lg:gap-12">
         <motion.div
           animate={{
             opacity: 1,
             transform: "translateX(0)",
             transition: { duration: 0.8 },
           }}
-          className="flex-col flex text-center my-[10%] gap-2 z-10"
+          className="flex-col flex items-center text-center lg:w-2/5 my-[10%] lg:my-0 gap-6 z-10"
           initial={{
             opacity: 0,
             transform: "translateX(-20px)",
           }}
         >
-          <span className="flex gap-2 mx-auto text-5xl md:text-6xl">
-            <BsStars style={{ color: "gold" }} />
-            <h1 className="font-semibold text-5xl md:text-6xl">MyWishlists</h1>
+          <span className="flex items-center gap-3">
+            <BsStars
+              className="shrink-0 text-4xl md:text-5xl"
+              style={{ color: "gold" }}
+            />
+            <h1 className="font-bold tracking-tight text-5xl md:text-6xl">
+              MyWishlists
+            </h1>
           </span>
 
-          <h2 className="text-xl md:text-3xl">
+          <h2 className="text-xl md:text-3xl leading-snug text-foreground/75 text-balance">
             Бесплатный сервис для составления вишлистов
           </h2>
           <StartButton
@@ -46,7 +51,7 @@ export const HeaderBlock = () => {
             title="Начать прямо сейчас"
           />
         </motion.div>
-        <span className="md:skew-y-3 h-125 lg:w-2/3 lg:h-auto">
+        <span className="md:skew-y-3 h-125 lg:w-2/3 lg:h-130">
           <motion.div
             animate={{
               opacity: 1,
@@ -83,13 +88,9 @@ export const HeaderBlock = () => {
                 >
                   <AnimatedDiv
                     key="desktop"
-                    className="max-h-110 absolute top-14 "
+                    className="absolute inset-x-0 top-16 h-110"
                   >
-                    <Video
-                      className="my-auto max-h-110"
-                      posterSrc="https://cdn.mywishlists.ru/static/landing/light/desktopPreload.jpg"
-                      src="https://cdn.mywishlists.ru/static/landing/light/videoMainPC.mp4"
-                    />
+                    <LandingDemo variant="desktop" />
                   </AnimatedDiv>
                 </Tabs.Panel>
                 <Tabs.Panel
@@ -97,12 +98,11 @@ export const HeaderBlock = () => {
                   className="flex justify-center"
                   id="mobile"
                 >
-                  <AnimatedDiv key="mobile" className="absolute top-14">
-                    <Video
-                      className="h-110 mx-auto"
-                      posterSrc="https://cdn.mywishlists.ru/static/landing/light/mobilePreload.jpg"
-                      src="https://cdn.mywishlists.ru/static/landing/light/videoMainMobile.mp4"
-                    />
+                  <AnimatedDiv
+                    key="mobile"
+                    className="absolute inset-x-0 top-16 h-110"
+                  >
+                    <LandingDemo variant="mobile" />
                   </AnimatedDiv>
                 </Tabs.Panel>
               </AnimatePresence>

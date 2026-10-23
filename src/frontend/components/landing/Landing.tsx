@@ -3,13 +3,15 @@
 import { AdvantageBlock } from "./LandingAdvantage";
 import { HeaderBlock } from "./LandingHeader";
 import { StartBlock } from "./LandingStart";
+import { FloatingGifts } from "./LandingFloatingGifts";
 import { StartButton } from "./LandingButton";
 
 const Landing = () => {
   return (
-    <div className="flex flex-col justify-center">
+    <div className="relative flex flex-col justify-center">
+      <FloatingGifts />
       <HeaderBlock />
-      <div className="flex lg:flex-col flex-col max-w-300 mx-auto w-full gap-4 mt-4">
+      <div className="relative z-10 flex lg:flex-col flex-col max-w-300 mx-auto w-full gap-4 mt-4">
         <StartBlock />
         <AdvantageBlock />
         <StartButton title="Поехали 🚀" />
