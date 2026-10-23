@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 
 import { getUserByUsername } from "@/lib/server-requests/user";
-import PageHeader from "@/components/PageHeader";
 import { Wishlists } from "@/components/wishlist/Wishlist";
 
 export async function generateMetadata({
@@ -33,10 +32,10 @@ const UserPage = async ({
   const username = (await params).username;
   return (
     <>
-      <PageHeader title="Вишлисты пользователя" />
       {username ? (
         <Wishlists
           actions={{ edit: false, filter: false }}
+          title="Вишлисты пользователя"
           username={username}
         />
       ) : null}

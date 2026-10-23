@@ -1,6 +1,7 @@
 import { Button, Drawer, Link } from "@heroui/react";
 import { observer } from "mobx-react-lite";
 import { MdOpenInNew } from "react-icons/md";
+import { twMerge } from "tailwind-merge";
 
 import MarketIcon from "../MarketIcon";
 import { QuestionList } from "../question/QuestionList";
@@ -71,7 +72,7 @@ const WishFullCard = observer(
                 {menuItems.map((value) => (
                   <Button
                     key={value.key}
-                    className="w-full"
+                    className={twMerge("w-full", value.buttonClassName)}
                     variant={value.variant}
                     onPress={() => {
                       handeAction(value.key);

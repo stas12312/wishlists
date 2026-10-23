@@ -17,6 +17,7 @@ interface IWishMenuItem {
   actionKey?: keyof IWishActions | null;
   key: string;
   className: string;
+  buttonClassName?: string;
   title?: string;
   icon: IconType;
   getTitleFunc?: { (actions: IWishActions): string };
@@ -29,6 +30,9 @@ interface IWishMenuItem {
     | "outline"
     | "danger-soft";
 }
+
+export const RESERVE_BUTTON_CLASS_NAME =
+  "bg-success/15 text-success hover:bg-success/25";
 
 const ACTIONS: IWishMenuItem[] = [
   {
@@ -60,6 +64,7 @@ const ACTIONS: IWishMenuItem[] = [
   {
     key: "reserve",
     className: "text-accent",
+    buttonClassName: RESERVE_BUTTON_CLASS_NAME,
     title: "Забронировать",
     icon: MdOutlineBookmarkAdded,
     variant: "primary",
@@ -69,7 +74,7 @@ const ACTIONS: IWishMenuItem[] = [
     className: "text-danger",
     title: "Отменить бронь",
     icon: MdOutlineBookmarkRemove,
-    variant: "primary",
+    variant: "danger-soft",
   },
   {
     key: "make_full",
@@ -102,10 +107,16 @@ const ACTIONS: IWishMenuItem[] = [
   },
 ];
 
-export function getMenuItemsByActions(actions: IWishActions): IWishMenuItem[] {
+export const RESERVE_ACTION_KEYS = ["reserve", "cancel_reserve"];
+
+export function getMenuItemsByActions(
+  actions: IWishActions,
+  excludeKeys: string[] = [],
+): IWishMenuItem[] {
   let items: IWishMenuItem[] = [];
 
   ACTIONS.forEach((action) => {
+    if (excludeKeys.includes(action.key)) return;
     let key = action.key as keyof IWishActions;
     if (
       (action.actionKey && actions[action.actionKey]) ||
