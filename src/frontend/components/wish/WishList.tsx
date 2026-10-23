@@ -165,6 +165,8 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
     setItems(newWishes);
   }
 
+  const canAddWish = isEditable && wishlist.is_active;
+
   if (error?.message) {
     return (
       <div className="flex justify-center">
@@ -241,9 +243,15 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
               />
             </div>
           ) : null}
+          {!items.length && !canAddWish ? (
+            <div className="flex h-40 flex-col items-center justify-center gap-1 rounded-3xl border-2 border-dashed border-gray-500/20 text-muted">
+              <span className="text-3xl">🎁</span>
+              Здесь пока пусто
+            </div>
+          ) : null}
           <AnimatedList
             items={[
-              isEditable && wishlist.is_active ? (
+              canAddWish ? (
                 <AddCardButton
                   key="add-button"
                   className="h-40 md:h-70 w-full"
