@@ -9,6 +9,7 @@ import { Button, toast, useOverlayState } from "@heroui/react";
 import AddCardButton from "../AddCardButton";
 import { AnimatedList } from "../animated-list/AnimatedList";
 import { InfinityLoader } from "../InfinityLoader";
+import PageHeader from "../PageHeader";
 import { PageSpinner } from "../PageSpinner";
 
 import { WishlistItem } from "./WishlistCard";
@@ -31,10 +32,12 @@ const COUNT = 30;
 
 export const Wishlists = observer(
   ({
+    title,
     actions,
     userId,
     username,
   }: {
+    title: string;
     actions: IWishlistAction;
     userId?: number;
     username?: string;
@@ -115,6 +118,9 @@ export const Wishlists = observer(
 
     return (
       <>
+        <PageHeader>
+          <h1 className="text-2xl">{title}</h1>
+        </PageHeader>
         {actions.filter ? (
           <span className="flex col-span-full mb-4">
             <WishlistFilter filter={filter} setFilter={setFilter} />
@@ -142,8 +148,8 @@ export const Wishlists = observer(
             />
           </InfinityLoader>
         ) : isLoading ? null : (
-          <div className="col-span-full text-center">
-            <h1 className="text-4xl	col-span-full">
+          <div className="col-span-full flex flex-col items-center gap-6 text-center">
+            <h1 className="text-4xl">
               {filter.showArchive
                 ? "Список архивированных вишлистов пуст"
                 : "Список вишлистов пуст"}

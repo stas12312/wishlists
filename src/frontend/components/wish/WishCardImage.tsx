@@ -15,10 +15,12 @@ const CardImage = ({
   wish,
   className,
   iconClassName,
+  chipsClassName,
 }: {
   wish: IWish;
   className?: string;
   iconClassName?: string;
+  chipsClassName?: string;
 }) => {
   return (
     <div className={twMerge("relative h-full rounded-3xl", className)}>
@@ -44,12 +46,15 @@ const CardImage = ({
           </div>
         )}
       </div>
-      <div className="absolute top-1.5 flex flex-col items-center w-full">
-        <span className="mx-auto">
-          <WishStatus size="lg" wish={wish} />
-        </span>
+      <div className="absolute inset-x-0 top-0 z-10 overflow-hidden rounded-t-3xl">
+        <WishStatus banner wish={wish} />
       </div>
-      <div className="flex absolute bottom-2 px-3 w-full z-10">
+      <div
+        className={twMerge(
+          "flex absolute bottom-2 px-3 w-full z-10",
+          chipsClassName,
+        )}
+      >
         {wish.desirability && wish.desirability > 1 ? (
           <Chip
             className="bg-default/60 backdrop-blur-lg border border-gray-500/30"

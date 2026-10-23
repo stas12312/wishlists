@@ -9,11 +9,13 @@ import { getMenuItemsByActions } from "@/lib/wish/menu";
 export function WishItemMenu({
   wish,
   handeAction,
+  excludeKeys,
 }: {
   wish: IWish;
   handeAction: { (key: Key): void };
+  excludeKeys?: string[];
 }) {
-  const menuItems = getMenuItemsByActions(wish.actions);
+  const menuItems = getMenuItemsByActions(wish.actions, excludeKeys);
   return (
     <Dropdown>
       <MenuTrigger className="backdrop-blur-sm" name="wish-menu" />
