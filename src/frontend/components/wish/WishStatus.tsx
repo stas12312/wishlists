@@ -37,8 +37,8 @@ const WishStatus = ({
               className={twMerge(
                 "flex h-8 w-full items-center justify-center text-sm font-medium",
                 status.color === "accent"
-                  ? "bg-accent dark:bg-accent/80 text-accent-foreground"
-                  : "bg-success dark:bg-success/80 text-success-foreground",
+                  ? "bg-accent text-accent-foreground"
+                  : "bg-success text-success-foreground",
               )}
             >
               {status.text}
