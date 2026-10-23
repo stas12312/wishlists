@@ -25,11 +25,13 @@ export const WishItem = observer(
     onDelete = () => {},
     onUpdate = () => {},
     withUser = false,
+    hideReservedStatus = false,
   }: {
     wish: IWish;
     onDelete?: { (wish: IWish, message: string): void };
     onUpdate?: { (wish: IWish): void };
     withUser?: boolean;
+    hideReservedStatus?: boolean;
   }) => {
     const fullCardDrawer = useOverlayState();
     const { handleOnAction, modals } = useWishActions({
@@ -96,6 +98,7 @@ export const WishItem = observer(
             <CardImage
               chipsClassName={withReserveButton ? "bottom-12" : undefined}
               className="h-full"
+              hideReservedStatus={hideReservedStatus}
               iconClassName="h-full"
               wish={wish}
             />

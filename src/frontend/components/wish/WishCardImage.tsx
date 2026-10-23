@@ -16,11 +16,13 @@ const CardImage = ({
   className,
   iconClassName,
   chipsClassName,
+  hideReservedStatus = false,
 }: {
   wish: IWish;
   className?: string;
   iconClassName?: string;
   chipsClassName?: string;
+  hideReservedStatus?: boolean;
 }) => {
   return (
     <div className={twMerge("relative h-full rounded-3xl", className)}>
@@ -46,8 +48,10 @@ const CardImage = ({
           </div>
         )}
       </div>
-      <div className="absolute inset-x-0 top-0 z-10 overflow-hidden rounded-t-3xl">
-        <WishStatus banner wish={wish} />
+      <div className="absolute top-1.5 z-10 flex flex-col items-center w-full">
+        <span className="mx-auto">
+          <WishStatus hideReserved={hideReservedStatus} size="lg" wish={wish} />
+        </span>
       </div>
       <div
         className={twMerge(
