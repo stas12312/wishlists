@@ -80,6 +80,14 @@ export interface ParseProxy {
   // null — прокси не проверялся
   working: boolean | null;
   check: ParseProxyCheck | null;
+  // Проверки за последние 3 дня от старых к новым
+  checks_history?: ParseProxyHistoryCheck[];
+}
+
+export interface ParseProxyHistoryCheck {
+  checked_at: string;
+  ok: boolean;
+  latency_ms: number | null;
 }
 
 export interface ParseProxyCheck {
