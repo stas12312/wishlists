@@ -20,6 +20,7 @@ import { ButtonWithLoader } from "../ButtonWithLoader";
 import ConfirmationModal from "../ConfirmationModal";
 
 import { EmptyState, formatDate, LoadingOverlay } from "./parseCommon";
+import { ProxyChecksModal, ProxyChecksStrip } from "./ProxyChecksHistory";
 
 import {
   activateParseProxy,
@@ -84,6 +85,7 @@ export const ParseProxiesPanel = ({
   const [adding, setAdding] = useState<"checked" | "unchecked">();
   const [isBusy, setIsBusy] = useState(false);
   const [proxyToDelete, setProxyToDelete] = useState<ParseProxy>();
+  const [proxyWithChecks, setProxyWithChecks] = useState<ParseProxy>();
   // Проверка идёт запросом через прокси и может занять время, поэтому таблица не блокируется
   const [checkingIds, setCheckingIds] = useState<Set<string>>(new Set());
 
@@ -219,6 +221,7 @@ export const ParseProxiesPanel = ({
                 <Table.Column isRowHeader>Адрес</Table.Column>
                 <Table.Column>Добавлен</Table.Column>
                 <Table.Column>Проверка</Table.Column>
+                <Table.Column>За 3 дня</Table.Column>
                 {STATS_COLUMNS.map(([key, label]) => (
                   <Table.Column key={key}>{label}</Table.Column>
                 ))}
@@ -247,6 +250,12 @@ export const ParseProxiesPanel = ({
                     </Table.Cell>
                     <Table.Cell className="min-w-40">
                       <ProxyCheckStatus check={item.check} />
+                    </Table.Cell>
+                    <Table.Cell>
+                      <ProxyChecksStrip
+                        proxy={item}
+                        onPress={() => setProxyWithChecks(item)}
+                      />
                     </Table.Cell>
                     {STATS_COLUMNS.map(([key]) => (
                       <Table.Cell key={key}>{item.stats[key] ?? 0}</Table.Cell>
@@ -317,6 +326,10 @@ export const ParseProxiesPanel = ({
           }
         }}
         onDecline={() => setProxyToDelete(undefined)}
+      />
+      <ProxyChecksModal
+        proxy={proxyWithChecks}
+        onClose={() => setProxyWithChecks(undefined)}
       />
     </div>
   );
