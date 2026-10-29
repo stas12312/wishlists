@@ -2,7 +2,6 @@
 import {
   Alert,
   Chip,
-  ErrorMessage,
   FieldError,
   Form,
   InputGroup,
@@ -21,8 +20,29 @@ import {
   getParseStatus,
   parse,
 } from "@/lib/client-requests/parse";
-import { ParseResult, ShopParam } from "@/lib/models/parse";
+import { ParseOutcome, ParseResult, ShopParam } from "@/lib/models/parse";
 import { extractLink, isURL } from "@/lib/url";
+
+interface LoadError {
+  title: string;
+  description?: string;
+}
+
+function failReasonError(reason?: ParseOutcome | null): LoadError {
+  switch (reason) {
+    case "OUT_OF_STOCK":
+      return {
+        title: "Товара нет в наличии",
+        description: "Без цены загрузить товар не получится",
+      };
+    default:
+      return {
+        title: "Не удалось загрузить товар",
+        description:
+          "Скорее всего, он доступен не во всех регионах, снят с продажи или ссылка указана с ошибкой",
+      };
+  }
+}
 
 const LoadByLinkModal = ({
   onLinkLoad,
@@ -37,16 +57,16 @@ const LoadByLinkModal = ({
   const timer = useRef<NodeJS.Timeout | undefined>();
   const [isLoading, setIsLoading] = useState(false);
 
-  const [error, setError] = useState("");
+  const [error, setError] = useState<LoadError | null>(null);
 
   const [serviceError, setServiceError] = useState("");
 
   async function parseByUrl(url: string) {
-    setError("");
+    setError(null);
     setIsLoading(true);
     const data = await parse(url);
     if ("detail" in data) {
-      setError(data.detail);
+      setError({ title: data.detail });
       setIsLoading(false);
       return;
     }
@@ -69,9 +89,7 @@ const LoadByLinkModal = ({
     if (status.status == "FAILED") {
       clearInterval(timer.current);
       setIsLoading(false);
-      setError(
-        "При загрузке произошла ошибка, проверьте ссылку и попробуйте снова",
-      );
+      setError(failReasonError(status.reason));
     }
   }
 
@@ -143,8 +161,21 @@ const LoadByLinkModal = ({
                       </div>
 
                       <FieldError />
-                      <ErrorMessage>{error}</ErrorMessage>
                     </TextField>
+
+                    {error && (
+                      <Alert className="bg-danger-soft" status="danger">
+                        <Alert.Indicator />
+                        <Alert.Content>
+                          <Alert.Title>{error.title}</Alert.Title>
+                          {error.description && (
+                            <Alert.Description>
+                              {error.description}
+                            </Alert.Description>
+                          )}
+                        </Alert.Content>
+                      </Alert>
+                    )}
 
                     <ButtonWithLoader
                       fullWidth

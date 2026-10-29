@@ -8,6 +8,8 @@ export interface ParseResult {
 export interface ParseStatus {
   result: ParseResult;
   status: "FINISHED" | "FAILED" | "WAITING" | "RUNNING";
+  // Итог парсинга, с которым задача завершилась FAILED
+  reason?: ParseOutcome | null;
 }
 
 export interface ParseStartInfo {
