@@ -2,6 +2,7 @@
 
 import {
   Button,
+  Description,
   FieldError,
   Form,
   Input,
@@ -78,6 +79,7 @@ export default function WishForm(props: {
 
   const [isCreating, setIsCreating] = useState(false);
   const [imageIsLoading, setImageIsLoading] = useState(false);
+  const [isOutOfStock, setIsOutOfStock] = useState(false);
   const loadByLinkDisclosure = useOverlayState();
   const [uploadedImages, setImages] = useState(
     formData.images.map((image) => {
@@ -161,11 +163,12 @@ export default function WishForm(props: {
       ...formData,
       link: link,
       comment: description,
-      currency: result.currency,
+      currency: result.currency ?? formData.currency,
       name: title,
       images: [result.image],
-      cost: result.cost,
+      cost: result.cost ?? undefined,
     });
+    setIsOutOfStock(result.cost === null);
   }
   return (
     <>
@@ -259,7 +262,11 @@ export default function WishForm(props: {
               <NumberField.Group className="w-full flex">
                 <NumberField.Input className="w-full" />
               </NumberField.Group>
-
+              {isOutOfStock && formData.cost === undefined && (
+                <Description>
+                  Товара нет в наличии, укажите цену вручную
+                </Description>
+              )}
               <FieldError />
             </NumberField>
 

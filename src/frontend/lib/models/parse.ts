@@ -1,8 +1,9 @@
 export interface ParseResult {
   title: string;
-  cost: number;
+  // null — товара нет в наличии
+  cost: number | null;
   image: string;
-  currency: string;
+  currency: string | null;
 }
 
 export interface ParseStatus {
