@@ -33,7 +33,7 @@ function failReasonError(reason?: ParseOutcome | null): LoadError {
     case "OUT_OF_STOCK":
       return {
         title: "Товара нет в наличии",
-        description: "Без цены загрузить товар не получится",
+        description: "Попробуйте позже или заполните желание вручную",
       };
     default:
       return {
