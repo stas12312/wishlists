@@ -13,7 +13,7 @@ export const MainMenu = observer(
   }) => {
     if (variant == "mobile") {
       return (
-        <div className="flex justify-between">
+        <div className="flex justify-between overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {itemsProps.map((itemProps) => (
             <MobileMenuItem key={itemProps.item.title} {...itemProps} />
           ))}
