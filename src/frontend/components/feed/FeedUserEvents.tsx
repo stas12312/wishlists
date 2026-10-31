@@ -36,7 +36,7 @@ export const UserEvents = ({
           <Separator className="my-4" />
           <motion.div
             animate={{ opacity: 1, transition: { duration: 0.5 } }}
-            className="flex flex-wrap items-center gap-2"
+            className="flex flex-wrap items-center justify-center gap-2 md:justify-start"
             initial={{ opacity: 0 }}
           >
             <UserChip
