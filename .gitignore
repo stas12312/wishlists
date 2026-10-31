@@ -2,5 +2,7 @@ postgres
 redis-data
 tmp
 .idea
+.agent/
 
 *.env
+.env*

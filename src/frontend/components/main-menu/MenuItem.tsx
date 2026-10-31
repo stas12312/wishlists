@@ -27,7 +27,7 @@ export const MobileMenuItem = observer((props: IMenuItemProps) => {
   const item = props.item;
   const params = props.params;
   return (
-    <div className="h-full w-full flex justify-center">
+    <div className="h-full flex-1 min-w-17.5 flex justify-center">
       <Badge.Anchor className="h-full w-full" color="primary">
         <Link
           className={clsx(
