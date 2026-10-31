@@ -1,49 +1,10 @@
 "use client";
-import {
-  MdOutlineArticle,
-  MdOutlineMail,
-  MdOutlineStarBorder,
-  MdOutlineStorefront,
-  MdOutlineSupport,
-} from "react-icons/md";
 import { observer } from "mobx-react-lite";
 import { usePathname } from "next/navigation";
 
 import { MainMenu } from "../main-menu/Menu";
-import { IMenuItem } from "../main-menu/MenuItem";
 
-const AdminMenuItems: IMenuItem[] = [
-  {
-    title: "Главная",
-    href: "/admin",
-    icon: <MdOutlineStarBorder />,
-    selectedIconClassName: "text-yellow-500",
-  },
-  {
-    title: "Статьи",
-    href: "/admin/articles",
-    icon: <MdOutlineArticle />,
-    selectedIconClassName: "text-red-500",
-  },
-  {
-    title: "Поддержка",
-    href: "/admin/tickets",
-    icon: <MdOutlineSupport />,
-    selectedIconClassName: "text-pink-500",
-  },
-  {
-    title: "Письма",
-    href: "/admin/mails",
-    icon: <MdOutlineMail />,
-    selectedIconClassName: "text-blue-500",
-  },
-  {
-    title: "Парсинг",
-    href: "/admin/parse",
-    icon: <MdOutlineStorefront />,
-    selectedIconClassName: "text-green-500",
-  },
-];
+import { AdminMenuItems } from "./adminMenuItems";
 
 export const AdminMenu = observer(() => {
   const pathname = usePathname();

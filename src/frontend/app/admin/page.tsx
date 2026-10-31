@@ -1,9 +1,7 @@
-import PageHeader from "@/components/PageHeader";
+import { redirect } from "next/navigation";
 
-export default async function Page() {
-  return (
-    <>
-      <PageHeader title="Панель администратора" />
-    </>
-  );
+import { AdminMenuItems } from "@/components/admin/adminMenuItems";
+
+export default function Page() {
+  redirect(AdminMenuItems[0].href);
 }
