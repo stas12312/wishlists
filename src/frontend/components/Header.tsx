@@ -60,7 +60,7 @@ export const Header = ({ isLogin }: { isLogin: boolean }) => {
         showBg
           ? "bg-white/50 dark:bg-default/50 backdrop-blur-xl shadow-md ring-gray-500/10 ring-1 "
           : null,
-        isVisible ? "opacity-100" : "opacity-0",
+        isVisible ? "opacity-100" : "opacity-0 pointer-events-none",
         "py-3 duration-400 mx-4",
       )}
     >
