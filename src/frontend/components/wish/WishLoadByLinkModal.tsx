@@ -48,10 +48,12 @@ const LoadByLinkModal = ({
   onLinkLoad,
   onOpenChange,
   isOpen,
+  className,
 }: {
   onLinkLoad: { (result: ParseResult, link: string): void };
   onOpenChange: { (): void };
   isOpen: boolean;
+  className?: string;
 }) => {
   const [link, setLink] = useState("");
   const timer = useRef<NodeJS.Timeout | undefined>();
@@ -104,7 +106,7 @@ const LoadByLinkModal = ({
   return (
     <Modal.Backdrop isOpen={isOpen} variant="blur" onOpenChange={onOpenChange}>
       <Modal.Container placement="center">
-        <Modal.Dialog className="max-w-180 px-2 md:px-4">
+        <Modal.Dialog className={`max-w-180 px-2 md:px-4 ${className ?? ""}`}>
           <Modal.Header className="mx-auto">
             <Modal.CloseTrigger />
             <Modal.Heading>Автозаполнение</Modal.Heading>

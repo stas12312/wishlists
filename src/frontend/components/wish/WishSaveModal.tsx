@@ -10,12 +10,14 @@ export default function WishSaveModal({
   wishlistUUID,
   onUpdate,
   wish,
+  className,
 }: {
   isOpen: boolean;
   onOpenChange: { (): void };
   wishlistUUID: string;
   onUpdate: { (wish: IWish): void };
   wish?: IWish | undefined;
+  className?: string;
 }) {
   return (
     <Modal.Backdrop
@@ -24,7 +26,9 @@ export default function WishSaveModal({
       onOpenChange={onOpenChange}
     >
       <Modal.Container placement="center">
-        <Modal.Dialog className="max-w-200 w-full px-2 md:px-4">
+        <Modal.Dialog
+          className={`max-w-200 w-full px-2 md:px-4 ${className ?? ""}`}
+        >
           <Modal.CloseTrigger />
           <ModalHeader className="flex flex-col gap-1 text-center">
             <Modal.Heading>
@@ -33,6 +37,7 @@ export default function WishSaveModal({
           </ModalHeader>
           <ModalBody className="p-1">
             <WishForm
+              className={className}
               wish={wish}
               wishlistUUID={wishlistUUID}
               onCreate={onUpdate}

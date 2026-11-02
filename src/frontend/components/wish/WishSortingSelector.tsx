@@ -52,9 +52,11 @@ const items = [
 export const SortingSelector = ({
   defaultField,
   onChangeSorting,
+  overlayClassName,
 }: {
   onChangeSorting: { (sorting: ISorting): void };
   defaultField: string;
+  overlayClassName?: string;
 }) => {
   const [field, setField] = useState(defaultField);
   const [desc, setDesc] = useState(true);
@@ -66,7 +68,10 @@ export const SortingSelector = ({
         initial="initial"
         variants={defaultVariants}
       >
-        <Button className="shadow-lg" variant="tertiary">
+        <Button
+          className="shadow-lg wishlist-accent-trigger"
+          variant="tertiary"
+        >
           <MdSort />
           {
             (
@@ -78,7 +83,7 @@ export const SortingSelector = ({
           {desc ? <MdArrowDownward /> : <MdArrowUpward />}
         </Button>
       </motion.span>
-      <Dropdown.Popover>
+      <Dropdown.Popover className={overlayClassName}>
         <DropdownMenu
           aria-label="Сортировка"
           onAction={(action) => {
@@ -108,7 +113,7 @@ export const SortingSelector = ({
             ) : (
               <DropdownItem key={item.key} id={item.key}>
                 {item.key == field || item.desk === desc ? (
-                  <MdCheck />
+                  <MdCheck className="text-accent" />
                 ) : (
                   <span className="w-4" />
                 )}

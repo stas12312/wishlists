@@ -44,6 +44,7 @@ export default function WishForm(props: {
   onCreate: { (wish: IWish): void };
   wishlistUUID: string;
   wish?: IWish | undefined;
+  className?: string;
 }) {
   const existsWish = props.wish;
   const [formData, setFormData] = useState<{
@@ -397,6 +398,7 @@ export default function WishForm(props: {
       <div>
         {loadByLinkDisclosure.isOpen ? (
           <LoadByLinkModal
+            className={props.className}
             isOpen={loadByLinkDisclosure.isOpen}
             onLinkLoad={setLinkResult}
             onOpenChange={loadByLinkDisclosure.toggle}

@@ -1,14 +1,8 @@
 "use client";
-import {
-  Alert,
-  Button,
-  Chip,
-  ChipProps,
-  toast,
-  useOverlayState,
-} from "@heroui/react";
+import { Alert, Button, Link, toast, useOverlayState } from "@heroui/react";
 import { motion } from "framer-motion";
 import { observer } from "mobx-react-lite";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   MdDeleteOutline,
@@ -17,24 +11,31 @@ import {
   MdRestoreFromTrash,
 } from "react-icons/md";
 
-import { CustomBreadcrumbs } from "../Breadcrumbs";
 import ConfirmationModal from "../ConfirmationModal";
 import PageHeader from "../PageHeader";
 import UserCard from "../user/UserCard";
 import { IStatistic } from "../wish/WishList";
 
+import { WishlistChips } from "./WishlistChips";
 import WishlistSaveModal from "./WishlistSaveModal";
+import {
+  DEFAULT_WISHLIST_EMOJI,
+  getWishlistAccent,
+  getWishlistGradient,
+} from "./wishlistAppearance";
 
 import { restoreWishlist } from "@/lib/client-requests/wishlist";
-import { IWishlist, Visible } from "@/lib/models/wishlist";
+import { IWishlist } from "@/lib/models/wishlist";
 import userStore from "@/store/userStore";
 
-const visibleLabels: Record<Visible, string> = {
-  [Visible.Private]: "только для меня",
-  [Visible.Public]: "для всех",
-  [Visible.ForFriends]: "для друзей",
-  [Visible.ForSelectedFriends]: "для избранных друзей",
-};
+const GLASS_BUTTON_CLASS =
+  "wishlist-glass-button rounded-full backdrop-blur-sm";
+
+const SHARE_BUTTON_CLASS =
+  "wishlist-accent-button rounded-full backdrop-blur-sm";
+
+const DANGER_BUTTON_CLASS =
+  "wishlist-danger-button rounded-full backdrop-blur-sm";
 
 export const WishlistDetail = observer(
   ({
@@ -51,27 +52,12 @@ export const WishlistDetail = observer(
     statistic?: IStatistic;
   }) => {
     const user = wishlist.user;
+    const router = useRouter();
     const isOwner = user && user.id === userStore.user.id;
-
-    const chips: { label: string; color: ChipProps["color"] }[] = [];
-    if (wishlist.date) {
-      chips.push({ label: formatEventDate(wishlist.date), color: "default" });
-    }
-    if (isOwner && wishlist.is_active) {
-      chips.push({ label: visibleLabels[wishlist.visible], color: "accent" });
-    }
-    if (isOwner && statistic?.totalCount) {
-      chips.push({
-        label: `исполнено ${statistic.fullfiledCount} из ${statistic.totalCount}`,
-        color: "success",
-      });
-    }
-    if (isOwner && statistic?.totalSum) {
-      chips.push({
-        label: `на сумму ${statistic.totalSum.toLocaleString()}`,
-        color: "warning",
-      });
-    }
+    const gradient = getWishlistGradient(
+      wishlist.uuid,
+      wishlist.settings?.color,
+    );
 
     const editOverlay = useOverlayState();
     const [isConfirm, setIsConfirm] = useState(false);
@@ -94,99 +80,113 @@ export const WishlistDetail = observer(
         {user && user.id != userStore.user.id ? (
           <UserCard username={user.username} />
         ) : null}
-        <PageHeader>
-          <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto] gap-x-2 gap-y-3 md:gap-y-2">
-            <div className="min-w-0">
-              <CustomBreadcrumbs
-                items={[
-                  {
-                    title: isEditable ? "Вишлисты" : "Вишлисты пользователя",
-                    href: isEditable
-                      ? "/"
-                      : `/users/${wishlist.user?.username}`,
-                  },
-                  {
-                    title: wishlist.name,
-                    href: `/wishlists/${wishlist.uuid}`,
-                  },
-                ]}
-              />
-            </div>
-            <div className="flex items-center justify-center gap-2 md:col-start-2 md:row-start-1 md:row-span-2 md:self-center">
-              {wishlist.is_active ? (
-                <Button
-                  isIconOnly
-                  aria-label="Поделиться"
-                  className="rounded-full"
-                  variant="primary"
-                  onPress={shareWishlist}
+        <PageHeader dividerClassName="mt-3 mb-4">
+          <Link
+            className="mx-auto text-2xl text-muted md:mx-0"
+            onPress={() => {
+              router.push(
+                isEditable ? "/" : `/users/${wishlist.user?.username}`,
+              );
+            }}
+          >
+            {isEditable ? "Вишлисты" : "Вишлисты пользователя"}
+          </Link>
+          <div
+            className={`group relative mt-2 overflow-hidden rounded-3xl bg-gradient-to-br ${gradient} ${
+              !wishlist.is_active ? "grayscale" : ""
+            }`}
+          >
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute -right-6 -top-4 flex size-52 rotate-[-18deg] select-none items-center justify-center text-[180px] leading-none opacity-[0.16] transition-transform duration-500 ease-out [mask-image:linear-gradient(135deg,transparent_5%,black_65%)] group-focus-within:rotate-[-8deg] group-focus-within:scale-110 motion-reduce:transition-none motion-reduce:group-focus-within:transform-none dark:opacity-[0.12] md:group-hover:rotate-[-8deg] md:group-hover:scale-110 motion-reduce:md:group-hover:transform-none"
+            >
+              {wishlist.settings?.emoji || DEFAULT_WISHLIST_EMOJI}
+            </span>
+            <div className="absolute -right-10 -top-16 size-40 rounded-full bg-white/10" />
+            <div className="absolute -bottom-16 right-1/4 size-32 rounded-full bg-black/10" />
+            <div className="relative z-10 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 p-3 md:gap-x-4 md:p-4">
+              <div className="row-start-1 flex size-14 shrink-0 items-center justify-center rounded-2xl bg-white/40 shadow-[0_4px_12px_rgba(15,23,42,0.24)] dark:bg-white/15 backdrop-blur-sm">
+                <span
+                  aria-label="Эмодзи вишлиста"
+                  className="text-3xl drop-shadow-[0_2px_3px_rgba(15,23,42,0.4)]"
+                  role="img"
                 >
-                  <MdOutlineShare className="text-lg" />
-                </Button>
-              ) : null}
-              {isEditable ? (
-                <>
-                  {wishlist.is_active ? (
-                    <Button
-                      isIconOnly
-                      aria-label="Редактировать"
-                      className="rounded-full"
-                      variant="tertiary"
-                      onPress={editOverlay.open}
-                    >
-                      <MdOutlineEdit className="text-lg" />
-                    </Button>
-                  ) : (
-                    <Button
-                      isIconOnly
-                      aria-label="Восстановить"
-                      className="rounded-full"
-                      variant="tertiary"
-                      onPress={restore}
-                    >
-                      <MdRestoreFromTrash className="text-lg" />
-                    </Button>
-                  )}
+                  {wishlist.settings?.emoji || DEFAULT_WISHLIST_EMOJI}
+                </span>
+              </div>
+              <div className="col-start-3 row-start-1 flex items-center gap-2">
+                {wishlist.is_active ? (
                   <Button
                     isIconOnly
-                    aria-label={wishlist.is_active ? "Архивировать" : "Удалить"}
-                    className="rounded-full"
-                    variant="danger"
-                    onPress={() => setIsConfirm(true)}
+                    aria-label="Поделиться"
+                    className={SHARE_BUTTON_CLASS}
+                    variant="tertiary"
+                    onPress={shareWishlist}
                   >
-                    <MdDeleteOutline className="text-lg" />
+                    <MdOutlineShare className="text-lg" />
                   </Button>
-                </>
-              ) : null}
-            </div>
-            {chips.length ? (
-              <motion.div
-                animate={{ opacity: 1, transition: { duration: 0.5 } }}
-                className="flex flex-wrap items-center justify-center md:justify-start gap-2"
-                initial={{ opacity: 0 }}
-              >
-                {chips.map((chip) => (
-                  <Chip
-                    key={chip.label}
-                    color={chip.color}
-                    size="lg"
-                    variant="soft"
+                ) : null}
+                {isEditable ? (
+                  <>
+                    {wishlist.is_active ? (
+                      <Button
+                        isIconOnly
+                        aria-label="Редактировать"
+                        className={GLASS_BUTTON_CLASS}
+                        variant="tertiary"
+                        onPress={editOverlay.open}
+                      >
+                        <MdOutlineEdit className="text-lg" />
+                      </Button>
+                    ) : (
+                      <Button
+                        isIconOnly
+                        aria-label="Восстановить"
+                        className={GLASS_BUTTON_CLASS}
+                        variant="tertiary"
+                        onPress={restore}
+                      >
+                        <MdRestoreFromTrash className="text-lg" />
+                      </Button>
+                    )}
+                    <Button
+                      isIconOnly
+                      aria-label={
+                        wishlist.is_active ? "Архивировать" : "Удалить"
+                      }
+                      className={DANGER_BUTTON_CLASS}
+                      variant="tertiary"
+                      onPress={() => setIsConfirm(true)}
+                    >
+                      <MdDeleteOutline className="text-lg" />
+                    </Button>
+                  </>
+                ) : null}
+              </div>
+              <div className="col-span-full row-start-2 flex min-w-0 flex-col items-center gap-1 md:col-span-1 md:col-start-2 md:row-start-1 md:items-start">
+                <h1
+                  className="max-w-full truncate text-xl font-semibold text-slate-900 dark:text-white md:text-2xl"
+                  title={wishlist.name}
+                >
+                  {wishlist.name}
+                </h1>
+                {wishlist.description ? (
+                  <p
+                    className="max-w-full truncate text-center text-sm text-slate-700 dark:text-white/80 md:text-left md:text-base"
+                    title={wishlist.description}
                   >
-                    {chip.label}
-                  </Chip>
-                ))}
-              </motion.div>
-            ) : null}
+                    {wishlist.description}
+                  </p>
+                ) : null}
+              </div>
+              <WishlistChips
+                className="col-span-full justify-center md:row-start-2 md:justify-start"
+                isOwner={!!isOwner}
+                statistic={statistic}
+                wishlist={wishlist}
+              />
+            </div>
           </div>
-
-          {wishlist.description ? (
-            <p
-              className="text-sm text-muted mt-2 text-center md:text-left"
-              title={wishlist.description}
-            >
-              {wishlist.description}
-            </p>
-          ) : null}
           {!wishlist.is_active ? (
             <motion.div
               animate={{ opacity: 1, transition: { duration: 0.5 } }}
@@ -205,6 +205,7 @@ export const WishlistDetail = observer(
           ) : null}
         </PageHeader>
         <WishlistSaveModal
+          className={getWishlistAccent(wishlist.uuid, wishlist.settings?.color)}
           isOpen={editOverlay.isOpen}
           wishlist={wishlist}
           onOpenChange={editOverlay.toggle}
@@ -226,13 +227,3 @@ export const WishlistDetail = observer(
     );
   },
 );
-
-function formatEventDate(date: string): string {
-  const eventDate = new Date(date);
-  const isCurrentYear = eventDate.getFullYear() === new Date().getFullYear();
-  return eventDate.toLocaleDateString("ru-RU", {
-    day: "numeric",
-    month: "long",
-    year: isCurrentYear ? undefined : "numeric",
-  });
-}

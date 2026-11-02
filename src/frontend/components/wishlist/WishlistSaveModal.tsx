@@ -9,16 +9,20 @@ export default function WishlistSaveModal({
   onOpenChange,
   onSaveWishlist,
   wishlist,
+  className,
 }: {
   isOpen: boolean;
   onOpenChange: { (): void };
   onSaveWishlist: { (wishlist: IWishlist): void };
   wishlist?: IWishlist | undefined;
+  className?: string;
 }) {
   return (
     <Modal.Backdrop isOpen={isOpen} onOpenChange={onOpenChange}>
       <Modal.Container placement="center">
-        <Modal.Dialog className="px-2 md:px-4">
+        <Modal.Dialog
+          className={`w-full max-w-160 px-2 md:px-4 ${className ?? ""}`}
+        >
           <Modal.Header className="flex flex-col gap-1 text-center">
             <Modal.Heading>
               {wishlist ? "Редактирование вишлиста" : "Добавление вишлиста"}

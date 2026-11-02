@@ -28,6 +28,7 @@
     "axios": "^1.14.0",
     "clsx": "2.1.1",
     "country-flag-icons": "^1.6.15",
+    "emoji-picker-react": "^5.1.4",
     "framer-motion": "^12.38.0",
     "intl-messageformat": "^11.2.0",
     "jwt-decode": "^4.0.0",
