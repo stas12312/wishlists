@@ -33,7 +33,7 @@ const WishFullCard = observer(
     withUser?: boolean;
     withQuestions?: boolean;
   }) => {
-    const menuItems = getMenuItemsByActions(wish.actions);
+    const menuItems = getMenuItemsByActions(wish);
     const accentClass = getWishlistAccent(
       wishlist?.uuid ?? wish.wishlist_uuid,
       wishlist?.settings?.color,

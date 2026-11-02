@@ -18,6 +18,8 @@ const ConfirmationModal = ({
   confirmName = "Да",
   declineName = "Нет",
   title = "Подтвердите действие",
+  confirmDisabled = false,
+  primaryConfirm = false,
   confirmByText = false,
   confirmText,
   confirmLabel,
@@ -29,6 +31,8 @@ const ConfirmationModal = ({
   declineName?: string;
   isOpen: boolean;
   title?: string;
+  confirmDisabled?: boolean;
+  primaryConfirm?: boolean;
   confirmByText?: boolean;
   confirmText?: string;
   confirmLabel?: string;
@@ -89,7 +93,7 @@ const ConfirmationModal = ({
           </Modal.Body>
           <Modal.Footer>
             <Button
-              value="primary"
+              variant={primaryConfirm ? "danger" : undefined}
               onPress={() => {
                 onDecline();
               }}
@@ -98,9 +102,22 @@ const ConfirmationModal = ({
             </Button>
             <ButtonWithLoader
               ref={buttonRef}
-              isDisabled={confirmByText && !(confirmText == text)}
+              className={
+                primaryConfirm && !confirmDisabled
+                  ? "[--accent:var(--color-blue-600)] [--accent-foreground:white]"
+                  : undefined
+              }
+              isDisabled={
+                confirmDisabled || (confirmByText && confirmText !== text)
+              }
               isLoading={isLoading}
-              variant="danger-soft"
+              variant={
+                primaryConfirm
+                  ? confirmDisabled
+                    ? "secondary"
+                    : "primary"
+                  : "danger-soft"
+              }
               onPress={async () => {
                 setIsLoading(true);
                 await onConfirm();

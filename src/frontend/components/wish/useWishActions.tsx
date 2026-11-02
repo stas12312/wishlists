@@ -5,9 +5,11 @@ import ConfirmationModal from "../ConfirmationModal";
 import SelectWishlistModal from "../wishlist/WishlistSelectorModal";
 
 import WishSaveModal from "./WishSaveModal";
+import WishReservationModal from "./WishReservationModal";
 
 import {
   cancelReserveWish,
+  checkReservation,
   cancelWishFull,
   copyWish,
   deleteWish,
@@ -18,6 +20,7 @@ import {
 } from "@/lib/client-requests/wish";
 import { IWish } from "@/lib/models/wish";
 import { IWishlist } from "@/lib/models/wishlist";
+import userStore from "@/store/userStore";
 
 export function useWishActions({
   wish,
@@ -34,6 +37,24 @@ export function useWishActions({
   const editModal = useOverlayState();
   const moveModal = useOverlayState();
   const copyModal = useOverlayState();
+  const reservationModal = useOverlayState();
+
+  async function onCheckReservation() {
+    const wishUUID = wish.uuid;
+    if (!wishUUID) return;
+    try {
+      const reserved = await checkReservation(wishUUID);
+      userStore.setCheckedReservation(wishUUID, reserved);
+    } catch (error) {
+      toast.danger(
+        error instanceof Error
+          ? error.message
+          : "Не удалось проверить бронирование",
+      );
+    } finally {
+      reservationModal.close();
+    }
+  }
 
   async function onDeleteWish() {
     await onDelete(wish, "Желание удалено");
@@ -68,6 +89,9 @@ export function useWishActions({
     }
     if (key === "edit") {
       editModal.open();
+    }
+    if (key === "check_reservation") {
+      reservationModal.open();
     }
     if (key === "reserve") {
       const result = await reserveWish(wishUUID);
@@ -108,6 +132,13 @@ export function useWishActions({
 
   const modals = (
     <>
+      {reservationModal.isOpen && (
+        <WishReservationModal
+          isOpen={reservationModal.isOpen}
+          onConfirm={onCheckReservation}
+          onDecline={reservationModal.close}
+        />
+      )}
       <ConfirmationModal
         isOpen={isConfirm}
         message="Вы действительно хотите удалить желание?"
