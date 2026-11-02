@@ -59,6 +59,102 @@ export const WISHLIST_COLORS = [
   },
 ] as const;
 
+type WishlistOgPalette = {
+  background: string;
+  edge: string;
+  emojiBackground: string;
+};
+
+export const WISHLIST_OG_COLORS = {
+  sky: {
+    light: {
+      background: "#E0F2FE",
+      edge: "rgba(14, 116, 144, 0.16)",
+      emojiBackground: "#BAE6FD",
+    },
+    dark: {
+      background: "#082F49",
+      edge: "rgba(14, 116, 144, 0.32)",
+      emojiBackground: "#0EA5E9",
+    },
+  },
+  violet: {
+    light: {
+      background: "#F3E8FF",
+      edge: "rgba(126, 34, 206, 0.16)",
+      emojiBackground: "#DDD6FE",
+    },
+    dark: {
+      background: "#2E1065",
+      edge: "rgba(126, 34, 206, 0.32)",
+      emojiBackground: "#8B5CF6",
+    },
+  },
+  rose: {
+    light: {
+      background: "#FFE4E6",
+      edge: "rgba(190, 18, 60, 0.16)",
+      emojiBackground: "#FECDD3",
+    },
+    dark: {
+      background: "#4C0519",
+      edge: "rgba(190, 18, 60, 0.32)",
+      emojiBackground: "#F43F5E",
+    },
+  },
+  teal: {
+    light: {
+      background: "#CCFBF1",
+      edge: "rgba(13, 148, 136, 0.16)",
+      emojiBackground: "#99F6E4",
+    },
+    dark: {
+      background: "#134E4A",
+      edge: "rgba(13, 148, 136, 0.32)",
+      emojiBackground: "#14B8A6",
+    },
+  },
+  orange: {
+    light: {
+      background: "#FFEDD5",
+      edge: "rgba(194, 65, 12, 0.16)",
+      emojiBackground: "#FED7AA",
+    },
+    dark: {
+      background: "#431407",
+      edge: "rgba(194, 65, 12, 0.32)",
+      emojiBackground: "#F97316",
+    },
+  },
+  fuchsia: {
+    light: {
+      background: "#FAE8FF",
+      edge: "rgba(162, 28, 175, 0.16)",
+      emojiBackground: "#F5D0FE",
+    },
+    dark: {
+      background: "#4A044E",
+      edge: "rgba(162, 28, 175, 0.32)",
+      emojiBackground: "#D946EF",
+    },
+  },
+  graphite: {
+    light: {
+      background: "#E4E4E7",
+      edge: "rgba(63, 63, 70, 0.16)",
+      emojiBackground: "#D4D4D8",
+    },
+    dark: {
+      background: "#18181B",
+      edge: "rgba(82, 82, 91, 0.32)",
+      emojiBackground: "#71717A",
+    },
+  },
+} satisfies Record<
+  (typeof WISHLIST_COLORS)[number]["id"],
+  { light: WishlistOgPalette; dark: WishlistOgPalette }
+>;
+
 export const DEFAULT_WISHLIST_COLOR = WISHLIST_COLORS[0].id;
 
 export const WISHLIST_EMOJIS = [

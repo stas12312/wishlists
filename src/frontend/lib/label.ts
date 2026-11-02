@@ -1,3 +1,5 @@
+import type { OgTheme } from "@/components/OGImage";
+
 export function getLabelForCount(count: number, labels: string[]): string {
   const cases = [2, 0, 1, 1, 1, 2];
   return labels[
@@ -15,6 +17,21 @@ export function getOgImageUrl(
   title: string,
   description?: string,
   footer?: string,
+  options: { color?: string; emoji?: string; theme?: OgTheme } = {},
 ): string {
-  return `/image/opengraph?title=${title || ""}&description=${description || ""}&footer=${footer || ""}`;
+  const params = new URLSearchParams({
+    title,
+    description: description || "",
+    footer: footer || "",
+  });
+  if (options.color) {
+    params.set("color", options.color);
+  }
+  if (options.emoji) {
+    params.set("emoji", options.emoji);
+  }
+  if (options.theme) {
+    params.set("theme", options.theme);
+  }
+  return `/image/opengraph?${params.toString()}`;
 }

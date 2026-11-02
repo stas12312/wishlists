@@ -1,6 +1,11 @@
 import { Metadata } from "next";
 
 import Wishes from "@/components/wish/WishList";
+import {
+  DEFAULT_WISHLIST_COLOR,
+  DEFAULT_WISHLIST_EMOJI,
+} from "@/components/wishlist/wishlistAppearance";
+import { getOgImageUrl } from "@/lib/label";
 import { getWishlist } from "@/lib/server-requests/wishlist";
 
 export async function generateMetadata({
@@ -20,6 +25,17 @@ export async function generateMetadata({
     openGraph: {
       title: wishlist.name,
       description: wishlist.description,
+      images: [
+        getOgImageUrl(
+          wishlist.name,
+          wishlist.description,
+          wishlist.user?.name,
+          {
+            color: wishlist.settings?.color || DEFAULT_WISHLIST_COLOR,
+            emoji: wishlist.settings?.emoji || DEFAULT_WISHLIST_EMOJI,
+          },
+        ),
+      ],
     },
   };
 }
