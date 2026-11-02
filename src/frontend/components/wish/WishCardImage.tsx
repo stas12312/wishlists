@@ -1,10 +1,9 @@
 import { Chip } from "@heroui/react";
-import { AiFillGift } from "react-icons/ai";
 import { twMerge } from "tailwind-merge";
-import clsx from "clsx";
 
 import Desirability from "../desirability/DesirabilitySelector";
 import { ResponsiveImage } from "../ResponsiveImage";
+import { DEFAULT_WISHLIST_EMOJI } from "../wishlist/wishlistAppearance";
 
 import WishStatus from "./WishStatus";
 
@@ -35,16 +34,16 @@ const CardImage = ({
             src={wish.images[0]}
           />
         ) : (
-          <div
-            className={clsx(
-              "w-full h-full rounded-3xl",
-              "bg-[linear-gradient(180deg,#ffffff_0%,#f7f7f8_35%,#ececee_100%)]",
-              "dark:bg-[linear-gradient(180deg,#1c1c1e_0%,#2c2c2e_40%,#3a3a3c_100%)]",
-            )}
-          >
-            <AiFillGift
-              className={twMerge("text-8xl mx-auto my-auto", iconClassName)}
-            />
+          <div className="wish-image-placeholder w-full h-full rounded-3xl">
+            <span
+              aria-hidden="true"
+              className={twMerge(
+                "grid place-items-center text-8xl mx-auto my-auto",
+                iconClassName,
+              )}
+            >
+              {DEFAULT_WISHLIST_EMOJI}
+            </span>
           </div>
         )}
       </div>
@@ -61,7 +60,7 @@ const CardImage = ({
       >
         {wish.desirability && wish.desirability > 1 ? (
           <Chip
-            className="bg-default/60 backdrop-blur-lg border border-gray-500/30"
+            className="wishlist-card-chip backdrop-blur-lg border"
             size="lg"
           >
             <Desirability onlyRead value={wish.desirability} />
@@ -69,7 +68,7 @@ const CardImage = ({
         ) : null}
         {wish.cost ? (
           <Chip
-            className="ml-auto mr-0 bg-default/60 backdrop-blur-lg border border-gray-500/30"
+            className="ml-auto mr-0 wishlist-card-chip backdrop-blur-lg border"
             size="lg"
           >
             {wish.cost.toLocaleString() +

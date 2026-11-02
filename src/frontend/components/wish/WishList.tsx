@@ -1,15 +1,19 @@
 "use client";
-import { Alert, Skeleton, toast, useOverlayState } from "@heroui/react";
+import { Alert, Button, Skeleton, toast, useOverlayState } from "@heroui/react";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { MdOutlineAdd } from "react-icons/md";
 import useWebSocket from "react-use-websocket";
 
-import AddCardButton from "../AddCardButton";
 import { AnimatedList } from "../animated-list/AnimatedList";
 import { LoginButton } from "../auth/Login";
 import PageHeader from "../PageHeader";
 import { PageSpinner } from "../PageSpinner";
+import {
+  DEFAULT_WISHLIST_EMOJI,
+  getWishlistAccent,
+} from "../wishlist/wishlistAppearance";
 import { WishlistDetail } from "../wishlist/WishlistDetail";
 
 import { WishItem } from "./WishCard";
@@ -95,9 +99,13 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
 
   useEffect(() => {
     async function fetchWishlists() {
+      // Дожидаемся загрузки пользователя, чтобы кнопки шапки с isEditable
+      // не появлялись отдельной вспышкой после отрисовки вишлиста
+      const userPromise = userStore.getMe().catch(() => null);
       const response = await Promise.all([
         getWishes(wishlistUUID),
         getWishlist(wishlistUUID),
+        userPromise,
       ]);
       if ("message" in response[1]) {
         setError(response[1]);
@@ -167,6 +175,10 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
 
   const canAddWish = isEditable && wishlist.is_active;
 
+  const accentClass = wishlist.uuid
+    ? getWishlistAccent(wishlist.uuid, wishlist.settings?.color)
+    : undefined;
+
   if (error?.message) {
     return (
       <div className="flex justify-center">
@@ -176,14 +188,23 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
   }
 
   return (
-    <>
+    <div
+      className={`${accentClass ?? ""} flex min-h-[calc(100dvh-11rem)] flex-col`}
+    >
       {isLoading ? (
         <PageHeader>
-          <div className="flex justify-center md:justify-start">
-            <Skeleton className="h-8 w-1/5 rounded-full" />
-          </div>
-          <div className="flex justify-center md:justify-start">
-            <Skeleton className="h-5 w-2/5 mt-2 rounded-full" />
+          <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto] gap-x-2 gap-y-3 md:gap-y-2">
+            <div className="min-w-0 flex justify-center md:justify-start">
+              <Skeleton className="h-8 w-3/5 md:w-2/5 rounded-full" />
+            </div>
+            <div className="flex items-center justify-center gap-2 md:col-start-2 md:row-start-1 md:row-span-2 md:self-center">
+              <Skeleton className="h-10 w-10 rounded-full" />
+              <Skeleton className="h-10 w-10 rounded-full" />
+              <Skeleton className="h-10 w-10 rounded-full" />
+            </div>
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
+              <Skeleton className="h-8 w-32 rounded-full" />
+            </div>
           </div>
         </PageHeader>
       ) : (
@@ -200,7 +221,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
           <PageSpinner />
         </div>
       ) : (
-        <>
+        <div className="relative isolate flex flex-1 flex-col">
           {!userStore.user.id ? (
             <div className="col-span-full flex justify-center mb-4">
               <div>
@@ -221,64 +242,93 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
             </div>
           ) : null}
           {items.length ? (
-            <div className="col-span-full flex gap-4 mb-4">
-              <WishFilter
-                hidedFilters={
-                  isEditable || !userStore.user.id ? ["reserved"] : undefined
-                }
-                initValues={{
-                  priceFrom: priceInfo.minPrice,
-                  priceTo: priceInfo.maxPrice,
-                  fullfiled: "all",
-                  reserved: "all",
-                  currency: items[0].currency ?? "RUB",
-                }}
-                onChangeFilter={(newFilter: IWishFilter) => {
-                  if (!isEqual(newFilter, filters)) setFilters(newFilter);
-                }}
-              />
-              <SortingSelector
-                defaultField="created_at"
-                onChangeSorting={setSorting}
-              />
+            <div className="col-span-full flex flex-wrap items-center gap-4 mb-4">
+              {items.length ? (
+                <>
+                  <WishFilter
+                    hidedFilters={
+                      isEditable || !userStore.user.id
+                        ? ["reserved"]
+                        : undefined
+                    }
+                    initValues={{
+                      priceFrom: priceInfo.minPrice,
+                      priceTo: priceInfo.maxPrice,
+                      fullfiled: "all",
+                      reserved: "all",
+                      currency: items[0].currency ?? "RUB",
+                    }}
+                    overlayClassName={`${accentClass} wishlist-overlay`}
+                    onChangeFilter={(newFilter: IWishFilter) => {
+                      if (!isEqual(newFilter, filters)) setFilters(newFilter);
+                    }}
+                  />
+                  <SortingSelector
+                    defaultField="created_at"
+                    overlayClassName={`${accentClass} wishlist-overlay`}
+                    onChangeSorting={setSorting}
+                  />
+                </>
+              ) : null}
+              {canAddWish ? (
+                <Button className="w-full md:ml-auto md:w-auto" onPress={open}>
+                  <MdOutlineAdd className="text-lg" />
+                  Добавить желание
+                </Button>
+              ) : null}
             </div>
           ) : null}
-          {!items.length && !canAddWish ? (
-            <div className="flex h-40 flex-col items-center justify-center gap-1 rounded-3xl border-2 border-dashed border-gray-500/20 text-muted">
-              <span className="text-3xl">🎁</span>
-              Здесь пока пусто
-            </div>
-          ) : null}
-          <AnimatedList
-            items={[
-              canAddWish ? (
-                <AddCardButton
-                  key="add-button"
-                  className="h-40 md:h-70 w-full"
-                  title="Добавить желание"
+          {!items.length ? (
+            <div className="flex flex-1 flex-col items-center justify-center rounded-3xl border border-dashed border-default px-4 py-8 text-center sm:px-5 sm:py-14 md:py-20">
+              <div className="mb-4 flex size-16 items-center justify-center rounded-2xl bg-accent-soft sm:mb-6 sm:size-24 sm:rounded-3xl">
+                <span aria-hidden="true" className="text-4xl sm:text-5xl">
+                  {wishlist.settings?.emoji || DEFAULT_WISHLIST_EMOJI}
+                </span>
+              </div>
+              <h2 className="text-lg font-semibold sm:text-xl md:text-2xl">
+                Здесь пока нет желаний
+              </h2>
+              <p className="mt-2 max-w-sm text-sm text-muted md:text-base">
+                {canAddWish
+                  ? "Добавьте первое желание — пусть близкие знают, чем вас порадовать."
+                  : "Владелец ещё не добавил желания. Загляните сюда позже."}
+              </p>
+              {canAddWish ? (
+                <Button
+                  className="mt-5 w-full sm:mt-6 sm:w-auto"
                   onPress={open}
-                />
-              ) : null,
-              ...visibleItems.map((wish: IWish) => (
+                >
+                  <MdOutlineAdd className="text-lg" />
+                  Добавить желание
+                </Button>
+              ) : null}
+            </div>
+          ) : null}
+          <div className={`relative ${items.length ? "flex-1" : ""}`}>
+            <AnimatedList
+              className="relative"
+              items={visibleItems.map((wish: IWish) => (
                 <WishItem
                   key={wish.uuid}
                   wish={wish}
+                  wishlist={wishlist}
                   onDelete={onDeleteWish}
                   onUpdate={onUpdate}
                 />
-              )),
-            ]}
-          />
+              ))}
+            />
+          </div>
 
           <WishSaveModal
+            className={accentClass}
             isOpen={isOpen}
             wishlistUUID={wishlistUUID}
             onOpenChange={toggle}
             onUpdate={onCreateWish}
           />
-        </>
+        </div>
       )}
-    </>
+    </div>
   );
 });
 

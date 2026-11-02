@@ -30,3 +30,232 @@
         scrollbar-gutter: stable;
     }
 }
+
+/* Переопределение акцентного цвета HeroUI (--accent) в цвет вишлиста.
+   Каскадирует в кнопки, фильтры, слайдеры и фокус-кольца внутри обёртки
+   и в порталах, куда класс передан явно (см. getWishlistAccent). */
+@layer components {
+    .wishlist-accent-violet,
+    .wishlist-accent-rose,
+    .wishlist-accent-teal,
+    .wishlist-accent-orange,
+    .wishlist-accent-sky,
+    .wishlist-accent-fuchsia {
+        /* Производные токены HeroUI вычисляются на корне темы. Когда
+           переопределяем --accent в вишлисте, их нужно пересчитать здесь,
+           иначе hover остаётся цветом глобальной темы. */
+        --accent-hover: color-mix(
+            in oklab,
+            var(--accent) 90%,
+            var(--accent-foreground) 10%
+        );
+        --accent-soft: color-mix(in oklab, var(--accent) 15%, transparent);
+        --accent-soft-foreground: color-mix(
+            in oklab,
+            var(--accent) 70%,
+            var(--foreground) 30%
+        );
+        --accent-soft-hover: color-mix(
+            in oklab,
+            var(--accent) 20%,
+            transparent
+        );
+        --focus: var(--accent);
+    }
+
+    .wishlist-accent-violet {
+        --accent: #8b5cf6;
+    }
+
+    .wishlist-accent-rose {
+        --accent: #f43f5e;
+    }
+
+    .wishlist-accent-teal {
+        --accent: #14b8a6;
+    }
+
+    .wishlist-accent-orange {
+        --accent: #f97316;
+    }
+
+    .wishlist-accent-sky {
+        --accent: #0ea5e9;
+    }
+
+    .wishlist-accent-fuchsia {
+        --accent: #d946ef;
+    }
+
+    :root {
+        --wishlist-overlay-base: var(--overlay);
+    }
+
+    .wishlist-overlay {
+        --overlay: color-mix(
+            in oklab,
+            var(--accent) 16%,
+            var(--wishlist-overlay-base)
+        );
+        --color-overlay: var(--overlay);
+        --color-accent: var(--accent);
+        border: 1px solid color-mix(in oklab, var(--accent) 35%, transparent);
+    }
+
+    .wishlist-overlay [data-slot="separator"] {
+        background-color: color-mix(in oklab, var(--accent) 30%, transparent);
+    }
+
+    @media (hover: hover) {
+        .wishlist-overlay [data-slot="menu-item"]:hover,
+        .wishlist-overlay [data-slot="menu-item"][data-hovered="true"] {
+            background-color: var(--accent-soft-hover);
+        }
+    }
+}
+
+/*
+   HeroUI хранит состояния кнопки во внутренних переменных. Задаём обе,
+   чтобы data-hovered не возвращал кнопке системный цвет темы.
+*/
+.wishlist-accent-trigger {
+    --button-bg: var(--accent-soft);
+    --button-bg-hover: var(--accent-soft-hover);
+    --button-bg-pressed: var(--accent-soft-hover);
+    --button-fg: var(--accent-soft-foreground);
+}
+
+.wishlist-glass-button {
+    --button-bg: rgb(255 255 255 / 15%);
+    --button-bg-hover: rgb(255 255 255 / 25%);
+    --button-bg-pressed: rgb(255 255 255 / 25%);
+    --button-fg: white;
+}
+
+html:not(.dark) .wishlist-glass-button {
+    --button-bg: rgb(255 255 255 / 40%);
+    --button-bg-hover: rgb(255 255 255 / 60%);
+    --button-bg-pressed: rgb(255 255 255 / 60%);
+    --button-fg: var(--color-slate-900);
+}
+
+.wishlist-accent-button {
+    --button-bg: color-mix(in srgb, var(--accent) 60%, transparent);
+    --button-bg-hover: color-mix(in srgb, var(--accent) 70%, transparent);
+    --button-bg-pressed: color-mix(in srgb, var(--accent) 70%, transparent);
+    --button-fg: white;
+}
+
+.wishlist-danger-button {
+    --button-bg: color-mix(in srgb, var(--danger) 50%, transparent);
+    --button-bg-hover: color-mix(in srgb, var(--danger) 60%, transparent);
+    --button-bg-pressed: color-mix(in srgb, var(--danger) 60%, transparent);
+    --button-fg: white;
+}
+
+.wish-image-placeholder {
+    background-image: linear-gradient(
+        135deg,
+        color-mix(in oklab, var(--accent) 38%, var(--surface)),
+        color-mix(in oklab, var(--accent) 15%, var(--surface))
+    );
+}
+
+.wishlist-card-backdrop {
+    background-color: color-mix(
+        in oklab,
+        var(--accent) 18%,
+        var(--color-default)
+    );
+}
+
+.wishlist-card-user-chip {
+    background-color: rgb(255 255 255 / 85%);
+    color: var(--color-slate-900);
+    border-color: rgb(15 23 42 / 15%);
+}
+
+html.dark .wishlist-card-user-chip {
+    background-color: rgb(24 24 27 / 85%);
+    color: var(--color-zinc-100);
+    border-color: rgb(255 255 255 / 20%);
+}
+
+.wishlist-card-chip,
+.wishlist-card-menu-button {
+    background-color: color-mix(
+        in oklab,
+        var(--accent) 18%,
+        color-mix(in oklab, var(--color-default) 60%, transparent)
+    );
+    border-color: color-mix(in oklab, var(--accent) 40%, transparent);
+}
+
+.wishlist-card-menu-button:hover {
+    background-color: color-mix(
+        in oklab,
+        var(--accent) 28%,
+        color-mix(in oklab, var(--color-default) 60%, transparent)
+    );
+}
+
+.wishlist-card-button {
+    --button-bg: color-mix(in oklab, var(--accent) 22%, var(--color-default));
+    --button-bg-hover: color-mix(
+        in oklab,
+        var(--accent) 32%,
+        var(--color-default)
+    );
+    --button-bg-pressed: var(--button-bg-hover);
+    --button-fg: var(--accent-soft-foreground);
+    border-color: color-mix(in oklab, var(--accent) 40%, transparent);
+}
+
+.wishlist-card-danger-button {
+    --button-bg: color-mix(in oklab, var(--danger) 18%, var(--color-default));
+    --button-bg-hover: color-mix(
+        in oklab,
+        var(--danger) 28%,
+        var(--color-default)
+    );
+    --button-bg-pressed: var(--button-bg-hover);
+    --button-fg: var(--danger);
+    border-color: color-mix(in oklab, var(--danger) 30%, transparent);
+}
+
+.feed-wishes .wishlist-card-button:not(.wishlist-card-danger-button) {
+    --button-bg: color-mix(in oklab, var(--success) 18%, var(--color-default));
+    --button-bg-hover: color-mix(in oklab, var(--success) 28%, var(--color-default));
+    --button-fg: var(--color-green-700);
+    border-color: color-mix(in oklab, var(--success) 30%, transparent);
+}
+
+.dark .feed-wishes .wishlist-card-button:not(.wishlist-card-danger-button) {
+    --button-fg: var(--success);
+}
+
+.feed-wishes .card:has(.card__content img) .wishlist-card-backdrop {
+    opacity: 1;
+    background-image: none;
+    background-color: color-mix(in oklab, var(--color-default) 50%, transparent);
+}
+
+.feed-wishes .card__content {
+    overflow: hidden;
+    border-radius: 1.5rem;
+}
+
+.dark .feed-wishes .card__header [title] {
+    color: white;
+}
+
+.feed-wishes .card__header > div {
+    height: 3.5rem;
+}
+
+.feed-wishes .card__header [title]:first-child:has(+ [title]:not(:empty)) {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}

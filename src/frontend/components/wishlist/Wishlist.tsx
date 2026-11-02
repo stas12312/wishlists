@@ -6,7 +6,6 @@ import { IoMdAdd } from "react-icons/io";
 import { useRouter } from "next/navigation";
 import { Button, toast, useOverlayState } from "@heroui/react";
 
-import AddCardButton from "../AddCardButton";
 import { AnimatedList } from "../animated-list/AnimatedList";
 import { InfinityLoader } from "../InfinityLoader";
 import PageHeader from "../PageHeader";
@@ -106,7 +105,7 @@ export const Wishlists = observer(
       toggle();
     }
 
-    let components = items.map((wishlist: IWishlist) => (
+    const components = items.map((wishlist: IWishlist) => (
       <WishlistItem
         key={`${wishlist.uuid}-${wishlist.is_active}`}
         edit={actions.edit}
@@ -118,13 +117,27 @@ export const Wishlists = observer(
 
     return (
       <>
-        <PageHeader>
-          <h1 className="text-2xl">{title}</h1>
+        <PageHeader dividerClassName="mt-4 mb-5">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <h1 className="text-2xl font-semibold">{title}</h1>
+            {actions.edit &&
+            !filter.showArchive &&
+            (isLoading || items.length > 0) ? (
+              <Button
+                className="w-full shrink-0 sm:w-auto"
+                variant="primary"
+                onPress={open}
+              >
+                <IoMdAdd />
+                Добавить вишлист
+              </Button>
+            ) : null}
+          </div>
         </PageHeader>
         {actions.filter ? (
-          <span className="flex col-span-full mb-4">
+          <div className="col-span-full mb-5 flex">
             <WishlistFilter filter={filter} setFilter={setFilter} />
-          </span>
+          </div>
         ) : null}
         {isLoading ? <PageSpinner /> : null}
 
@@ -135,31 +148,37 @@ export const Wishlists = observer(
             onLoad={() => fetchWishlists(false)}
           >
             <AnimatedList
-              items={[
-                !filter.showArchive && actions.edit && !isLoading ? (
-                  <AddCardButton
-                    className="h-40 w-full"
-                    title="Добавить вишлист"
-                    onPress={open}
-                  />
-                ) : null,
-                ...components,
-              ]}
+              gridConfig="grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+              items={components}
             />
           </InfinityLoader>
-        ) : isLoading ? null : (
-          <div className="col-span-full flex flex-col items-center gap-6 text-center">
-            <h1 className="text-4xl">
-              {filter.showArchive
-                ? "Список архивированных вишлистов пуст"
-                : "Список вишлистов пуст"}
-            </h1>
-            {actions.edit && !filter.showArchive ? (
-              <Button variant="primary" onPress={open}>
+        ) : isLoading ? null : !filter.showArchive ? (
+          <div className="col-span-full flex min-h-80 flex-col items-center justify-center rounded-3xl border border-dashed border-default px-5 py-14 text-center md:py-20">
+            <div className="mb-6 flex size-24 items-center justify-center rounded-3xl bg-accent-soft">
+              <span aria-hidden="true" className="text-5xl">
+                🎁
+              </span>
+            </div>
+            <h2 className="text-xl font-semibold md:text-2xl">
+              Здесь пока нет вишлистов
+            </h2>
+            <p className="mt-2 max-w-sm text-sm text-muted md:text-base">
+              {actions.edit
+                ? "Создайте первый вишлист и соберите в нём всё, о чём мечтаете."
+                : "Пользователь ещё не добавил вишлисты. Загляните сюда позже."}
+            </p>
+            {actions.edit ? (
+              <Button className="mt-6 w-full sm:w-auto" onPress={open}>
                 <IoMdAdd />
-                Добавить
+                Создать первый вишлист
               </Button>
             ) : null}
+          </div>
+        ) : (
+          <div className="col-span-full flex min-h-60 flex-col items-center justify-center gap-3 text-center">
+            <h2 className="text-xl text-default-foreground/60">
+              Список архивированных вишлистов пуст
+            </h2>
           </div>
         )}
         <WishlistSaveModal

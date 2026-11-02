@@ -8,10 +8,14 @@ import { defaultVariants } from "@/lib/animations/default";
 const Filter = ({
   applyFilter,
   isShowBadge,
+  triggerClassName,
+  overlayClassName,
   children,
 }: {
   applyFilter: { (): void };
   isShowBadge?: boolean;
+  triggerClassName?: string;
+  overlayClassName?: string;
   children: ReactNode;
 }) => {
   const filterOverlay = useOverlayState();
@@ -35,7 +39,9 @@ const Filter = ({
           <Badge.Anchor>
             <Button
               isIconOnly
-              className="shadow-lg"
+              className={
+                triggerClassName ? `shadow-lg ${triggerClassName}` : "shadow-lg"
+              }
               data-qa="select-filters"
               variant="tertiary"
               onPress={filterOverlay.toggle}
@@ -46,7 +52,11 @@ const Filter = ({
           </Badge.Anchor>
         </motion.span>
       </Popover.Trigger>
-      <Popover.Content offset={20} placement="bottom left">
+      <Popover.Content
+        className={overlayClassName}
+        offset={20}
+        placement="bottom left"
+      >
         <Popover.Dialog className="flex flex-col gap-3 py-2">
           <Popover.Arrow className="custom-arrow" />
           <Popover.Heading className="text-center">Фильтры</Popover.Heading>
