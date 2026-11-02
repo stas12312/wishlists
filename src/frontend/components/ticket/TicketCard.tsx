@@ -87,7 +87,7 @@ export function getStatus(
     case "closed":
       return ["Закрыто", "default"];
     case "waiting_info":
-      return ["Ожидает вашего ответа", "warning"];
+      return ["Получен ответ", "warning"];
     case "waiting_fix":
       return ["Ожидает исправление", "warning"];
   }
