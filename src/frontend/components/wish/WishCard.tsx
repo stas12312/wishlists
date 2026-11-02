@@ -157,6 +157,7 @@ export const WishItem = observer(
           handeAction={handleOnAction}
           isOpen={fullCardDrawer.isOpen}
           wish={wish}
+          wishlist={wishlist}
           withUser={withUser}
           onOpenChange={fullCardDrawer.toggle}
         />
