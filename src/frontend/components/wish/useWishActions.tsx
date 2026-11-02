@@ -23,10 +23,12 @@ export function useWishActions({
   wish,
   onDelete = () => {},
   onUpdate = () => {},
+  className,
 }: {
   wish: IWish;
   onDelete?: { (wish: IWish, message: string): void };
   onUpdate?: { (wish: IWish): void };
+  className?: string;
 }) {
   const [isConfirm, setIsConfirm] = useState(false);
   const editModal = useOverlayState();
@@ -115,6 +117,7 @@ export function useWishActions({
         }}
       />
       <WishSaveModal
+        className={className}
         isOpen={editModal.isOpen}
         wish={wish}
         wishlistUUID={wish.wishlist_uuid}

@@ -17,10 +17,12 @@ export const WishFilter = ({
   hidedFilters = [],
   onChangeFilter,
   initValues,
+  overlayClassName,
 }: {
   hidedFilters?: string[];
   onChangeFilter: { (filter: IWishFilter): void };
   initValues: IWishFilter & { currency: string };
+  overlayClassName?: string;
 }) => {
   const [fullfiledValue, setFullfiledValue] = useState<Key>("all");
   const [reservedValue, setReservedValue] = useState<Key>("all");
@@ -53,6 +55,8 @@ export const WishFilter = ({
           priceTo === undefined
         )
       }
+      overlayClassName={overlayClassName}
+      triggerClassName="wishlist-accent-trigger"
     >
       <div className="flex flex-wrap flex-col gap-2">
         <Tabs

@@ -69,7 +69,7 @@ export const WishlistItemMenu = ({
     <>
       <Dropdown>
         <MenuTrigger className={className} name="wishlist-menu" />
-        <Dropdown.Popover className="mr-2">
+        <Dropdown.Popover className="mr-2 bg-overlay/70 backdrop-blur-xl">
           <Dropdown.Menu aria-label="Static Actions" onAction={handleOnAction}>
             {isEditable ? (
               <>

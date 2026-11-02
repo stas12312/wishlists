@@ -7,6 +7,11 @@ export enum Visible {
   ForSelectedFriends,
 }
 
+export interface IWishlistSettings {
+  color: string;
+  emoji: string;
+}
+
 export interface IWishlist {
   uuid: string;
   name: string;
@@ -17,6 +22,7 @@ export interface IWishlist {
   is_active: boolean;
   wishes_count: number;
   visible: Visible;
+  settings?: IWishlistSettings;
   user?: IUser;
   visible_user_ids: number[];
 }

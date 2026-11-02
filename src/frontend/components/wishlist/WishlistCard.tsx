@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Chip, Skeleton } from "@heroui/react";
+import { Card, Skeleton } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { forwardRef, useState } from "react";
 import { usePress } from "react-aria";
@@ -8,6 +8,10 @@ import { usePress } from "react-aria";
 import { VisibleChip } from "../VisibleChip";
 
 import WishlistItemMenu from "./WishlistMenu";
+import {
+  DEFAULT_WISHLIST_EMOJI,
+  getWishlistGradient,
+} from "./wishlistAppearance";
 
 import { getLabelForCount } from "@/lib/label";
 import { IWishlist } from "@/lib/models/wishlist";
@@ -34,84 +38,94 @@ export const WishlistItem = forwardRef(
       setCardWishlist(wishlist);
     }
 
-    let { pressProps, isPressed } = usePress({
+    const { pressProps, isPressed } = usePress({
       onPress: () => router.push(`/wishlists/${wishlist.uuid}`),
     });
 
     return (
-      <div className="md:hover:scale-[1.03] transition">
+      <div className="group relative transition-transform duration-200 md:hover:scale-[1.02]">
         <Card
           ref={ref}
-          className="p-0 flex-col h-40 data-[pressed=true]:scale-95 transition"
+          className="h-52 flex-col gap-0 overflow-hidden p-0 shadow-sm transition data-[pressed=true]:scale-[0.98]"
           data-pressed={isPressed ? "true" : undefined}
-          role="button"
         >
-          <button {...pressProps} className="cursor-pointer card h-full">
-            <Card.Header className="flex-col items-start">
-              <div className="flex flex-row justify-between w-full">
-                <div className="text-tiny font-bold flex flex-col text-left overflow-hidden truncate">
-                  <span
-                    className={`flex flex-row gap-1 ${!wishlist.is_active ? "text-default-400" : ""}`}
-                  >
-                    {edit ? (
-                      <VisibleChip onlyIcon wishlist={cardWishlist} />
-                    ) : null}
-
-                    <p
-                      className="uppercase text-lg my-auto ml-1"
-                      title={cardWishlist.name}
-                    >
-                      {cardWishlist.name}
-                    </p>
-                  </span>
-                  <p
-                    className="text-default-foreground/50 text-left text-sm mt-0.5"
-                    title={cardWishlist.description}
-                  >
-                    {cardWishlist.description}
-                  </p>
-                </div>
-                <div>
-                  {edit ? (
-                    <WishlistItemMenu
-                      className="h-8"
-                      isEditable={true}
-                      wishlist={cardWishlist}
-                      onDelete={onDelete}
-                      onRestore={onRestore}
-                      onUpdate={onUpdate}
-                    />
-                  ) : null}
-                </div>
-              </div>
-            </Card.Header>
-            <Card.Content className="justify-end">
-              <div className="flow-root">
-                <span className="float-right flex flex-col gap-1">
-                  <Chip
-                    className="mr-0 ml-auto"
-                    color="accent"
-                    size="lg"
-                    variant="primary"
-                  >
-                    {cardWishlist.wishes_count > 0
-                      ? wishlist.wishes_count
-                      : "Нет"}{" "}
-                    {getLabelForCount(cardWishlist.wishes_count, [
-                      "желание",
-                      "желания",
-                      "желаний",
-                    ])}
-                  </Chip>
-                  {cardWishlist.date ? (
-                    <Chip className="mr-0 ml-auto" size="lg">
-                      {new Date(cardWishlist.date).toLocaleDateString()}
-                    </Chip>
-                  ) : null}
+          <button
+            {...pressProps}
+            aria-label={`Открыть вишлист ${cardWishlist.name}`}
+            className={`relative flex h-full cursor-pointer flex-col overflow-hidden bg-gradient-to-br text-left ${getWishlistGradient(cardWishlist.uuid, cardWishlist.settings?.color)} ${!cardWishlist.is_active ? "grayscale" : ""}`}
+          >
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute -right-6 -top-4 flex size-52 rotate-[-18deg] select-none items-center justify-center text-[180px] leading-none opacity-[0.16] transition-transform duration-500 ease-out [mask-image:linear-gradient(135deg,transparent_5%,black_65%)] group-focus-within:rotate-[-8deg] group-focus-within:scale-110 motion-reduce:transition-none motion-reduce:group-focus-within:transform-none dark:opacity-[0.12] md:group-hover:rotate-[-8deg] md:group-hover:scale-110 motion-reduce:md:group-hover:transform-none"
+            >
+              {cardWishlist.settings?.emoji || DEFAULT_WISHLIST_EMOJI}
+            </span>
+            <div className="relative flex h-16 shrink-0 items-center px-2">
+              <div className="relative z-10 flex size-12 items-center justify-center rounded-2xl bg-white/40 text-slate-900 shadow-[0_4px_12px_rgba(15,23,42,0.24)] dark:bg-white/10 dark:text-white">
+                <span
+                  aria-label="Эмодзи вишлиста"
+                  className="text-3xl drop-shadow-[0_2px_3px_rgba(15,23,42,0.4)]"
+                  role="img"
+                >
+                  {cardWishlist.settings?.emoji || DEFAULT_WISHLIST_EMOJI}
                 </span>
               </div>
-            </Card.Content>
+            </div>
+
+            <div className="relative z-10 flex min-h-0 flex-1 flex-col overflow-hidden">
+              <Card.Header className="shrink-0 flex-col items-start px-4 pb-0 pt-1">
+                <p
+                  className={`w-full truncate text-xl font-semibold ${!cardWishlist.is_active ? "text-slate-900/50 dark:text-white/50" : "text-slate-900 dark:text-white"}`}
+                  title={cardWishlist.name}
+                >
+                  {cardWishlist.name}
+                </p>
+              </Card.Header>
+              <Card.Content className="min-h-0 flex-1 px-4 py-1">
+                <p
+                  className="line-clamp-2 text-sm text-slate-700 dark:text-white/75"
+                  title={cardWishlist.description}
+                >
+                  {cardWishlist.description}
+                </p>
+              </Card.Content>
+              <Card.Footer className="flex shrink-0 items-center justify-between gap-3 p-2">
+                <span className="shrink-0 rounded-full bg-black/5 px-3 py-1 text-sm font-medium text-slate-800 backdrop-blur-sm dark:bg-black/15 dark:text-white">
+                  {cardWishlist.wishes_count}{" "}
+                  {getLabelForCount(cardWishlist.wishes_count, [
+                    "желание",
+                    "желания",
+                    "желаний",
+                  ])}
+                </span>
+                {cardWishlist.date ? (
+                  <time
+                    className="truncate rounded-full bg-black/5 px-3 py-1 text-sm font-medium text-slate-800 backdrop-blur-sm dark:bg-black/15 dark:text-white"
+                    dateTime={cardWishlist.date}
+                  >
+                    {new Date(cardWishlist.date).toLocaleDateString("ru-RU")}
+                  </time>
+                ) : null}
+              </Card.Footer>
+            </div>
           </button>
+          {edit ? (
+            <>
+              <div className="absolute left-1/2 top-2 z-20 -translate-x-1/2">
+                <VisibleChip short wishlist={cardWishlist} />
+              </div>
+              <div className="absolute right-2 top-2 z-20 rounded-full text-slate-800 backdrop-blur-sm dark:text-white">
+                <WishlistItemMenu
+                  className="h-8 rounded-full bg-black/5 shadow-none hover:bg-black/10 dark:bg-black/15 dark:hover:bg-black/25"
+                  isEditable={true}
+                  wishlist={cardWishlist}
+                  onDelete={onDelete}
+                  onRestore={onRestore}
+                  onUpdate={onUpdate}
+                />
+              </div>
+            </>
+          ) : null}
         </Card>
       </div>
     );
@@ -120,10 +134,15 @@ export const WishlistItem = forwardRef(
 
 export function WishlistsSkeletonItem() {
   return (
-    <Card className="space-y-5 p-4 h-40">
-      <div className="space-y-3">
-        <Skeleton className="w-3/5 rounded-lg" />
-        <Skeleton className="w-4/5 rounded-lg" />
+    <Card className="h-52 gap-0 overflow-hidden p-0">
+      <Skeleton className="h-16 w-full rounded-none" />
+      <div className="flex flex-1 flex-col gap-3 p-4">
+        <Skeleton className="h-6 w-3/5 rounded-lg" />
+        <Skeleton className="h-4 w-4/5 rounded-lg" />
+        <div className="mt-auto flex items-center justify-between">
+          <Skeleton className="h-4 w-24 rounded-lg" />
+          <Skeleton className="h-4 w-20 rounded-lg" />
+        </div>
       </div>
     </Card>
   );

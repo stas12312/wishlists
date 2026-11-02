@@ -9,6 +9,10 @@ import { usePress } from "react-aria";
 import { twMerge } from "tailwind-merge";
 
 import { ResponsiveImage } from "../ResponsiveImage";
+import {
+  getWishlistAccent,
+  getWishlistGradient,
+} from "../wishlist/wishlistAppearance";
 
 import CardImage from "./WishCardImage";
 import { WishItemMenu } from "./WishCardMenu";
@@ -16,26 +20,34 @@ import WishFullCard from "./WishDrawer";
 import { useWishActions } from "./useWishActions";
 
 import { IWish, IWishActions } from "@/lib/models/wish";
+import { IWishlist } from "@/lib/models/wishlist";
 import { UserChip } from "@/components/user/UserChip";
 import { getMenuItemsByActions, RESERVE_ACTION_KEYS } from "@/lib/wish/menu";
 import userStore from "@/store/userStore";
 export const WishItem = observer(
   ({
     wish,
+    wishlist,
     onDelete = () => {},
     onUpdate = () => {},
     withUser = false,
     hideReservedStatus = false,
   }: {
     wish: IWish;
+    wishlist?: IWishlist;
     onDelete?: { (wish: IWish, message: string): void };
     onUpdate?: { (wish: IWish): void };
     withUser?: boolean;
     hideReservedStatus?: boolean;
   }) => {
     const fullCardDrawer = useOverlayState();
+    const accentClass = getWishlistAccent(
+      wishlist?.uuid ?? wish.wishlist_uuid,
+      wishlist?.settings?.color,
+    );
     const { handleOnAction, modals } = useWishActions({
       wish,
+      className: accentClass,
       onDelete,
       onUpdate,
     });
@@ -55,6 +67,7 @@ export const WishItem = observer(
             "flex-col w-full ring-1 ring-gray-500/30 p-0 relative overflow-hidden isolate cursor-pointer gap-0",
             "hover:scale-[1.03] active:scale-[0.97]",
             "transition-transform will-change-transform transform-gpu",
+            accentClass,
           )}
           {...pressProps}
         >
@@ -68,26 +81,35 @@ export const WishItem = observer(
             </div>
           ) : null}
 
-          <div className="bg-default/50 absolute z-0 inset-0 rounded-3xl backdrop-saturate-200 backdrop-contrast-125" />
+          <div
+            className={twMerge(
+              "wishlist-card-backdrop absolute z-0 inset-0 rounded-3xl opacity-60 backdrop-saturate-200 backdrop-contrast-125",
+              `bg-gradient-to-br ${getWishlistGradient(wishlist?.uuid ?? wish.wishlist_uuid, wishlist?.settings?.color)}`,
+            )}
+          />
 
           <Card.Header className="flex-col items-start p-0 z-10 relative">
-            <div className="flex flex-row justify-between w-full h-14 px-2.5 pt-2">
-              <div className="my-auto flex flex-col text-left overflow-hidden text-ellipsis truncate">
-                <span className="text-xl/5 font-bold" title={wish.name}>
+            <div className="flex flex-row justify-between w-full min-h-14 gap-2 px-2.5 py-2">
+              <div className="my-auto min-w-0 flex flex-col text-left overflow-hidden">
+                <span
+                  className="truncate text-xl/5 font-bold"
+                  title={wish.name}
+                >
                   {wish.name}
                 </span>
                 <span
-                  className="text-gray text-[14px] text-sm"
+                  className="truncate text-muted text-sm dark:text-white/80"
                   title={wish.comment}
                 >
                   {wish.comment}
                 </span>
               </div>
               {showMenu(wish.actions) ? (
-                <span className="flex items-center absolute top-2 right-2 border border-gray-500/30 rounded-3xl">
+                <span className="flex shrink-0 self-start items-center border border-gray-500/30 rounded-3xl">
                   <WishItemMenu
                     excludeKeys={RESERVE_ACTION_KEYS}
                     handeAction={handleOnAction}
+                    overlayClassName={`${accentClass} wishlist-overlay`}
                     wish={wish}
                   />
                 </span>
@@ -112,10 +134,19 @@ export const WishItem = observer(
             ) : null}
           </Card.Content>
           {withUser ? (
-            <Card.Footer className="flex justify-between p-2">
-              <UserChip user={wish.user} variant="secondary" />
+            <Card.Footer className="relative z-10 flex justify-between p-2">
+              <UserChip
+                className="wishlist-card-user-chip"
+                user={wish.user}
+                variant="secondary"
+              />
               {wish.wishlist.date ? (
-                <Chip color="warning" size="lg" variant="primary">
+                <Chip
+                  className="h-8"
+                  color="warning"
+                  size="lg"
+                  variant="primary"
+                >
                   {new Date(wish.wishlist.date).toLocaleDateString()}
                 </Chip>
               ) : null}
@@ -135,9 +166,7 @@ export const WishItem = observer(
   },
 );
 
-// Same glass as the price chips, so the buttons stay readable on any image.
-const GLASS_BUTTON_CLASS_NAME =
-  "bg-default/90 backdrop-blur-lg border border-gray-500/30 hover:bg-default";
+const GLASS_BUTTON_CLASS_NAME = "wishlist-card-button backdrop-blur-lg border";
 
 type ReserveAction = "reserve" | "cancel_reserve";
 
@@ -152,7 +181,7 @@ function getReserveAction(wish: IWish): ReserveAction | null {
   return null;
 }
 
-function ReserveButton({
+export function ReserveButton({
   action,
   onPress,
 }: {
@@ -163,12 +192,7 @@ function ReserveButton({
     return (
       <Button
         fullWidth
-        className={twMerge(
-          GLASS_BUTTON_CLASS_NAME,
-          "text-green-700 dark:text-success border-success/30",
-          "bg-[color-mix(in_oklab,var(--color-success)_18%,var(--color-default))]",
-          "hover:bg-[color-mix(in_oklab,var(--color-success)_28%,var(--color-default))]",
-        )}
+        className={GLASS_BUTTON_CLASS_NAME}
         size="sm"
         variant="tertiary"
         onPress={onPress}
@@ -184,9 +208,7 @@ function ReserveButton({
       fullWidth
       className={twMerge(
         GLASS_BUTTON_CLASS_NAME,
-        "text-danger border-danger/30",
-        "bg-[color-mix(in_oklab,var(--color-danger)_18%,var(--color-default))]",
-        "hover:bg-[color-mix(in_oklab,var(--color-danger)_28%,var(--color-default))]",
+        "wishlist-card-danger-button",
       )}
       size="sm"
       variant="tertiary"

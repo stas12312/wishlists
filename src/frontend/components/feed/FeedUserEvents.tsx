@@ -68,7 +68,7 @@ const WishesGrid = ({
   wishes: IWish[];
   onUpdate?: { (wish: IWish): void };
 }) => (
-  <div className="mx-auto my-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+  <div className="feed-wishes mx-auto my-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
     <AnimatedList
       items={wishes.map((item) => {
         return (
