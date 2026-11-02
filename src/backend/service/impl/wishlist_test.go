@@ -23,9 +23,9 @@ func TestNewWishlistService(t *testing.T) {
 		uService := mocks2.NewUserService(t)
 		fService := mocks2.NewFriendService(t)
 		wsService := mocks2.NewWSService(t)
-		want := NewWishlistService(wlRepository, wRepository, uService, fService, wsService)
+		want := NewWishlistService(wlRepository, wRepository, uService, fService, wsService, nil, time.Minute)
 
-		if got := NewWishlistService(wlRepository, wRepository, uService, fService, wsService); !reflect.DeepEqual(got, want) {
+		if got := NewWishlistService(wlRepository, wRepository, uService, fService, wsService, nil, time.Minute); !reflect.DeepEqual(got, want) {
 			t.Errorf("NewWishlistService() = %v, want %v", got, want)
 		}
 	})

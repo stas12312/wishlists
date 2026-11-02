@@ -91,15 +91,16 @@ func NewAppFeatures() Features {
 }
 
 type Config struct {
-	JWT             JWTConfig
-	S3              S3Config
-	Postgres        PostgresConfig
-	Environment     string
-	Redis           RedisConfig
-	SMTP            SMTPConfig
-	BaseUrl         string
-	Feature         Features
-	ParseServiceUrl string
+	ReservationCheckInterval time.Duration
+	JWT                      JWTConfig
+	S3                       S3Config
+	Postgres                 PostgresConfig
+	Environment              string
+	Redis                    RedisConfig
+	SMTP                     SMTPConfig
+	BaseUrl                  string
+	Feature                  Features
+	ParseServiceUrl          string
 }
 
 func (c Config) IsTest() bool {
@@ -121,8 +122,17 @@ func NewConfig() *Config {
 
 	redisPort, _ := strconv.ParseInt(os.Getenv("REDIS_PORT"), 10, 64)
 	smtpPort, _ := strconv.ParseInt(os.Getenv("SMTP_PORT"), 10, 64)
+	interval := time.Minute
+	if value := os.Getenv("RESERVATION_CHECK_INTERVAL"); value != "" {
+		parsed, err := time.ParseDuration(value)
+		if err != nil || parsed < time.Second {
+			log.Panic("RESERVATION_CHECK_INTERVAL must be a duration of at least 1s")
+		}
+		interval = parsed
+	}
 	return &Config{
-		JWT: jwt,
+		ReservationCheckInterval: interval,
+		JWT:                      jwt,
 		S3: S3Config{
 			AccessKey:       os.Getenv("S3_ACCESS_KEY"),
 			SecretAccessKey: os.Getenv("S3_SECRET_ACCESS_KEY"),

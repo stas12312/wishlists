@@ -10,6 +10,8 @@ import (
 	"main/repository"
 	"main/service"
 	"time"
+
+	"github.com/redis/go-redis/v9"
 )
 
 func NewWishlistService(
@@ -18,6 +20,8 @@ func NewWishlistService(
 	uService service.UserService,
 	fService service.FriendService,
 	wsService service.WSService,
+	redisClient *redis.Client,
+	reservationCheckInterval time.Duration,
 ) service.WishlistService {
 	return &WishlistImpl{
 		wlRepository,
@@ -25,6 +29,8 @@ func NewWishlistService(
 		uService,
 		fService,
 		wsService,
+		redisClient,
+		reservationCheckInterval,
 	}
 }
 
@@ -34,6 +40,8 @@ type WishlistImpl struct {
 	service.UserService
 	service.FriendService
 	service.WSService
+	redisClient              *redis.Client
+	reservationCheckInterval time.Duration
 }
 
 func (s *WishlistImpl) Create(wishlist *model.Wishlist) (*model.Wishlist, error) {
@@ -229,6 +237,45 @@ func (s *WishlistImpl) GetWish(userId int64, wishUuid string) (*model.Wish, erro
 	preparedWish := prepareWish(userId, *existWish)
 	return &preparedWish, nil
 
+}
+
+var reservationCheckLimit = redis.NewScript(`
+	local remaining = redis.call("PTTL", KEYS[1])
+	if remaining >= 0 then
+		return math.max(1, remaining)
+	end
+	redis.call("SET", KEYS[1], 1, "PX", ARGV[1])
+	return 0
+`)
+
+func reservationCheckKey(userId int64) string {
+	return fmt.Sprintf("wish:reservation-check:%d", userId)
+}
+
+func (s *WishlistImpl) ReservationCooldown(userId int64) (int64, error) {
+	ttl, err := s.redisClient.PTTL(context.Background(), reservationCheckKey(userId)).Result()
+	if err != nil {
+		return 0, apperror.NewError(apperror.DatabaseError, "Не удалось узнать время до проверки")
+	}
+	return max(0, ttl.Milliseconds()), nil
+}
+
+func (s *WishlistImpl) CheckReservation(userId int64, wishUuid string) (bool, error) {
+	wish, err := s.WishRepository.Get(wishUuid)
+	if err != nil || wish.UserId != userId {
+		return false, apperror.NewError(apperror.NotFound, "Желание не найдено")
+	}
+	key := reservationCheckKey(userId)
+	remainingMs, err := reservationCheckLimit.Run(context.Background(), s.redisClient, []string{key}, s.reservationCheckInterval.Milliseconds()).Int64()
+	if err != nil {
+		return false, apperror.NewError(apperror.DatabaseError, "Не удалось проверить бронирование")
+	}
+	if remainingMs > 0 {
+		seconds := (remainingMs + 999) / 1000
+		message := fmt.Sprintf("Следующая проверка через %d мин %02d сек", seconds/60, seconds%60)
+		return false, apperror.NewError(apperror.ReservationCheckCooldown, message)
+	}
+	return wish.PresenterId.Valid, nil
 }
 
 func (s *WishlistImpl) ReserveWish(userId int64, wishUuid string) error {

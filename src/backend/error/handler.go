@@ -13,8 +13,13 @@ var AppErrorHandler = func(ctx *fiber.Ctx, err error) error {
 
 	var appError *Error
 	if errors.As(err, &appError) {
+		status := fiber.StatusBadRequest
+		if appError.Code == ReservationCheckCooldown {
+			status = fiber.StatusTooManyRequests
+		}
+
 		return ctx.
-			Status(fiber.StatusBadRequest).
+			Status(status).
 			JSON(model.ErrorResponse{Message: appError.Message, Code: appError.Code, Details: appError.Details})
 	}
 	return ctx.Status(fiber.StatusInternalServerError).
