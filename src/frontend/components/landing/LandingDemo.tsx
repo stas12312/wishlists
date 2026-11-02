@@ -1,3 +1,4 @@
+import { Button } from "@heroui/react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ReactNode, RefObject, useEffect, useRef, useState } from "react";
 import { BsStars, BsThreeDotsVertical } from "react-icons/bs";
@@ -7,16 +8,12 @@ import {
   MdAutoAwesome,
   MdBolt,
   MdCheckCircleOutline,
-  MdChevronRight,
   MdClose,
   MdDeleteOutline,
   MdEventNote,
   MdFilterAlt,
   MdLock,
-  MdOutlineBookmarkAdded,
-  MdOutlineBookmarkRemove,
   MdOutlineCopyAll,
-  MdOutlineEdit,
   MdOutlinePublic,
   MdOutlineShare,
   MdPerson,
@@ -25,8 +22,21 @@ import {
 } from "react-icons/md";
 import { twMerge } from "tailwind-merge";
 
-import WishStatus from "../wish/WishStatus";
+import { WishlistChips } from "../wishlist/WishlistChips";
+import { ButtonWithLoader } from "../ButtonWithLoader";
+import CardImage from "../wish/WishCardImage";
+import { ReserveButton } from "../wish/WishCard";
+import { WishlistItem } from "../wishlist/WishlistCard";
+import {
+  DEFAULT_WISHLIST_COLOR,
+  WISHLIST_COLORS,
+  WISHLIST_EMOJIS,
+  DEFAULT_WISHLIST_EMOJI,
+  getWishlistGradient,
+  getWishlistAccent,
+} from "../wishlist/wishlistAppearance";
 
+import { IWishlist, Visible } from "@/lib/models/wishlist";
 import { IWish } from "@/lib/models/wish";
 
 type Variant = "desktop" | "mobile";
@@ -34,6 +44,8 @@ type Variant = "desktop" | "mobile";
 type Target =
   | "addWishlist"
   | "wishlistName"
+  | "wishlistEmoji"
+  | "wishlistColor"
   | "wishlistSave"
   | "newWishlist"
   | "addWish"
@@ -53,7 +65,7 @@ type Phase = {
   target: Target;
   duration: number;
   click?: boolean;
-  wishlistModal?: { name?: Field };
+  wishlistModal?: { name?: Field; themed?: boolean; emoji?: string };
   wishlistCreated?: boolean;
   wishModal?: {
     index: number;
@@ -68,7 +80,32 @@ type Phase = {
   reserved?: boolean;
 };
 
-const WISHLIST_NAME = "День рождения 🎂";
+const WISHLIST_NAME = "День рождения";
+const chosenEmoji = "🍰";
+const birthday: IWishlist = {
+  uuid: "demo-birthday",
+  name: WISHLIST_NAME,
+  description: "Идеи к моему празднику",
+  date: "2026-11-15",
+  created_at: "2026-10-01",
+  user_id: 1,
+  is_active: true,
+  wishes_count: 0,
+  visible: Visible.Public,
+  visible_user_ids: [],
+  settings: { color: "violet", emoji: chosenEmoji },
+};
+const newYear: IWishlist = {
+  ...birthday,
+  uuid: "demo-new-year",
+  name: "Новый год",
+  description: "Подарки под ёлку",
+  date: "2026-12-31",
+  wishes_count: 3,
+  settings: { color: "teal", emoji: "🎄" },
+};
+const gradient = getWishlistGradient(birthday.uuid, birthday.settings?.color);
+const accent = getWishlistAccent(birthday.uuid, birthday.settings?.color);
 // Ссылка намеренно ненастоящая: демо не должно рекламировать реальный товар
 const PRODUCT_LINK = "https://market.example/product/wireless-headphones";
 const SHOPS = [
@@ -118,12 +155,14 @@ const STEPS = [
 const TYPING_SPEED = 70;
 const FAST_TYPING_SPEED = 50;
 
-const getPhases = (): Phase[] => {
+const getPhases = () => {
   const owner = (phase: Omit<Phase, "scene">): Phase => ({
     scene: "wishlists",
     ...phase,
   });
-  const wishlist = (phase: Omit<Phase, "scene" | "step">): Phase => ({
+  const wishlist = (
+    phase: Omit<Phase, "scene" | "step"> & { step?: number },
+  ): Phase => ({
     scene: "wishlist",
     step: 1,
     ...phase,
@@ -178,7 +217,7 @@ const getPhases = (): Phase[] => {
     },
   ];
 
-  return [
+  const timeline: Phase[] = [
     owner({ step: 0, target: "idle", duration: 800 }),
     owner({ step: 0, target: "addWishlist", duration: 900 }),
     owner({
@@ -196,9 +235,35 @@ const getPhases = (): Phase[] => {
     }),
     owner({
       step: 0,
-      target: "wishlistSave",
-      duration: 800,
+      target: "wishlistColor",
+      duration: 850,
       wishlistModal: { name: "done" },
+    }),
+    owner({
+      step: 0,
+      target: "wishlistColor",
+      duration: 1000,
+      click: true,
+      wishlistModal: { name: "done", themed: true },
+    }),
+    owner({
+      step: 0,
+      target: "wishlistEmoji",
+      duration: 850,
+      wishlistModal: { name: "done", themed: true },
+    }),
+    owner({
+      step: 0,
+      target: "wishlistEmoji",
+      duration: 1800,
+      click: true,
+      wishlistModal: { name: "done", themed: true, emoji: chosenEmoji },
+    }),
+    owner({
+      step: 0,
+      target: "wishlistSave",
+      duration: 850,
+      wishlistModal: { name: "done", themed: true, emoji: chosenEmoji },
     }),
     owner({
       step: 0,
@@ -232,13 +297,13 @@ const getPhases = (): Phase[] => {
     wishlist({ target: "linkInput", duration: 800, linkModal: {} }),
     wishlist({
       target: "linkInput",
-      duration: 1800,
+      duration: 150,
       click: true,
       linkModal: { isPasted: true },
     }),
     wishlist({
       target: "wishSave",
-      duration: 1500,
+      duration: 450,
       wishModal: { index: 0, name: "done", price: "done", isAutofilled: true },
     }),
     wishlist({ target: "wishSave", duration: 500, click: true, wishes: 1 }),
@@ -265,6 +330,8 @@ const getPhases = (): Phase[] => {
       reserved: true,
     },
   ];
+
+  return timeline;
 };
 
 const CANVAS = {
@@ -272,7 +339,7 @@ const CANVAS = {
   mobile: { width: 340, height: 680 },
 };
 
-const usePhase = (phases: Phase[], isPaused: boolean) => {
+const usePhase = (phases: ReturnType<typeof getPhases>, isPaused: boolean) => {
   const [index, setIndex] = useState(0);
   const phase = phases[index % phases.length];
 
@@ -394,9 +461,6 @@ const getCenterInCanvas = (element: HTMLElement, canvas: HTMLElement) => {
   return { x, y };
 };
 
-const formatCost = (cost: number) =>
-  cost.toLocaleString("ru-RU").replace(/\s/g, " ");
-
 type SetTarget = (name: Target) => (element: HTMLElement | null) => void;
 
 export const LandingDemo = ({
@@ -466,6 +530,9 @@ export const LandingDemo = ({
   const step = STEPS[phase.step];
   const isFriend = phase.scene === "friend";
   const wishModal = phase.wishModal;
+  const formColor = phase.wishlistModal?.themed
+    ? birthday.settings!.color
+    : DEFAULT_WISHLIST_COLOR;
   const speed = wishModal?.fast ? FAST_TYPING_SPEED : TYPING_SPEED;
   const modalWish = wishModal ? WISHES[wishModal.index] : undefined;
   // Когда название и цена заполняются в одной фазе, цена начинает печататься после названия
@@ -553,8 +620,14 @@ export const LandingDemo = ({
 
           <AnimatePresence>
             {phase.wishlistModal ? (
-              <Modal key="wishlist-modal" isMobile={isMobile}>
+              <Modal
+                key="wishlist-modal"
+                isMobile={isMobile}
+                theme={getWishlistAccent(birthday.uuid, formColor)}
+              >
                 <WishlistForm
+                  color={formColor}
+                  emoji={phase.wishlistModal.emoji ?? DEFAULT_WISHLIST_EMOJI}
                   name={typeText(
                     WISHLIST_NAME,
                     phase.wishlistModal.name,
@@ -566,7 +639,7 @@ export const LandingDemo = ({
               </Modal>
             ) : null}
             {wishModal && modalWish ? (
-              <Modal key="wish-modal" isMobile={isMobile}>
+              <Modal key="wish-modal" isMobile={isMobile} theme={accent}>
                 <WishForm
                   focusedField={focusedField}
                   isAutofilled={!!wishModal.isAutofilled}
@@ -590,7 +663,7 @@ export const LandingDemo = ({
               </Modal>
             ) : null}
             {phase.linkModal ? (
-              <Modal key="link-modal" isMobile={isMobile}>
+              <Modal key="link-modal" isMobile={isMobile} theme={accent}>
                 <LinkForm
                   isPasted={!!phase.linkModal.isPasted}
                   setTarget={setTarget}
@@ -812,7 +885,7 @@ const Pressable = ({
   </motion.div>
 );
 
-const AddCard = ({
+const CreateButton = ({
   ref,
   title,
   isPressed,
@@ -823,16 +896,13 @@ const AddCard = ({
   isPressed?: boolean;
   className?: string;
 }) => (
-  <Pressable
-    ref={ref}
-    className={twMerge(
-      "flex flex-col items-center justify-center gap-1 rounded-3xl border-2 border-accent/60 text-[14px] text-accent",
-      className,
-    )}
-    isPressed={isPressed}
-  >
-    <IoMdAdd className="text-3xl" />
-    {title}
+  <Pressable ref={ref} className={className} isPressed={isPressed}>
+    <span inert className="block">
+      <Button className="w-full" variant="primary">
+        <IoMdAdd />
+        {title}
+      </Button>
+    </span>
   </Pressable>
 );
 
@@ -855,10 +925,10 @@ export const Chip = ({
 
 const FilterRow = () => (
   <div className="flex items-center gap-2">
-    <RoundButton>
+    <RoundButton className="wishlist-accent-trigger bg-[var(--button-bg)] text-[color:var(--button-fg)]">
       <MdFilterAlt />
     </RoundButton>
-    <Chip className="bg-default/70 py-1.5 shadow-md">
+    <Chip className="wishlist-accent-trigger bg-[var(--button-bg)] text-[color:var(--button-fg)] py-1.5 shadow-md">
       <MdSort />
       Дате добавления
       <MdArrowDownward />
@@ -876,14 +946,19 @@ const WishlistsScene = ({
   setTarget: SetTarget;
 }) => (
   <div className="flex flex-col gap-3">
-    <p
+    <div
       className={twMerge(
-        "border-b border-black/10 pb-2 text-[22px] dark:border-white/10",
-        isMobile && "text-center",
+        "flex gap-4 border-b border-black/10 pb-4 dark:border-white/10",
+        isMobile ? "flex-col" : "items-center justify-between",
       )}
     >
-      Вишлисты
-    </p>
+      <p className="text-2xl font-semibold">Вишлисты</p>
+      <CreateButton
+        ref={setTarget("addWishlist")}
+        isPressed={phase.click && phase.target === "addWishlist"}
+        title="Добавить вишлист"
+      />
+    </div>
     <RoundButton>
       <MdFilterAlt />
     </RoundButton>
@@ -893,12 +968,6 @@ const WishlistsScene = ({
         isMobile ? "grid-cols-1" : "grid-cols-3",
       )}
     >
-      <AddCard
-        ref={setTarget("addWishlist")}
-        className={isMobile ? "h-28" : "h-32"}
-        isPressed={phase.click && phase.target === "addWishlist"}
-        title="Добавить вишлист"
-      />
       <AnimatePresence>
         {phase.wishlistCreated ? (
           <motion.div
@@ -907,72 +976,36 @@ const WishlistsScene = ({
             initial={{ opacity: 0, scale: 0.6 }}
             transition={{ type: "spring", bounce: 0.4, duration: 0.6 }}
           >
-            <WishlistCard
+            <Pressable
               ref={setTarget("newWishlist")}
-              count="Нет желаний"
-              date="15.11.2026"
-              isMobile={isMobile}
               isPressed={phase.click && phase.target === "newWishlist"}
-              name={WISHLIST_NAME}
-            />
+            >
+              <DemoWishlist wishlist={birthday} />
+            </Pressable>
           </motion.div>
         ) : null}
       </AnimatePresence>
-      <WishlistCard
-        count="3 желания"
-        date="31.12.2026"
-        isMobile={isMobile}
-        name="Новый год 🎄"
-      />
+      <DemoWishlist wishlist={newYear} />
     </div>
   </div>
 );
 
-const WishlistCard = ({
-  ref,
-  name,
-  count,
-  date,
-  isMobile,
-  isPressed,
-}: {
-  ref?: (element: HTMLElement | null) => void;
-  name: string;
-  count: string;
-  date: string;
-  isMobile: boolean;
-  isPressed?: boolean;
-}) => (
-  <Pressable
-    ref={ref}
-    className={twMerge(
-      "flex flex-col justify-between rounded-3xl bg-surface p-3 shadow-md",
-      isMobile ? "h-28" : "h-32",
-    )}
-    isPressed={isPressed}
-  >
-    <span className="flex items-center gap-1.5">
-      <RoundButton className="size-7 shadow-none">
-        <MdOutlinePublic />
-      </RoundButton>
-      <span className="min-w-0 flex-1 truncate text-[15px] font-bold uppercase">
-        {name}
-      </span>
-      <RoundButton className="size-7">
-        <BsThreeDotsVertical />
-      </RoundButton>
-    </span>
-    <span className="ml-auto flex flex-col items-end gap-1">
-      <Chip className="bg-accent text-accent-foreground">{count}</Chip>
-      <Chip>{date}</Chip>
-    </span>
-  </Pressable>
+const DemoWishlist = ({ wishlist }: { wishlist: IWishlist }) => (
+  <div inert>
+    <WishlistItem
+      wishlist={wishlist}
+      onDelete={async () => {}}
+      onRestore={() => {}}
+    />
+  </div>
 );
 
 const Modal = ({
+  theme,
   isMobile,
   children,
 }: {
+  theme: string;
   isMobile: boolean;
   children: ReactNode;
 }) => (
@@ -989,7 +1022,8 @@ const Modal = ({
     <motion.div
       animate={{ opacity: 1, scale: 1 }}
       className={twMerge(
-        "flex flex-col gap-1.5 rounded-3xl bg-surface p-4 shadow-2xl",
+        "wishlist-overlay flex flex-col gap-1 rounded-3xl bg-overlay p-4 shadow-2xl",
+        theme,
         isMobile ? "w-[92%]" : "w-90",
       )}
       exit={{ opacity: 0, scale: 0.95 }}
@@ -1062,11 +1096,41 @@ const SaveButton = ({
   </span>
 );
 
+export const DemoEmojiPicker = ({
+  emoji,
+  targetRef,
+}: {
+  emoji: string;
+  targetRef?: (element: HTMLElement | null) => void;
+}) => (
+  <>
+    <FieldLabel>Эмодзи</FieldLabel>
+    <div className="flex flex-wrap gap-1">
+      {WISHLIST_EMOJIS.map((option) => (
+        <span
+          key={option}
+          ref={option === chosenEmoji ? targetRef : undefined}
+          className={twMerge(
+            "grid size-7 place-items-center rounded-lg bg-default",
+            option === emoji && "ring-2 ring-[var(--accent)]",
+          )}
+        >
+          {option}
+        </span>
+      ))}
+    </div>
+  </>
+);
+
 const WishlistForm = ({
+  emoji,
+  color,
   name,
   setTarget,
 }: {
   name: string;
+  color: string;
+  emoji: string;
   setTarget: SetTarget;
 }) => (
   <>
@@ -1074,7 +1138,38 @@ const WishlistForm = ({
     <FieldLabel isRequired>Название</FieldLabel>
     <Input ref={setTarget("wishlistName")} isFocused value={name} />
     <FieldLabel>Описание</FieldLabel>
-    <Input className="h-12" value="" />
+    <Input value="" />
+    <FieldLabel>Оформление</FieldLabel>
+    <div
+      className={twMerge(
+        "flex h-12 items-center gap-2 rounded-xl bg-gradient-to-br px-3 text-sm font-semibold",
+        getWishlistGradient(birthday.uuid, color),
+      )}
+    >
+      <span className="text-xl">{emoji}</span>
+      {name}
+    </div>
+    <FieldLabel>Цвет</FieldLabel>
+    <div className="flex gap-2 px-1 py-1">
+      {WISHLIST_COLORS.map((option) => (
+        <span
+          key={option.id}
+          ref={
+            option.id === birthday.settings?.color
+              ? setTarget("wishlistColor")
+              : undefined
+          }
+          className={twMerge(
+            "size-6 rounded-full",
+            option.swatch,
+            option.id === color && "ring-2 ring-[var(--accent)] ring-offset-2",
+          )}
+          title={option.label}
+        />
+      ))}
+    </div>
+
+    <DemoEmojiPicker emoji={emoji} targetRef={setTarget("wishlistEmoji")} />
     <FieldLabel>Дата события</FieldLabel>
     <Input
       className="justify-between"
@@ -1126,6 +1221,8 @@ const WishForm = ({
     </span>
     <FieldLabel isRequired>Название</FieldLabel>
     <Input isFocused={focusedField === "name"} value={name} />
+    <FieldLabel>Комментарий</FieldLabel>
+    <Input value="" />
     <div className="grid grid-cols-[2fr_1fr] gap-2">
       <FieldLabel>Цена</FieldLabel>
       <FieldLabel>Валюта</FieldLabel>
@@ -1191,17 +1288,11 @@ const LinkForm = ({
       isFocused={!isPasted}
       value={isPasted ? PRODUCT_LINK : ""}
     />
-    <span
-      className={twMerge(
-        "mt-1 flex h-8 shrink-0 items-center justify-center gap-2 rounded-full bg-accent text-[13px] font-medium text-accent-foreground",
-        isPasted && "opacity-70",
-      )}
-    >
-      {isPasted ? (
-        <span className="size-3.5 animate-spin rounded-full border-2 border-accent-foreground border-t-transparent" />
-      ) : null}
-      {isPasted ? "Загрузка" : "Загрузить"}
-    </span>
+    <div inert>
+      <ButtonWithLoader fullWidth isLoading={isPasted} loaderText="Загрузка">
+        Загрузить
+      </ButtonWithLoader>
+    </div>
   </>
 );
 
@@ -1227,7 +1318,7 @@ const WishlistScene = ({
   const isPressed = (target: Target) => phase.click && phase.target === target;
 
   return (
-    <div className="relative flex flex-col gap-3">
+    <div className={twMerge("relative flex flex-col gap-3", accent)}>
       {isFriend ? (
         <div className="flex items-center justify-center gap-3">
           <Avatar className="size-11" letter="С" />
@@ -1243,7 +1334,9 @@ const WishlistScene = ({
 
       <div
         className={twMerge(
-          "grid gap-x-2 border-b border-black/10 pb-3 dark:border-white/10",
+          "grid gap-x-2 rounded-3xl bg-gradient-to-br p-4",
+          gradient,
+          accent,
           isMobile
             ? "grid-cols-1 gap-y-3"
             : "grid-cols-[minmax(0,1fr)_auto] gap-y-2",
@@ -1257,64 +1350,51 @@ const WishlistScene = ({
               : "text-[20px] leading-7",
           )}
         >
-          <span className="flex items-center gap-1 text-muted">
-            {isFriend ? "Вишлисты пользователя" : "Вишлисты"}
-            <MdChevronRight className="shrink-0 text-[14px]" />
+          <span className="grid size-10 place-items-center rounded-xl bg-white/40 text-2xl dark:bg-white/15">
+            {birthday.settings?.emoji ?? DEFAULT_WISHLIST_EMOJI}
           </span>
           <span className="truncate font-medium">{WISHLIST_NAME}</span>
         </span>
         <span
           className={twMerge(
             "flex items-center justify-center gap-2",
-            !isMobile && "col-start-2 row-span-2 row-start-1 self-center",
+            !isMobile && "col-start-2 row-start-1 self-center",
           )}
         >
           <RoundButton
             ref={setTarget("share")}
-            className="size-9 bg-accent text-accent-foreground shadow-none"
+            className="wishlist-accent-button size-9 bg-[var(--button-bg)] text-[color:var(--button-fg)] shadow-none backdrop-blur-sm"
             isPressed={isPressed("share")}
           >
             <MdOutlineShare className="text-[16px]" />
           </RoundButton>
           {isFriend ? null : (
             <>
-              <RoundButton className="size-9 shadow-none">
-                <MdOutlineEdit className="text-[16px]" />
-              </RoundButton>
-              <RoundButton className="size-9 bg-danger text-white shadow-none">
+              <RoundButton className="wishlist-danger-button size-9 bg-[var(--button-bg)] text-[color:var(--button-fg)] shadow-none backdrop-blur-sm">
                 <MdDeleteOutline className="text-[16px]" />
               </RoundButton>
             </>
           )}
         </span>
-        <span
-          className={twMerge(
-            "flex flex-wrap items-center gap-1.5",
-            isMobile && "justify-center",
-          )}
-        >
-          <Chip className="py-1 text-[13px]">15 ноября</Chip>
-          {isFriend ? null : (
-            <>
-              <Chip className="bg-accent/15 py-1 text-[13px] text-accent">
-                для всех
-              </Chip>
-              {count ? (
-                <Chip className="bg-success/15 py-1 text-[13px] text-success">
-                  исполнено 0 из {count}
-                </Chip>
-              ) : null}
-              {total ? (
-                <Chip className="bg-warning/15 py-1 text-[13px] text-warning">
-                  на сумму {total.toLocaleString("ru-RU")}
-                </Chip>
-              ) : null}
-            </>
-          )}
-        </span>
+        <WishlistChips
+          className={isMobile ? "justify-center" : "col-span-full"}
+          isOwner={!isFriend}
+          statistic={{ totalCount: count, fullfiledCount: 0, totalSum: total }}
+          wishlist={birthday}
+        />
       </div>
 
-      <FilterRow />
+      <div className="flex flex-wrap items-center gap-4">
+        {count > 0 && <FilterRow />}
+        {!isFriend && (
+          <CreateButton
+            ref={setTarget("addWish")}
+            className={isMobile ? "w-full" : "ml-auto"}
+            isPressed={isPressed("addWish")}
+            title="Добавить желание"
+          />
+        )}
+      </div>
 
       <div
         className={twMerge(
@@ -1322,14 +1402,6 @@ const WishlistScene = ({
           isMobile ? "grid-cols-1" : "grid-cols-4",
         )}
       >
-        {isFriend ? null : (
-          <AddCard
-            ref={setTarget("addWish")}
-            className={isMobile ? "h-28" : "h-52"}
-            isPressed={isPressed("addWish")}
-            title="Добавить желание"
-          />
-        )}
         <AnimatePresence initial={false}>
           {wishes.map((wish) => (
             <motion.div
@@ -1361,40 +1433,6 @@ const WishlistScene = ({
   );
 };
 
-// Матовое стекло для чипа цены и кнопки брони, как в настоящей карточке
-const GLASS = "border border-gray-500/30 bg-default/60 backdrop-blur-lg";
-
-const WishImage = ({
-  wish,
-  className,
-  chipsClassName,
-}: {
-  wish: (typeof WISHES)[number];
-  className?: string;
-  chipsClassName?: string;
-}) => (
-  <div
-    className={twMerge(
-      "relative flex items-center justify-center overflow-hidden rounded-3xl bg-linear-to-br",
-      wish.gradient,
-      className,
-    )}
-  >
-    <span className="absolute -right-6 -top-8 size-28 rounded-full bg-white/20" />
-    <span className="absolute -bottom-10 -left-8 size-24 rounded-full bg-white/15" />
-    <span className="relative opacity-80 drop-shadow-lg">{wish.emoji}</span>
-    <Chip
-      className={twMerge(
-        "absolute bottom-2 right-2 py-1 text-[13px] font-medium",
-        GLASS,
-        chipsClassName,
-      )}
-    >
-      {formatCost(wish.cost)} ₽
-    </Chip>
-  </div>
-);
-
 const WishCard = ({
   wish,
   isFriend,
@@ -1413,68 +1451,75 @@ const WishCard = ({
   // Владелец не видит, что забронировано или исполнено, поэтому статусы показываются только другу
   const friendStatus = isFriend ? wish.friendStatus : undefined;
   const canReserve = isFriend && !friendStatus;
-  // Минимум полей желания, нужный настоящей плашке статуса из сервиса
-  const statusWish = {
+  const statusWish: IWish = {
+    name: wish.name,
+    comment: "",
+    cost: wish.cost,
+    currency: "RUB",
+    wishlist: birthday,
+    wishlist_uuid: birthday.uuid,
+    user: { id: 1, name: "Саша", username: "sasha", email: "", image: "" },
+    images: [
+      "data:image/svg+xml," +
+        encodeURIComponent(
+          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240"><text x="160" y="155" text-anchor="middle" font-size="100">' +
+            wish.emoji +
+            "</text></svg>",
+        ),
+    ],
     uuid: wish.name,
     fulfilled_at: friendStatus === "fulfilled" ? "2026-10-01" : undefined,
     is_reserved: isReserved || friendStatus === "reserved",
-    actions: { cancel_reserve: isReserved },
-  } as IWish;
+    actions: {
+      edit: !isFriend,
+      reserve: canReserve && !isReserved,
+      cancel_reserve: isReserved,
+      make_full: false,
+      cancel_full: false,
+      open_wishlist: false,
+    },
+  };
 
   return (
     <div
       className={twMerge(
         "relative isolate flex flex-col overflow-hidden rounded-3xl shadow-md ring-1 ring-gray-500/30",
+        accent,
         isMobile ? "h-56" : "h-52",
       )}
     >
-      {/* Шапку подкрашивает размытая копия картинки, как в настоящей карточке */}
       <div
         className={twMerge(
-          "absolute inset-x-0 top-0 -z-10 h-1/2 bg-linear-to-br blur-xl",
-          wish.gradient,
+          "wishlist-card-backdrop absolute inset-0 -z-10 bg-gradient-to-br opacity-60",
+          gradient,
         )}
       />
-      <div className="absolute inset-0 -z-10 bg-default/50 backdrop-contrast-125 backdrop-saturate-200" />
       <div className="flex h-12 shrink-0 items-center justify-between px-2.5 pt-1">
         <span className="truncate text-[18px] font-bold leading-5">
           {wish.name}
         </span>
-        <RoundButton className="size-8 border border-gray-500/30 bg-default/50 shadow-none">
+        <RoundButton className="wishlist-card-menu-button size-8 bg-[var(--button-bg)] text-[color:var(--button-fg)] shadow-none">
           <BsThreeDotsVertical />
         </RoundButton>
       </div>
       <div className="relative min-h-0 flex-1">
-        <WishImage
+        <CardImage
           chipsClassName={canReserve ? "bottom-12" : undefined}
-          className={twMerge("h-full", isMobile ? "text-7xl" : "text-6xl")}
-          wish={wish}
+          hideReservedStatus={!isFriend}
+          wish={statusWish}
         />
-        <div className="absolute top-1.5 z-10 flex flex-col items-center w-full">
-          <span className="mx-auto">
-            <WishStatus size="lg" wish={statusWish} />
-          </span>
-        </div>
         {canReserve ? (
-          <motion.span
+          <motion.div
             ref={reserveRef}
+            inert
             animate={{ scale: isPressed ? 0.92 : 1 }}
-            className={twMerge(
-              "absolute inset-x-2 bottom-2 flex h-8 items-center justify-center gap-1 rounded-full text-[13px] font-medium",
-              GLASS,
-              isReserved
-                ? "border-danger/30 bg-[color-mix(in_oklab,var(--color-danger)_18%,var(--color-default))] text-danger"
-                : "border-success/30 bg-[color-mix(in_oklab,var(--color-success)_18%,var(--color-default))] text-green-700 dark:text-success",
-            )}
-            transition={{ duration: 0.15 }}
+            className="absolute inset-x-2 bottom-2 z-20"
           >
-            {isReserved ? (
-              <MdOutlineBookmarkRemove />
-            ) : (
-              <MdOutlineBookmarkAdded />
-            )}
-            {isReserved ? "Отменить бронь" : "Забронировать"}
-          </motion.span>
+            <ReserveButton
+              action={isReserved ? "cancel_reserve" : "reserve"}
+              onPress={() => {}}
+            />
+          </motion.div>
         ) : null}
       </div>
     </div>

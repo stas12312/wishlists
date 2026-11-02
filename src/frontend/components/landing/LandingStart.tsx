@@ -8,11 +8,12 @@ import {
   MdDeleteOutline,
   MdExpandMore,
   MdOutlineCopyAll,
-  MdOutlineEdit,
   MdOutlinePublic,
   MdOutlineShare,
 } from "react-icons/md";
 import { twMerge } from "tailwind-merge";
+
+import { WISHLIST_COLORS } from "../wishlist/wishlistAppearance";
 
 import {
   Chip,
@@ -20,6 +21,7 @@ import {
   Input,
   ModalTitle,
   RoundButton,
+  DemoEmojiPicker,
 } from "./LandingDemo";
 import { itemVariants } from "./Landing";
 
@@ -43,9 +45,20 @@ const WishlistMockup = () => (
     <Form>
       <ModalTitle>Добавление вишлиста</ModalTitle>
       <FieldLabel isRequired>Название</FieldLabel>
-      <Input isFocused value="День рождения 🎂" />
+      <Input isFocused value="День рождения" />
       <FieldLabel>Описание</FieldLabel>
-      <Input className="h-10" value="" />
+      <Input value="" />
+      <FieldLabel>Оформление</FieldLabel>
+      <FieldLabel>Цвет</FieldLabel>
+      <div className="flex gap-2">
+        {WISHLIST_COLORS.map((color) => (
+          <span
+            key={color.id}
+            className={twMerge("size-5 rounded-full", color.swatch)}
+          />
+        ))}
+      </div>
+      <DemoEmojiPicker emoji="🍰" />
       <FieldLabel>Дата события</FieldLabel>
       <Input value="15.11.2026" />
       <FieldLabel>Кому доступен</FieldLabel>
@@ -71,6 +84,8 @@ const WishMockup = () => (
       </span>
       <FieldLabel isRequired>Название</FieldLabel>
       <Input value="Беспроводные наушники 🎧" />
+      <FieldLabel>Комментарий</FieldLabel>
+      <Input value="" />
       <div className="grid grid-cols-[2fr_1fr] gap-x-2 gap-y-1.5">
         <FieldLabel>Цена</FieldLabel>
         <FieldLabel>Валюта</FieldLabel>
@@ -98,7 +113,6 @@ const WishMockup = () => (
 );
 
 const SHARE_MENU = [
-  { label: "Редактировать", icon: <MdOutlineEdit /> },
   { label: "Поделиться", icon: <MdOutlineShare />, isActive: true },
 ];
 
@@ -111,7 +125,7 @@ const ShareMockup = () => (
             <MdOutlinePublic />
           </RoundButton>
           <span className="min-w-0 flex-1 truncate text-[15px] font-bold uppercase">
-            День рождения 🎂
+            День рождения
           </span>
           <RoundButton className="size-7">
             <BsThreeDotsVertical />
