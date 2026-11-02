@@ -52,6 +52,17 @@ const EmojiPicker = dynamic(() => import("emoji-picker-react"), {
   ssr: false,
 });
 const loadRussianEmojis = () => import("emoji-picker-react/data/emojis-ru");
+const emojiPickerHeight = 360;
+
+function centerEmojiPicker(element: HTMLDivElement | null) {
+  element?.scrollIntoView({
+    block: "center",
+    inline: "nearest",
+    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ? "instant"
+      : "smooth",
+  });
+}
 
 export function WishlistCreateForm({
   onCreate,
@@ -276,15 +287,17 @@ export function WishlistCreateForm({
         </div>
         {isEmojiPickerOpen ? (
           <div
+            ref={centerEmojiPicker}
             className="mt-3 overflow-hidden rounded-xl"
             id="wishlist-emoji-picker"
+            style={{ minHeight: emojiPickerHeight }}
           >
             <EmojiPicker
               lazyLoadEmojis
               autoFocusSearch={false}
               colorScheme={resolvedTheme === "light" ? "light" : "dark"}
               emojiData={loadRussianEmojis}
-              height={360}
+              height={emojiPickerHeight}
               labels={{
                 loading: "Загрузка эмодзи",
                 searchClear: "Очистить поиск",
