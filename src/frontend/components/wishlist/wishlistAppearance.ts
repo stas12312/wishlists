@@ -48,7 +48,16 @@ const AUTO_COLORS = [
   },
 ] as const;
 
-export const WISHLIST_COLORS = AUTO_COLORS;
+export const WISHLIST_COLORS = [
+  ...AUTO_COLORS,
+  {
+    id: "graphite",
+    label: "Графитовый",
+    gradient: "from-zinc-200 to-zinc-300 dark:from-zinc-500 dark:to-zinc-950",
+    swatch: "bg-zinc-600",
+    accent: "wishlist-accent-graphite",
+  },
+] as const;
 
 export const DEFAULT_WISHLIST_COLOR = WISHLIST_COLORS[0].id;
 

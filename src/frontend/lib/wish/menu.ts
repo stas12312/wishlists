@@ -36,6 +36,21 @@ export const RESERVE_BUTTON_CLASS_NAME =
 
 const ACTIONS: IWishMenuItem[] = [
   {
+    key: "reserve",
+    className: "text-accent",
+    buttonClassName: RESERVE_BUTTON_CLASS_NAME,
+    title: "Забронировать",
+    icon: MdOutlineBookmarkAdded,
+    variant: "primary",
+  },
+  {
+    key: "cancel_reserve",
+    className: "text-danger",
+    title: "Отменить бронь",
+    icon: MdOutlineBookmarkRemove,
+    variant: "danger-soft",
+  },
+  {
     key: "edit",
     className: "",
     title: "Редактировать",
@@ -60,21 +75,6 @@ const ACTIONS: IWishMenuItem[] = [
     getTitleFunc: (actions) => {
       return actions.edit ? "Копировать" : "Сохранить себе";
     },
-  },
-  {
-    key: "reserve",
-    className: "text-accent",
-    buttonClassName: RESERVE_BUTTON_CLASS_NAME,
-    title: "Забронировать",
-    icon: MdOutlineBookmarkAdded,
-    variant: "primary",
-  },
-  {
-    key: "cancel_reserve",
-    className: "text-danger",
-    title: "Отменить бронь",
-    icon: MdOutlineBookmarkRemove,
-    variant: "danger-soft",
   },
   {
     key: "make_full",
