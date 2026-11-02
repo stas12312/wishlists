@@ -3,7 +3,6 @@
 import { Card, Skeleton } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { forwardRef, useState } from "react";
-import { usePress } from "react-aria";
 
 import { VisibleChip } from "../VisibleChip";
 
@@ -38,25 +37,21 @@ export const WishlistItem = forwardRef(
       setCardWishlist(wishlist);
     }
 
-    const { pressProps, isPressed } = usePress({
-      onPress: () => router.push(`/wishlists/${wishlist.uuid}`),
-    });
-
     return (
       <div className="group relative transition-transform duration-200 md:hover:scale-[1.02]">
         <Card
           ref={ref}
-          className="h-52 flex-col gap-0 overflow-hidden p-0 shadow-sm transition data-[pressed=true]:scale-[0.98]"
-          data-pressed={isPressed ? "true" : undefined}
+          className="h-52 flex-col gap-0 overflow-hidden p-0 shadow-sm transition-transform duration-200 has-[>button:active]:scale-[0.98]"
         >
           <button
-            {...pressProps}
             aria-label={`Открыть вишлист ${cardWishlist.name}`}
             className={`relative flex h-full cursor-pointer flex-col overflow-hidden bg-gradient-to-br text-left ${getWishlistGradient(cardWishlist.uuid, cardWishlist.settings?.color)} ${!cardWishlist.is_active ? "grayscale" : ""}`}
+            type="button"
+            onClick={() => router.push(`/wishlists/${wishlist.uuid}`)}
           >
             <span
               aria-hidden="true"
-              className="pointer-events-none absolute -right-6 -top-4 flex size-52 rotate-[-18deg] select-none items-center justify-center text-[180px] leading-none opacity-[0.16] transition-transform duration-500 ease-out [mask-image:linear-gradient(135deg,transparent_5%,black_65%)] group-focus-within:rotate-[-8deg] group-focus-within:scale-110 motion-reduce:transition-none motion-reduce:group-focus-within:transform-none dark:opacity-[0.12] md:group-hover:rotate-[-8deg] md:group-hover:scale-110 motion-reduce:md:group-hover:transform-none"
+              className="pointer-events-none absolute -right-6 -top-4 flex size-52 rotate-[-18deg] select-none items-center justify-center text-[180px] leading-none opacity-[0.16] transition-transform duration-500 ease-out [mask-image:linear-gradient(135deg,transparent_5%,black_65%)] group-has-[:focus-visible]:rotate-[-8deg] group-has-[:focus-visible]:scale-110 motion-reduce:transition-none motion-reduce:group-has-[:focus-visible]:transform-none dark:opacity-[0.12] md:group-hover:rotate-[-8deg] md:group-hover:scale-110 motion-reduce:md:group-hover:transform-none"
             >
               {cardWishlist.settings?.emoji || DEFAULT_WISHLIST_EMOJI}
             </span>
