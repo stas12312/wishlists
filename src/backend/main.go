@@ -73,6 +73,8 @@ func main() {
 		userService,
 		friendService,
 		websocketService,
+		redisClient,
+		appConfig.ReservationCheckInterval,
 	)
 	wishlistController := controller.NewWishlistController(&wishlistService, appConfig)
 

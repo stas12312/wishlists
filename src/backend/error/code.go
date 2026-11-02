@@ -15,5 +15,6 @@ const (
 
 	ValidateError = 130
 
-	WrongRequest = 140
+	WrongRequest             = 140
+	ReservationCheckCooldown = 141
 )

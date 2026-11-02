@@ -244,6 +244,23 @@ func (c *WishlistController) GetWish(ctx *fiber.Ctx) error {
 
 }
 
+func (c *WishlistController) ReservationCooldownHandler(ctx *fiber.Ctx) error {
+	remaining, err := c.WishlistService.ReservationCooldown(GetUserIdFromCtx(ctx))
+	if err != nil {
+		return err
+	}
+	ctx.Set("Cache-Control", "no-store")
+	return ctx.JSON(fiber.Map{"remaining_ms": remaining, "interval_ms": c.Config.ReservationCheckInterval.Milliseconds()})
+}
+
+func (c *WishlistController) CheckReservationHandler(ctx *fiber.Ctx) error {
+	reserved, err := c.WishlistService.CheckReservation(GetUserIdFromCtx(ctx), ctx.Params("uuid"))
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(fiber.Map{"is_reserved": reserved})
+}
+
 func (c *WishlistController) ReserveWishHandler(ctx *fiber.Ctx) error {
 	wishUuid := ctx.Params("uuid")
 	userId := GetUserIdFromCtx(ctx)
@@ -357,6 +374,7 @@ func (c *WishlistController) Route(router fiber.Router) {
 
 	wishGroup := router.Group("/wishes")
 	wishGroup.Post("/", middleware.Protected(true), c.CreateWishHandler)
+	wishGroup.Get("/reservation_cooldown", middleware.Protected(true), c.ReservationCooldownHandler)
 	wishGroup.Get("/reserved", middleware.Protected(true), c.ReservedWishes)
 	wishGroup.Delete("/:uuid", middleware.Protected(true), c.DeleteWishHandler)
 	wishGroup.Post("/:uuid", middleware.Protected(true), c.UpdateWishHandler)
@@ -364,6 +382,7 @@ func (c *WishlistController) Route(router fiber.Router) {
 	wishGroup.Post("/:uuid/copy", middleware.Protected(true), c.CopyWish)
 
 	wishGroup.Post("/:uuid/restore", middleware.Protected(true), c.RestoreWishHandler)
+	wishGroup.Post("/:uuid/check_reservation", middleware.Protected(true), c.CheckReservationHandler)
 	wishGroup.Post("/:uuid/reserve", middleware.Protected(true), c.ReserveWishHandler)
 	wishGroup.Post("/:uuid/cancel_reserve", middleware.Protected(true), c.CancelReserveWishHandler)
 
