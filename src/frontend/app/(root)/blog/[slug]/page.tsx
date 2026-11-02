@@ -4,6 +4,7 @@ import { ArticleDetails } from "@/components/article/ArticleDetail";
 import PageHeader from "@/components/PageHeader";
 import { getArticleBySlug } from "@/lib/server-requests/article";
 import { CustomBreadcrumbs } from "@/components/Breadcrumbs";
+import { getOgImageUrl } from "@/lib/label";
 
 export async function generateMetadata({
   params,
@@ -20,6 +21,7 @@ export async function generateMetadata({
     openGraph: {
       title: article.title,
       description: article.description,
+      images: [getOgImageUrl(article.title, article.description)],
     },
   };
 }

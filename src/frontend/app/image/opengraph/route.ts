@@ -7,5 +7,12 @@ export async function GET(request: NextRequest) {
   const title = searchParams.get("title") || "";
   const description = searchParams.get("description") || "";
   const footer = searchParams.get("footer") || "";
-  return getOgImage(title, description, footer);
+  const color = searchParams.get("color") || undefined;
+  const emoji = searchParams.get("emoji") || undefined;
+  const theme = searchParams.get("theme");
+  return getOgImage(title, description, footer, {
+    color,
+    emoji,
+    theme: theme === "dark" ? "dark" : "light",
+  });
 }

@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 
+import { getOgImageUrl } from "@/lib/label";
 import { getUserByUsername } from "@/lib/server-requests/user";
 import { Wishlists } from "@/components/wishlist/Wishlist";
 
@@ -12,7 +13,13 @@ export async function generateMetadata({
 
   const user = await getUserByUsername(username);
   if ("message" in user) {
-    return {};
+    return {
+      openGraph: {
+        images: [
+          getOgImageUrl("Пользователь не найден", "", "Профиль пользователя"),
+        ],
+      },
+    };
   }
 
   return {
@@ -20,6 +27,7 @@ export async function generateMetadata({
     openGraph: {
       title: user.name,
       description: `${user.name} вишлисты пользователя`,
+      images: [getOgImageUrl(user.name, "", "Профиль пользователя")],
     },
   };
 }
