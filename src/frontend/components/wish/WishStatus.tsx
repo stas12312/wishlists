@@ -30,7 +30,16 @@ const WishStatus = ({
           initial="initial"
           variants={defaultVariants}
         >
-          <Chip color={status.color} size={size} variant="primary">
+          <Chip
+            className={
+              wish.fulfilled_at
+                ? "[--accent:var(--color-blue-600)] [--accent-foreground:white]"
+                : undefined
+            }
+            color={status.color}
+            size={size}
+            variant="primary"
+          >
             {status.text}
           </Chip>
         </motion.span>

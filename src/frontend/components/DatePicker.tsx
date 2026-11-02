@@ -14,6 +14,7 @@ export const CustomDatePicker = ({
   label,
   name,
   minValue,
+  calendarMinValue,
   maxValue,
   variant = "primary",
 }: {
@@ -22,6 +23,7 @@ export const CustomDatePicker = ({
   label: string;
   name: string;
   minValue?: CalendarDate | null;
+  calendarMinValue?: CalendarDate;
   maxValue?: CalendarDate | null;
   variant?: "primary" | "secondary";
 }) => {
@@ -48,7 +50,10 @@ export const CustomDatePicker = ({
         </DateField.Group>
         <FieldError />
         <DatePicker.Popover>
-          <Calendar aria-label="Выберите дату">
+          <Calendar
+            aria-label="Выберите дату"
+            minValue={calendarMinValue ?? minValue ?? undefined}
+          >
             <Calendar.Header>
               <Calendar.YearPickerTrigger>
                 <Calendar.YearPickerTriggerHeading />

@@ -1,11 +1,11 @@
 import { Chip } from "@heroui/react";
 import clsx from "clsx";
-import { AiFillGift } from "react-icons/ai";
 import { Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 import Desirability from "../desirability/DesirabilitySelector";
 import { ResponsiveImage } from "../ResponsiveImage";
+import { DEFAULT_WISHLIST_EMOJI } from "../wishlist/wishlistAppearance";
 
 import WishStatus from "./WishStatus";
 
@@ -26,8 +26,9 @@ export const ImageSwiper = ({ wish }: { wish: IWish }) => {
       <div
         className={clsx(
           "w-full flex h-full rounded-3xl",
-          "bg-[linear-gradient(180deg,#ffffff_0%,#f7f7f8_35%,#ececee_100%)]",
-          "dark:bg-[linear-gradient(180deg,#1c1c1e_0%,#2c2c2e_40%,#3a3a3c_100%)]",
+          wish.images?.length
+            ? "bg-[linear-gradient(180deg,#ffffff_0%,#f7f7f8_35%,#ececee_100%)] dark:bg-[linear-gradient(180deg,#1c1c1e_0%,#2c2c2e_40%,#3a3a3c_100%)]"
+            : "wish-image-placeholder",
         )}
       >
         {wish.images?.length ? (
@@ -54,7 +55,12 @@ export const ImageSwiper = ({ wish }: { wish: IWish }) => {
             })}
           </Swiper>
         ) : (
-          <AiFillGift className={`text-8xl mx-auto my-auto h-64`} />
+          <span
+            aria-hidden="true"
+            className={`grid place-items-center text-8xl mx-auto my-auto h-64`}
+          >
+            {DEFAULT_WISHLIST_EMOJI}
+          </span>
         )}
       </div>
 
