@@ -4,9 +4,81 @@ import (
 	"bytes"
 	"main/model"
 	"main/repository/mocks"
+	"main/service"
+	servicemocks "main/service/mocks"
 	"strings"
 	"testing"
 )
+
+type ticketRepositoryStub struct {
+	ticket  model.Ticket
+	updated *model.Ticket
+}
+
+func (r *ticketRepositoryStub) Create(ticket *model.Ticket) (*model.Ticket, error) {
+	return ticket, nil
+}
+
+func (r *ticketRepositoryStub) List(int64, int64, model.Navigation, model.TicketFilters) ([]model.Ticket, error) {
+	return []model.Ticket{r.ticket}, nil
+}
+
+func (r *ticketRepositoryStub) Get(int64) (*model.Ticket, error) {
+	return &r.ticket, nil
+}
+
+func (r *ticketRepositoryStub) Update(ticket *model.Ticket) (*model.Ticket, error) {
+	r.updated = ticket
+	return ticket, nil
+}
+
+func (r *ticketRepositoryStub) Delete(int64) error {
+	return nil
+}
+
+func (r *ticketRepositoryStub) GetCounters(int64) (int, error) {
+	return 0, nil
+}
+
+type messageServiceStub struct {
+	createMessageCalls int
+}
+
+func (s *messageServiceStub) CreateConversation() (*model.Conversation, error) {
+	return &model.Conversation{}, nil
+}
+
+func (s *messageServiceStub) CreateMessage(int64, int64, string, model.Attachments) (*model.Message, error) {
+	s.createMessageCalls++
+	return &model.Message{}, nil
+}
+
+func (s *messageServiceStub) ListMessages(int64) ([]model.Message, error) {
+	return nil, nil
+}
+
+func TestTicketServiceImpl_AddMessageFromAdminCommandOnly(t *testing.T) {
+	ticketRepository := &ticketRepositoryStub{ticket: model.Ticket{Id: 1, AuthorId: 42, ConversationId: 7}}
+	messageService := &messageServiceStub{}
+	wsService := servicemocks.NewWSService(t)
+	wsService.On("SendMessage", int64(42), model.WSMessage{Event: service.ChangeTicketsCount}).Once()
+	wsService.On("SendMessageToChannel", "ticket_1", model.WSMessage{Event: service.Update}).Once()
+	s := NewTicketServiceImpl(ticketRepository, nil, messageService, wsService, nil, nil, "", nil, nil, "")
+
+	message, err := s.AddMessageFromAdmin(1, 1, &model.Message{Content: "/status resolved"})
+	if err != nil {
+		t.Fatalf("AddMessageFromAdmin() error = %v", err)
+	}
+	if message != nil {
+		t.Errorf("AddMessageFromAdmin() message = %+v, want nil", message)
+	}
+	if ticketRepository.updated == nil || ticketRepository.updated.Status != "resolved" {
+		t.Errorf("updated ticket = %+v, want status resolved", ticketRepository.updated)
+	}
+	if messageService.createMessageCalls != 0 {
+		t.Errorf("CreateMessage() calls = %d, want 0", messageService.createMessageCalls)
+	}
+}
 
 func TestSplitMessage(t *testing.T) {
 	tests := []struct {

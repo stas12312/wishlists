@@ -183,8 +183,11 @@ func (t *TicketServiceImpl) AddMessageFromAdmin(userId int64, ticketId int64, me
 		return nil, apperror.NewError(apperror.ValidateError, fmt.Sprintf("Неизвестный статус обращения: %s", status))
 	}
 	message.Content = content
-	if err = t.validateMessage(message); err != nil {
-		return nil, err
+	commandOnly := status != "" && message.Content == "" && len(message.Attachments) == 0
+	if !commandOnly {
+		if err = t.validateMessage(message); err != nil {
+			return nil, err
+		}
 	}
 
 	if status != "" {
@@ -193,6 +196,13 @@ func (t *TicketServiceImpl) AddMessageFromAdmin(userId int64, ticketId int64, me
 			return nil, err
 		}
 		t.wsService.SendMessage(ticket.AuthorId, model.WSMessage{Event: service.ChangeTicketsCount})
+	}
+
+	if commandOnly {
+		t.wsService.SendMessageToChannel(getChannelNameForTicket(ticketId), model.WSMessage{
+			Event: service.Update,
+		})
+		return nil, nil
 	}
 
 	createdMessage, err := t.messageService.CreateMessage(userId, ticket.ConversationId, message.Content, message.Attachments)
