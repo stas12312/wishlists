@@ -29,6 +29,29 @@ export async function updateWish(wish: IWish): Promise<IWish | IError> {
   return response.data;
 }
 
+export async function getReservationCooldown(): Promise<{
+  remaining_ms: number;
+  interval_ms: number;
+}> {
+  const response = await clientAxios.get("/wishes/reservation_cooldown");
+  if (response.status !== 200) throw new Error(response.data.message);
+  return response.data;
+}
+
+export async function checkReservation(wishUUID: string): Promise<boolean> {
+  const response = await clientAxios.post(
+    `/wishes/${wishUUID}/check_reservation`,
+    null,
+    {
+      validateStatus: (status) => status === 200 || status === 429,
+    },
+  );
+  if (response.status !== 200) {
+    throw new Error(response.data.message);
+  }
+  return response.data.is_reserved;
+}
+
 export async function reserveWish(wishUUID: string): Promise<IError | void> {
   const response = await clientAxios.post(`wishes/${wishUUID}/reserve`);
   if (response.status != 200) {

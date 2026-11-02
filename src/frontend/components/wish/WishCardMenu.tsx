@@ -1,4 +1,5 @@
 import { Dropdown, DropdownMenu } from "@heroui/react";
+import { observer } from "mobx-react-lite";
 import { Key } from "react";
 
 import MenuTrigger from "../menu/MenuTrigger";
@@ -6,7 +7,7 @@ import MenuTrigger from "../menu/MenuTrigger";
 import { IWish } from "@/lib/models/wish";
 import { getMenuItemsByActions } from "@/lib/wish/menu";
 
-export function WishItemMenu({
+export const WishItemMenu = observer(function WishItemMenu({
   wish,
   handeAction,
   excludeKeys,
@@ -17,7 +18,7 @@ export function WishItemMenu({
   excludeKeys?: string[];
   overlayClassName?: string;
 }) {
-  const menuItems = getMenuItemsByActions(wish.actions, excludeKeys);
+  const menuItems = getMenuItemsByActions(wish, excludeKeys);
   return (
     <Dropdown>
       <MenuTrigger
@@ -44,4 +45,4 @@ export function WishItemMenu({
       </Dropdown.Popover>
     </Dropdown>
   );
-}
+});

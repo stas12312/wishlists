@@ -11,7 +11,9 @@ import {
 } from "react-icons/md";
 import { IconType } from "react-icons";
 
-import { IWishActions } from "../models/wish";
+import { IWish, IWishActions } from "../models/wish";
+
+import userStore from "@/store/userStore";
 
 interface IWishMenuItem {
   actionKey?: keyof IWishActions | null;
@@ -35,6 +37,14 @@ export const RESERVE_BUTTON_CLASS_NAME =
   "bg-success/15 text-success hover:bg-success/25";
 
 const ACTIONS: IWishMenuItem[] = [
+  {
+    actionKey: "edit",
+    key: "check_reservation",
+    className: "",
+    title: "Проверить бронирование",
+    icon: MdOutlineBookmarkAdded,
+    variant: "secondary",
+  },
   {
     key: "reserve",
     className: "text-accent",
@@ -110,13 +120,21 @@ const ACTIONS: IWishMenuItem[] = [
 export const RESERVE_ACTION_KEYS = ["reserve", "cancel_reserve"];
 
 export function getMenuItemsByActions(
-  actions: IWishActions,
+  wish: IWish,
   excludeKeys: string[] = [],
 ): IWishMenuItem[] {
+  const actions = wish.actions;
+  const hasReservationStatus =
+    wish.is_reserved ||
+    (wish.uuid && userStore.getCheckedReservation(wish.uuid) !== undefined);
   let items: IWishMenuItem[] = [];
 
   ACTIONS.forEach((action) => {
-    if (excludeKeys.includes(action.key)) return;
+    if (
+      excludeKeys.includes(action.key) ||
+      (action.key === "check_reservation" && hasReservationStatus)
+    )
+      return;
     let key = action.key as keyof IWishActions;
     if (
       (action.actionKey && actions[action.actionKey]) ||

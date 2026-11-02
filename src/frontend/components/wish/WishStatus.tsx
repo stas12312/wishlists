@@ -1,8 +1,10 @@
+import { observer } from "mobx-react-lite";
 import { Chip } from "@heroui/react";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { IWish } from "@/lib/models/wish";
 import { defaultVariants } from "@/lib/animations/default";
+import userStore from "@/store/userStore";
 
 const WishStatus = ({
   wish,
@@ -13,12 +15,18 @@ const WishStatus = ({
   size?: "sm" | "md" | "lg" | undefined;
   hideReserved?: boolean;
 }) => {
+  const checked =
+    wish.actions.edit && wish.uuid && !hideReserved
+      ? userStore.getCheckedReservation(wish.uuid)
+      : undefined;
   const byYou = wish.actions.cancel_reserve ? " вами" : "";
   const status = wish.fulfilled_at
     ? { color: "accent" as const, text: `Исполнено${byYou}` }
-    : wish.is_reserved && !hideReserved
+    : (checked ?? wish.is_reserved) && !hideReserved
       ? { color: "success" as const, text: `Забронировано${byYou}` }
-      : null;
+      : checked === false
+        ? { color: "accent" as const, text: "Не забронировано" }
+        : null;
 
   return (
     <AnimatePresence>
@@ -32,7 +40,7 @@ const WishStatus = ({
         >
           <Chip
             className={
-              wish.fulfilled_at
+              status.color === "accent"
                 ? "[--accent:var(--color-blue-600)] [--accent-foreground:white]"
                 : undefined
             }
@@ -48,4 +56,4 @@ const WishStatus = ({
   );
 };
 
-export default WishStatus;
+export default observer(WishStatus);

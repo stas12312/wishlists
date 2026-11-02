@@ -19,7 +19,7 @@ import { WishItemMenu } from "./WishCardMenu";
 import WishFullCard from "./WishDrawer";
 import { useWishActions } from "./useWishActions";
 
-import { IWish, IWishActions } from "@/lib/models/wish";
+import { IWish } from "@/lib/models/wish";
 import { IWishlist } from "@/lib/models/wishlist";
 import { UserChip } from "@/components/user/UserChip";
 import { getMenuItemsByActions, RESERVE_ACTION_KEYS } from "@/lib/wish/menu";
@@ -104,7 +104,7 @@ export const WishItem = observer(
                   {wish.comment}
                 </span>
               </div>
-              {showMenu(wish.actions) ? (
+              {showMenu(wish) ? (
                 <span className="flex shrink-0 self-start items-center border border-gray-500/30 rounded-3xl">
                   <WishItemMenu
                     excludeKeys={RESERVE_ACTION_KEYS}
@@ -221,6 +221,6 @@ export function ReserveButton({
   );
 }
 
-function showMenu(actions: IWishActions): boolean {
-  return getMenuItemsByActions(actions, RESERVE_ACTION_KEYS).length > 0;
+function showMenu(wish: IWish): boolean {
+  return getMenuItemsByActions(wish, RESERVE_ACTION_KEYS).length > 0;
 }
