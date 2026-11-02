@@ -8,6 +8,7 @@ import Menu from "@/components/Menu";
 import { SupportButton } from "@/components/SupportButton";
 import { SupportLink } from "@/components/SupportLink";
 import Version from "@/components/Version";
+import { BackgroundDecoration } from "@/components/BackgroundDecoration";
 import { LeftPanel } from "@/components/left-panel/LeftPanel";
 export default async function Layout({
   children,
@@ -17,9 +18,10 @@ export default async function Layout({
   const cookieStore = await cookies();
   const isLogin = cookieStore.has("refresh_token");
   return (
-    <div className="flex flex-col min-h-screen justify-between">
+    <div className="relative flex flex-col min-h-screen justify-between">
       <div>
         <Header isLogin={isLogin} />
+        {isLogin ? <BackgroundDecoration /> : null}
 
         <div className="gap-1 pb-4 flex mt-4">
           {isLogin ? (
