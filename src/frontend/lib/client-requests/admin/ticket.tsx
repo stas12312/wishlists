@@ -36,7 +36,7 @@ export async function addTicketMessageForAdmin(
   ticketId: number,
   content: string,
   attachments: IAttachment[],
-): Promise<IResponse<IMessage> | IError> {
+): Promise<IResponse<IMessage | null> | IError> {
   const response = await clientAxios.post(
     `/admin/tickets/${ticketId}/conversation`,
     {

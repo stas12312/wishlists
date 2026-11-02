@@ -117,7 +117,7 @@ export const TicketDetailPage = ({
       ticketId: number,
       content: string,
       attachments: IAttachment[],
-    ): Promise<IResponse<IMessage> | IError>;
+    ): Promise<IResponse<IMessage | null> | IError>;
   };
   withAuthor?: boolean;
   withStatusCommands?: boolean;
@@ -180,7 +180,10 @@ export const TicketDetailPage = ({
         description: result.message,
       });
     } else {
-      setMessages([...messages, result.data]);
+      const createdMessage = result.data;
+      if (createdMessage) {
+        setMessages((messages) => [...messages, createdMessage]);
+      }
       attachments.clearSent(sentAttachments);
     }
   }
