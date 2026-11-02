@@ -8,7 +8,9 @@ import { QuestionList } from "../question/QuestionList";
 
 import { ImageSwiper } from "./WishImageSwiper";
 
+import { getWishlistAccent } from "@/components/wishlist/wishlistAppearance";
 import { IWish } from "@/lib/models/wish";
+import { IWishlist } from "@/lib/models/wishlist";
 import { getMenuItemsByActions } from "@/lib/wish/menu";
 import userStore from "@/store/userStore";
 import { UserChip } from "@/components/user/UserChip";
@@ -19,6 +21,7 @@ const WishFullCard = observer(
     onOpenChange,
     handeAction,
     wish,
+    wishlist,
     withUser = false,
     withQuestions = true,
   }: {
@@ -26,14 +29,19 @@ const WishFullCard = observer(
     onOpenChange: { (): void };
     handeAction: { (action: string): void };
     wish: IWish;
+    wishlist?: IWishlist;
     withUser?: boolean;
     withQuestions?: boolean;
   }) => {
     const menuItems = getMenuItemsByActions(wish.actions);
+    const accentClass = getWishlistAccent(
+      wishlist?.uuid ?? wish.wishlist_uuid,
+      wishlist?.settings?.color,
+    );
     return (
       <Drawer.Backdrop isOpen={isOpen} onOpenChange={onOpenChange}>
         <Drawer.Content placement="right">
-          <Drawer.Dialog className="max-w-140 w-full">
+          <Drawer.Dialog className={twMerge("max-w-140 w-full", accentClass)}>
             <Drawer.Handle />
             <Drawer.CloseTrigger />
             <Drawer.Header className="text-center">
