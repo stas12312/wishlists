@@ -9,6 +9,8 @@ import (
 //go:generate mockery --name UserService
 
 type UserService interface {
+	GetAuthInfo(ctx context.Context, userId int64) (*model.AuthInfo, error)
+	DeleteOAuthLink(ctx context.Context, userId int64, provider string) error
 	Register(ctx context.Context, email, password, name string) (*model.User, *model.Code, error)
 	Login(ctx context.Context, email, password string) (*model.User, error)
 	GetById(ctx context.Context, id int64) (*model.User, error)

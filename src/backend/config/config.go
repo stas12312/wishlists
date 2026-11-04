@@ -93,6 +93,7 @@ func NewAppFeatures() Features {
 type Config struct {
 	ImageMaxDownloadSize     int64
 	TelegramBotToken         string
+	TelegramBotUsername      string
 	ReservationCheckInterval time.Duration
 	JWT                      JWTConfig
 	S3                       S3Config
@@ -142,6 +143,7 @@ func NewConfig() *Config {
 	}
 	return &Config{
 		ImageMaxDownloadSize:     imageMaxDownloadSize,
+		TelegramBotUsername:      os.Getenv("TELEGRAM_BOT_USERNAME"),
 		TelegramBotToken:         os.Getenv("TELEGRAM_BOT_TOKEN"),
 		ReservationCheckInterval: interval,
 		JWT:                      jwt,

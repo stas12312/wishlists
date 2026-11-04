@@ -40,7 +40,7 @@ func (o OAuthUserPostgres) DeleteByUserId(userId int64, provider string) error {
 	DELETE FROM oauth_user
 	WHERE 
 	    user_id = $1
-		AND provider = $2
+		AND LOWER(provider) = LOWER($2)
 `
 	_, err := o.Connection.Exec(q, userId, provider)
 	return err
@@ -62,9 +62,9 @@ func (o OAuthUserPostgres) ListByUserId(userId int64) ([]model.OAuthUser, error)
 	SELECT * FROM oauth_user
 	WHERE user_id = $1
 `
-	var oAuthUsers []model.OAuthUser
+	oAuthUsers := make([]model.OAuthUser, 0)
 
-	err := o.Connection.Select(oAuthUsers, q, userId)
+	err := o.Connection.Select(&oAuthUsers, q, userId)
 	return oAuthUsers, err
 
 }
