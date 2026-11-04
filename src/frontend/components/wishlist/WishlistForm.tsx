@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Avatar,
   Chip,
   Form,
   Input,
@@ -358,7 +357,9 @@ export function WishlistCreateForm({
                 textValue={visible.label}
               >
                 <div className="flex items-center gap-2">
-                  <Avatar size="sm">{visible.icon}</Avatar>
+                  <span className="flex size-5 shrink-0 items-center justify-center">
+                    {visible.icon}
+                  </span>
                   {visible.label}
                 </div>
 
@@ -388,7 +389,7 @@ export function WishlistCreateForm({
           }}
         >
           <Label>Выберите друзей</Label>
-          <Select.Trigger className="h-auto min-h-10 py-2">
+          <Select.Trigger className="h-auto min-h-9 py-2">
             <Select.Value>
               {({ defaultChildren, isPlaceholder, state }) => {
                 if (isPlaceholder || state.selectedItems.length === 0) {
@@ -411,7 +412,7 @@ export function WishlistCreateForm({
                         return null;
                       }
                       return (
-                        <Chip key={user.id} className="max-w-full">
+                        <Chip key={user.id} className="max-w-full" size="sm">
                           <UserAvatar
                             avatarClassName="size-5"
                             image={user.image}
