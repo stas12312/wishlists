@@ -3,18 +3,17 @@
 import { Button, Input, Label, TextField } from "@heroui/react";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 import PageHeader from "@/components/PageHeader";
-import { PageSpinner } from "@/components/PageSpinner";
-import { AdminUsersStore } from "@/store/adminUsersStore";
+import { useAdminUsersStore } from "@/components/admin/AdminUsersProvider";
 
 export default observer(function AdminUsersPage() {
-  const [store] = useState(() => new AdminUsersStore());
+  const store = useAdminUsersStore();
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const { loading, hasMore, error } = store;
   useEffect(() => {
-    void store.loadUsers();
+    if (!store.hasLoadedUsers && !store.loading) void store.loadUsers();
     return () => store.cancelSearch();
   }, [store]);
 
@@ -31,8 +30,6 @@ export default observer(function AdminUsersPage() {
     observer.observe(target);
     return () => observer.disconnect();
   }, [store, loading, hasMore, error]);
-
-  if (!store.hasLoadedUsers) return <PageSpinner />;
 
   return (
     <>
@@ -82,21 +79,24 @@ export default observer(function AdminUsersPage() {
               </p>
             </Link>
           ))}
-          {!store.error && !store.users.length && (
-            <div className="flex min-h-80 flex-col items-center justify-center rounded-3xl border border-dashed border-default px-5 py-14 text-center md:py-20">
-              <h2 className="text-xl font-semibold md:text-2xl">
-                Пользователи не найдены
-              </h2>
-              <p className="mt-2 max-w-sm text-sm text-muted md:text-base">
-                Попробуйте изменить запрос или проверить написание.
-              </p>
-            </div>
-          )}
+          {store.hasLoadedUsers &&
+            !store.loading &&
+            !store.error &&
+            !store.users.length && (
+              <div className="flex min-h-80 flex-col items-center justify-center rounded-3xl border border-dashed border-default px-5 py-14 text-center md:py-20">
+                <h2 className="text-xl font-semibold md:text-2xl">
+                  Пользователи не найдены
+                </h2>
+                <p className="mt-2 max-w-sm text-sm text-muted md:text-base">
+                  Попробуйте изменить запрос или проверить написание.
+                </p>
+              </div>
+            )}
         </div>
         <div ref={loadMoreRef} aria-hidden="true" className="h-px" />
         {store.error && (
           <Button
-            isPending={store.loading}
+            isDisabled={store.loading}
             variant="secondary"
             onPress={() => void store.loadUsers(store.hasMore)}
           >
