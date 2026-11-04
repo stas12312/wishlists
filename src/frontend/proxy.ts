@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { refreshTokenIfNeed } from "./lib/auth";
 
 export default async function proxy(request: NextRequest) {
+  if (request.nextUrl.pathname === "/miniapp/telegram") {
+    return NextResponse.next();
+  }
   const requestedUrl = request.nextUrl.pathname;
   const authUrl = new URL(`/auth/login?ret=${requestedUrl}`, request.url);
   if (
