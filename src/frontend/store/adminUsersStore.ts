@@ -30,13 +30,26 @@ export class AdminUsersStore {
   hasMore = false;
   private appliedSearch = "";
   private request = 0;
+  private searchTimer: ReturnType<typeof setTimeout> | undefined;
 
   constructor() {
-    makeAutoObservable(this);
+    makeAutoObservable<this, "searchTimer">(this, { searchTimer: false });
   }
 
   setSearch(value: string) {
     this.search = value;
+    this.cancelSearch();
+    const search = value.trim();
+    if (!search) {
+      if (this.appliedSearch) void this.loadUsers();
+    } else if (search.length >= 3) {
+      this.searchTimer = setTimeout(() => void this.loadUsers(), 400);
+    }
+  }
+
+  cancelSearch() {
+    clearTimeout(this.searchTimer);
+    this.searchTimer = undefined;
   }
   selectLink(link: IUserLink | null) {
     if (!this.deleting) this.pendingLink = link;
@@ -44,6 +57,7 @@ export class AdminUsersStore {
 
   async loadUsers(append = false) {
     if (append && (this.loading || !this.hasMore)) return;
+    if (!append) this.cancelSearch();
     const request = ++this.request;
     if (!append) {
       this.appliedSearch = this.search.trim();

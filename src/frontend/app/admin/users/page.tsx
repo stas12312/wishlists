@@ -14,6 +14,7 @@ export default observer(function AdminUsersPage() {
   const { loading, hasMore, error } = store;
   useEffect(() => {
     void store.loadUsers();
+    return () => store.cancelSearch();
   }, [store]);
 
   useEffect(() => {
