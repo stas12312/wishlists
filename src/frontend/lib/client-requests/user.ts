@@ -10,6 +10,8 @@ export async function getMe(): Promise<IUser> {
 }
 export async function getAuthInfo(): Promise<AuthInfo> {
   const response = await clientAxios.get("user/auth-info");
+  if (response.status !== 200)
+    throw new Error(response.data?.message || "Не удалось загрузить привязки");
   return response.data as AuthInfo;
 }
 
@@ -56,4 +58,12 @@ export async function updateUser(user: IUser): Promise<IUser | IError> {
     ...user,
   });
   return response.data;
+}
+
+export async function deleteOAuthLink(provider: string): Promise<void> {
+  const response = await clientAxios.delete(
+    "user/oauth/" + encodeURIComponent(provider),
+  );
+  if (response.status !== 200)
+    throw new Error(response.data?.message || "Не удалось удалить привязку");
 }

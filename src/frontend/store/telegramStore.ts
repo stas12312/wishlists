@@ -11,6 +11,7 @@ import {
 
 interface TelegramWebApp {
   initData: string;
+  initDataUnsafe?: { start_param?: string };
   ready(): void;
   expand(): void;
 }
@@ -52,8 +53,11 @@ export class TelegramStore {
     }
     app.ready();
     app.expand();
-    if (linkMode) {
-      this.status = "link";
+    if (linkMode || app.initDataUnsafe?.start_param === "link") {
+      const token = await authManager.getAccessToken();
+      runInAction(() => {
+        this.status = token ? "link" : "choice";
+      });
       return;
     }
     this.busy = true;
