@@ -16,6 +16,7 @@ import (
 var ErrInvalidInitData = errors.New("invalid Telegram init data")
 
 type User struct {
+	PhotoURL  string `json:"photo_url"`
 	ID        int64  `json:"id"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`

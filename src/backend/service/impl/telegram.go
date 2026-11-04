@@ -19,11 +19,12 @@ const telegramProvider = "telegram"
 
 var telegramUsernamePattern = regexp.MustCompile(`^[0-9A-Za-z.\-_]{3,32}$`)
 
-func NewTelegramService(work uof.UnitOfWork, botToken string) service.TelegramService {
-	return &telegramService{work: work, botToken: botToken, now: time.Now}
+func NewTelegramService(work uof.UnitOfWork, botToken string, images service.ImageService) service.TelegramService {
+	return &telegramService{work: work, botToken: botToken, now: time.Now, images: images}
 }
 
 type telegramService struct {
+	images   service.ImageService
 	work     uof.UnitOfWork
 	botToken string
 	now      func() time.Time
@@ -97,6 +98,7 @@ func (s *telegramService) Register(ctx context.Context, initData string) (*model
 	}
 	var user *model.User
 	for attempt := 0; attempt < 3; attempt++ {
+		accountCreated := false
 		err = s.work.Do(ctx, func(ctx context.Context, store uof.UnitOfWorkStore) error {
 			telegramID := strconv.FormatInt(identity.ID, 10)
 			link, err := store.OAuthRepository().Get(telegramProvider, telegramID)
@@ -126,6 +128,7 @@ func (s *telegramService) Register(ctx context.Context, initData string) (*model
 			if err != nil {
 				return err
 			}
+			accountCreated = true
 			// БД уже выдала случайный уникальный username; заменяем его только на свободный Telegram username.
 			if username != "" {
 				user.Username = username
@@ -139,6 +142,9 @@ func (s *telegramService) Register(ctx context.Context, initData string) (*model
 			})
 		})
 		if err == nil {
+			if accountCreated {
+				s.importAvatar(ctx, user, identity.PhotoURL)
+			}
 			return user, nil
 		}
 		// После конфликта уникальности PostgreSQL требует новую транзакцию.

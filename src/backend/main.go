@@ -59,7 +59,9 @@ func main() {
 	mailClient := impl.NewLoggingClient(impl.NewSMPTClient(&appConfig.SMTP), mailLogRepository)
 	userService := service.NewUserService(uof, codeRepository, mailClient, appConfig, oAuthManager)
 	userController := controller.NewUserController(&userService, appConfig)
-	telegramService := service.NewTelegramService(uof, appConfig.TelegramBotToken)
+	imageRepository := repository.NewS3ImageRepository(&appConfig.S3)
+	imageService := service.NewImageService(imageRepository, uuid.NewString, appConfig.Feature, appConfig.ImageMaxDownloadSize)
+	telegramService := service.NewTelegramService(uof, appConfig.TelegramBotToken, imageService)
 	telegramController := controller.NewTelegramController(telegramService, appConfig)
 
 	friendRepository := repository.NewFriendRepositoryPostgres(db)
@@ -79,8 +81,6 @@ func main() {
 	)
 	wishlistController := controller.NewWishlistController(&wishlistService, appConfig)
 
-	imageRepository := repository.NewS3ImageRepository(&appConfig.S3)
-	imageService := service.NewImageService(imageRepository, uuid.NewString, appConfig.Feature, appConfig.ImageMaxDownloadSize)
 	imageController := controller.NewImageController(imageService)
 
 	articleRepository := repository.NewArticlePostgresRepository(db)
