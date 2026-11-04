@@ -20,21 +20,21 @@ export async function generateMetadata({
     return {};
   }
 
+  const author = wishlist.user?.name || wishlist.user?.username;
+  const description = author ? `Вишлист от ${author}` : "Вишлист";
+
   return {
     title: `Вишлист - ${wishlist.name}`,
+    description,
     openGraph: {
       title: wishlist.name,
-      description: wishlist.description,
+      description,
       images: [
-        getOgImageUrl(
-          wishlist.name,
-          wishlist.description,
-          wishlist.user?.name,
-          {
-            color: wishlist.settings?.color || DEFAULT_WISHLIST_COLOR,
-            emoji: wishlist.settings?.emoji || DEFAULT_WISHLIST_EMOJI,
-          },
-        ),
+        getOgImageUrl(wishlist.name, wishlist.description, author, {
+          avatar: wishlist.user?.image,
+          color: wishlist.settings?.color || DEFAULT_WISHLIST_COLOR,
+          emoji: wishlist.settings?.emoji || DEFAULT_WISHLIST_EMOJI,
+        }),
       ],
     },
   };

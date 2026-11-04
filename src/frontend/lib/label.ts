@@ -17,13 +17,21 @@ export function getOgImageUrl(
   title: string,
   description?: string,
   footer?: string,
-  options: { color?: string; emoji?: string; theme?: OgTheme } = {},
+  options: {
+    avatar?: string;
+    color?: string;
+    emoji?: string;
+    theme?: OgTheme;
+  } = {},
 ): string {
   const params = new URLSearchParams({
     title,
     description: description || "",
     footer: footer || "",
   });
+  if (options.avatar) {
+    params.set("avatar", options.avatar);
+  }
   if (options.color) {
     params.set("color", options.color);
   }

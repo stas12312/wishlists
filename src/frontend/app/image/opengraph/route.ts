@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
   const emoji = searchParams.get("emoji") || undefined;
   const theme = searchParams.get("theme");
   return getOgImage(title, description, footer, {
+    avatar: searchParams.get("avatar") || undefined,
     color,
     emoji,
     theme: theme === "dark" ? "dark" : "light",
