@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { FaTelegramPlane } from "react-icons/fa";
 
 import ConfirmationModal from "@/components/ConfirmationModal";
+import { CustomBreadcrumbs } from "@/components/Breadcrumbs";
 import PageHeader from "@/components/PageHeader";
 import { Yandex } from "@/components/logo/YandexLogo";
 import { AdminUsersStore } from "@/store/adminUsersStore";
@@ -28,18 +29,24 @@ export const AdminUserDetail = observer(function AdminUserDetail({
 
   return (
     <>
-      <PageHeader title={user ? user.name : "Пользователь"} />
+      <PageHeader>
+        <CustomBreadcrumbs
+          items={[
+            { title: "Пользователи", href: "/admin/users" },
+            {
+              title: user?.name ?? "",
+              href: `/admin/users/${id}`,
+            },
+          ]}
+        />
+      </PageHeader>
       <div className="flex flex-col gap-4">
-        <Link className="text-accent" href="/admin/users">
-          ← Все пользователи
-        </Link>
-        {store.loading && <p role="status">Загрузка пользователя…</p>}
         {store.error && (
           <p className="text-danger" role="alert">
             {store.error}
           </p>
         )}
-        {!store.loading && !user && (
+        {store.error && !store.loading && !user && (
           <Button variant="secondary" onPress={() => void store.loadUser(id)}>
             Повторить
           </Button>
