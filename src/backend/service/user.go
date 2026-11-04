@@ -11,6 +11,8 @@ import (
 type UserService interface {
 	GetAuthInfo(ctx context.Context, userId int64) (*model.AuthInfo, error)
 	DeleteOAuthLink(ctx context.Context, userId int64, provider string) error
+	RequestEmailChange(ctx context.Context, userId int64, email string) (*model.Code, error)
+	ConfirmEmailChange(ctx context.Context, userId int64, code *model.Code) (*model.User, error)
 	Register(ctx context.Context, email, password, name string) (*model.User, *model.Code, error)
 	Login(ctx context.Context, email, password string) (*model.User, error)
 	GetById(ctx context.Context, id int64) (*model.User, error)

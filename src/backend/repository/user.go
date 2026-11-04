@@ -5,6 +5,7 @@ import "main/model"
 //go:generate mockery --name UserRepository
 
 type UserRepository interface {
+	UpdateEmail(userId int64, email string) (*model.User, error)
 	GetByEmail(email string) (*model.User, error)
 	GetById(id int64) (*model.User, error)
 	GetByUsername(username string) (*model.User, error)

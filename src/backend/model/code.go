@@ -12,9 +12,11 @@ import (
 const (
 	ConfirmEmailCode  = 1
 	ResetPasswordCode = 2
+	ChangeEmailCode   = 3
 )
 
 type Code struct {
+	Email         string `redis:"email" json:"-"`
 	UUID          string `json:"uuid"`
 	Code          string `redis:"code" json:"code"`
 	Key           string `redis:"key" json:"key"`

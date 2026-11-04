@@ -381,3 +381,20 @@ func (_m *UserService) GetAuthInfo(ctx context.Context, userId int64) (*model.Au
 func (_m *UserService) DeleteOAuthLink(ctx context.Context, userId int64, provider string) error {
 	return _m.Called(ctx, userId, provider).Error(0)
 }
+
+func (_m *UserService) RequestEmailChange(ctx context.Context, userId int64, email string) (*model.Code, error) {
+	ret := _m.Called(ctx, userId, email)
+	var code *model.Code
+	if ret.Get(0) != nil {
+		code = ret.Get(0).(*model.Code)
+	}
+	return code, ret.Error(1)
+}
+func (_m *UserService) ConfirmEmailChange(ctx context.Context, userId int64, code *model.Code) (*model.User, error) {
+	ret := _m.Called(ctx, userId, code)
+	var user *model.User
+	if ret.Get(0) != nil {
+		user = ret.Get(0).(*model.User)
+	}
+	return user, ret.Error(1)
+}

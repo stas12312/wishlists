@@ -429,7 +429,46 @@ func (c *UserController) Route(router fiber.Router) {
 	user.Delete("/", middleware.Protected(true), c.DeleteUser)
 	user.Get("/me", middleware.Protected(true), c.Me)
 	user.Post("/change-password", middleware.Protected(true), c.ChangePassword)
+	user.Post("/email", middleware.Protected(true), c.RequestEmailChange)
+	user.Post("/email/confirm", middleware.Protected(true), c.ConfirmEmailChange)
 	user.Get("/auth-info", middleware.Protected(true), c.GetAuthInfo)
 	user.Delete("/oauth/:provider", middleware.Protected(true), c.DeleteOAuthLink)
 	user.Get("/:username", c.GetByUsername)
+}
+
+func (c *UserController) RequestEmailChange(ctx *fiber.Ctx) error {
+	request := &struct {
+		Email string `json:"email" validate:"required,email,max=254"`
+	}{}
+	if err := ctx.BodyParser(request); err != nil {
+		return apperror.NewError(apperror.ValidateError, "Некорректные данные")
+	}
+	request.Email = strings.TrimSpace(request.Email)
+	if errs := NewValidator().Validate(request); len(errs) > 0 {
+		return ctx.Status(fiber.StatusBadRequest).JSON(model.ValidateErrorResponse{Message: "Введите корректный email", Fields: errs})
+	}
+	code, err := c.UserService.RequestEmailChange(ctx.UserContext(), GetUserIdFromCtx(ctx), request.Email)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(model.ShortCode{UUID: code.UUID, SecretKey: code.SecretKey})
+}
+
+func (c *UserController) ConfirmEmailChange(ctx *fiber.Ctx) error {
+	request := &struct {
+		UUID      string `json:"uuid" validate:"required,uuid"`
+		Code      string `json:"code" validate:"required,len=6,numeric"`
+		SecretKey string `json:"secret_key" validate:"required"`
+	}{}
+	if err := ctx.BodyParser(request); err != nil {
+		return apperror.NewError(apperror.ValidateError, "Некорректные данные")
+	}
+	if errs := NewValidator().Validate(request); len(errs) > 0 {
+		return ctx.Status(fiber.StatusBadRequest).JSON(model.ValidateErrorResponse{Message: "Введите шестизначный код", Fields: errs})
+	}
+	user, err := c.UserService.ConfirmEmailChange(ctx.UserContext(), GetUserIdFromCtx(ctx), &model.Code{UUID: request.UUID, Code: request.Code, SecretKey: request.SecretKey})
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(user)
 }

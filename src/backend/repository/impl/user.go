@@ -138,3 +138,10 @@ func (r *UserRepositoryPostgres) ListAdminEmails() ([]string, error) {
 	err := r.Select(&emails, query)
 	return emails, err
 }
+
+func (r *UserRepositoryPostgres) UpdateEmail(userId int64, email string) (*model.User, error) {
+	user := &model.User{}
+	err := r.Get(user, `UPDATE users SET email = $2 WHERE user_id = $1
+        RETURNING *, COALESCE(email, '') AS pretty_email`, userId, email)
+	return user, err
+}

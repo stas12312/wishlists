@@ -274,6 +274,9 @@ func (u *userServiceImpl) CheckCode(
 	if err != nil {
 		return DBCode, false
 	}
+	if code.UserId != 0 && DBCode.UserId != code.UserId {
+		return &model.Code{}, false
+	}
 	if DBCode.UUID == "" {
 		return DBCode, false
 	}
