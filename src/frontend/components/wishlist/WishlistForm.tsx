@@ -23,6 +23,7 @@ import { FormEvent, Key, useEffect, useState } from "react";
 import { MdOutlinePublic, MdOutlinePublicOff, MdPerson } from "react-icons/md";
 
 import { CustomDatePicker } from "../DatePicker";
+import { UserAvatar } from "../user/UserAvatar";
 import { ButtonWithLoader } from "../ButtonWithLoader";
 
 import {
@@ -411,14 +412,13 @@ export function WishlistCreateForm({
                       }
                       return (
                         <Chip key={user.id} className="max-w-full">
-                          <Avatar className="size-5 shrink-0" size="sm">
-                            <Avatar.Image
-                              alt=""
-                              className="object-cover"
-                              src={user.image}
-                            />
-                            <Avatar.Fallback>{user.name[0]}</Avatar.Fallback>
-                          </Avatar>
+                          <UserAvatar
+                            avatarClassName="size-5"
+                            image={user.image}
+                            name={user.name}
+                            showName={false}
+                            size="sm"
+                          />
                           <Chip.Label className="truncate">
                             {user.name}
                           </Chip.Label>
@@ -440,22 +440,14 @@ export function WishlistCreateForm({
                     id={user.id}
                     textValue={user.name}
                   >
-                    <div className="flex min-w-0 items-center gap-3">
-                      <Avatar className="shrink-0" size="sm">
-                        <Avatar.Image
-                          alt=""
-                          className="object-cover"
-                          src={user.image}
-                        />
-                        <Avatar.Fallback>{user.name[0]}</Avatar.Fallback>
-                      </Avatar>
-                      <div className="flex min-w-0 flex-col">
-                        <span className="truncate text-sm">{user.name}</span>
-                        <span className="truncate text-xs text-muted">
-                          {user.username}
-                        </span>
-                      </div>
-                    </div>
+                    <UserAvatar
+                      className="min-w-0"
+                      description={user.username}
+                      image={user.image}
+                      name={user.name}
+                      nameClassName="block max-w-full truncate text-sm"
+                      size="sm"
+                    />
                     <ListBox.ItemIndicator />
                   </ListBox.Item>
                 );

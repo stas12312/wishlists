@@ -11,6 +11,7 @@ export const UserAvatar = ({
   avatarClassName = "",
   nameClassName = "",
   hasBadge = false,
+  showName = true,
 }: {
   image?: string;
   name: string;
@@ -20,22 +21,29 @@ export const UserAvatar = ({
   avatarClassName?: string;
   nameClassName?: string;
   hasBadge?: boolean;
+  showName?: boolean;
 }) => {
   return (
     <div className={twMerge("flex items-center gap-2", className)}>
-      <Avatar className={avatarClassName} size={size}>
+      <Avatar className={twMerge("shrink-0", avatarClassName)} size={size}>
         <Avatar.Image alt="" className="object-cover" src={image} />
         <Avatar.Fallback>{name.length ? name[0] : null}</Avatar.Fallback>
       </Avatar>
-      <div className="flex flex-col items-start">
-        <Badge.Anchor>
-          <span className={nameClassName}>{name}</span>
-          {hasBadge ? (
-            <Badge className="-mr-2.5" color="accent" content="" size="sm" />
+      {showName ? (
+        <div className="flex min-w-0 flex-col items-start">
+          <Badge.Anchor>
+            <span className={nameClassName}>{name}</span>
+            {hasBadge ? (
+              <Badge className="-mr-2.5" color="accent" content="" size="sm" />
+            ) : null}
+          </Badge.Anchor>
+          {description ? (
+            <span className="max-w-full truncate text-xs text-muted">
+              {description}
+            </span>
           ) : null}
-        </Badge.Anchor>
-        <span className="text-xs text-muted">{description}</span>
-      </div>
+        </div>
+      ) : null}
     </div>
   );
 };
