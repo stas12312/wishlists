@@ -50,9 +50,7 @@ export default observer(function AdminUsersPage() {
             <Label>Поиск пользователя</Label>
             <Input placeholder="ID, имя, username или email" />
           </TextField>
-          <Button isPending={store.loading} type="submit">
-            Найти
-          </Button>
+          <Button type="submit">Найти</Button>
         </form>
         {store.error && (
           <p className="text-danger" role="alert">
@@ -81,7 +79,6 @@ export default observer(function AdminUsersPage() {
               </p>
             </Link>
           ))}
-          {store.loading && <p role="status">Загрузка пользователей…</p>}
           {!store.loading && !store.error && !store.users.length && (
             <p className="text-muted">Пользователи не найдены</p>
           )}
