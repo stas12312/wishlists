@@ -61,7 +61,6 @@ export class AdminUsersStore {
     const request = ++this.request;
     if (!append) {
       this.appliedSearch = this.search.trim();
-      this.users = [];
       this.hasMore = false;
     }
     this.loading = true;
