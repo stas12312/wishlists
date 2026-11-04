@@ -3,11 +3,18 @@ import {
   MdOutlineMail,
   MdOutlineStorefront,
   MdOutlineSupport,
+  MdOutlinePeople,
 } from "react-icons/md";
 
 import { IMenuItem } from "../main-menu/MenuItem";
 
 export const AdminMenuItems: IMenuItem[] = [
+  {
+    title: "Пользователи",
+    href: "/admin/users",
+    icon: <MdOutlinePeople />,
+    selectedIconClassName: "text-violet-500",
+  },
   {
     title: "Статьи",
     href: "/admin/articles",

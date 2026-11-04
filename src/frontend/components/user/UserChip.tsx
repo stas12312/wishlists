@@ -9,6 +9,7 @@ export const UserChip = ({
   user,
   className,
   variant,
+  href,
 }: {
   user: IUser;
   className?: string;
@@ -23,7 +24,7 @@ export const UserChip = ({
         className,
         "pl-0.5 rounded-full h-8",
       )}
-      href={getUserLink(user.username)}
+      href={href ?? getUserLink(user.username)}
     >
       <Avatar className="h-7 w-7">
         <Avatar.Image className="object-cover" src={user.image} />

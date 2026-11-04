@@ -14,7 +14,8 @@ export const AdminMenu = observer(
       item: item,
       params: {
         counter: 0,
-        isCurrent: pathname == item.href,
+        isCurrent:
+          pathname == item.href || pathname.startsWith(`${item.href}/`),
       },
     }));
 
