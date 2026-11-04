@@ -165,22 +165,19 @@ export const WishlistDetail = observer(
               </div>
               <div className="col-span-full row-start-2 flex min-w-0 flex-col items-center gap-1 md:col-span-1 md:col-start-2 md:row-start-1 md:items-start">
                 <h1
-                  className="max-w-full truncate text-xl font-semibold text-slate-900 dark:text-white md:text-2xl"
+                  className="max-w-full text-center text-xl font-semibold text-slate-900 [overflow-wrap:anywhere] dark:text-white md:text-left md:text-2xl"
                   title={wishlist.name}
                 >
                   {wishlist.name}
                 </h1>
-                {wishlist.description ? (
-                  <p
-                    className="max-w-full truncate text-center text-sm text-slate-700 dark:text-white/80 md:text-left md:text-base"
-                    title={wishlist.description}
-                  >
-                    {wishlist.description}
-                  </p>
-                ) : null}
               </div>
+              {wishlist.description ? (
+                <p className="col-span-full row-start-3 min-w-0 max-w-[80ch] whitespace-pre-wrap text-left text-sm leading-relaxed text-slate-700 [overflow-wrap:anywhere] dark:text-white/80 md:row-start-2 md:text-base">
+                  {wishlist.description}
+                </p>
+              ) : null}
               <WishlistChips
-                className="col-span-full justify-center md:row-start-2 md:justify-start"
+                className={`col-span-full justify-center md:justify-start ${wishlist.description ? "row-start-4 md:row-start-3" : "row-start-3 md:row-start-2"}`}
                 isOwner={!!isOwner}
                 statistic={statistic}
                 wishlist={wishlist}
