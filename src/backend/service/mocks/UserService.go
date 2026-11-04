@@ -369,3 +369,15 @@ func NewUserService(t mockConstructorTestingTNewUserService) *UserService {
 
 	return mock
 }
+
+func (_m *UserService) GetAuthInfo(ctx context.Context, userId int64) (*model.AuthInfo, error) {
+	ret := _m.Called(ctx, userId)
+	var info *model.AuthInfo
+	if ret.Get(0) != nil {
+		info = ret.Get(0).(*model.AuthInfo)
+	}
+	return info, ret.Error(1)
+}
+func (_m *UserService) DeleteOAuthLink(ctx context.Context, userId int64, provider string) error {
+	return _m.Called(ctx, userId, provider).Error(0)
+}

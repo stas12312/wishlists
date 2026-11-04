@@ -351,18 +351,17 @@ func (c *UserController) UpdateProfile(ctx *fiber.Ctx) error {
 
 func (c *UserController) GetAuthInfo(ctx *fiber.Ctx) error {
 
-	userId := GetUserIdFromCtx(ctx)
-	user, err := c.GetById(ctx.Context(), userId)
+	info, err := c.UserService.GetAuthInfo(ctx.UserContext(), GetUserIdFromCtx(ctx))
 	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).
-			JSON(model.ErrorResponse{Message: "Ошибка при получении пользователя", Details: err.Error()})
+		return err
 	}
-
-	authInfo := &model.AuthInfo{
-		HasPassword: user.Password != "",
+	return ctx.JSON(info)
+}
+func (c *UserController) DeleteOAuthLink(ctx *fiber.Ctx) error {
+	if err := c.UserService.DeleteOAuthLink(ctx.UserContext(), GetUserIdFromCtx(ctx), ctx.Params("provider")); err != nil {
+		return err
 	}
-
-	return ctx.JSON(authInfo)
+	return ctx.JSON(model.Response{Data: true})
 }
 
 func (c *UserController) DeleteUser(ctx *fiber.Ctx) error {
@@ -431,5 +430,6 @@ func (c *UserController) Route(router fiber.Router) {
 	user.Get("/me", middleware.Protected(true), c.Me)
 	user.Post("/change-password", middleware.Protected(true), c.ChangePassword)
 	user.Get("/auth-info", middleware.Protected(true), c.GetAuthInfo)
+	user.Delete("/oauth/:provider", middleware.Protected(true), c.DeleteOAuthLink)
 	user.Get("/:username", c.GetByUsername)
 }

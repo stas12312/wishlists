@@ -42,5 +42,13 @@ type TokenPariResponse struct {
 }
 
 type AuthInfo struct {
-	HasPassword bool `json:"has_password"`
+	Providers   []AuthProvider `json:"providers"`
+	HasEmail    bool           `json:"has_email"`
+	Links       []OAuthUser    `json:"links"`
+	HasPassword bool           `json:"has_password"`
+}
+
+type AuthProvider struct {
+	Name string `json:"name"`
+	URL  string `json:"url"`
 }

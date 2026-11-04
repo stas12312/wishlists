@@ -335,18 +335,26 @@ func (u *userServiceImpl) OAuthAuth(
 			return apperror.NewError(apperror.DatabaseError, "Ошибка при получении OAuth пользователя")
 		}
 
-		if existsOAuthUser.UserId != 0 && userId != 0 {
-			existsOAuthUser.UserId = userId
-			err = store.OAuthRepository().Update(existsOAuthUser)
-			if err != nil {
-				return apperror.NewError(apperror.DatabaseError, "Ошибка при смене пользователя")
+		if existsOAuthUser == nil {
+			existsOAuthUser = &model.OAuthUser{}
+		}
+		if userId != 0 {
+			if existsOAuthUser.UserId != 0 && existsOAuthUser.UserId != userId {
+				return apperror.NewError(apperror.OAuthError, "Этот аккаунт уже привязан к другому пользователю")
 			}
-			user, err = store.UserRepository().GetById(existsOAuthUser.UserId)
+			user, err = store.UserRepository().GetById(userId)
 			if err != nil {
-				return apperror.NewError(apperror.DatabaseError, "Ошибка при смене пользователя")
+				return apperror.NewError(apperror.DatabaseError, "Не удалось получить пользователя")
+			}
+			if existsOAuthUser.UserId == userId {
+				return nil
+			}
+			if err := store.OAuthRepository().Create(&model.OAuthUser{Provider: provider, OAuthUserId: userFromOAuth.Id, UserId: userId}); err != nil {
+				return apperror.NewError(apperror.DatabaseError, "Не удалось привязать аккаунт")
 			}
 			return nil
-		} else if existsOAuthUser.UserId != 0 {
+		}
+		if existsOAuthUser.UserId != 0 {
 			user, err = store.UserRepository().GetById(existsOAuthUser.UserId)
 			if err != nil {
 				return apperror.NewError(apperror.DatabaseError, "Ошибка при получении пользователя")
