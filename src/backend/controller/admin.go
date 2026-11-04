@@ -14,16 +14,17 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func NewAdminController(userService service.UserService, articleService service.ArticleService, ticketService service.TicketService, mailLogService service.MailLogService, config *config.Config) *AdminController {
-	return &AdminController{userService: userService, articleService: articleService, ticketService: ticketService, mailLogService: mailLogService, config: config}
+func NewAdminController(userService service.UserService, articleService service.ArticleService, ticketService service.TicketService, mailLogService service.MailLogService, config *config.Config, adminUserService service.AdminUserService) *AdminController {
+	return &AdminController{userService: userService, articleService: articleService, ticketService: ticketService, mailLogService: mailLogService, config: config, adminUserService: adminUserService}
 }
 
 type AdminController struct {
-	userService    service.UserService
-	articleService service.ArticleService
-	ticketService  service.TicketService
-	mailLogService service.MailLogService
-	config         *config.Config
+	adminUserService service.AdminUserService
+	userService      service.UserService
+	articleService   service.ArticleService
+	ticketService    service.TicketService
+	mailLogService   service.MailLogService
+	config           *config.Config
 }
 
 func (c *AdminController) IsAdmin(ctx *fiber.Ctx) error {
@@ -334,6 +335,10 @@ func (c *AdminController) Route(router fiber.Router) {
 	adminGroup := router.Group("/admin", middleware.Protected(true))
 
 	adminGroup.Get("/is", c.IsAdmin)
+	usersGroup := adminGroup.Group("/users", middleware.ForAdmin(c.userService))
+	usersGroup.Get("/", c.ListUsers)
+	usersGroup.Get("/:id", c.GetUser)
+	usersGroup.Delete("/:id/links/:provider", c.DeleteUserLink)
 
 	articleGroup := adminGroup.Group("/articles", middleware.Protected(true), middleware.ForAdmin(c.userService))
 	articleGroup.Post("/", c.CreateArticle)

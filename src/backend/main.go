@@ -114,7 +114,8 @@ func main() {
 	)
 	ticketController := controller.NewTicketController(ticketService)
 
-	adminController := controller.NewAdminController(userService, articleService, ticketService, mailLogService, appConfig)
+	adminUserService := service.NewAdminUserService(repository.NewAdminUserRepository(postgresDB))
+	adminController := controller.NewAdminController(userService, articleService, ticketService, mailLogService, appConfig, adminUserService)
 	articleController := controller.NewArticleController(articleService)
 
 	api := app.Group("/api")
