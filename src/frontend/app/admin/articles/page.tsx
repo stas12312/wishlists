@@ -1,8 +1,9 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Button } from "@heroui/react";
+import { IoMdAdd } from "react-icons/io";
 
-import AddCardButton from "@/components/AddCardButton";
 import { AnimatedList } from "@/components/animated-list/AnimatedList";
 import PageHeader from "@/components/PageHeader";
 import { getAdminArticles } from "@/lib/client-requests/article";
@@ -50,28 +51,30 @@ export default function Page() {
   }
   return (
     <>
-      <PageHeader title="Статьи" />
+      <PageHeader dividerClassName="mt-4 mb-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <h1 className="text-2xl font-semibold">Статьи</h1>
+          <Button
+            className="w-full shrink-0 sm:w-auto"
+            variant="primary"
+            onPress={() => route.push("/admin/articles/create")}
+          >
+            <IoMdAdd />
+            Добавить статью
+          </Button>
+        </div>
+      </PageHeader>
       <InfinityLoader hasMore={!isLoadedAll} onLoad={loadData}>
         <div className="p-4">
           <AnimatedList
-            items={[
-              <AddCardButton
-                key="add"
-                className="w-full"
-                title="Добавить"
-                onPress={() => {
-                  route.push("/admin/articles/create");
-                }}
-              />,
-              ...articles.map((article) => (
-                <ArticleCard
-                  key={article.id}
-                  forAdmin
-                  article={article}
-                  href={`/admin/articles/${article.id}`}
-                />
-              )),
-            ]}
+            items={articles.map((article) => (
+              <ArticleCard
+                key={article.id}
+                forAdmin
+                article={article}
+                href={`/admin/articles/${article.id}`}
+              />
+            ))}
           />
         </div>
       </InfinityLoader>
