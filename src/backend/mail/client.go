@@ -10,6 +10,7 @@ import (
 )
 
 var TemplateByName = map[string]string{
+	"email_change":   "./mail/template/email_change.html",
 	"code":           "./mail/template/code.html",
 	"ticket_message": "./mail/template/ticket_message.html",
 }

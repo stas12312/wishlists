@@ -1,5 +1,6 @@
 import { AuthInfo, IUser } from "../models/user";
 import { IError } from "../models";
+import { IRegisterData } from "../models/auth";
 
 import { clientAxios } from "./base";
 
@@ -66,4 +67,24 @@ export async function deleteOAuthLink(provider: string): Promise<void> {
   );
   if (response.status !== 200)
     throw new Error(response.data?.message || "Не удалось удалить привязку");
+}
+
+export async function requestEmailChange(
+  email: string,
+): Promise<IRegisterData | IError> {
+  const response = await clientAxios.post("user/email", { email });
+  return response.data;
+}
+
+export async function confirmEmailChange(
+  uuid: string,
+  code: string,
+  secretKey: string,
+): Promise<IUser | IError> {
+  const response = await clientAxios.post("user/email/confirm", {
+    uuid,
+    code,
+    secret_key: secretKey,
+  });
+  return response.data;
 }

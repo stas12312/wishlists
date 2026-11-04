@@ -70,8 +70,9 @@ const CodeInput = ({
   const inputs = [];
   for (let i = 0; i < digitsCount; i++) {
     const element = (
-      <span key={i}>
+      <span key={i} className="min-w-0 flex-1">
         <TextField
+          className="w-full min-w-0"
           isDisabled={disabled || i > currentIndex}
           type="number"
           variant="secondary"
@@ -80,7 +81,7 @@ const CodeInput = ({
             ref={(ref: HTMLInputElement | null) => {
               inputsRefs.current[i] = ref;
             }}
-            className="w-12 group-data-[focus=true]:bg-default-200 group-data-[focus=true]:scale-105 text-center"
+            className="w-full min-w-0 px-1 group-data-[focus=true]:bg-default-200 group-data-[focus=true]:scale-105 text-center"
             name={i.toString()}
             value={values[i]}
             onChange={processInput}
@@ -94,7 +95,11 @@ const CodeInput = ({
     inputs.push(element);
   }
 
-  return <div className="flex gap-2 text p-2 justify-center">{inputs}</div>;
+  return (
+    <div className="flex w-full max-w-88 min-w-0 gap-2 self-center p-2 mx-auto">
+      {inputs}
+    </div>
+  );
 };
 
 export default CodeInput;

@@ -224,3 +224,12 @@ func NewUserRepository(t interface {
 
 	return mock
 }
+
+func (_m *UserRepository) UpdateEmail(userId int64, email string) (*model.User, error) {
+	ret := _m.Called(userId, email)
+	var user *model.User
+	if ret.Get(0) != nil {
+		user = ret.Get(0).(*model.User)
+	}
+	return user, ret.Error(1)
+}
