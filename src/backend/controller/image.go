@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"errors"
 	"log"
+	apperror "main/error"
 	"main/middleware"
 	"main/model"
 	"main/service"
@@ -31,8 +33,13 @@ func (c *ImageController) UploadImageHandler(ctx *fiber.Ctx) error {
 			JSON(model.ErrorResponse{Message: "Ошибка при загрузке файла", Details: err.Error()})
 	}
 
+	defer file.Close()
 	fileUrl, err := c.Upload(fileHeader.Filename, file)
 	if err != nil {
+		var appErr *apperror.Error
+		if errors.As(err, &appErr) {
+			return appErr
+		}
 		return ctx.Status(fiber.StatusInternalServerError).
 			JSON(model.ErrorResponse{Message: "Ошибка при загрузке файла", Details: err.Error()})
 	}
@@ -53,6 +60,10 @@ func (c *ImageController) UploadImageByURLHandler(ctx *fiber.Ctx) error {
 
 	fileUrl, err := c.UploadByURL(image.Url)
 	if err != nil {
+		var appErr *apperror.Error
+		if errors.As(err, &appErr) {
+			return appErr
+		}
 		return ctx.Status(fiber.StatusInternalServerError).
 			JSON(model.ErrorResponse{Message: "Ошибка при загрузке файла", Details: err.Error()})
 	}
