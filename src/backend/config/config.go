@@ -91,6 +91,7 @@ func NewAppFeatures() Features {
 }
 
 type Config struct {
+	ImageMaxDownloadSize     int64
 	TelegramBotToken         string
 	ReservationCheckInterval time.Duration
 	JWT                      JWTConfig
@@ -124,6 +125,14 @@ func NewConfig() *Config {
 	redisPort, _ := strconv.ParseInt(os.Getenv("REDIS_PORT"), 10, 64)
 	smtpPort, _ := strconv.ParseInt(os.Getenv("SMTP_PORT"), 10, 64)
 	interval := time.Minute
+	imageMaxDownloadSize := int64(5 * 1024 * 1024)
+	if value := os.Getenv("IMAGE_MAX_DOWNLOAD_SIZE"); value != "" {
+		parsed, err := strconv.ParseInt(value, 10, 64)
+		if err != nil || parsed <= 0 || parsed > int64(^uint(0)>>1)-1024*1024 {
+			log.Panic("IMAGE_MAX_DOWNLOAD_SIZE must be a positive number of bytes within the HTTP body size limit")
+		}
+		imageMaxDownloadSize = parsed
+	}
 	if value := os.Getenv("RESERVATION_CHECK_INTERVAL"); value != "" {
 		parsed, err := time.ParseDuration(value)
 		if err != nil || parsed < time.Second {
@@ -132,6 +141,7 @@ func NewConfig() *Config {
 		interval = parsed
 	}
 	return &Config{
+		ImageMaxDownloadSize:     imageMaxDownloadSize,
 		TelegramBotToken:         os.Getenv("TELEGRAM_BOT_TOKEN"),
 		ReservationCheckInterval: interval,
 		JWT:                      jwt,

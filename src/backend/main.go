@@ -27,15 +27,14 @@ import (
 )
 
 func main() {
+	appConfig := config.NewConfig()
 	app := fiber.New(fiber.Config{
 		JSONEncoder:  json.Marshal,
 		JSONDecoder:  json.Unmarshal,
 		ErrorHandler: apperror.AppErrorHandler,
-		// Запас сверх лимита файла в 5 МБ на служебные данные multipart
-		BodyLimit: 6 * 1024 * 1024,
+		// Запас на multipart; минимум сохраняет возможность загрузки вложений обращений.
+		BodyLimit: max(6*1024*1024, int(appConfig.ImageMaxDownloadSize)+1024*1024),
 	})
-
-	appConfig := config.NewConfig()
 
 	setupMiddlewares(app, appConfig)
 
@@ -81,7 +80,7 @@ func main() {
 	wishlistController := controller.NewWishlistController(&wishlistService, appConfig)
 
 	imageRepository := repository.NewS3ImageRepository(&appConfig.S3)
-	imageService := service.NewImageService(imageRepository, uuid.NewString, appConfig.Feature)
+	imageService := service.NewImageService(imageRepository, uuid.NewString, appConfig.Feature, appConfig.ImageMaxDownloadSize)
 	imageController := controller.NewImageController(imageService)
 
 	articleRepository := repository.NewArticlePostgresRepository(db)
