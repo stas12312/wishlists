@@ -1,0 +1,1 @@
+DROP INDEX oauth_user_telegram_user_id_idx;

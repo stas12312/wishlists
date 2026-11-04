@@ -60,6 +60,8 @@ func main() {
 	mailClient := impl.NewLoggingClient(impl.NewSMPTClient(&appConfig.SMTP), mailLogRepository)
 	userService := service.NewUserService(uof, codeRepository, mailClient, appConfig, oAuthManager)
 	userController := controller.NewUserController(&userService, appConfig)
+	telegramService := service.NewTelegramService(uof, appConfig.TelegramBotToken)
+	telegramController := controller.NewTelegramController(telegramService, appConfig)
 
 	friendRepository := repository.NewFriendRepositoryPostgres(db)
 	friendService := service.NewFriendService(friendRepository, uof, websocketService)
@@ -119,6 +121,7 @@ func main() {
 
 	websocketController.Route(app)
 	userController.Route(api)
+	telegramController.Route(api)
 	wishlistController.Route(api)
 	imageController.Route(api)
 	friendController.Route(api)

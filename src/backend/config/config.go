@@ -91,6 +91,7 @@ func NewAppFeatures() Features {
 }
 
 type Config struct {
+	TelegramBotToken         string
 	ReservationCheckInterval time.Duration
 	JWT                      JWTConfig
 	S3                       S3Config
@@ -131,6 +132,7 @@ func NewConfig() *Config {
 		interval = parsed
 	}
 	return &Config{
+		TelegramBotToken:         os.Getenv("TELEGRAM_BOT_TOKEN"),
 		ReservationCheckInterval: interval,
 		JWT:                      jwt,
 		S3: S3Config{
