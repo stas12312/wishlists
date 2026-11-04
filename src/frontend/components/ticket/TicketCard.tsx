@@ -41,7 +41,12 @@ export const TicketItem = ({
       >
         <div className="flex justify-between ">
           <div className="flex gap-4">
-            {withAuthor ? <UserChip user={ticket.author} /> : null}
+            {withAuthor ? (
+              <UserChip
+                href={`/admin/users/${ticket.author_id}`}
+                user={ticket.author}
+              />
+            ) : null}
             <div className="my-auto font-bold text-lg">{ticket.subject}</div>
           </div>
 
