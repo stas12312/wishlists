@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { BsStars } from "react-icons/bs";
+import sharp from "sharp";
 
 import { WISHLIST_OG_COLORS } from "./wishlist/wishlistAppearance";
 
@@ -11,6 +12,7 @@ export const size = {
 export type OgTheme = "light" | "dark";
 
 interface OgImageOptions {
+  avatar?: string;
   color?: string;
   emoji?: string;
   theme?: OgTheme;
@@ -31,25 +33,56 @@ export async function getOgImage(
   title: string,
   description: string,
   footer: string,
-  { color = "sky", emoji, theme = "light" }: OgImageOptions = {},
+  { avatar, color = "sky", emoji, theme = "light" }: OgImageOptions = {},
 ): Promise<ImageResponse> {
+  let avatarData: string | undefined;
+  if (avatar && footer) {
+    try {
+      const url = new URL(avatar);
+      const allowedOrigins = [
+        process.env.S3_DOMAIN,
+        process.env.NEXT_PUBLIC_STATIC_URL,
+        "https://avatars.yandex.net",
+      ].filter(Boolean);
+      if (allowedOrigins.includes(url.origin)) {
+        const response = await fetch(url, {
+          redirect: "error",
+          signal: AbortSignal.timeout(3000),
+        });
+        if (response.ok) {
+          const image = await sharp(await response.arrayBuffer(), {
+            limitInputPixels: 16000000,
+          })
+            .resize(112, 112, { fit: "cover" })
+            .composite([
+              {
+                input: Buffer.from(
+                  '<svg width="112" height="112"><circle cx="56" cy="56" r="56" fill="white"/></svg>',
+                ),
+                blend: "dest-in",
+              },
+            ])
+            .png()
+            .toBuffer();
+          avatarData = `data:image/png;base64,${image.toString("base64")}`;
+        }
+      }
+    } catch {
+      // Render only the name when the photo is unavailable or invalid.
+    }
+  }
   const accent =
     WISHLIST_OG_COLORS[color as keyof typeof WISHLIST_OG_COLORS] ??
     WISHLIST_OG_COLORS.sky;
   const palette = { ...palettes[theme], ...accent[theme] };
-  const angle = Math.PI / 4;
-  const pattern: { left: number; top: number }[] = [];
-  for (let row = -15; row <= 15; row++) {
-    for (let column = -15; column <= 15; column++) {
-      const x = column * 120;
-      const y = row * 120;
-      const left = 600 + x * Math.cos(angle) - y * Math.sin(angle) - 45;
-      const top = 315 + x * Math.sin(angle) + y * Math.cos(angle) - 45;
-      if (left > -90 && left < 1200 && top > -90 && top < 630) {
-        pattern.push({ left, top });
-      }
-    }
-  }
+  const pattern = [
+    { left: 32, top: 166, size: 144, rotation: -18 },
+    { left: 344, top: 32, size: 100, rotation: 16 },
+    { left: 988, top: 34, size: 160, rotation: -18 },
+    { left: 1052, top: 300, size: 104, rotation: 16 },
+    { left: 44, top: 438, size: 140, rotation: 14 },
+    { left: 846, top: 444, size: 136, rotation: -20 },
+  ];
   const robotoBold = fetch(
     new URL("https://cdn.jsdelivr.net/gh/wefonts/Roboto/Roboto-Bold.ttf"),
   ).then((res) => res.arrayBuffer());
@@ -67,7 +100,7 @@ export async function getOgImage(
           flexDirection: "column",
           position: "relative",
           overflow: "hidden",
-          background: palette.background,
+          background: theme === "dark" ? palette.background : "#FDFBFF",
           color: palette.foreground,
           width: "100%",
           height: "100%",
@@ -82,7 +115,7 @@ export async function getOgImage(
             right: 0,
             bottom: 0,
             left: 0,
-            opacity: theme === "dark" ? 0.75 : 0.4,
+            opacity: theme === "dark" ? 0.32 : 0.24,
           }}
         >
           {pattern.map((position, index) => (
@@ -95,11 +128,11 @@ export async function getOgImage(
                 position: "absolute",
                 left: position.left,
                 top: position.top,
-                width: 90,
-                height: 90,
-                fontSize: 76,
+                width: position.size,
+                height: position.size,
+                fontSize: position.size * 0.85,
                 lineHeight: 1,
-                transform: "rotate(45deg)",
+                transform: `rotate(${position.rotation}deg)`,
               }}
             >
               {emoji}
@@ -127,7 +160,7 @@ export async function getOgImage(
             right: 0,
             bottom: 0,
             left: 0,
-            backgroundImage: `radial-gradient(circle at center, rgba(2, 6, 23, 0) 35%, rgba(2, 6, 23, 0) 48%, ${palette.edge} 100%)`,
+            backgroundImage: `radial-gradient(ellipse at center, ${theme === "dark" ? "rgba(2, 6, 23, 0.35)" : "rgba(253, 251, 255, 0.98)"} 20%, ${theme === "dark" ? "rgba(2, 6, 23, 0)" : "rgba(253, 251, 255, 0)"} 72%, ${palette.edge} 100%)`,
           }}
         />
         <div
@@ -185,7 +218,7 @@ export async function getOgImage(
                   <div
                     style={{
                       display: "block",
-                      lineClamp: 3,
+                      lineClamp: 2,
                       position: "absolute",
                       top: "100%",
                       left: "50%",
@@ -210,10 +243,31 @@ export async function getOgImage(
             style={{
               display: "flex",
               justifyContent: "flex-end",
+              alignItems: "center",
+              gap: 12,
               color: palette.secondary,
               fontSize: 24,
             }}
           >
+            {avatarData ? (
+              <div
+                style={{
+                  display: "flex",
+                  width: 56,
+                  height: 56,
+                  borderRadius: "50%",
+                  overflow: "hidden",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: palette.emojiBackground,
+                  fontSize: 22,
+                  flexShrink: 0,
+                }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img alt="" height={56} src={avatarData} width={56} />
+              </div>
+            ) : null}
             {footer}
           </div>
         </div>
