@@ -370,6 +370,7 @@ export function WishlistCreateForm({
       </Select>
       {formData.visible == 3 ? (
         <Select
+          fullWidth
           isRequired
           placeholder="Выберите друзей"
           selectionMode="multiple"
@@ -389,7 +390,7 @@ export function WishlistCreateForm({
         >
           <Label>Выберите друзей</Label>
           <Select.Trigger className="h-auto min-h-10 py-2">
-            <Select.Value>
+            <Select.Value className="flex min-h-6 min-w-0 items-center">
               {({ defaultChildren, isPlaceholder, state }) => {
                 if (isPlaceholder || state.selectedItems.length === 0) {
                   return defaultChildren;
@@ -411,7 +412,7 @@ export function WishlistCreateForm({
                         return null;
                       }
                       return (
-                        <Chip key={user.id} className="max-w-full">
+                        <Chip key={user.id} className="max-w-full" size="md">
                           <UserAvatar
                             avatarClassName="size-5"
                             image={user.image}
