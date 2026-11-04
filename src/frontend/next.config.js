@@ -19,7 +19,7 @@ const nextConfig = {
 };
 
 
-const { withSentryConfig } = require("@sentry/nextjs");
+const { withSentryConfig } = require("@sentry/nextjs/config");
 
 // В формате sentryUrl;org;project
 SENTRY_CONF = (process.env.SENTRY_CONF || ";;").split(";")
@@ -39,8 +39,9 @@ module.exports = withSentryConfig(
         deleteSourcemapsAfterUpload: false
     },
     sentryUrl: SENTRY_CONF[0],
-    hideSourceMaps: true,
-    disableLogger: true,
+    bundleSizeOptimizations: {
+      excludeDebugStatements: true,
+    },
     org: SENTRY_CONF[1],
     project: SENTRY_CONF[2],
     authToken: process.env.SENTRY_AUTH_TOKEN,

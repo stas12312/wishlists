@@ -32,7 +32,7 @@ export default function Page() {
 }
 
 function SignInForm() {
-  const timer = useRef<NodeJS.Timeout | undefined>();
+  const timer = useRef<NodeJS.Timeout | undefined>(undefined);
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState({
     email: "",

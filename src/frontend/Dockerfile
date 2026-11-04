@@ -1,4 +1,4 @@
-FROM node:20-alpine AS base
+FROM node:26.13.0-alpine AS base
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json package-lock.json ./
@@ -39,7 +39,7 @@ FROM scratch AS sourcemaps
 COPY --from=base /app/.next/static ./static
 COPY --from=base /app/.next/server ./server
 
-FROM node:20-alpine AS release
+FROM node:26.13.0-alpine AS release
 WORKDIR /app
 
 ARG sentry_conf

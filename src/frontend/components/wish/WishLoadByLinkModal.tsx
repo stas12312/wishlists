@@ -56,7 +56,7 @@ const LoadByLinkModal = ({
   className?: string;
 }) => {
   const [link, setLink] = useState("");
-  const timer = useRef<NodeJS.Timeout | undefined>();
+  const timer = useRef<NodeJS.Timeout | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
 
   const [error, setError] = useState<LoadError | null>(null);
