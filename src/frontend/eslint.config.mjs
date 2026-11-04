@@ -11,6 +11,7 @@ import _import from "eslint-plugin-import";
 import jsxA11Y from "eslint-plugin-jsx-a11y";
 import prettier from "eslint-plugin-prettier";
 import react from "eslint-plugin-react";
+import reactHooks from "eslint-plugin-react-hooks";
 import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
 import tseslint from "typescript-eslint";
@@ -27,7 +28,6 @@ export default [
     compat.extends(
       "plugin:react/recommended",
       "plugin:prettier/recommended",
-      "plugin:react-hooks/recommended",
       "plugin:jsx-a11y/recommended",
     ),
   ),
@@ -80,6 +80,7 @@ export default [
       "react/jsx-uses-react": "off",
       "react/react-in-jsx-scope": "off",
       "react-hooks/exhaustive-deps": "off",
+      "react-hooks/rules-of-hooks": "error",
       "jsx-a11y/click-events-have-key-events": "warn",
       "jsx-a11y/interactive-supports-focus": "warn",
       "prettier/prettier": ["error", { endOfLine: "auto" }],
@@ -133,6 +134,7 @@ export default [
     },
     plugins: {
       react: fixupPluginRules(react),
+      "react-hooks": reactHooks,
       "unused-imports": unusedImports,
       import: fixupPluginRules(_import),
       "@typescript-eslint": typescriptEslint,

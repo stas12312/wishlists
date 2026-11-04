@@ -23,7 +23,7 @@ const FriendsList = observer(
     username?: string;
     withMenu?: boolean;
   }) => {
-    const successFunction = useRef<{ (): void }>();
+    const successFunction = useRef<{ (): void } | undefined>(undefined);
     const [friends, setFriends] = useState<IUser[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
