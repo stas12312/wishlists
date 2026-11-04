@@ -23,7 +23,6 @@ import { FormEvent, Key, useEffect, useState } from "react";
 import { MdOutlinePublic, MdOutlinePublicOff, MdPerson } from "react-icons/md";
 
 import { CustomDatePicker } from "../DatePicker";
-import { UserAvatar } from "../user/UserAvatar";
 import { ButtonWithLoader } from "../ButtonWithLoader";
 
 import {
@@ -371,6 +370,7 @@ export function WishlistCreateForm({
       {formData.visible == 3 ? (
         <Select
           isRequired
+          placeholder="Выберите друзей"
           selectionMode="multiple"
           value={formData?.visible_user_ids.map((value) => {
             return value;
@@ -387,7 +387,7 @@ export function WishlistCreateForm({
           }}
         >
           <Label>Выберите друзей</Label>
-          <Select.Trigger>
+          <Select.Trigger className="h-auto min-h-10 py-2">
             <Select.Value>
               {({ defaultChildren, isPlaceholder, state }) => {
                 if (isPlaceholder || state.selectedItems.length === 0) {
@@ -401,22 +401,27 @@ export function WishlistCreateForm({
                   return defaultChildren;
                 }
                 return (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex min-w-0 flex-wrap gap-1">
                     {selectedItems.map((userId) => {
                       const user = friends.find(
                         (user) => user.id == userId.key,
                       );
                       if (!user) {
-                        return <></>;
+                        return null;
                       }
                       return (
-                        <Chip key={user.id}>
-                          <UserAvatar
-                            description=""
-                            image={user.image}
-                            name={user.name}
-                            size="sm"
-                          />
+                        <Chip key={user.id} className="max-w-full">
+                          <Avatar className="size-5 shrink-0" size="sm">
+                            <Avatar.Image
+                              alt=""
+                              className="object-cover"
+                              src={user.image}
+                            />
+                            <Avatar.Fallback>{user.name[0]}</Avatar.Fallback>
+                          </Avatar>
+                          <Chip.Label className="truncate">
+                            {user.name}
+                          </Chip.Label>
                         </Chip>
                       );
                     })}
@@ -426,8 +431,8 @@ export function WishlistCreateForm({
             </Select.Value>
             <Select.Indicator />
           </Select.Trigger>
-          <Select.Popover>
-            <ListBox selectionMode="multiple">
+          <Select.Popover className="max-h-72 max-w-[calc(100vw-2rem)] overflow-y-auto">
+            <ListBox aria-label="Друзья" selectionMode="multiple">
               {friends.map((user) => {
                 return (
                   <ListBox.Item
@@ -435,16 +440,18 @@ export function WishlistCreateForm({
                     id={user.id}
                     textValue={user.name}
                   >
-                    <div className="flex gap-2 items-center">
-                      <UserAvatar
-                        description=""
-                        image={user.image}
-                        name={user.name[0]}
-                        size="sm"
-                      />
-                      <div className="flex flex-col">
-                        <span className="text-small">{user.name}</span>
-                        <span className="text-tiny text-default-400">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <Avatar className="shrink-0" size="sm">
+                        <Avatar.Image
+                          alt=""
+                          className="object-cover"
+                          src={user.image}
+                        />
+                        <Avatar.Fallback>{user.name[0]}</Avatar.Fallback>
+                      </Avatar>
+                      <div className="flex min-w-0 flex-col">
+                        <span className="truncate text-sm">{user.name}</span>
+                        <span className="truncate text-xs text-muted">
                           {user.username}
                         </span>
                       </div>
