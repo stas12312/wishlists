@@ -106,7 +106,7 @@ export const WishlistItem = forwardRef(
           </button>
           {edit ? (
             <>
-              <div className="absolute left-1/2 top-2 z-20 -translate-x-1/2">
+              <div className="absolute left-1/2 top-2 z-20 w-max max-w-[calc(100%-8rem)] -translate-x-1/2">
                 <VisibleChip short wishlist={cardWishlist} />
               </div>
               <div className="absolute right-2 top-2 z-20 rounded-full text-slate-800 backdrop-blur-sm dark:text-white">
