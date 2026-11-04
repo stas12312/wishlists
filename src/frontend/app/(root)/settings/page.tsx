@@ -8,6 +8,7 @@ import SecuritySection from "@/components/setting/SettingSecurity";
 import { SettingLinks } from "@/components/setting/SettingLinks";
 import { ProfileSection } from "@/components/setting/SettingProfile";
 import { SettingsLinksStore } from "@/store/settingsLinksStore";
+import { SettingEmail } from "@/components/setting/SettingEmail";
 import {
   DeleteAccountButton,
   ExitButton,
@@ -25,6 +26,9 @@ export default function SettingsPage() {
       <div className="flex flex-col gap-3 sm:text-center md:text-left ">
         <SettingItem header="Профиль">
           <ProfileSection />
+        </SettingItem>
+        <SettingItem header="Email">
+          <SettingEmail />
         </SettingItem>
         <SettingItem header="Безопасность">
           <SecuritySection />
