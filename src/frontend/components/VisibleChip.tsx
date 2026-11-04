@@ -60,7 +60,7 @@ export const VisibleChip = ({
       <Chip
         className={
           short
-            ? "h-8 bg-black/5 text-slate-800 backdrop-blur-sm dark:bg-black/15 dark:text-white"
+            ? "h-8 max-w-full bg-black/5 text-slate-800 backdrop-blur-sm dark:bg-black/15 dark:text-white"
             : undefined
         }
         color={short ? "default" : "success"}
@@ -69,7 +69,9 @@ export const VisibleChip = ({
         variant="primary"
       >
         {info.icon}
-        {short ? info.shortTitle : info.title}
+        <Chip.Label className="min-w-0 truncate">
+          {short ? info.shortTitle : info.title}
+        </Chip.Label>
       </Chip>
     );
   }
