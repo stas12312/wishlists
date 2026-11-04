@@ -371,6 +371,7 @@ export function WishlistCreateForm({
       {formData.visible == 3 ? (
         <Select
           isRequired
+          placeholder="Выберите друзей"
           selectionMode="multiple"
           value={formData?.visible_user_ids.map((value) => {
             return value;
@@ -387,7 +388,7 @@ export function WishlistCreateForm({
           }}
         >
           <Label>Выберите друзей</Label>
-          <Select.Trigger>
+          <Select.Trigger className="h-auto min-h-10 py-2">
             <Select.Value>
               {({ defaultChildren, isPlaceholder, state }) => {
                 if (isPlaceholder || state.selectedItems.length === 0) {
@@ -401,22 +402,26 @@ export function WishlistCreateForm({
                   return defaultChildren;
                 }
                 return (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex min-w-0 flex-wrap gap-1">
                     {selectedItems.map((userId) => {
                       const user = friends.find(
                         (user) => user.id == userId.key,
                       );
                       if (!user) {
-                        return <></>;
+                        return null;
                       }
                       return (
-                        <Chip key={user.id}>
+                        <Chip key={user.id} className="max-w-full">
                           <UserAvatar
-                            description=""
+                            avatarClassName="size-5"
                             image={user.image}
                             name={user.name}
+                            showName={false}
                             size="sm"
                           />
+                          <Chip.Label className="truncate">
+                            {user.name}
+                          </Chip.Label>
                         </Chip>
                       );
                     })}
@@ -426,8 +431,8 @@ export function WishlistCreateForm({
             </Select.Value>
             <Select.Indicator />
           </Select.Trigger>
-          <Select.Popover>
-            <ListBox selectionMode="multiple">
+          <Select.Popover className="max-h-72 max-w-[calc(100vw-2rem)] overflow-y-auto">
+            <ListBox aria-label="Друзья" selectionMode="multiple">
               {friends.map((user) => {
                 return (
                   <ListBox.Item
@@ -435,20 +440,14 @@ export function WishlistCreateForm({
                     id={user.id}
                     textValue={user.name}
                   >
-                    <div className="flex gap-2 items-center">
-                      <UserAvatar
-                        description=""
-                        image={user.image}
-                        name={user.name[0]}
-                        size="sm"
-                      />
-                      <div className="flex flex-col">
-                        <span className="text-small">{user.name}</span>
-                        <span className="text-tiny text-default-400">
-                          {user.username}
-                        </span>
-                      </div>
-                    </div>
+                    <UserAvatar
+                      className="min-w-0"
+                      description={user.username}
+                      image={user.image}
+                      name={user.name}
+                      nameClassName="block max-w-full truncate text-sm"
+                      size="sm"
+                    />
                     <ListBox.ItemIndicator />
                   </ListBox.Item>
                 );
