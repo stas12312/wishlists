@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Spinner, Surface } from "@heroui/react";
+import { Button, Link, LinkIcon, Spinner, Surface } from "@heroui/react";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import Script from "next/script";
@@ -69,6 +69,16 @@ const TelegramEntry = observer(function TelegramEntry({
             <p>
               Войдите в существующий аккаунт или создайте новый, чтобы связать
               его с Telegram.
+            </p>
+            <p>
+              Создавая аккаунт, вы соглашаетесь с{" "}
+              <Link
+                className="text-accent no-underline"
+                href={`${process.env.NEXT_PUBLIC_STATIC_URL}/docs/terms-of-service.pdf`}
+              >
+                пользовательским соглашением
+                <LinkIcon />
+              </Link>
             </p>
             <Button
               fullWidth
