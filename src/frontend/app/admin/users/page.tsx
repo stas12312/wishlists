@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 import PageHeader from "@/components/PageHeader";
+import { PageSpinner } from "@/components/PageSpinner";
 import { AdminUsersStore } from "@/store/adminUsersStore";
 
 export default observer(function AdminUsersPage() {
@@ -30,6 +31,8 @@ export default observer(function AdminUsersPage() {
     observer.observe(target);
     return () => observer.disconnect();
   }, [store, loading, hasMore, error]);
+
+  if (!store.hasLoadedUsers) return <PageSpinner />;
 
   return (
     <>
@@ -79,8 +82,15 @@ export default observer(function AdminUsersPage() {
               </p>
             </Link>
           ))}
-          {!store.loading && !store.error && !store.users.length && (
-            <p className="text-muted">Пользователи не найдены</p>
+          {!store.error && !store.users.length && (
+            <div className="flex min-h-80 flex-col items-center justify-center rounded-3xl border border-dashed border-default px-5 py-14 text-center md:py-20">
+              <h2 className="text-xl font-semibold md:text-2xl">
+                Пользователи не найдены
+              </h2>
+              <p className="mt-2 max-w-sm text-sm text-muted md:text-base">
+                Попробуйте изменить запрос или проверить написание.
+              </p>
+            </div>
           )}
         </div>
         <div ref={loadMoreRef} aria-hidden="true" className="h-px" />

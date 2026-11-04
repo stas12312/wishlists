@@ -25,6 +25,7 @@ export class AdminUsersStore {
   user: IAdminUserDetail | null = null;
   pendingLink: IUserLink | null = null;
   loading = false;
+  hasLoadedUsers = false;
   deleting = false;
   error = "";
   hasMore = false;
@@ -85,7 +86,10 @@ export class AdminUsersStore {
       });
     } finally {
       runInAction(() => {
-        if (request === this.request) this.loading = false;
+        if (request === this.request) {
+          this.loading = false;
+          this.hasLoadedUsers = true;
+        }
       });
     }
   }
