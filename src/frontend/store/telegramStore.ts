@@ -79,7 +79,7 @@ export class TelegramStore {
     );
   }
 
-  async initialize(linkMode: boolean) {
+  async initialize(linkMode: boolean, sessionUserId?: number) {
     if (this.busy || this.status !== "loading") return;
     const app = window.Telegram?.WebApp;
     if (!app?.initData) {
@@ -104,6 +104,15 @@ export class TelegramStore {
       const isLinkRequest =
         linkMode || params.get("link") === "1" || startParam === "link";
       if (!isLinkRequest) {
+        if (sessionUserId) {
+          const inspection = await inspectTelegram(app.initData);
+          if (inspection.linked && inspection.user.id === sessionUserId) {
+            runInAction(() => {
+              this.status = "done";
+            });
+            return;
+          }
+        }
         const result = await authenticateTelegram(app.initData);
         if (result.linked) {
           await setTokens(result);
