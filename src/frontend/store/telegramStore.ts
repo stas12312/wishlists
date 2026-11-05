@@ -139,6 +139,14 @@ export class TelegramStore {
           ? app.initDataUnsafe?.start_param
           : undefined);
       if (startParam?.startsWith("link_")) {
+        if (
+          sessionUserId &&
+          params.get("user_id") === String(sessionUserId) &&
+          (await this.prepareLink(sessionUserId))
+        ) {
+          showLinkScreenUrl();
+          return;
+        }
         await this.redeemLink(startParam);
         return;
       }
@@ -277,7 +285,7 @@ export class TelegramStore {
     await this.prepareLink();
   }
 
-  private async prepareLink() {
+  private async prepareLink(expectedUserId?: number) {
     const initData = window.Telegram?.WebApp.initData;
     if (!initData) {
       this.status = "outside";
@@ -289,6 +297,7 @@ export class TelegramStore {
       getAuthInfo(),
     ]);
     if (!user?.id) throw new Error("Не удалось загрузить аккаунт");
+    if (expectedUserId !== undefined && user.id !== expectedUserId) return null;
 
     const targetHasTelegram = authInfo.links.some(
       (link) => link.provider.toLowerCase() === "telegram",

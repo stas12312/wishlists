@@ -3,20 +3,23 @@ package impl
 import (
 	"context"
 	apperror "main/error"
+	"main/repository"
 	"main/service"
 	"main/telegram"
 	"net/url"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
-func NewTelegramBotService(bot telegram.BotClient, baseURL string) service.TelegramBotService {
-	return &telegramBotService{bot: bot, baseURL: strings.TrimRight(baseURL, "/")}
+func NewTelegramBotService(bot telegram.BotClient, baseURL string, codes repository.CodeRepository) service.TelegramBotService {
+	return &telegramBotService{bot: bot, baseURL: strings.TrimRight(baseURL, "/"), codes: codes}
 }
 
 type telegramBotService struct {
 	bot     telegram.BotClient
 	baseURL string
+	codes   repository.CodeRepository
 }
 
 func (s *telegramBotService) HandleUpdate(ctx context.Context, update telegram.Update) error {
@@ -33,6 +36,9 @@ func (s *telegramBotService) HandleUpdate(ctx context.Context, update telegram.U
 			return nil
 		}
 		miniAppURL += "?link_code=" + url.QueryEscape(fields[1])
+		if code, err := getTelegramLinkCode(s.codes, fields[1]); err == nil {
+			miniAppURL += "&user_id=" + strconv.FormatInt(code.UserId, 10)
+		}
 	}
 	if s.baseURL == "" {
 		return apperror.NewError(apperror.OAuthError, "Авторизация через Telegram временно недоступна")
