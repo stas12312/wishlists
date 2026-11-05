@@ -68,7 +68,7 @@ func main() {
 	telegramService := service.NewTelegramService(uof, appConfig.TelegramBotToken, appConfig.TelegramBotUsername, telegramCodeRepository, imageService)
 	telegramController := controller.NewTelegramController(telegramService, appConfig)
 	telegramBotClient := telegram.NewAPIClient(appConfig.TelegramBotToken)
-	telegramBotService := service.NewTelegramBotService(telegramBotClient, appConfig.BaseUrl)
+	telegramBotService := service.NewTelegramBotService(telegramBotClient, appConfig.BaseUrl, telegramCodeRepository)
 	telegramBotController := controller.NewTelegramBotController(telegramBotService, appConfig.TelegramWebhookSecret)
 
 	friendRepository := repository.NewFriendRepositoryPostgres(db)

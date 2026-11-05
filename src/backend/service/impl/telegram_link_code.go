@@ -7,6 +7,7 @@ import (
 	"errors"
 	apperror "main/error"
 	"main/model"
+	"main/repository"
 	"main/telegram"
 	"main/uof"
 	"strconv"
@@ -19,7 +20,7 @@ func (s *telegramService) RedeemLinkCode(ctx context.Context, initData, payload 
 	if _, err := s.validate(initData); err != nil {
 		return nil, err
 	}
-	code, err := s.getLinkCode(payload)
+	code, err := getTelegramLinkCode(s.codes, payload)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +43,7 @@ func (s *telegramService) RedeemLinkCode(ctx context.Context, initData, payload 
 	return user, nil
 }
 
-func (s *telegramService) getLinkCode(payload string) (*model.Code, error) {
+func getTelegramLinkCode(codes repository.CodeRepository, payload string) (*model.Code, error) {
 	invalid := func() (*model.Code, error) {
 		return nil, apperror.NewError(apperror.OAuthError, "Ссылка для подключения устарела. Получите новую в настройках")
 	}
@@ -56,7 +57,7 @@ func (s *telegramService) getLinkCode(payload string) (*model.Code, error) {
 	if _, err := uuid.Parse(id); err != nil {
 		return invalid()
 	}
-	code, err := s.codes.Get(id)
+	code, err := codes.Get(id)
 	if err != nil || code == nil || code.CodeType != model.TelegramLinkCode || subtle.ConstantTimeCompare([]byte(code.Key), []byte(key)) != 1 {
 		return invalid()
 	}
