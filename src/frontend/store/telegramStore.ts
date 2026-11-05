@@ -1,7 +1,7 @@
 import { isAxiosError } from "axios";
 import { makeAutoObservable, runInAction } from "mobx";
 
-import { clearSession, setTokens } from "@/lib/auth";
+import { clearSession, openTelegramAccount, setTokens } from "@/lib/auth";
 import { authManager } from "@/lib/clientAuth";
 import {
   authenticateTelegram,
@@ -149,6 +149,7 @@ export class TelegramStore {
       return;
     }
     this.busy = true;
+    const previousAccessToken = authManager.accessToken;
     try {
       const result = await authenticateTelegram(initData);
       if (!result.linked) {
@@ -156,10 +157,10 @@ export class TelegramStore {
           "Связка Telegram изменилась. Откройте приложение заново",
         );
       }
-      await setTokens(result);
       authManager.accessToken = result.access_token;
-      window.location.replace(openSettings ? "/settings" : "/");
+      await openTelegramAccount(result, openSettings);
     } catch (error) {
+      authManager.accessToken = previousAccessToken;
       this.fail(this.errorMessage(error));
       runInAction(() => {
         this.busy = false;
