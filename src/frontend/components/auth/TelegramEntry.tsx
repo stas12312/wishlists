@@ -44,7 +44,11 @@ const TelegramEntry = observer(function TelegramEntry({
             "Не удалось загрузить Telegram. Откройте приложение заново",
           )
         }
-        onReady={() => void store.initialize(linkMode, sessionUserId)}
+        onReady={() =>
+          void store.initialize(linkMode, sessionUserId, () =>
+            router.replace("/"),
+          )
+        }
       />
       <Surface className="relative flex w-full max-w-md flex-col gap-5 rounded-3xl p-6 text-center shadow-md">
         {isCreatingAccount && (
