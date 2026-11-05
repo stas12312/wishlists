@@ -29,9 +29,9 @@ const TelegramEntry = observer(function TelegramEntry({
 
   useEffect(() => {
     if (store.status === "done") {
-      window.location.replace(store.successPath);
+      window.location.replace("/");
     }
-  }, [store.status, store.successPath]);
+  }, [store.status]);
 
   return (
     <main className="flex min-h-dvh items-center justify-center p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]">

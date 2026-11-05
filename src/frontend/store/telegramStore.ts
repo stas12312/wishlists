@@ -17,7 +17,7 @@ import { IUser } from "@/lib/models/user";
 
 interface TelegramWebApp {
   initData: string;
-  initDataUnsafe?: { start_param?: string; user?: { id: number } };
+  initDataUnsafe?: { start_param?: string };
   ready(): void;
   expand(): void;
   close(): void;
@@ -48,13 +48,13 @@ function showLinkScreenUrl() {
 
 export class TelegramStore {
   status: TelegramStatus = "loading";
-  successPath = "/";
   error = "";
   busy = false;
   accountId = 0;
   accountName = "";
   accountImage = "";
   accountEmail = "";
+  targetHasTelegram = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -73,10 +73,10 @@ export class TelegramStore {
   }
 
   get isLinkConflict() {
-    return [
-      "Этот Telegram уже связан с другим аккаунтом",
-      "К этому аккаунту уже привязан другой Telegram. Отвяжите другой Telegram в настройках и повторите попытку",
-    ].includes(this.error);
+    return (
+      this.error ===
+      "К этому аккаунту уже привязан другой Telegram. Отвяжите другой Telegram в настройках и повторите попытку"
+    );
   }
 
   async initialize(linkMode: boolean) {
@@ -115,8 +115,8 @@ export class TelegramStore {
         }
       }
 
-      const currentUser = await this.getCurrentUser();
-      if (currentUser) {
+      const token = await authManager.getAccessToken();
+      if (token) {
         await this.prepareLink();
       } else {
         runInAction(() => {
@@ -149,13 +149,9 @@ export class TelegramStore {
       }
       await setTokens(result);
       authManager.accessToken = result.access_token;
-      runInAction(() => {
-        this.successPath = openSettings ? "/settings" : "/";
-        this.status = "done";
-      });
+      window.location.replace(openSettings ? "/settings" : "/");
     } catch (error) {
       this.fail(this.errorMessage(error));
-    } finally {
       runInAction(() => {
         this.busy = false;
       });
@@ -180,11 +176,6 @@ export class TelegramStore {
         this.busy = false;
       });
     }
-  }
-
-  private async getCurrentUser() {
-    const token = await authManager.getAccessToken();
-    return token ? getMe() : null;
   }
 
   private showLinkConflict(user: IUser) {
@@ -231,31 +222,36 @@ export class TelegramStore {
       this.status = "outside";
       return null;
     }
-    const user = await getMe();
+    const [user, inspection, authInfo] = await Promise.all([
+      getMe(),
+      inspectTelegram(initData),
+      getAuthInfo(),
+    ]);
     if (!user?.id) throw new Error("Не удалось загрузить аккаунт");
 
-    const authInfo = await getAuthInfo();
-    const telegramLink = authInfo.links.find(
+    const targetHasTelegram = authInfo.links.some(
       (link) => link.provider.toLowerCase() === "telegram",
     );
-    const telegramId = window.Telegram?.WebApp.initDataUnsafe?.user?.id;
-    if (telegramLink && telegramLink.oauth_user_id !== String(telegramId)) {
-      this.setAccount(user);
-      throw new Error(
-        "К этому аккаунту уже привязан другой Telegram. Отвяжите другой Telegram в настройках и повторите попытку",
-      );
-    }
 
-    const inspection = await inspectTelegram(initData);
     if (inspection.linked) {
       if (inspection.user.id === user.id) {
         runInAction(() => {
           this.status = "done";
         });
       } else {
-        this.showLinkConflict(inspection.user);
+        runInAction(() => {
+          this.targetHasTelegram = targetHasTelegram;
+          this.showLinkConflict(inspection.user);
+        });
       }
       return user.id;
+    }
+
+    if (targetHasTelegram) {
+      this.setAccount(user);
+      throw new Error(
+        "К этому аккаунту уже привязан другой Telegram. Отвяжите другой Telegram в настройках и повторите попытку",
+      );
     }
 
     runInAction(() => {
@@ -298,7 +294,18 @@ export class TelegramStore {
     }
     this.busy = true;
     try {
-      await linkTelegram(initData);
+      try {
+        await linkTelegram(initData);
+      } catch (error) {
+        if (
+          this.errorMessage(error) !==
+          "Этот Telegram уже связан с другим аккаунтом"
+        ) {
+          throw error;
+        }
+        await this.prepareLink();
+        return;
+      }
       runInAction(() => {
         this.status = "done";
       });
