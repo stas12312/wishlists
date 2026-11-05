@@ -20,7 +20,8 @@ type TelegramController struct {
 }
 
 type telegramRequest struct {
-	InitData string `json:"init_data"`
+	InitData       string `json:"init_data"`
+	ExpectedUserID int64  `json:"expected_user_id"`
 }
 
 func parseTelegramRequest(ctx *fiber.Ctx) (*telegramRequest, error) {
@@ -115,11 +116,47 @@ func (c *TelegramController) RedeemLinkCode(ctx *fiber.Ctx) error {
 	return c.respondWithSession(ctx, user)
 }
 
+func (c *TelegramController) Inspect(ctx *fiber.Ctx) error {
+	ctx.Set(fiber.HeaderCacheControl, "no-store")
+	request, err := parseTelegramRequest(ctx)
+	if err != nil {
+		return err
+	}
+	user, err := c.service.Authenticate(ctx.UserContext(), request.InitData)
+	if err != nil {
+		return err
+	}
+	if user == nil {
+		return ctx.JSON(fiber.Map{"linked": false})
+	}
+	return ctx.JSON(struct {
+		Linked bool        `json:"linked"`
+		User   *model.User `json:"user"`
+	}{Linked: true, User: user})
+}
+
+func (c *TelegramController) Unlink(ctx *fiber.Ctx) error {
+	ctx.Set(fiber.HeaderCacheControl, "no-store")
+	request, err := parseTelegramRequest(ctx)
+	if err != nil {
+		return err
+	}
+	if request.ExpectedUserID <= 0 {
+		return apperror.NewError(apperror.WrongRequest, "Укажите аккаунт для отвязки Telegram")
+	}
+	if err := c.service.Unlink(ctx.UserContext(), GetUserIdFromCtx(ctx), request.ExpectedUserID, request.InitData); err != nil {
+		return err
+	}
+	return ctx.JSON(fiber.Map{"linked": false})
+}
+
 func (c *TelegramController) Route(router fiber.Router) {
 	telegram := router.Group("/auth/telegram")
 	telegram.Post("/", c.Authenticate)
+	telegram.Post("/inspect", c.Inspect)
 	telegram.Post("/register", c.Register)
 	telegram.Post("/link", middleware.Protected(true), c.Link)
+	telegram.Post("/unlink", middleware.Protected(true), c.Unlink)
 	telegram.Post("/link-code", middleware.Protected(true), c.CreateLinkCode)
 	telegram.Post("/link-code/redeem", c.RedeemLinkCode)
 }

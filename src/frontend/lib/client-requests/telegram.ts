@@ -1,9 +1,11 @@
 import axios from "axios";
 
 import { ITokens } from "../models/auth";
+import { IUser } from "../models/user";
 import { authManager } from "../clientAuth";
 
 type TelegramAuth = { linked: false } | ({ linked: true } & ITokens);
+type TelegramInspection = { linked: false } | { linked: true; user: IUser };
 
 const telegramAxios = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/telegram`,
@@ -13,6 +15,13 @@ const telegramAxios = axios.create({
 
 export async function authenticateTelegram(initData: string) {
   const response = await telegramAxios.post<TelegramAuth>("/", {
+    init_data: initData,
+  });
+  return response.data;
+}
+
+export async function inspectTelegram(initData: string) {
+  const response = await telegramAxios.post<TelegramInspection>("/inspect", {
     init_data: initData,
   });
   return response.data;
@@ -81,6 +90,18 @@ export async function linkTelegram(initData: string) {
   await telegramAxios.post(
     "/link",
     { init_data: initData },
+    { headers: { Authorization: `Bearer ${accessToken}` } },
+  );
+}
+
+export async function unlinkTelegram(initData: string, expectedUserId: number) {
+  const accessToken = await authManager.getAccessToken();
+  if (!accessToken) {
+    throw new Error("Войдите в аккаунт, чтобы продолжить привязку Telegram");
+  }
+  await telegramAxios.post(
+    "/unlink",
+    { init_data: initData, expected_user_id: expectedUserId },
     { headers: { Authorization: `Bearer ${accessToken}` } },
   );
 }

@@ -75,17 +75,5 @@ func (r *AdminUserPostgres) ListLinks(id int64) ([]model.OAuthUser, error) {
 }
 
 func (r *AdminUserPostgres) DeleteLink(id int64, provider, externalID string) (bool, error) {
-	query := `
-		DELETE FROM oauth_user
-		WHERE
-			user_id = $1
-			AND provider = $2
-			AND oauth_user_id = $3
-`
-	result, err := r.Exec(query, id, provider, externalID)
-	if err != nil {
-		return false, err
-	}
-	count, err := result.RowsAffected()
-	return count > 0, err
+	return NewOAuthPostgresRepository(r.Connection).DeleteLink(id, provider, externalID)
 }

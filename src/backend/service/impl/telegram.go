@@ -83,6 +83,57 @@ func (s *telegramService) Link(ctx context.Context, userID int64, initData strin
 	return s.linkIdentity(ctx, userID, identity)
 }
 
+func (s *telegramService) Unlink(ctx context.Context, targetID, expectedUserID int64, initData string) error {
+	identity, err := s.validate(initData)
+	if err != nil {
+		return err
+	}
+	telegramID := strconv.FormatInt(identity.ID, 10)
+	err = s.work.Do(ctx, func(ctx context.Context, store uof.UnitOfWorkStore) error {
+		link, err := store.OAuthRepository().Get(telegramProvider, telegramID)
+		if errors.Is(err, sql.ErrNoRows) {
+			return apperror.NewError(apperror.OAuthError, "Telegram не привязан к аккаунту")
+		}
+		if err != nil {
+			return err
+		}
+		user, err := activeTelegramUser(store, link.UserId)
+		if err != nil {
+			return err
+		}
+		if strings.TrimSpace(user.Email) == "" {
+			return apperror.NewError(apperror.ValidateError, "Войдите в привязанный аккаунт и добавьте email в настройках или удалите профиль")
+		}
+		if link.UserId != expectedUserID || targetID == expectedUserID {
+			return apperror.NewError(apperror.OAuthError, "Связка Telegram изменилась. Откройте приложение заново")
+		}
+		if _, err := activeTelegramUser(store, targetID); err != nil {
+			return err
+		}
+		targetLinks, err := store.OAuthRepository().ListByUserId(targetID)
+		if err != nil {
+			return err
+		}
+		for _, targetLink := range targetLinks {
+			if strings.EqualFold(targetLink.Provider, telegramProvider) {
+				return apperror.NewError(apperror.OAuthError, "К этому аккаунту уже привязан другой Telegram. Отвяжите другой Telegram в настройках и повторите попытку")
+			}
+		}
+		deleted, err := store.OAuthRepository().DeleteLink(expectedUserID, telegramProvider, telegramID)
+		if err != nil {
+			return err
+		}
+		if !deleted {
+			return apperror.NewError(apperror.OAuthError, "Связка Telegram изменилась. Откройте приложение заново")
+		}
+		return nil
+	})
+	if err != nil {
+		return telegramServiceError(err)
+	}
+	return nil
+}
+
 func (s *telegramService) Register(ctx context.Context, initData string) (*model.User, error) {
 	identity, err := s.validate(initData)
 	if err != nil {

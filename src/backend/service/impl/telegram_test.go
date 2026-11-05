@@ -92,11 +92,27 @@ func TestTelegramAccountLinkRejectsAnotherTelegram(t *testing.T) {
 	s := telegramService{work: telegramTestWork{telegramTestStore{links: links, users: users}}, botToken: "test-token", now: func() time.Time { return now }}
 	user, err := s.Link(context.Background(), 42, raw)
 	var appErr *apperror.Error
-	if user != nil || !errors.As(err, &appErr) || appErr.Message != "К этому аккаунту уже привязан другой Telegram. Сначала отвяжите его в настройках" {
+	if user != nil || !errors.As(err, &appErr) || appErr.Message != "К этому аккаунту уже привязан другой Telegram. Отвяжите другой Telegram в настройках и повторите попытку" {
 		t.Fatalf("unexpected user=%v err=%v", user, err)
 	}
 	links.AssertNotCalled(t, "Create", mock.Anything)
 	links.AssertNotCalled(t, "Update", mock.Anything)
+}
+
+func TestTelegramUnlink(t *testing.T) {
+	raw, now := telegramTestInitData(`{"id":123}`)
+	links := mocks.NewOAuthUserRepository(t)
+	users := mocks.NewUserRepository(t)
+	links.On("Get", "telegram", "123").Return(&model.OAuthUser{UserId: 42}, nil).Once()
+	users.On("GetById", int64(42)).Return(&model.User{Id: 42, Email: "test@example.org", IsActive: true}, nil).Once()
+	users.On("GetById", int64(43)).Return(&model.User{Id: 43, IsActive: true}, nil).Once()
+	links.On("ListByUserId", int64(43)).Return(nil, nil).Once()
+	links.On("DeleteLink", int64(42), "telegram", "123").Return(true, nil).Once()
+	s := telegramService{work: telegramTestWork{telegramTestStore{links: links, users: users}}, botToken: "test-token", now: func() time.Time { return now }}
+
+	if err := s.Unlink(context.Background(), 43, 42, raw); err != nil {
+		t.Fatal(err)
+	}
 }
 
 func TestTelegramRegister(t *testing.T) {
