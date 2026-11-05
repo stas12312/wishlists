@@ -91,7 +91,7 @@ func (s *telegramService) linkIdentity(ctx context.Context, userID int64, identi
 		}
 		for _, existing := range links {
 			if strings.EqualFold(existing.Provider, telegramProvider) {
-				return apperror.NewError(apperror.OAuthError, "К этому аккаунту уже привязан другой Telegram. Сначала отвяжите его в настройках")
+				return apperror.NewError(apperror.OAuthError, "К этому аккаунту уже привязан другой Telegram. Отвяжите другой Telegram в настройках и повторите попытку")
 			}
 		}
 		return store.OAuthRepository().Create(&model.OAuthUser{

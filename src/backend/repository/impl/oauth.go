@@ -35,6 +35,18 @@ func (o OAuthUserPostgres) Create(oAuthUser *model.OAuthUser) error {
 	return err
 }
 
+func (o OAuthUserPostgres) DeleteLink(userID int64, provider, oauthUserID string) (bool, error) {
+	result, err := o.Connection.Exec(
+		"DELETE FROM oauth_user WHERE user_id = $1 AND provider = $2 AND oauth_user_id = $3",
+		userID, provider, oauthUserID,
+	)
+	if err != nil {
+		return false, err
+	}
+	count, err := result.RowsAffected()
+	return count > 0, err
+}
+
 func (o OAuthUserPostgres) DeleteByUserId(userId int64, provider string) error {
 	q := `
 	DELETE FROM oauth_user

@@ -7,6 +7,7 @@ import "main/model"
 type OAuthUserRepository interface {
 	Get(provider, oAuthUserId string) (*model.OAuthUser, error)
 	Create(user *model.OAuthUser) error
+	DeleteLink(userID int64, provider, oauthUserID string) (bool, error)
 	DeleteByUserId(userId int64, provider string) error
 	DeleteByOAuthUserId(oAuthUserId string, provider string) error
 	ListByUserId(userId int64) ([]model.OAuthUser, error)

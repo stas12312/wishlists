@@ -31,6 +31,11 @@ func (_m *OAuthUserRepository) Create(user *model.OAuthUser) error {
 	return r0
 }
 
+func (_m *OAuthUserRepository) DeleteLink(userID int64, provider, oauthUserID string) (bool, error) {
+	result := _m.Called(userID, provider, oauthUserID)
+	return result.Bool(0), result.Error(1)
+}
+
 // DeleteByOAuthUserId provides a mock function with given fields: oAuthUserId, provider
 func (_m *OAuthUserRepository) DeleteByOAuthUserId(oAuthUserId string, provider string) error {
 	ret := _m.Called(oAuthUserId, provider)

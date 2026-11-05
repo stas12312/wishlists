@@ -11,4 +11,5 @@ type TelegramService interface {
 	Link(ctx context.Context, userID int64, initData string) (*model.User, error)
 	CreateLinkCode(ctx context.Context, userID int64) (string, error)
 	RedeemLinkCode(ctx context.Context, initData, payload string) (*model.User, error)
+	Unlink(ctx context.Context, targetID, expectedUserID int64, initData string) error
 }
