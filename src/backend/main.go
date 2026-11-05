@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"main/config"
 	"main/controller"
@@ -13,7 +14,9 @@ import (
 	"main/oauth/yandex"
 	repository "main/repository/impl"
 	service "main/service/impl"
+	"main/telegram"
 	impl2 "main/uof/impl"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -63,6 +66,9 @@ func main() {
 	imageService := service.NewImageService(imageRepository, uuid.NewString, appConfig.Feature, appConfig.ImageMaxDownloadSize)
 	telegramService := service.NewTelegramService(uof, appConfig.TelegramBotToken, imageService)
 	telegramController := controller.NewTelegramController(telegramService, appConfig)
+	telegramBotClient := telegram.NewAPIClient(appConfig.TelegramBotToken)
+	telegramBotService := service.NewTelegramBotService(telegramBotClient, appConfig.BaseUrl)
+	telegramBotController := controller.NewTelegramBotController(telegramBotService, appConfig.TelegramWebhookSecret)
 
 	friendRepository := repository.NewFriendRepositoryPostgres(db)
 	friendService := service.NewFriendService(friendRepository, uof, websocketService)
@@ -122,6 +128,7 @@ func main() {
 	websocketController.Route(app)
 	userController.Route(api)
 	telegramController.Route(api)
+	telegramBotController.Route(api)
 	wishlistController.Route(api)
 	imageController.Route(api)
 	friendController.Route(api)
@@ -131,7 +138,18 @@ func main() {
 	questionController.Route(api)
 	ticketController.Route(api)
 
+	configureTelegramWebhook(telegramBotClient, appConfig)
 	log.Fatal(app.Listen(":8080"))
+}
+
+func configureTelegramWebhook(client telegram.BotClient, config *config.Config) {
+	if config.TelegramBotToken == "" || config.TelegramWebhookSecret == "" || !strings.HasPrefix(config.BaseUrl, "https://") {
+		return
+	}
+	webhookURL := strings.TrimRight(config.BaseUrl, "/") + "/api/webhook/telegram/" + config.TelegramWebhookSecret
+	if err := client.SetWebhook(context.Background(), webhookURL, config.TelegramWebhookSecret); err != nil {
+		log.Error("Не удалось зарегистрировать Telegram webhook")
+	}
 }
 
 func setupMiddlewares(app *fiber.App, config *config.Config) {
