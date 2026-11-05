@@ -9,6 +9,14 @@ import (
 	"strings"
 )
 
+func telegramAuthDeepLink(botUsername string) string {
+	bot := strings.TrimPrefix(strings.TrimSpace(botUsername), "@")
+	if bot == "" {
+		return ""
+	}
+	return "https://t.me/" + url.PathEscape(bot) + "?start=auth"
+}
+
 func (u *userServiceImpl) GetAuthInfo(ctx context.Context, userId int64) (*model.AuthInfo, error) {
 	var info *model.AuthInfo
 	err := u.UnitOfWork.Do(ctx, func(ctx context.Context, store uof.UnitOfWorkStore) error {
@@ -34,9 +42,8 @@ func (u *userServiceImpl) GetAuthInfo(ctx context.Context, userId int64) (*model
 			}
 		}
 		if u.Config != nil {
-			bot := strings.TrimPrefix(strings.TrimSpace(u.Config.TelegramBotUsername), "@")
-			if bot != "" {
-				info.Providers = append(info.Providers, model.AuthProvider{Name: "telegram", URL: "https://t.me/" + url.PathEscape(bot) + "?startapp=link"})
+			if link := telegramAuthDeepLink(u.Config.TelegramBotUsername); link != "" {
+				info.Providers = append(info.Providers, model.AuthProvider{Name: "telegram", URL: link})
 			}
 		}
 		return nil

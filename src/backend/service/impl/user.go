@@ -399,7 +399,16 @@ func (u *userServiceImpl) OAuthAuth(
 }
 
 func (u *userServiceImpl) ListOAuthProviders(ctx context.Context) []oauth.Provider {
-	return u.Manager.GetProviders()
+	providers := make([]oauth.Provider, 0)
+	if u.Manager != nil {
+		providers = u.Manager.GetProviders()
+	}
+	if u.Config != nil {
+		if link := telegramAuthDeepLink(u.Config.TelegramBotUsername); link != "" {
+			providers = append(providers, oauth.Provider{Name: "TELEGRAM", Url: link})
+		}
+	}
+	return providers
 }
 
 func (u *userServiceImpl) ChangePassword(ctx context.Context, userId int64, oldPassword, newPassword string) error {

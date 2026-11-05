@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gofiber/fiber/v2/log"
 	"os"
+	"regexp"
 	"strconv"
 	"time"
 )
@@ -94,6 +95,7 @@ type Config struct {
 	ImageMaxDownloadSize     int64
 	TelegramBotToken         string
 	TelegramBotUsername      string
+	TelegramWebhookSecret    string
 	ReservationCheckInterval time.Duration
 	JWT                      JWTConfig
 	S3                       S3Config
@@ -112,6 +114,10 @@ func (c Config) IsTest() bool {
 }
 
 func NewConfig() *Config {
+	telegramWebhookSecret := os.Getenv("TELEGRAM_WEBHOOK_SECRET")
+	if telegramWebhookSecret != "" && !regexp.MustCompile(`^[A-Za-z0-9_-]{1,256}$`).MatchString(telegramWebhookSecret) {
+		log.Panic("TELEGRAM_WEBHOOK_SECRET должен содержать от 1 до 256 символов: A-Z, a-z, 0-9, _ или -")
+	}
 
 	accessExpireTime, _ := strconv.ParseInt(os.Getenv("JWT_ACCESS_SECRET_KEY_EXPIRE"), 10, 64)
 	refreshExpireTime, _ := strconv.ParseInt(os.Getenv("JWT_REFRESH_SECRET_KEY_EXPIRE"), 10, 64)
@@ -145,6 +151,7 @@ func NewConfig() *Config {
 		ImageMaxDownloadSize:     imageMaxDownloadSize,
 		TelegramBotUsername:      os.Getenv("TELEGRAM_BOT_USERNAME"),
 		TelegramBotToken:         os.Getenv("TELEGRAM_BOT_TOKEN"),
+		TelegramWebhookSecret:    telegramWebhookSecret,
 		ReservationCheckInterval: interval,
 		JWT:                      jwt,
 		S3: S3Config{
