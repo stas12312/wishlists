@@ -1,7 +1,7 @@
 "use server";
 import { jwtDecode } from "jwt-decode";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { redirect, RedirectType } from "next/navigation";
 
 import { ITokens } from "./models/auth";
 import { refreshTokens } from "./server-requests/auth";
@@ -69,6 +69,14 @@ export async function setTokens(tokens: ITokens): Promise<string> {
     httpOnly: true,
   });
   return tokens.access_token;
+}
+
+export async function openTelegramAccount(
+  tokens: ITokens,
+  openSettings: boolean,
+) {
+  await setTokens(tokens);
+  redirect(openSettings ? "/settings" : "/", RedirectType.replace);
 }
 
 export async function refreshToken(): Promise<string> {
