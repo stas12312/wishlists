@@ -79,7 +79,11 @@ export class TelegramStore {
     );
   }
 
-  async initialize(linkMode: boolean, sessionUserId?: number) {
+  async initialize(
+    linkMode: boolean,
+    sessionUserId: number | undefined,
+    openHome: () => void,
+  ) {
     if (this.busy || this.status !== "loading") return;
     const app = window.Telegram?.WebApp;
     if (!app?.initData) {
@@ -105,13 +109,9 @@ export class TelegramStore {
         linkMode || params.get("link") === "1" || startParam === "link";
       if (!isLinkRequest) {
         if (sessionUserId) {
-          const inspection = await inspectTelegram(app.initData);
-          if (inspection.linked && inspection.user.id === sessionUserId) {
-            runInAction(() => {
-              this.status = "done";
-            });
-            return;
-          }
+          openHome();
+          void this.checkSessionAccount(app.initData, sessionUserId);
+          return;
         }
         const result = await authenticateTelegram(app.initData);
         if (result.linked) {
@@ -211,6 +211,18 @@ export class TelegramStore {
     await logoutTelegram();
     await clearSession();
     authManager.logout();
+  }
+
+  private async checkSessionAccount(initData: string, sessionUserId: number) {
+    try {
+      const inspection = await inspectTelegram(initData);
+      if (inspection.linked && inspection.user.id !== sessionUserId) {
+        await this.endSession();
+        window.location.replace("/miniapp/telegram");
+      }
+    } catch {
+      // Сбой фоновой проверки не должен прерывать работу на главной.
+    }
   }
 
   private async redeemLink(code: string) {
