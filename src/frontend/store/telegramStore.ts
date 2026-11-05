@@ -1,7 +1,7 @@
 import { isAxiosError } from "axios";
 import { makeAutoObservable, runInAction } from "mobx";
 
-import { clearSession, openTelegramAccount, setTokens } from "@/lib/auth";
+import { clearSession, setTokens } from "@/lib/auth";
 import { authManager } from "@/lib/clientAuth";
 import {
   authenticateTelegram,
@@ -14,6 +14,7 @@ import {
 } from "@/lib/client-requests/telegram";
 import { getAuthInfo, getMe } from "@/lib/client-requests/user";
 import { IUser } from "@/lib/models/user";
+import { ITokens } from "@/lib/models/auth";
 
 interface TelegramWebApp {
   initData: string;
@@ -38,12 +39,49 @@ type TelegramStatus =
   | "done"
   | "error";
 
+async function waitForSession<T>(operation: Promise<T>): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    // У Server Actions нет таймаута axios: сохранение cookie может зависнуть отдельно от API.
+    return await Promise.race([
+      operation,
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(
+          () =>
+            reject(
+              new Error(
+                "Не удалось сохранить сессию. Откройте мини-приложение заново",
+              ),
+            ),
+          15000,
+        );
+      }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 function showLinkScreenUrl() {
   const url = new URL(window.location.href);
   url.searchParams.delete("link_code");
   url.searchParams.delete("user_id");
   url.searchParams.set("link", "1");
   window.history.replaceState(window.history.state, "", url);
+}
+
+const savedSessions = new WeakMap<ITokens, Promise<string>>();
+
+function saveTelegramSession(tokens: ITokens) {
+  const existing = savedSessions.get(tokens);
+  if (existing) return existing;
+
+  // Обмен кода переживает перемонтирование, и сохранение его cookie тоже должно быть однократным.
+  // Иначе Server Action снова обновляет страницу и запускает ту же цепочку входа.
+  const operation = waitForSession(setTokens(tokens));
+  savedSessions.set(tokens, operation);
+  void operation.catch(() => savedSessions.delete(tokens));
+  return operation;
 }
 
 export class TelegramStore {
@@ -115,7 +153,7 @@ export class TelegramStore {
         }
         const result = await authenticateTelegram(app.initData);
         if (result.linked) {
-          await setTokens(result);
+          await saveTelegramSession(result);
           authManager.accessToken = result.access_token;
           runInAction(() => {
             this.status = "done";
@@ -157,8 +195,9 @@ export class TelegramStore {
           "Связка Telegram изменилась. Откройте приложение заново",
         );
       }
+      await saveTelegramSession(result);
       authManager.accessToken = result.access_token;
-      await openTelegramAccount(result, openSettings);
+      window.location.replace(openSettings ? "/settings" : "/");
     } catch (error) {
       authManager.accessToken = previousAccessToken;
       this.fail(this.errorMessage(error));
@@ -209,7 +248,7 @@ export class TelegramStore {
 
   private async endSession() {
     await logoutTelegram();
-    await clearSession();
+    await waitForSession(clearSession());
     authManager.logout();
   }
 
@@ -232,7 +271,7 @@ export class TelegramStore {
       return;
     }
     const result = await redeemTelegramLinkCode(initData, code);
-    await setTokens(result);
+    await saveTelegramSession(result);
     authManager.accessToken = result.access_token;
     showLinkScreenUrl();
     await this.prepareLink();
@@ -293,7 +332,7 @@ export class TelegramStore {
     this.busy = true;
     try {
       const result = await registerTelegram(initData);
-      await setTokens(result);
+      await saveTelegramSession(result);
       authManager.accessToken = result.access_token;
       runInAction(() => {
         this.status = "done";
