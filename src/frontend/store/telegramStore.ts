@@ -5,12 +5,15 @@ import { clearSession, setTokens } from "@/lib/auth";
 import { authManager } from "@/lib/clientAuth";
 import {
   authenticateTelegram,
+  inspectTelegram,
   redeemTelegramLinkCode,
   linkTelegram,
   logoutTelegram,
   registerTelegram,
+  unlinkTelegram,
 } from "@/lib/client-requests/telegram";
 import { getAuthInfo, getMe } from "@/lib/client-requests/user";
+import { IUser } from "@/lib/models/user";
 
 interface TelegramWebApp {
   initData: string;
@@ -30,42 +33,25 @@ type TelegramStatus =
   | "loading"
   | "outside"
   | "choice"
+  | "linkConflict"
   | "link"
   | "done"
   | "error";
 
-const redeemedLinkKey = "telegram-redeemed-link";
-
-function rememberRedeemedLink(code: string, userId: number) {
-  try {
-    sessionStorage.setItem(redeemedLinkKey, JSON.stringify({ code, userId }));
-  } catch {
-    // В некоторых WebView хранилище недоступно; вход от него не зависит.
-  }
-}
-
-function redeemedLinkUser(code: string): number | undefined {
-  try {
-    const saved = JSON.parse(sessionStorage.getItem(redeemedLinkKey) || "null");
-    return saved?.code === code && typeof saved.userId === "number"
-      ? saved.userId
-      : undefined;
-  } catch {
-    return undefined;
-  }
-}
-
 function showLinkScreenUrl() {
   const url = new URL(window.location.href);
   url.searchParams.delete("link_code");
+  url.searchParams.delete("user_id");
   url.searchParams.set("link", "1");
   window.history.replaceState(window.history.state, "", url);
 }
 
 export class TelegramStore {
   status: TelegramStatus = "loading";
+  successPath = "/";
   error = "";
   busy = false;
+  accountId = 0;
   accountName = "";
   accountImage = "";
   accountEmail = "";
@@ -86,6 +72,13 @@ export class TelegramStore {
     );
   }
 
+  get isLinkConflict() {
+    return [
+      "Этот Telegram уже связан с другим аккаунтом",
+      "К этому аккаунту уже привязан другой Telegram. Отвяжите другой Telegram в настройках и повторите попытку",
+    ].includes(this.error);
+  }
+
   async initialize(linkMode: boolean) {
     if (this.busy || this.status !== "loading") return;
     const app = window.Telegram?.WebApp;
@@ -95,64 +88,35 @@ export class TelegramStore {
     }
     app.ready();
     app.expand();
-    const params = new URLSearchParams(window.location.search);
-    const startParam =
-      params.get("link_code") ||
-      (!(linkMode || params.get("link") === "1")
-        ? app.initDataUnsafe?.start_param
-        : undefined);
-    if (startParam?.startsWith("link_")) {
-      this.busy = true;
-      try {
-        const previousUser = redeemedLinkUser(startParam);
-        if (
-          previousUser !== undefined &&
-          (await authManager.getAccessToken()) &&
-          (await this.prepareLink(previousUser))
-        ) {
-          showLinkScreenUrl();
-          return;
-        }
-        const result = await redeemTelegramLinkCode(app.initData, startParam);
-        await setTokens(result);
-        authManager.accessToken = result.access_token;
-        showLinkScreenUrl();
-        const userId = await this.prepareLink();
-        if (userId) rememberRedeemedLink(startParam, userId);
-      } catch (error) {
-        this.fail(this.errorMessage(error));
-      } finally {
-        runInAction(() => {
-          this.busy = false;
-        });
-      }
-      return;
-    }
-    if (linkMode || params.get("link") === "1" || startParam === "link") {
-      try {
-        const token = await authManager.getAccessToken();
-        if (token) {
-          await this.prepareLink();
-        } else {
-          runInAction(() => {
-            this.status = "choice";
-          });
-        }
-      } catch (error) {
-        this.fail(this.errorMessage(error));
-      }
-      return;
-    }
     this.busy = true;
     try {
-      const result = await authenticateTelegram(app.initData);
-      if (result.linked) {
-        await setTokens(result);
-        authManager.accessToken = result.access_token;
-        runInAction(() => {
-          this.status = "done";
-        });
-      } else if (await authManager.getAccessToken()) {
+      const params = new URLSearchParams(window.location.search);
+      const startParam =
+        params.get("link_code") ||
+        (!(linkMode || params.get("link") === "1")
+          ? app.initDataUnsafe?.start_param
+          : undefined);
+      if (startParam?.startsWith("link_")) {
+        await this.redeemLink(startParam);
+        return;
+      }
+
+      const isLinkRequest =
+        linkMode || params.get("link") === "1" || startParam === "link";
+      if (!isLinkRequest) {
+        const result = await authenticateTelegram(app.initData);
+        if (result.linked) {
+          await setTokens(result);
+          authManager.accessToken = result.access_token;
+          runInAction(() => {
+            this.status = "done";
+          });
+          return;
+        }
+      }
+
+      const currentUser = await this.getCurrentUser();
+      if (currentUser) {
         await this.prepareLink();
       } else {
         runInAction(() => {
@@ -168,24 +132,134 @@ export class TelegramStore {
     }
   }
 
-  private async prepareLink(expectedUserId?: number) {
+  async loginLinkedAccount(openSettings: boolean) {
+    if (this.busy || this.status !== "linkConflict") return;
+    const initData = window.Telegram?.WebApp.initData;
+    if (!initData) {
+      this.status = "outside";
+      return;
+    }
+    this.busy = true;
+    try {
+      const result = await authenticateTelegram(initData);
+      if (!result.linked) {
+        throw new Error(
+          "Связка Telegram изменилась. Откройте приложение заново",
+        );
+      }
+      await setTokens(result);
+      authManager.accessToken = result.access_token;
+      runInAction(() => {
+        this.successPath = openSettings ? "/settings" : "/";
+        this.status = "done";
+      });
+    } catch (error) {
+      this.fail(this.errorMessage(error));
+    } finally {
+      runInAction(() => {
+        this.busy = false;
+      });
+    }
+  }
+
+  async unlinkAndContinue() {
+    if (this.busy || this.status !== "linkConflict") return;
+    const initData = window.Telegram?.WebApp.initData;
+    if (!initData) {
+      this.status = "outside";
+      return;
+    }
+    this.busy = true;
+    try {
+      await unlinkTelegram(initData, this.accountId);
+      await this.prepareLink();
+    } catch (error) {
+      this.fail(this.errorMessage(error));
+    } finally {
+      runInAction(() => {
+        this.busy = false;
+      });
+    }
+  }
+
+  private async getCurrentUser() {
+    const token = await authManager.getAccessToken();
+    return token ? getMe() : null;
+  }
+
+  private showLinkConflict(user: IUser) {
+    this.setAccount(user);
+    this.status = "linkConflict";
+  }
+
+  private setAccount(user: IUser) {
+    this.accountId = user.id;
+    this.accountName = user.name;
+    this.accountImage = user.image;
+    this.accountEmail = user.email;
+  }
+
+  private clearAccount() {
+    this.accountId = 0;
+    this.accountName = "";
+    this.accountImage = "";
+    this.accountEmail = "";
+  }
+
+  private async endSession() {
+    await logoutTelegram();
+    await clearSession();
+    authManager.logout();
+  }
+
+  private async redeemLink(code: string) {
+    const initData = window.Telegram?.WebApp.initData;
+    if (!initData) {
+      this.status = "outside";
+      return;
+    }
+    const result = await redeemTelegramLinkCode(initData, code);
+    await setTokens(result);
+    authManager.accessToken = result.access_token;
+    showLinkScreenUrl();
+    await this.prepareLink();
+  }
+
+  private async prepareLink() {
+    const initData = window.Telegram?.WebApp.initData;
+    if (!initData) {
+      this.status = "outside";
+      return null;
+    }
     const user = await getMe();
     if (!user?.id) throw new Error("Не удалось загрузить аккаунт");
-    if (expectedUserId !== undefined && user.id !== expectedUserId) return null;
+
     const authInfo = await getAuthInfo();
     const telegramLink = authInfo.links.find(
       (link) => link.provider.toLowerCase() === "telegram",
     );
     const telegramId = window.Telegram?.WebApp.initDataUnsafe?.user?.id;
     if (telegramLink && telegramLink.oauth_user_id !== String(telegramId)) {
+      this.setAccount(user);
       throw new Error(
-        "К этому аккаунту уже привязан другой Telegram. Сначала отвяжите его в настройках",
+        "К этому аккаунту уже привязан другой Telegram. Отвяжите другой Telegram в настройках и повторите попытку",
       );
     }
+
+    const inspection = await inspectTelegram(initData);
+    if (inspection.linked) {
+      if (inspection.user.id === user.id) {
+        runInAction(() => {
+          this.status = "done";
+        });
+      } else {
+        this.showLinkConflict(inspection.user);
+      }
+      return user.id;
+    }
+
     runInAction(() => {
-      this.accountName = user.name;
-      this.accountImage = user.image;
-      this.accountEmail = user.email;
+      this.setAccount(user);
       this.status = "link";
     });
     return user.id;
@@ -241,13 +315,9 @@ export class TelegramStore {
     if (this.busy) return;
     this.busy = true;
     try {
-      await logoutTelegram();
-      await clearSession();
-      authManager.logout();
+      await this.endSession();
       runInAction(() => {
-        this.accountName = "";
-        this.accountImage = "";
-        this.accountEmail = "";
+        this.clearAccount();
         this.status = "choice";
       });
       window.Telegram?.WebApp.close();

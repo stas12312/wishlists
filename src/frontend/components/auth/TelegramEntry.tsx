@@ -8,7 +8,11 @@ import { useEffect, useState } from "react";
 import { BsStars } from "react-icons/bs";
 import { FaTelegramPlane } from "react-icons/fa";
 
-import { TelegramLinkConfirmation } from "./TelegramLinkConfirmation";
+import {
+  TelegramAccountCard,
+  TelegramLinkConfirmation,
+} from "./TelegramLinkConfirmation";
+import { TelegramLinkConflict } from "./TelegramLinkConflict";
 
 import { TelegramStore } from "@/store/telegramStore";
 
@@ -25,9 +29,9 @@ const TelegramEntry = observer(function TelegramEntry({
 
   useEffect(() => {
     if (store.status === "done") {
-      window.location.replace("/");
+      window.location.replace(store.successPath);
     }
-  }, [store.status, router]);
+  }, [store.status, store.successPath]);
 
   return (
     <main className="flex min-h-dvh items-center justify-center p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]">
@@ -121,9 +125,13 @@ const TelegramEntry = observer(function TelegramEntry({
               </Button>
             </>
           )}
+          <TelegramLinkConflict store={store} />
           <TelegramLinkConfirmation store={store} />
           {store.status === "error" && (
             <>
+              {store.isLinkConflict && store.accountName && (
+                <TelegramAccountCard store={store} />
+              )}
               <p className="text-danger" role="alert">
                 {store.error}
               </p>
@@ -131,7 +139,9 @@ const TelegramEntry = observer(function TelegramEntry({
                 fullWidth
                 variant="secondary"
                 onPress={() => {
-                  if (store.isLinkExpired) {
+                  if (store.isLinkConflict) {
+                    router.push("/settings");
+                  } else if (store.isLinkExpired) {
                     if (window.Telegram?.WebApp) {
                       window.Telegram.WebApp.close();
                     } else {
@@ -142,7 +152,11 @@ const TelegramEntry = observer(function TelegramEntry({
                   }
                 }}
               >
-                {store.isLinkExpired ? "Закрыть" : "Попробовать ещё раз"}
+                {store.isLinkConflict
+                  ? "Перейти в настройки"
+                  : store.isLinkExpired
+                    ? "Закрыть"
+                    : "Попробовать ещё раз"}
               </Button>
             </>
           )}
