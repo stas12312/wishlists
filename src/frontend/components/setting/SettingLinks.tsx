@@ -1,7 +1,10 @@
 "use client";
 
-import { Button } from "@heroui/react";
+import { Button, Surface } from "@heroui/react";
 import { observer } from "mobx-react-lite";
+import { FaTelegramPlane } from "react-icons/fa";
+
+import { TelegramLinkButton } from "./TelegramLinkButton";
 
 import ConfirmationModal from "@/components/ConfirmationModal";
 import { Yandex } from "@/components/logo/YandexLogo";
@@ -14,10 +17,8 @@ const providers = [
 
 export const SettingLinks = observer(function SettingLinks({
   store,
-  service,
 }: {
   store: SettingsLinksStore;
-  service: "yandex" | "telegram";
 }) {
   return (
     <div className="flex flex-col gap-3">
@@ -34,9 +35,8 @@ export const SettingLinks = observer(function SettingLinks({
       )}
       {store.info && (
         <>
-          {providers
-            .filter((provider) => provider.id === service)
-            .map((provider) => {
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {providers.map((provider) => {
               const connectionUrl = store.info!.providers.find(
                 (item) => item.name === provider.id,
               )?.url;
@@ -45,68 +45,65 @@ export const SettingLinks = observer(function SettingLinks({
               );
 
               return (
-                <div
+                <Surface
                   key={provider.id}
-                  className={
-                    service === "telegram"
-                      ? "flex flex-col items-start gap-4 text-left md:flex-row md:items-center md:justify-between"
-                      : "flex flex-wrap items-center justify-between gap-3 rounded-xl bg-surface p-3 text-left"
-                  }
+                  className="flex min-w-0 flex-col items-center gap-5 rounded-3xl border border-border/50 p-6 text-center shadow-sm sm:p-8"
                 >
-                  <div>
-                    {service === "telegram" ? (
-                      <p className="max-w-xl text-sm text-muted">
-                        {linked
-                          ? "Аккаунт подключён к Telegram. Открывайте свои вишлисты в мини-приложении."
-                          : "Подключите аккаунт, чтобы открывать свои вишлисты в мини-приложении Telegram. Для подключения перейдите в Telegram и войдите в свой аккаунт."}
-                      </p>
-                    ) : (
-                      <p
-                        className={`flex items-center gap-2 font-semibold${linked ? "" : " text-muted"}`}
-                      >
-                        <span aria-hidden="true">
-                          <Yandex className="size-6 rounded-full" />
+                  <div className="flex flex-col items-center gap-3">
+                    <span aria-hidden="true">
+                      {provider.id === "telegram" ? (
+                        <span className="flex size-14 items-center justify-center rounded-2xl bg-[#2AABEE] text-white">
+                          <FaTelegramPlane className="size-8" />
                         </span>
-                        {provider.name}
-                      </p>
-                    )}
+                      ) : (
+                        <Yandex className="size-14 rounded-2xl" />
+                      )}
+                    </span>
+                    <h3 className="text-lg font-semibold">{provider.name}</h3>
                   </div>
-                  {linked ? (
-                    <Button
-                      isDisabled={!store.info?.has_email || store.deleting}
-                      variant="danger-soft"
-                      onPress={() => store.selectProvider(provider.id)}
-                    >
-                      Удалить привязку
-                    </Button>
-                  ) : (
-                    <Button
-                      isDisabled={store.deleting || !connectionUrl}
-                      variant="secondary"
-                      onPress={() => {
-                        if (!connectionUrl) return;
-                        if (provider.id === "yandex") {
+                  <p className="max-w-xs text-sm leading-relaxed text-muted">
+                    {provider.id === "telegram"
+                      ? "Входите через Telegram и открывайте свои вишлисты в мини-приложении."
+                      : "Входите в свой аккаунт с помощью Яндекс ID."}
+                  </p>
+                  <div className="mt-auto w-full max-w-xs pt-1">
+                    {linked ? (
+                      <Button
+                        fullWidth
+                        isDisabled={!store.info?.has_email || store.deleting}
+                        variant="danger-soft"
+                        onPress={() => store.selectProvider(provider.id)}
+                      >
+                        Удалить привязку
+                      </Button>
+                    ) : provider.id === "telegram" ? (
+                      <TelegramLinkButton
+                        disabled={store.deleting}
+                        onLinked={store.setInfo}
+                      />
+                    ) : (
+                      <Button
+                        fullWidth
+                        isDisabled={store.deleting || !connectionUrl}
+                        variant="primary"
+                        onPress={() => {
+                          if (!connectionUrl) return;
                           localStorage.setItem("path", "/settings");
                           window.open(
                             connectionUrl,
                             "YANDEX",
                             "status=no,location=no,toolbar=no,menubar=no,titlebar=no",
                           );
-                        } else {
-                          window.location.assign(
-                            window.Telegram?.WebApp.initData
-                              ? "/miniapp/telegram?link=1"
-                              : connectionUrl!,
-                          );
-                        }
-                      }}
-                    >
-                      Подключить
-                    </Button>
-                  )}
-                </div>
+                        }}
+                      >
+                        Подключить
+                      </Button>
+                    )}
+                  </div>
+                </Surface>
               );
             })}
+          </div>
           {!store.info.has_email && (
             <p className="text-sm text-muted">
               Удалить привязки можно только при наличии email в аккаунте.
@@ -118,7 +115,7 @@ export const SettingLinks = observer(function SettingLinks({
         confirmDisabled={store.deleting}
         confirmName="Удалить привязку"
         declineName="Отмена"
-        isOpen={store.pendingProvider === service}
+        isOpen={store.pendingProvider !== null}
         message={`Удалить привязку ${providers.find((provider) => provider.id === store.pendingProvider)?.name ?? ""}? Вход через этот сервис больше не будет доступен. Для входа по email можно использовать пароль или восстановить его.`}
         title="Удалить привязку?"
         onConfirm={() => store.remove()}

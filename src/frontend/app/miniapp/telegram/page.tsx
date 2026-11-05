@@ -10,15 +10,8 @@ export const metadata: Metadata = {
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ link?: string; preview?: string }>;
+  searchParams: Promise<{ link?: string }>;
 }) {
   const params = await searchParams;
-  return (
-    <TelegramEntry
-      linkMode={params.link === "1"}
-      previewCreating={
-        process.env.NODE_ENV === "development" && params.preview === "creating"
-      }
-    />
-  );
+  return <TelegramEntry linkMode={params.link === "1"} />;
 }

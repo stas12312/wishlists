@@ -41,11 +41,15 @@ export async function getUserFromCookies(): Promise<number | null> {
 }
 
 export async function logout() {
+  await clearSession();
+  redirect("/");
+}
+
+export async function clearSession() {
   const cookie = await cookies();
 
   cookie.delete("access_token");
   cookie.delete("refresh_token");
-  redirect("/");
 }
 
 export async function setTokens(tokens: ITokens): Promise<string> {

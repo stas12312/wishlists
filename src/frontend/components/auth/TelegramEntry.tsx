@@ -8,25 +8,20 @@ import { useEffect, useState } from "react";
 import { BsStars } from "react-icons/bs";
 import { FaTelegramPlane } from "react-icons/fa";
 
+import { TelegramLinkConfirmation } from "./TelegramLinkConfirmation";
+
 import { TelegramStore } from "@/store/telegramStore";
 
 const returnTo = encodeURIComponent("/miniapp/telegram?link=1");
 
 const TelegramEntry = observer(function TelegramEntry({
   linkMode,
-  previewCreating = false,
 }: {
   linkMode: boolean;
-  previewCreating?: boolean;
 }) {
-  const [store] = useState(() => {
-    const telegramStore = new TelegramStore();
-    if (previewCreating) telegramStore.status = "choice";
-    return telegramStore;
-  });
+  const [store] = useState(() => new TelegramStore());
   const router = useRouter();
-  const isCreatingAccount =
-    previewCreating || (store.status === "choice" && store.busy);
+  const isCreatingAccount = store.status === "choice" && store.busy;
 
   useEffect(() => {
     if (store.status === "done") {
@@ -36,17 +31,15 @@ const TelegramEntry = observer(function TelegramEntry({
 
   return (
     <main className="flex min-h-dvh items-center justify-center p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]">
-      {!previewCreating && (
-        <Script
-          src="https://telegram.org/js/telegram-web-app.js"
-          onError={() =>
-            store.fail(
-              "Не удалось загрузить Telegram. Откройте приложение заново",
-            )
-          }
-          onReady={() => void store.initialize(linkMode)}
-        />
-      )}
+      <Script
+        src="https://telegram.org/js/telegram-web-app.js"
+        onError={() =>
+          store.fail(
+            "Не удалось загрузить Telegram. Откройте приложение заново",
+          )
+        }
+        onReady={() => void store.initialize(linkMode)}
+      />
       <Surface className="relative flex w-full max-w-md flex-col gap-5 rounded-3xl p-6 text-center shadow-md">
         {isCreatingAccount && (
           <div
@@ -128,21 +121,7 @@ const TelegramEntry = observer(function TelegramEntry({
               </Button>
             </>
           )}
-          {store.status === "link" && (
-            <>
-              <p>
-                Свяжите Telegram с аккаунтом, в который вы вошли. В следующий
-                раз вход будет автоматическим.
-              </p>
-              <Button
-                fullWidth
-                isPending={store.busy}
-                onPress={() => void store.link()}
-              >
-                Связать с Telegram
-              </Button>
-            </>
-          )}
+          <TelegramLinkConfirmation store={store} />
           {store.status === "error" && (
             <>
               <p className="text-danger" role="alert">
@@ -151,9 +130,19 @@ const TelegramEntry = observer(function TelegramEntry({
               <Button
                 fullWidth
                 variant="secondary"
-                onPress={() => window.location.reload()}
+                onPress={() => {
+                  if (store.isLinkExpired) {
+                    if (window.Telegram?.WebApp) {
+                      window.Telegram.WebApp.close();
+                    } else {
+                      router.replace("/");
+                    }
+                  } else {
+                    window.location.reload();
+                  }
+                }}
               >
-                Попробовать ещё раз
+                {store.isLinkExpired ? "Закрыть" : "Попробовать ещё раз"}
               </Button>
             </>
           )}
