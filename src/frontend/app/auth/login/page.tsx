@@ -28,7 +28,9 @@ const PROVIDER_TO_ICON = new Map<string, ReactNode>([
 ]);
 
 export default async function Page() {
-  const providers = await getOAuthProviders();
+  const providers = (await getOAuthProviders()).filter(
+    (provider) => provider.name.toUpperCase() !== "TELEGRAM",
+  );
   providers.forEach((item) => {
     item.icon = PROVIDER_TO_ICON.get(item.name);
   });
