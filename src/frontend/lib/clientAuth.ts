@@ -1,6 +1,16 @@
 import { jwtDecode } from "jwt-decode";
 
+import { clearSession, logout } from "./auth";
 import { refreshTokens } from "./client-requests/auth";
+
+export async function logoutFromClient() {
+  if (window.Telegram?.WebApp.initData) {
+    await clearSession();
+    window.Telegram.WebApp.close();
+    return;
+  }
+  await logout();
+}
 
 export class AuthManager {
   accessToken: string | undefined;

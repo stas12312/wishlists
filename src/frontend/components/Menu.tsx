@@ -16,7 +16,7 @@ import { DesktopMenuItem, MobileMenuItem } from "./main-menu/MenuItem";
 
 import countersStore from "@/store/counterStore";
 import userStore from "@/store/userStore";
-import { logout } from "@/lib/auth";
+import { logoutFromClient } from "@/lib/clientAuth";
 import { defaultParams, getWebsocketUrl, isEvent, WSEvent } from "@/lib/socket";
 
 const ITEMS: {
@@ -123,9 +123,9 @@ const Menu = observer(({ variant }: { variant: "mobile" | "desktop" }) => {
         <Link
           key="Выход"
           className="w-full flex gap-2 py-1 pl-3 rounded-3xl ease-in items-center hover:bg-danger-soft-hover text-lg cursor-pointer text-danger  no-underline "
-          onPress={() => {
+          onPress={async () => {
             userStore.logout();
-            logout();
+            await logoutFromClient();
           }}
         >
           <span>
