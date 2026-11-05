@@ -15,7 +15,7 @@ import { Counter } from "../main-menu/MenuCounter";
 
 import { UserAvatar } from "./UserAvatar";
 
-import { logout } from "@/lib/auth";
+import { logoutFromClient } from "@/lib/clientAuth";
 import countersStore from "@/store/counterStore";
 import userStore from "@/store/userStore";
 
@@ -89,7 +89,7 @@ export const UserItem = observer(() => {
                 variant="danger"
                 onPress={async () => {
                   userStore.logout();
-                  await logout();
+                  await logoutFromClient();
                 }}
               >
                 <MdOutlineExitToApp />

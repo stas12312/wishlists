@@ -7,6 +7,7 @@ import ConfirmationModal from "../ConfirmationModal";
 
 import userStore from "@/store/userStore";
 import { logout } from "@/lib/auth";
+import { logoutFromClient } from "@/lib/clientAuth";
 import { deleteAccount } from "@/lib/client-requests/user";
 
 export const DeleteAccountButton = observer(() => {
@@ -75,7 +76,7 @@ export const ExitButton = observer(() => {
       variant="danger"
       onPress={async () => {
         userStore.logout();
-        await logout();
+        await logoutFromClient();
       }}
     >
       <MdOutlineExitToApp />
