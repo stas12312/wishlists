@@ -6,9 +6,11 @@ import (
 	"errors"
 	apperror "main/error"
 	"main/model"
+	"main/repository"
 	"main/service"
 	"main/telegram"
 	"main/uof"
+	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
@@ -19,15 +21,33 @@ const telegramProvider = "telegram"
 
 var telegramUsernamePattern = regexp.MustCompile(`^[0-9A-Za-z.\-_]{3,32}$`)
 
-func NewTelegramService(work uof.UnitOfWork, botToken string, images service.ImageService) service.TelegramService {
-	return &telegramService{work: work, botToken: botToken, now: time.Now, images: images}
+func NewTelegramService(work uof.UnitOfWork, botToken, botUsername string, codes repository.CodeRepository, images service.ImageService) service.TelegramService {
+	return &telegramService{work: work, botToken: botToken, botUsername: botUsername, codes: codes, now: time.Now, images: images}
 }
 
 type telegramService struct {
-	images   service.ImageService
-	work     uof.UnitOfWork
-	botToken string
-	now      func() time.Time
+	images      service.ImageService
+	work        uof.UnitOfWork
+	codes       repository.CodeRepository
+	botToken    string
+	botUsername string
+	now         func() time.Time
+}
+
+func (s *telegramService) CreateLinkCode(ctx context.Context, userID int64) (string, error) {
+	if userID <= 0 {
+		return "", apperror.NewError(apperror.OAuthError, "Для привязки Telegram необходимо войти в аккаунт")
+	}
+	bot := strings.TrimPrefix(strings.TrimSpace(s.botUsername), "@")
+	if bot == "" {
+		return "", apperror.NewError(apperror.OAuthError, "Привязка Telegram временно недоступна")
+	}
+	code := model.NewCode(userID, 6, 22, model.TelegramLinkCode, 1)
+	if _, err := s.codes.Create(code); err != nil {
+		return "", apperror.NewError(apperror.DatabaseError, "Не удалось создать код привязки Telegram")
+	}
+	payload := "link_" + code.UUID + "_" + code.Key
+	return "https://t.me/" + url.PathEscape(bot) + "?start=" + url.QueryEscape(payload), nil
 }
 
 // Отсутствие связки возвращается как (nil, nil), чтобы предложить вход или регистрацию.
@@ -56,39 +76,11 @@ func (s *telegramService) Authenticate(ctx context.Context, initData string) (*m
 
 // userID должен поступать из проверенной сессии, а не из тела запроса.
 func (s *telegramService) Link(ctx context.Context, userID int64, initData string) (*model.User, error) {
-	if userID <= 0 {
-		return nil, apperror.NewError(apperror.OAuthError, "Для привязки Telegram необходимо войти в аккаунт")
-	}
 	identity, err := s.validate(initData)
 	if err != nil {
 		return nil, err
 	}
-	var user *model.User
-	err = s.work.Do(ctx, func(ctx context.Context, store uof.UnitOfWorkStore) error {
-		var err error
-		user, err = activeTelegramUser(store, userID)
-		if err != nil {
-			return err
-		}
-		telegramID := strconv.FormatInt(identity.ID, 10)
-		link, err := store.OAuthRepository().Get(telegramProvider, telegramID)
-		if err == nil {
-			if link.UserId != userID {
-				return apperror.NewError(apperror.OAuthError, "Этот Telegram уже связан с другим аккаунтом")
-			}
-			return nil
-		}
-		if !errors.Is(err, sql.ErrNoRows) {
-			return err
-		}
-		return store.OAuthRepository().Create(&model.OAuthUser{
-			Provider: telegramProvider, OAuthUserId: telegramID, UserId: userID,
-		})
-	})
-	if err != nil {
-		return nil, telegramServiceError(err)
-	}
-	return user, nil
+	return s.linkIdentity(ctx, userID, identity)
 }
 
 func (s *telegramService) Register(ctx context.Context, initData string) (*model.User, error) {

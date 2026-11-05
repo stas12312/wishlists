@@ -13,6 +13,7 @@ const (
 	ConfirmEmailCode  = 1
 	ResetPasswordCode = 2
 	ChangeEmailCode   = 3
+	TelegramLinkCode  = 4
 )
 
 type Code struct {

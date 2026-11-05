@@ -82,9 +82,44 @@ func (c *TelegramController) Link(ctx *fiber.Ctx) error {
 	return ctx.JSON(fiber.Map{"linked": true})
 }
 
+func (c *TelegramController) CreateLinkCode(ctx *fiber.Ctx) error {
+	ctx.Set(fiber.HeaderCacheControl, "no-store")
+	link, err := c.service.CreateLinkCode(ctx.UserContext(), GetUserIdFromCtx(ctx))
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(fiber.Map{"url": link, "expires_in": 300})
+}
+
+func (c *TelegramController) parseLinkCodeRequest(ctx *fiber.Ctx) (string, string, error) {
+	request := new(struct {
+		InitData string `json:"init_data"`
+		Code     string `json:"code"`
+	})
+	if err := ctx.BodyParser(request); err != nil || request.InitData == "" || len(request.InitData) > 16384 || len(request.Code) != 64 {
+		return "", "", apperror.NewError(apperror.WrongRequest, "Некорректные данные подключения Telegram")
+	}
+	return request.InitData, request.Code, nil
+}
+
+func (c *TelegramController) RedeemLinkCode(ctx *fiber.Ctx) error {
+	ctx.Set(fiber.HeaderCacheControl, "no-store")
+	initData, payload, err := c.parseLinkCodeRequest(ctx)
+	if err != nil {
+		return err
+	}
+	user, err := c.service.RedeemLinkCode(ctx.UserContext(), initData, payload)
+	if err != nil {
+		return err
+	}
+	return c.respondWithSession(ctx, user)
+}
+
 func (c *TelegramController) Route(router fiber.Router) {
 	telegram := router.Group("/auth/telegram")
 	telegram.Post("/", c.Authenticate)
 	telegram.Post("/register", c.Register)
 	telegram.Post("/link", middleware.Protected(true), c.Link)
+	telegram.Post("/link-code", middleware.Protected(true), c.CreateLinkCode)
+	telegram.Post("/link-code/redeem", c.RedeemLinkCode)
 }

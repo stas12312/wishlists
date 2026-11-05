@@ -52,6 +52,17 @@ func (c CodeRedis) DeleteByUUID(uuid string) error {
 	return result.Err()
 }
 
+func (c CodeRedis) Consume(code *model.Code) (bool, error) {
+	// Проверка и удаление атомарны: параллельный запрос не сможет выдать вторую сессию.
+	result, err := c.redisClient.Eval(context.Background(), `
+if redis.call('HGET', KEYS[1], 'key') == ARGV[1]
+and redis.call('HGET', KEYS[1], 'code_type') == ARGV[2] then
+    return redis.call('DEL', KEYS[1])
+end
+return 0`, []string{code.UUID}, code.Key, code.CodeType).Int()
+	return result == 1, err
+}
+
 func (c CodeRedis) Update(code *model.Code) error {
 	result := c.redisClient.HSet(context.Background(), code.UUID, code)
 	return result.Err()
