@@ -9,8 +9,11 @@ export async function getMe(): Promise<IUser> {
 
   return response.data;
 }
-export async function getAuthInfo(): Promise<AuthInfo> {
-  const response = await clientAxios.get("user/auth-info");
+export async function getAuthInfo(signal?: AbortSignal): Promise<AuthInfo> {
+  const response = await clientAxios.get("user/auth-info", {
+    signal,
+    timeout: 15000,
+  });
   if (response.status !== 200)
     throw new Error(response.data?.message || "Не удалось загрузить привязки");
   return response.data as AuthInfo;

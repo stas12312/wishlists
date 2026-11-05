@@ -33,12 +33,15 @@ export default function SettingsPage() {
         <SettingItem header="Безопасность">
           <SecuritySection />
         </SettingItem>
-        <SettingItem header="Способы входа">
-          <SettingLinks service="yandex" store={linksStore} />
-        </SettingItem>
-        <SettingItem header="Telegram">
-          <SettingLinks service="telegram" store={linksStore} />
-        </SettingItem>
+        <section
+          aria-labelledby="login-methods-heading"
+          className="flex flex-col gap-3"
+        >
+          <h2 className="text-xl" id="login-methods-heading">
+            Способы входа
+          </h2>
+          <SettingLinks store={linksStore} />
+        </section>
       </div>
       <div className="flex flex-col gap-2 mt-2">
         <ExitButton />

@@ -18,6 +18,10 @@ export class SettingsLinksStore {
     if (!this.deleting) this.pendingProvider = provider;
   }
 
+  setInfo = (info: AuthInfo) => {
+    this.info = info;
+  };
+
   async load() {
     this.loading = true;
     this.error = "";
