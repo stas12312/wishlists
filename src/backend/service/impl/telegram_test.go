@@ -16,6 +16,8 @@ import (
 	"net/url"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/mock"
 )
 
 type telegramTestWork struct {
@@ -57,6 +59,7 @@ func TestTelegramAccountLink(t *testing.T) {
 			users := mocks.NewUserRepository(t)
 			users.On("GetById", int64(42)).Return(&model.User{Id: 42, IsActive: true}, nil).Once()
 			if owner == 0 {
+				links.On("ListByUserId", int64(42)).Return([]model.OAuthUser{}, nil).Once()
 				links.On("Get", "telegram", "123").Return((*model.OAuthUser)(nil), sql.ErrNoRows).Once()
 				links.On("Create", &model.OAuthUser{Provider: "telegram", OAuthUserId: "123", UserId: 42}).Return(nil).Once()
 			} else {
@@ -75,6 +78,25 @@ func TestTelegramAccountLink(t *testing.T) {
 			links.AssertNotCalled(t, "Update")
 		})
 	}
+}
+
+func TestTelegramAccountLinkRejectsAnotherTelegram(t *testing.T) {
+	raw, now := telegramTestInitData(`{"id":123}`)
+	links := mocks.NewOAuthUserRepository(t)
+	users := mocks.NewUserRepository(t)
+	users.On("GetById", int64(42)).Return(&model.User{Id: 42, IsActive: true}, nil).Once()
+	links.On("Get", "telegram", "123").Return((*model.OAuthUser)(nil), sql.ErrNoRows).Once()
+	links.On("ListByUserId", int64(42)).Return([]model.OAuthUser{
+		{Provider: "telegram", OAuthUserId: "456", UserId: 42},
+	}, nil).Once()
+	s := telegramService{work: telegramTestWork{telegramTestStore{links: links, users: users}}, botToken: "test-token", now: func() time.Time { return now }}
+	user, err := s.Link(context.Background(), 42, raw)
+	var appErr *apperror.Error
+	if user != nil || !errors.As(err, &appErr) || appErr.Message != "К этому аккаунту уже привязан другой Telegram. Сначала отвяжите его в настройках" {
+		t.Fatalf("unexpected user=%v err=%v", user, err)
+	}
+	links.AssertNotCalled(t, "Create", mock.Anything)
+	links.AssertNotCalled(t, "Update", mock.Anything)
 }
 
 func TestTelegramRegister(t *testing.T) {
