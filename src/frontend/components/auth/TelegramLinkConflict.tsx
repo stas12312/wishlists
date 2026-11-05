@@ -35,7 +35,7 @@ export const TelegramLinkConflict = observer(function TelegramLinkConflict({
       ) : hasEmail ? (
         <p>Для продолжения его необходимо отвязать.</p>
       ) : (
-        <Alert status="warning">
+        <Alert className="bg-warning-soft" status="warning">
           <Alert.Indicator />
           <Alert.Content>
             <Alert.Title>
