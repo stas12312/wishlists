@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@heroui/react";
+import { Alert, Button } from "@heroui/react";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 
@@ -35,10 +35,18 @@ export const TelegramLinkConflict = observer(function TelegramLinkConflict({
       ) : hasEmail ? (
         <p>Для продолжения его необходимо отвязать.</p>
       ) : (
-        <p>
-          Войдите в этот аккаунт и добавьте email в настройках или удалите
-          профиль.
-        </p>
+        <Alert status="warning">
+          <Alert.Indicator />
+          <Alert.Content>
+            <Alert.Title>
+              Отвязать аккаунт можно только после добавления email.
+            </Alert.Title>
+            <Alert.Description>
+              Войдите в этот аккаунт и добавьте email в настройках, чтобы
+              отвязать его, или удалите профиль.
+            </Alert.Description>
+          </Alert.Content>
+        </Alert>
       )}
       <div className="flex flex-col gap-2">
         {canUnlink && (
