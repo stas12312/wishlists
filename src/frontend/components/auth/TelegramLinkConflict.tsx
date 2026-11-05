@@ -17,7 +17,9 @@ export const TelegramLinkConflict = observer(function TelegramLinkConflict({
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   if (store.status !== "linkConflict") return null;
 
-  const canUnlink = Boolean(store.accountEmail.trim());
+  const hasEmail = Boolean(store.accountEmail.trim());
+  const canUnlink = hasEmail && !store.targetHasTelegram;
+  const openSettings = !canUnlink;
 
   return (
     <>
@@ -25,7 +27,12 @@ export const TelegramLinkConflict = observer(function TelegramLinkConflict({
         Этот Telegram уже привязан к другому аккаунту
       </h2>
       <TelegramAccountCard store={store} />
-      {canUnlink ? (
+      {store.targetHasTelegram ? (
+        <p>
+          К аккаунту, который вы хотите привязать, уже подключён другой
+          Telegram.
+        </p>
+      ) : hasEmail ? (
         <p>Для продолжения его необходимо отвязать.</p>
       ) : (
         <p>
@@ -47,9 +54,9 @@ export const TelegramLinkConflict = observer(function TelegramLinkConflict({
         <Button
           fullWidth
           isPending={store.busy}
-          onPress={() => void store.loginLinkedAccount(!canUnlink)}
+          onPress={() => void store.loginLinkedAccount(openSettings)}
         >
-          {canUnlink ? "Войти" : "Перейти в настройки"}
+          {openSettings ? "Перейти в настройки" : "Войти"}
         </Button>
       </div>
       <ConfirmationModal
