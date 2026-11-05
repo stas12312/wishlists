@@ -20,8 +20,10 @@ const returnTo = encodeURIComponent("/miniapp/telegram?link=1");
 
 const TelegramEntry = observer(function TelegramEntry({
   linkMode,
+  sessionUserId,
 }: {
   linkMode: boolean;
+  sessionUserId?: number;
 }) {
   const [store] = useState(() => new TelegramStore());
   const router = useRouter();
@@ -42,7 +44,7 @@ const TelegramEntry = observer(function TelegramEntry({
             "Не удалось загрузить Telegram. Откройте приложение заново",
           )
         }
-        onReady={() => void store.initialize(linkMode)}
+        onReady={() => void store.initialize(linkMode, sessionUserId)}
       />
       <Surface className="relative flex w-full max-w-md flex-col gap-5 rounded-3xl p-6 text-center shadow-md">
         {isCreatingAccount && (
