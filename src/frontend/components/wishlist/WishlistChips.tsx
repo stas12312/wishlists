@@ -73,6 +73,14 @@ export function WishlistChips({
       emoji: "👀",
     });
   }
+  if (isOwner && !wishlist.settings?.for_other) {
+    chips.push({
+      label: "Бронирования скрыты, чтобы сохранить сюрприз",
+      textClassName: "text-slate-900 dark:text-white",
+      backgroundClassName: "bg-white/30 dark:bg-white/10",
+      emoji: "🙈",
+    });
+  }
   if (isOwner && statistic?.totalCount) {
     chips.push({
       label: `исполнено ${statistic.fullfiledCount} из ${statistic.totalCount}`,

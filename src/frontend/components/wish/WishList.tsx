@@ -236,11 +236,6 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
               </div>
             </div>
           ) : null}
-          {isEditable && !wishlist.settings?.for_other ? (
-            <p className="col-span-full mb-4 text-sm text-muted">
-              Бронирования скрыты от вас, чтобы сохранить сюрприз
-            </p>
-          ) : null}
           {items.length ? (
             <div className="col-span-full flex flex-wrap items-center gap-4 mb-4">
               {items.length ? (
