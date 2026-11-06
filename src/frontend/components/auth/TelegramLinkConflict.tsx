@@ -37,7 +37,7 @@ export const TelegramLinkConflict = observer(function TelegramLinkConflict({
       ) : (
         <Alert className="bg-warning-soft" status="warning">
           <Alert.Indicator />
-          <Alert.Content>
+          <Alert.Content className="text-start">
             <Alert.Title>
               Отвязать аккаунт можно только после добавления email.
             </Alert.Title>
@@ -61,7 +61,8 @@ export const TelegramLinkConflict = observer(function TelegramLinkConflict({
         )}
         <Button
           fullWidth
-          isPending={store.busy}
+          isDisabled={store.busy && !store.openingLinkedAccount}
+          isPending={store.openingLinkedAccount}
           onPress={() => void store.loginLinkedAccount(openSettings)}
         >
           {openSettings ? "Перейти в настройки" : "Войти"}

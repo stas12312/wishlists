@@ -12,6 +12,7 @@ authAxios.interceptors.response.use(
     return response;
   },
   async (error) => {
+    if (!error.response) return Promise.reject(error);
     if (error.response.status == 403) {
     } else if (![400, 404, 500].includes(error.response.status)) {
       return Promise.reject(error);
@@ -21,7 +22,9 @@ authAxios.interceptors.response.use(
 );
 
 export async function refreshTokens(): Promise<ITokens | IError> {
-  const response = await authAxios.post("/auth/refresh");
+  const response = await authAxios.post("/auth/refresh", undefined, {
+    timeout: 15000,
+  });
   return response.data;
 }
 
