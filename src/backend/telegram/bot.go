@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"net/url"
 	"time"
 )
 
@@ -26,6 +27,22 @@ func NewAPIClient(token string) *APIClient {
 		baseURL:    "https://api.telegram.org",
 		httpClient: &http.Client{Timeout: 10 * time.Second},
 	}
+}
+
+func (c *APIClient) SetProxy(address string) error {
+	proxyURL, err := url.Parse(address)
+	if err != nil || proxyURL.Hostname() == "" || proxyURL.Opaque != "" {
+		return errors.New("некорректный адрес TELEGRAM_PROXY_URL")
+	}
+	switch proxyURL.Scheme {
+	case "http", "https", "socks5", "socks5h":
+	default:
+		return errors.New("TELEGRAM_PROXY_URL должен использовать http, https, socks5 или socks5h")
+	}
+	transport := http.DefaultTransport.(*http.Transport).Clone()
+	transport.Proxy = http.ProxyURL(proxyURL)
+	c.httpClient.Transport = transport
+	return nil
 }
 
 type Update struct {
