@@ -9,7 +9,7 @@ export const wishlistChipClassName =
 
 const visibleLabels: Record<Visible, string> = {
   [Visible.Private]: "только для меня",
-  [Visible.Public]: "для всех",
+  [Visible.Public]: "Публичный",
   [Visible.ForFriends]: "для друзей",
   [Visible.ForSelectedFriends]: "для выбранных друзей",
 };
