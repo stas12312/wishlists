@@ -90,7 +90,7 @@ export const SettingEmail = observer(() => {
         isOpen={form.modalOpen}
         onOpenChange={(open) => form.setModalOpen(open)}
       >
-        <Modal.Container size="sm">
+        <Modal.Container placement="center" size="sm">
           <Modal.Dialog>
             {!form.busy && <Modal.CloseTrigger />}
             <Modal.Header className="items-center">
