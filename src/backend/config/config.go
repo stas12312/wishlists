@@ -95,6 +95,7 @@ type Config struct {
 	ImageMaxDownloadSize     int64
 	TelegramBotToken         string
 	TelegramBotUsername      string
+	TelegramProxyURL         string
 	TelegramWebhookSecret    string
 	ReservationCheckInterval time.Duration
 	JWT                      JWTConfig
@@ -151,6 +152,7 @@ func NewConfig() *Config {
 		ImageMaxDownloadSize:     imageMaxDownloadSize,
 		TelegramBotUsername:      os.Getenv("TELEGRAM_BOT_USERNAME"),
 		TelegramBotToken:         os.Getenv("TELEGRAM_BOT_TOKEN"),
+		TelegramProxyURL:         os.Getenv("TELEGRAM_PROXY_URL"),
 		TelegramWebhookSecret:    telegramWebhookSecret,
 		ReservationCheckInterval: interval,
 		JWT:                      jwt,
