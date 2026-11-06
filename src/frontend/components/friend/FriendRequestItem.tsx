@@ -22,7 +22,7 @@ export const FriendRequestItem = observer(
             <UserAvatar description={user.username} name={user.name} />
           </div>
 
-          <div className="flex flex-col gap-1 md:flex-row">{children}</div>
+          <div className="flex gap-1">{children}</div>
         </Card.Content>
       </Card>
     );
