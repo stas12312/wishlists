@@ -15,3 +15,10 @@ type AdminUserDetail struct {
 	AdminUser
 	Links []OAuthUser `json:"links"`
 }
+
+type AdminUserWishlist struct {
+	UUID     string `json:"uuid" db:"wishlist_uuid"`
+	Name     string `json:"name"`
+	IsActive bool   `json:"is_active" db:"is_active"`
+	ForOther bool   `json:"for_other" db:"for_other"`
+}

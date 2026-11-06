@@ -2,6 +2,7 @@ package impl
 
 import (
 	"main/db"
+	apperror "main/error"
 	"main/model"
 
 	"github.com/gofiber/fiber/v2/log"
@@ -56,6 +57,7 @@ func (r *WishRepositoryPostgres) Update(wish *model.Wish) (*model.Wish, error) {
 	SELECT
 		update.*,
 		wishlists.user_id,
+		wishlists.settings AS wishlist_settings,
 		update.presenter_id IS NOT NULL AS is_reserved
 	FROM update
 	JOIN wishlists USING (wishlist_uuid)
@@ -84,6 +86,7 @@ func (r *WishRepositoryPostgres) Get(wishUuid string) (*model.Wish, error) {
 	SELECT 
 		wishes.*, 
 		wishlists.user_id,
+		wishlists.settings AS wishlist_settings,
 		wishes.presenter_id IS NOT NULL AS is_reserved,
 
 		users.name AS "user.name",
@@ -108,7 +111,8 @@ func (r *WishRepositoryPostgres) ListBy(wishlistUuid string, wishUUIDs []string)
 	query := `
 		SELECT 
 		    wishes.*, 
-		    wishlists.user_id, 
+		    wishlists.user_id,
+		    wishlists.settings AS wishlist_settings,
 		    wishes.presenter_id IS NOT NULL AS is_reserved,
 
 		    users.name AS "user.name",
@@ -172,13 +176,27 @@ func (r *WishRepositoryPostgres) Restore(wishUuid string) error {
 	return err
 }
 
-func (r *WishRepositoryPostgres) SetPresenter(wishUuid string, presenterId model.NullInt64) error {
+func (r *WishRepositoryPostgres) SetPresenter(wishUuid string, presenterId model.NullInt64, expectedPresenterId model.NullInt64) error {
 	q := `
 		UPDATE wishes SET
 		    presenter_id = $2
-		WHERE wish_uuid = $1
+		FROM wishlists
+		WHERE wishes.wish_uuid = $1
+			AND wishes.wishlist_uuid = wishlists.wishlist_uuid
+			AND presenter_id IS NOT DISTINCT FROM $3::bigint
+			AND ($2::bigint IS NULL OR (
+				wishes.is_active AND wishlists.is_active AND fulfilled_at IS NULL
+				AND ($2 <> wishlists.user_id OR wishlists.settings @> '{"for_other":true}'::jsonb)
+			))
 `
-	_, err := r.Exec(q, wishUuid, presenterId)
+	result, err := r.Exec(q, wishUuid, presenterId, expectedPresenterId)
+	if err != nil {
+		return err
+	}
+	rows, err := result.RowsAffected()
+	if err == nil && rows == 0 {
+		return apperror.NewError(apperror.WrongRequest, "Бронирование изменилось или недоступно")
+	}
 	return err
 }
 
@@ -197,6 +215,7 @@ func (r *WishRepositoryPostgres) ReservedList(userId int64) (*[]model.Wish, erro
 	SELECT 
 	    wishes.*, 
 		wishlists.user_id,
+		wishlists.settings AS wishlist_settings,
 		wishes.presenter_id IS NOT NULL AS is_reserved,
 
 		users.name AS "user.name",

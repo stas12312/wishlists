@@ -338,6 +338,8 @@ func (c *AdminController) Route(router fiber.Router) {
 	usersGroup := adminGroup.Group("/users", middleware.ForAdmin(c.userService))
 	usersGroup.Get("/", c.ListUsers)
 	usersGroup.Get("/:id", c.GetUser)
+	usersGroup.Get("/:id/wishlists", c.ListUserWishlists)
+	usersGroup.Patch("/:id/wishlists/:uuid/type", c.SetUserWishlistType)
 	usersGroup.Delete("/:id/links/:provider", c.DeleteUserLink)
 
 	articleGroup := adminGroup.Group("/articles", middleware.Protected(true), middleware.ForAdmin(c.userService))

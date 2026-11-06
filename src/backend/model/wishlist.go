@@ -16,8 +16,9 @@ const (
 )
 
 type WishlistSettings struct {
-	Color string `json:"color"`
-	Emoji string `json:"emoji"`
+	ForOther bool   `json:"for_other"`
+	Color    string `json:"color"`
+	Emoji    string `json:"emoji"`
 }
 
 func (s WishlistSettings) Value() (driver.Value, error) {
