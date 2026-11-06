@@ -17,12 +17,12 @@ export const FriendRequestItem = observer(
     });
     return (
       <Card className="max-w-250 mx-auto w-full">
-        <Card.Content className="flex flex-row gap-4 justify-between">
+        <Card.Content className="flex flex-col gap-4 justify-between md:flex-row">
           <div {...pressProps} className="cursor-pointer">
             <UserAvatar description={user.username} name={user.name} />
           </div>
 
-          <div className="flex gap-1">{children}</div>
+          <div className="flex flex-col gap-1 md:flex-row">{children}</div>
         </Card.Content>
       </Card>
     );
