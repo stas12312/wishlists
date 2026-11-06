@@ -65,14 +65,15 @@ func main() {
 	imageRepository := repository.NewS3ImageRepository(&appConfig.S3)
 	imageService := service.NewImageService(imageRepository, uuid.NewString, appConfig.Feature, appConfig.ImageMaxDownloadSize)
 	telegramCodeRepository := repository.NewConfirmCodeRedis(redisClient, 5*time.Minute)
-	telegramService := service.NewTelegramService(uof, appConfig.TelegramBotToken, appConfig.TelegramBotUsername, telegramCodeRepository, imageService)
-	telegramController := controller.NewTelegramController(telegramService, appConfig)
 	telegramBotClient := telegram.NewAPIClient(appConfig.TelegramBotToken)
 	if appConfig.TelegramProxyURL != "" {
 		if err := telegramBotClient.SetProxy(appConfig.TelegramProxyURL); err != nil {
 			log.Fatal(err)
 		}
 	}
+	telegramImages := imageService.WithDownloadTransport(telegramBotClient.Transport())
+	telegramService := service.NewTelegramService(uof, appConfig.TelegramBotToken, appConfig.TelegramBotUsername, telegramCodeRepository, telegramImages)
+	telegramController := controller.NewTelegramController(telegramService, appConfig)
 	telegramBotService := service.NewTelegramBotService(telegramBotClient, appConfig.BaseUrl, telegramCodeRepository)
 	telegramBotController := controller.NewTelegramBotController(telegramBotService, appConfig.TelegramWebhookSecret)
 

@@ -45,6 +45,10 @@ func (c *APIClient) SetProxy(address string) error {
 	return nil
 }
 
+func (c *APIClient) Transport() http.RoundTripper {
+	return c.httpClient.Transport
+}
+
 type Update struct {
 	Message *Message `json:"message"`
 }

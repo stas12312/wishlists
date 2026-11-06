@@ -24,14 +24,25 @@ func NewImageService(
 	maxDownloadSize int64,
 ) *ImageServiceImpl {
 
-	return &ImageServiceImpl{repository, generator, features, maxDownloadSize}
+	return &ImageServiceImpl{
+		ImageRepository: repository,
+		UUIDGenerator:   generator,
+		Features:        features,
+		MaxDownloadSize: maxDownloadSize,
+	}
 }
 
 type ImageServiceImpl struct {
 	repository.ImageRepository
 	UUIDGenerator
 	config.Features
-	MaxDownloadSize int64
+	MaxDownloadSize   int64
+	downloadTransport http.RoundTripper
+}
+
+func (s ImageServiceImpl) WithDownloadTransport(transport http.RoundTripper) *ImageServiceImpl {
+	s.downloadTransport = transport
+	return &s
 }
 
 func (s *ImageServiceImpl) Upload(filename string, file io.Reader) (string, error) {
@@ -67,7 +78,7 @@ func (s *ImageServiceImpl) UploadByURL(rawURL string) (string, error) {
 	if err != nil || (parsed.Scheme != "http" && parsed.Scheme != "https") || parsed.Hostname() == "" || parsed.User != nil {
 		return "", errors.New("invalid image URL")
 	}
-	client := &http.Client{Timeout: 10 * time.Second}
+	client := &http.Client{Transport: s.downloadTransport, Timeout: 10 * time.Second}
 	response, err := client.Get(rawURL)
 	if err != nil {
 		return "", err
