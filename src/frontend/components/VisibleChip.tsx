@@ -2,6 +2,8 @@ import { Chip, Tooltip } from "@heroui/react";
 import { ReactNode } from "react";
 import { MdOutlinePublic, MdOutlinePublicOff, MdPerson } from "react-icons/md";
 
+import { wishlistChipClassName } from "./wishlist/WishlistChips";
+
 import { IWishlist, Visible } from "@/lib/models/wishlist";
 
 interface IVisibleInfo {
@@ -55,26 +57,26 @@ export const VisibleChip = ({
         <Tooltip.Content className="text-sm">{info.title}</Tooltip.Content>
       </Tooltip>
     );
-  } else {
+  }
+
+  if (short) {
     return (
-      <Chip
-        className={
-          short
-            ? "h-8 max-w-full bg-black/5 text-slate-800 backdrop-blur-sm dark:bg-black/15 dark:text-white"
-            : undefined
-        }
-        color={short ? "default" : "success"}
-        size="lg"
+      <span
+        className={`${wishlistChipClassName} max-w-full`}
         title={info.title}
-        variant="primary"
       >
-        {info.icon}
-        <Chip.Label className="min-w-0 truncate">
-          {short ? info.shortTitle : info.title}
-        </Chip.Label>
-      </Chip>
+        <span className="shrink-0">{info.icon}</span>
+        <span className="truncate">{info.shortTitle}</span>
+      </span>
     );
   }
+
+  return (
+    <Chip color="success" size="lg" title={info.title} variant="primary">
+      {info.icon}
+      <Chip.Label className="min-w-0 truncate">{info.title}</Chip.Label>
+    </Chip>
+  );
 };
 
 function getVisibleInfo(visible: Visible): IVisibleInfo {

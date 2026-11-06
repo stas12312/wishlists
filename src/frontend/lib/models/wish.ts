@@ -23,6 +23,7 @@ export interface IWish {
 export interface IWishActions {
   edit: boolean;
   reserve: boolean;
+  show_reservations?: boolean;
   cancel_reserve: boolean;
   make_full: boolean;
   cancel_full: boolean;

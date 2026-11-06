@@ -187,17 +187,17 @@ func (_m *WishRepository) SetFulfilledAt(wishUuid string, fulfilledAt model.Null
 	return r0
 }
 
-// SetPresenter provides a mock function with given fields: wishUuid, presenterId
-func (_m *WishRepository) SetPresenter(wishUuid string, presenterId model.NullInt64) error {
-	ret := _m.Called(wishUuid, presenterId)
+// SetPresenter provides a mock function with given fields: wishUuid, presenterId, expectedPresenterId
+func (_m *WishRepository) SetPresenter(wishUuid string, presenterId model.NullInt64, expectedPresenterId model.NullInt64) error {
+	ret := _m.Called(wishUuid, presenterId, expectedPresenterId)
 
 	if len(ret) == 0 {
 		panic("no return value specified for SetPresenter")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string, model.NullInt64) error); ok {
-		r0 = rf(wishUuid, presenterId)
+	if rf, ok := ret.Get(0).(func(string, model.NullInt64, model.NullInt64) error); ok {
+		r0 = rf(wishUuid, presenterId, expectedPresenterId)
 	} else {
 		r0 = ret.Error(0)
 	}

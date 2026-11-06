@@ -128,6 +128,7 @@ export const WishItem = observer(
               <div className="absolute inset-x-2 bottom-2 z-20">
                 <ReserveButton
                   action={reserveAction}
+                  forGuest={wish.actions.edit}
                   onPress={() => handleOnAction(reserveAction)}
                 />
               </div>
@@ -172,7 +173,7 @@ const GLASS_BUTTON_CLASS_NAME = "wishlist-card-button backdrop-blur-lg border";
 type ReserveAction = "reserve" | "cancel_reserve";
 
 function getReserveAction(wish: IWish): ReserveAction | null {
-  if (wish.actions.edit || userStore.user.id <= 0) return null;
+  if (userStore.user.id <= 0) return null;
   if (wish.actions.reserve) return "reserve";
   // A fulfilled gift can still be un-reserved, but only from the full card.
   if (wish.actions.cancel_reserve && !wish.fulfilled_at) {
@@ -184,9 +185,11 @@ function getReserveAction(wish: IWish): ReserveAction | null {
 
 export function ReserveButton({
   action,
+  forGuest = false,
   onPress,
 }: {
   action: ReserveAction;
+  forGuest?: boolean;
   onPress: () => void;
 }) {
   if (action === "reserve") {
@@ -199,7 +202,7 @@ export function ReserveButton({
         onPress={onPress}
       >
         <MdOutlineBookmarkAdded />
-        Забронировать
+        {forGuest ? "Забронировать за гостя" : "Забронировать"}
       </Button>
     );
   }

@@ -132,7 +132,7 @@ func (r *WishlistRepositoryPostgres) Update(wishlist *model.Wishlist) (*model.Wi
 		date = $4,
 		visible = $5,
 		visible_user_ids = $6,
-		settings = $7
+		settings = jsonb_set($7::jsonb, '{for_other}', COALESCE(settings->'for_other', 'false'::jsonb))
 	WHERE wishlist_uuid = $1
 	RETURNING *
 `

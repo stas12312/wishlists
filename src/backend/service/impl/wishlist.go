@@ -112,15 +112,17 @@ func (s *WishlistImpl) RestoreWishlist(userId int64, wishlistUuid string) error 
 
 func (s *WishlistImpl) AddWish(userId int64, wish *model.Wish) (*model.Wish, error) {
 	wishListUuid := wish.WishlistUuid
-	if !s.UserCanEditWishlist(userId, wishListUuid) {
+	wishlist, err := s.GetByUUID(wishListUuid)
+	if err != nil || wishlist.UserId != userId {
 		return nil, errors.New("user can't get access to the wishlist")
 	}
 
-	wish, err := s.WishRepository.Create(wish)
+	wish, err = s.WishRepository.Create(wish)
 	if err != nil {
 		return nil, err
 	}
 	wish.UserId = userId
+	wish.WishlistSettings = wishlist.Settings
 	preparedWish := prepareWish(userId, *wish)
 	s.WSService.SendMessageToChannel(getChannelNameForWishlist(wish.WishlistUuid), model.WSMessage{Event: service.Update})
 	return &preparedWish, nil
@@ -283,7 +285,7 @@ func (s *WishlistImpl) ReserveWish(userId int64, wishUuid string) error {
 	if err != nil || !s.UserCanViewWishlistByUuid(userId, existWish.WishlistUuid) {
 		return apperror.NewError(apperror.NotFound, "Желание не найдено")
 	}
-	if existWish.UserId == userId {
+	if existWish.UserId == userId && !existWish.WishlistSettings.ForOther {
 		return apperror.NewError(apperror.WrongRequest, "Вы не можете забронировать ваше желание")
 	}
 	if existWish.FulfilledAt.Valid {
@@ -293,7 +295,7 @@ func (s *WishlistImpl) ReserveWish(userId int64, wishUuid string) error {
 		return apperror.NewError(apperror.WrongRequest, "Желание уже забронировано")
 	}
 
-	err = s.WishRepository.SetPresenter(wishUuid, model.NullInt64{NullInt64: sql.NullInt64{Int64: userId, Valid: true}})
+	err = s.WishRepository.SetPresenter(wishUuid, model.NullInt64{NullInt64: sql.NullInt64{Int64: userId, Valid: true}}, model.NullInt64{})
 	if err != nil {
 		return err
 	}
@@ -306,11 +308,11 @@ func (s *WishlistImpl) CancelWishReservation(userId int64, wishUuid string) erro
 	if err != nil {
 		return err
 	}
-	if existWish.PresenterId.Int64 != userId {
+	if !existWish.PresenterId.Valid || existWish.PresenterId.Int64 != userId {
 		return apperror.NewError(apperror.WrongRequest, "Невозможно отменить бронь")
 	}
 
-	err = s.WishRepository.SetPresenter(wishUuid, model.NullInt64{NullInt64: sql.NullInt64{}})
+	err = s.WishRepository.SetPresenter(wishUuid, model.NullInt64{}, existWish.PresenterId)
 	if err != nil {
 		return err
 	}
@@ -409,18 +411,19 @@ func (s *WishlistImpl) CopyWish(userId int64, wishUuid string, toWishlistUuid st
 func getActionsForWish(userId int64, wish model.Wish) model.WishActions {
 	userIsOwner := userId == wish.UserId
 	return model.WishActions{
-		Edit:          userIsOwner,
-		Reserve:       userId > 0 && !wish.PresenterId.Valid && wish.UserId != userId && !wish.FulfilledAt.Valid,
-		CancelReserve: wish.PresenterId.Valid && wish.PresenterId.Int64 == userId,
-		MakeFull:      userIsOwner && !wish.FulfilledAt.Valid,
-		CancelFull:    userIsOwner && wish.FulfilledAt.Valid,
+		Edit:             userIsOwner,
+		ShowReservations: userIsOwner && wish.WishlistSettings.ForOther,
+		Reserve:          userId > 0 && !wish.PresenterId.Valid && (!userIsOwner || wish.WishlistSettings.ForOther) && !wish.FulfilledAt.Valid,
+		CancelReserve:    wish.PresenterId.Valid && wish.PresenterId.Int64 == userId,
+		MakeFull:         userIsOwner && !wish.FulfilledAt.Valid,
+		CancelFull:       userIsOwner && wish.FulfilledAt.Valid,
 	}
 }
 
 func prepareWish(userId int64, wish model.Wish) model.Wish {
 	wish.Actions = getActionsForWish(userId, wish)
 
-	if wish.UserId == userId || userId == 0 {
+	if userId == 0 || (wish.UserId == userId && !wish.Actions.ShowReservations) {
 		wish.IsReserved = false
 	}
 	return wish

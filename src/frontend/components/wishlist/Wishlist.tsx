@@ -119,7 +119,9 @@ export const Wishlists = observer(
       <>
         <PageHeader dividerClassName="mt-4 mb-5">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <h1 className="text-2xl font-semibold">{title}</h1>
+            <h1 className="text-center text-2xl font-semibold sm:text-left">
+              {title}
+            </h1>
             {actions.edit &&
             !filter.showArchive &&
             (isLoading || items.length > 0) ? (

@@ -1,6 +1,7 @@
 package impl
 
 import (
+	"database/sql"
 	"main/db"
 	"main/model"
 )
@@ -76,4 +77,34 @@ func (r *AdminUserPostgres) ListLinks(id int64) ([]model.OAuthUser, error) {
 
 func (r *AdminUserPostgres) DeleteLink(id int64, provider, externalID string) (bool, error) {
 	return NewOAuthPostgresRepository(r.Connection).DeleteLink(id, provider, externalID)
+}
+
+func (r *AdminUserPostgres) ListWishlists(id int64, offset int) ([]model.AdminUserWishlist, error) {
+	query := `
+ SELECT wishlist_uuid, name, is_active, settings @> '{"for_other":true}'::jsonb AS for_other
+ FROM wishlists
+ WHERE user_id = $1
+ ORDER BY created_at DESC, wishlist_uuid DESC
+ LIMIT 30 OFFSET $2
+ `
+	wishlists := make([]model.AdminUserWishlist, 0)
+	err := r.Select(&wishlists, query, id, offset)
+	return wishlists, err
+}
+
+func (r *AdminUserPostgres) SetWishlistType(id int64, uuid string, forOther bool) error {
+	query := `
+ UPDATE wishlists
+ SET settings = jsonb_set(settings, '{for_other}', to_jsonb($3::boolean))
+ WHERE user_id = $1 AND wishlist_uuid = $2
+ `
+	result, err := r.Exec(query, id, uuid, forOther)
+	if err != nil {
+		return err
+	}
+	rows, err := result.RowsAffected()
+	if err == nil && rows == 0 {
+		return sql.ErrNoRows
+	}
+	return err
 }
