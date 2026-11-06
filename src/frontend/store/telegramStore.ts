@@ -88,6 +88,7 @@ export class TelegramStore {
   status: TelegramStatus = "loading";
   error = "";
   busy = false;
+  openingLinkedAccount = false;
   accountId = 0;
   accountName = "";
   accountImage = "";
@@ -101,6 +102,12 @@ export class TelegramStore {
   fail(message: string) {
     this.error = message;
     this.status = "error";
+  }
+
+  failIfWaitingForScript() {
+    if (this.status === "loading" && !this.busy) {
+      this.fail("Не удалось загрузить Telegram. Попробуйте ещё раз");
+    }
   }
 
   get isLinkExpired() {
@@ -128,10 +135,10 @@ export class TelegramStore {
       this.status = "outside";
       return;
     }
-    app.ready();
-    app.expand();
     this.busy = true;
     try {
+      app.ready();
+      app.expand();
       const params = new URLSearchParams(window.location.search);
       const startParam =
         params.get("link_code") ||
@@ -195,6 +202,7 @@ export class TelegramStore {
       return;
     }
     this.busy = true;
+    this.openingLinkedAccount = true;
     const previousAccessToken = authManager.accessToken;
     try {
       const result = await authenticateTelegram(initData);
@@ -211,6 +219,7 @@ export class TelegramStore {
       this.fail(this.errorMessage(error));
       runInAction(() => {
         this.busy = false;
+        this.openingLinkedAccount = false;
       });
     }
   }
@@ -292,7 +301,7 @@ export class TelegramStore {
       return null;
     }
     const [user, inspection, authInfo] = await Promise.all([
-      getMe(),
+      getMe({ timeout: 15000 }),
       inspectTelegram(initData),
       getAuthInfo(),
     ]);

@@ -17,6 +17,7 @@ clientAxios.interceptors.response.use(
     return response;
   },
   async (error) => {
+    if (!error.response) return Promise.reject(error);
     if (error.response.status == 403) {
     } else if (![400, 404, 500].includes(error.response.status)) {
       return Promise.reject(error);

@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, Link, LinkIcon, Spinner, Surface } from "@heroui/react";
+import { runInAction } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import Script from "next/script";
@@ -16,6 +17,18 @@ import { TelegramLinkConflict } from "./TelegramLinkConflict";
 
 import { TelegramStore } from "@/store/telegramStore";
 
+function getLinkPreview() {
+  if (process.env.NODE_ENV !== "development") return null;
+  const preview = new URLSearchParams(window.location.search).get("preview");
+  if (
+    preview === "link-loading" ||
+    preview === "link-linked" ||
+    preview === "link-conflict"
+  )
+    return preview;
+  return null;
+}
+
 const returnTo = encodeURIComponent("/miniapp/telegram?link=1");
 
 const TelegramEntry = observer(function TelegramEntry({
@@ -30,6 +43,32 @@ const TelegramEntry = observer(function TelegramEntry({
   const isCreatingAccount = store.status === "choice" && store.busy;
 
   useEffect(() => {
+    const preview = getLinkPreview();
+    if (preview) {
+      const timer = window.setTimeout(
+        () =>
+          runInAction(() => {
+            if (preview === "link-conflict") {
+              store.fail("Этот Telegram уже связан с другим аккаунтом");
+              return;
+            }
+            store.accountName = "Тестовый профиль";
+            store.accountEmail = "preview@example.test";
+            store.status = preview === "link-linked" ? "done" : "link";
+          }),
+        2500,
+      );
+      return () => window.clearTimeout(timer);
+    }
+    const timeout = window.setTimeout(
+      () => store.failIfWaitingForScript(),
+      15000,
+    );
+
+    return () => window.clearTimeout(timeout);
+  }, [store]);
+
+  useEffect(() => {
     if (store.status === "done") {
       router.replace("/");
     }
@@ -39,16 +78,15 @@ const TelegramEntry = observer(function TelegramEntry({
     <main className="flex min-h-dvh items-center justify-center p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]">
       <Script
         src="https://telegram.org/js/telegram-web-app.js"
-        onError={() =>
-          store.fail(
-            "Не удалось загрузить Telegram. Откройте приложение заново",
-          )
-        }
-        onReady={() =>
-          void store.initialize(linkMode, sessionUserId, () =>
-            router.replace("/"),
-          )
-        }
+        onError={() => {
+          if (!getLinkPreview()) store.failIfWaitingForScript();
+        }}
+        onReady={() => {
+          if (!getLinkPreview())
+            void store.initialize(linkMode, sessionUserId, () =>
+              router.replace("/"),
+            );
+        }}
       />
       <Surface className="relative flex w-full max-w-md flex-col gap-5 rounded-3xl p-6 text-center shadow-md">
         {isCreatingAccount && (
@@ -123,7 +161,7 @@ const TelegramEntry = observer(function TelegramEntry({
               </Button>
               <Button
                 fullWidth
-                isPending={store.busy}
+                isDisabled={store.busy}
                 variant="secondary"
                 onPress={() => void store.register()}
               >

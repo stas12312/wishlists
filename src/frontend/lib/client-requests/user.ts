@@ -4,8 +4,8 @@ import { IRegisterData } from "../models/auth";
 
 import { clientAxios } from "./base";
 
-export async function getMe(): Promise<IUser> {
-  const response = await clientAxios.get("/user/me");
+export async function getMe(config?: { timeout: number }): Promise<IUser> {
+  const response = await clientAxios.get("/user/me", config);
 
   return response.data;
 }
