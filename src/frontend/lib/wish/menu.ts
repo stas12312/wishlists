@@ -49,7 +49,8 @@ const ACTIONS: IWishMenuItem[] = [
     key: "reserve",
     className: "text-accent",
     buttonClassName: RESERVE_BUTTON_CLASS_NAME,
-    title: "Забронировать",
+    getTitleFunc: (actions) =>
+      actions.edit ? "Забронировать за гостя" : "Забронировать",
     icon: MdOutlineBookmarkAdded,
     variant: "primary",
   },
@@ -125,6 +126,7 @@ export function getMenuItemsByActions(
 ): IWishMenuItem[] {
   const actions = wish.actions;
   const hasReservationStatus =
+    actions.show_reservations ||
     wish.is_reserved ||
     (wish.uuid && userStore.getCheckedReservation(wish.uuid) !== undefined);
   let items: IWishMenuItem[] = [];

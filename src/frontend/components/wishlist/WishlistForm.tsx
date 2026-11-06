@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Alert,
   Chip,
   Form,
   Input,
@@ -18,7 +19,7 @@ import {
 } from "@internationalized/date";
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
-import { FormEvent, Key, useEffect, useState } from "react";
+import { FormEvent, Key, useEffect, useId, useState } from "react";
 import { MdOutlinePublic, MdOutlinePublicOff, MdPerson } from "react-icons/md";
 
 import { CustomDatePicker } from "../DatePicker";
@@ -46,6 +47,12 @@ const visibleItems = [
   { key: "2", label: "Друзьям", icon: <MdPerson /> },
   { key: "3", label: "Указанным друзьям", icon: <MdPerson /> },
 ];
+
+const recipientDescriptions = {
+  other:
+    "Вы видите занятые подарки без имён гостей и можете бронировать за тех, кто попросил",
+  hidden: "Бронирования скрыты от вас, чтобы сохранить сюрприз",
+};
 
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), {
   ssr: false,
@@ -86,10 +93,13 @@ export function WishlistCreateForm({
     uuid: wishlist?.uuid || "",
     visible_user_ids: wishlist?.visible_user_ids || [],
     settings: {
+      for_other: wishlist?.settings?.for_other ?? false,
       color: wishlist?.settings?.color || DEFAULT_WISHLIST_COLOR,
       emoji: wishlist?.settings?.emoji || DEFAULT_WISHLIST_EMOJI,
     },
   });
+  const recipientId = useId();
+  const recipientDescription = formData.settings.for_other ? "other" : "hidden";
   const [friends, setFriends] = useState<IUser[]>([]);
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
   const { resolvedTheme } = useTheme();
@@ -184,6 +194,113 @@ export function WishlistCreateForm({
         <Label>Описание</Label>
         <TextArea fullWidth />
       </TextField>
+
+      <div
+        aria-describedby="wishlist-recipient-description"
+        aria-labelledby="wishlist-recipient-title"
+        className="w-full rounded-2xl border border-gray-500/20 p-3"
+        role="group"
+      >
+        <p className="mb-3 text-sm font-medium" id="wishlist-recipient-title">
+          Для кого вишлист
+        </p>
+        <div
+          className={
+            wishlist ? "grid" : "grid grid-cols-1 gap-2 md:grid-cols-2"
+          }
+        >
+          {[
+            {
+              forOther: false,
+              title: "Для себя",
+              subtitle: "Сохранить сюрприз",
+              emoji: "🎁",
+            },
+            {
+              forOther: true,
+              title: "Для другого",
+              subtitle: "Для ребёнка или близкого",
+              emoji: "👨‍👩‍👧",
+            },
+          ]
+            .filter(
+              ({ forOther }) =>
+                !wishlist || forOther === formData.settings.for_other,
+            )
+            .map(({ forOther, title, subtitle, emoji }) => (
+              <label
+                key={title}
+                className="group relative grid min-w-0 cursor-pointer has-disabled:cursor-default grid-cols-[auto_minmax(0,1fr)_auto] content-center gap-x-1.5 rounded-xl border border-default bg-default/40 p-2 has-checked:border-accent has-checked:bg-accent/10 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent sm:gap-x-3 sm:px-3 sm:py-2.5"
+                htmlFor={recipientId + String(forOther)}
+              >
+                <input
+                  checked={formData.settings.for_other === forOther}
+                  className="sr-only"
+                  disabled={!!wishlist}
+                  id={recipientId + String(forOther)}
+                  name="wishlist-recipient"
+                  type="radio"
+                  onChange={() =>
+                    setFormData({
+                      ...formData,
+                      settings: { ...formData.settings, for_other: forOther },
+                    })
+                  }
+                />
+                <span
+                  aria-hidden="true"
+                  className="col-start-1 row-span-2 row-start-1 self-center text-base leading-none sm:text-2xl"
+                >
+                  {emoji}
+                </span>
+                <span className="col-start-2 row-start-1 text-sm font-medium">
+                  {title}
+                </span>
+                <span className="col-start-2 row-start-2 text-xs text-muted">
+                  {subtitle}
+                </span>
+                <span
+                  aria-hidden="true"
+                  className="col-start-3 row-span-2 row-start-1 grid size-3.5 place-items-center self-center rounded-full border border-muted group-has-checked:border-accent group-has-checked:bg-accent sm:size-4"
+                >
+                  <span className="size-1.5 rounded-full bg-accent-foreground opacity-0 group-has-checked:opacity-100" />
+                </span>
+              </label>
+            ))}
+        </div>
+        <p
+          className="mt-2 text-sm text-muted"
+          id="wishlist-recipient-description"
+        >
+          <span className="grid">
+            {Object.entries(recipientDescriptions).map(
+              ([mode, description]) => (
+                <span
+                  key={mode}
+                  aria-hidden={mode !== recipientDescription}
+                  className={`col-start-1 row-start-1 ${mode === recipientDescription ? "" : "invisible"}`}
+                >
+                  {description}
+                </span>
+              ),
+            )}
+          </span>
+        </p>
+        {wishlist ? (
+          <p className="mt-2 text-xs text-muted">
+            Тип вишлиста задан при создании
+          </p>
+        ) : (
+          <Alert className="mt-2 bg-danger-soft" status="danger">
+            <Alert.Indicator />
+            <Alert.Content>
+              <Alert.Title>
+                После создания тип вишлиста изменить нельзя
+              </Alert.Title>
+            </Alert.Content>
+          </Alert>
+        )}
+      </div>
 
       <div className="rounded-2xl border border-gray-500/20 p-3">
         <p className="mb-3 text-sm font-medium">Оформление</p>

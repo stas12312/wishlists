@@ -22,11 +22,7 @@ import WishSaveModal from "./WishSaveModal";
 import { ISorting, SortingSelector } from "./WishSortingSelector";
 
 import { getWishes } from "@/lib/client-requests/wish";
-import {
-  deleteWishlist,
-  getWishlist,
-  updateWishlist,
-} from "@/lib/client-requests/wishlist";
+import { deleteWishlist, getWishlist } from "@/lib/client-requests/wishlist";
 import { isEqual } from "@/lib/compare";
 import { IError } from "@/lib/models";
 import { IWish } from "@/lib/models/wish";
@@ -162,8 +158,8 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
   }
 
   async function onUpdateWishlist(wishlist: IWishlist) {
-    const updatedWishlist = await updateWishlist(wishlist);
-    setWishlist(updatedWishlist);
+    setWishlist(wishlist);
+    setItems(await getWishes(wishlist.uuid));
   }
 
   function onUpdate(wish: IWish) {
@@ -232,14 +228,18 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
                       Некоторые из желаний могут быть забронированы
                     </Alert.Title>
                     <Alert.Description>
-                      Для отображения забронированных желаний войдите в свой
-                      аккаунт
+                      Войдите, чтобы видеть занятые подарки и бронировать
                     </Alert.Description>
                   </Alert.Content>
                   <LoginButton className="ml-4 my-auto" />
                 </Alert>
               </div>
             </div>
+          ) : null}
+          {isEditable && !wishlist.settings?.for_other ? (
+            <p className="col-span-full mb-4 text-sm text-muted">
+              Бронирования скрыты от вас, чтобы сохранить сюрприз
+            </p>
           ) : null}
           {items.length ? (
             <div className="col-span-full flex flex-wrap items-center gap-4 mb-4">

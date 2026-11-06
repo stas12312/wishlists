@@ -1,30 +1,36 @@
 import type { IStatistic } from "../wish/WishList";
 
 import { motion } from "framer-motion";
-import { ReactNode } from "react";
-import {
-  MdOutlineCalendarToday,
-  MdOutlineCheck,
-  MdOutlineSell,
-  MdOutlinePublic,
-  MdOutlinePublicOff,
-  MdPerson,
-} from "react-icons/md";
 
 import { IWishlist, Visible } from "@/lib/models/wishlist";
+
+export const wishlistChipClassName =
+  "inline-flex items-center gap-1.5 rounded-full bg-white/30 px-3 py-1 text-sm font-medium text-slate-900 backdrop-blur-sm dark:bg-white/10 dark:text-white";
+
 const visibleLabels: Record<Visible, string> = {
   [Visible.Private]: "только для меня",
   [Visible.Public]: "для всех",
   [Visible.ForFriends]: "для друзей",
-  [Visible.ForSelectedFriends]: "для избранных друзей",
+  [Visible.ForSelectedFriends]: "для выбранных друзей",
 };
 
-const visibleIcons: Record<Visible, ReactNode> = {
-  [Visible.Private]: <MdOutlinePublicOff className="text-sm" />,
-  [Visible.Public]: <MdOutlinePublic className="text-sm" />,
-  [Visible.ForFriends]: <MdPerson className="text-sm" />,
-  [Visible.ForSelectedFriends]: <MdPerson className="text-sm" />,
+const visibleEmoji: Record<Visible, string> = {
+  [Visible.Private]: "🔒",
+  [Visible.Public]: "🌍",
+  [Visible.ForFriends]: "👥",
+  [Visible.ForSelectedFriends]: "⭐",
 };
+
+export function WishlistTypeChip({ forOther }: { forOther?: boolean }) {
+  const label = forOther ? "Для другого" : "Для себя";
+
+  return (
+    <span className={`${wishlistChipClassName} shrink-0`}>
+      <span aria-hidden="true">{forOther ? "👨‍👩‍👧" : "🙋"}</span>
+      {label}
+    </span>
+  );
+}
 
 export function WishlistChips({
   wishlist,
@@ -41,14 +47,14 @@ export function WishlistChips({
     label: string;
     textClassName: string;
     backgroundClassName: string;
-    icon?: ReactNode;
+    emoji: string;
   }[] = [];
   if (wishlist.date) {
     chips.push({
       label: formatEventDate(wishlist.date),
       textClassName: "text-slate-700 dark:text-white/90",
       backgroundClassName: "bg-white/30 dark:bg-white/10",
-      icon: <MdOutlineCalendarToday className="text-sm" />,
+      emoji: "📅",
     });
   }
   if (isOwner && wishlist.is_active) {
@@ -56,7 +62,15 @@ export function WishlistChips({
       label: visibleLabels[wishlist.visible],
       textClassName: "text-slate-900 dark:text-white",
       backgroundClassName: "bg-white/30 dark:bg-white/10",
-      icon: visibleIcons[wishlist.visible],
+      emoji: visibleEmoji[wishlist.visible],
+    });
+  }
+  if (!isOwner && wishlist.settings?.for_other) {
+    chips.push({
+      label: "Автор видит, какие подарки забронированы",
+      textClassName: "text-slate-900 dark:text-white",
+      backgroundClassName: "bg-white/30 dark:bg-white/10",
+      emoji: "👀",
     });
   }
   if (isOwner && statistic?.totalCount) {
@@ -64,7 +78,7 @@ export function WishlistChips({
       label: `исполнено ${statistic.fullfiledCount} из ${statistic.totalCount}`,
       textClassName: "text-green-800 dark:text-green-200",
       backgroundClassName: "bg-green-100/40 dark:bg-green-200/15",
-      icon: <MdOutlineCheck className="text-sm" />,
+      emoji: "✅",
     });
   }
   if (isOwner && statistic?.totalSum) {
@@ -72,27 +86,30 @@ export function WishlistChips({
       label: `на сумму ${statistic.totalSum.toLocaleString()}`,
       textClassName: "text-amber-900 dark:text-amber-200",
       backgroundClassName: "bg-amber-100/40 dark:bg-amber-200/15",
-      icon: <MdOutlineSell className="text-sm" />,
+      emoji: "💰",
     });
   }
 
-  return chips.length ? (
+  return (
     <motion.div
       animate={{ opacity: 1, transition: { duration: 0.5 } }}
       className={"flex flex-wrap items-center gap-2 " + className}
       initial={{ opacity: 0 }}
     >
+      <WishlistTypeChip forOther={wishlist.settings?.for_other} />
       {chips.map((chip) => (
         <span
           key={chip.label}
           className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm backdrop-blur-sm ${chip.backgroundClassName} ${chip.textClassName}`}
         >
-          {chip.icon}
+          <span aria-hidden="true" className="shrink-0">
+            {chip.emoji}
+          </span>
           {chip.label}
         </span>
       ))}
     </motion.div>
-  ) : null;
+  );
 }
 function formatEventDate(date: string): string {
   const eventDate = new Date(date);

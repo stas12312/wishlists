@@ -49,3 +49,30 @@ export async function deleteAdminUserLink(id: number, link: IUserLink) {
   );
   checkResponse(response);
 }
+
+export interface AdminUserWishlist {
+  uuid: string;
+  name: string;
+  is_active: boolean;
+  for_other: boolean;
+}
+
+export async function getAdminUserWishlists(id: number, offset: number) {
+  const response = await clientAxios.get<IResponse<AdminUserWishlist[]>>(
+    `/admin/users/${id}/wishlists`,
+    { params: { offset } },
+  );
+  checkResponse(response);
+  return response.data.data;
+}
+
+export async function setAdminWishlistType(
+  id: number,
+  wishlist: AdminUserWishlist,
+) {
+  const response = await clientAxios.patch(
+    `/admin/users/${id}/wishlists/${wishlist.uuid}/type`,
+    { for_other: !wishlist.for_other },
+  );
+  checkResponse(response);
+}

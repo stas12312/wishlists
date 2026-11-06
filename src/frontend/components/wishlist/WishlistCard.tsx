@@ -6,6 +6,7 @@ import { forwardRef, useState } from "react";
 
 import { VisibleChip } from "../VisibleChip";
 
+import { wishlistChipClassName, WishlistTypeChip } from "./WishlistChips";
 import WishlistItemMenu from "./WishlistMenu";
 import {
   DEFAULT_WISHLIST_EMOJI,
@@ -41,21 +42,24 @@ export const WishlistItem = forwardRef(
       <div className="group relative transition-transform duration-200 md:hover:scale-[1.02]">
         <Card
           ref={ref}
-          className="h-52 flex-col gap-0 overflow-hidden p-0 shadow-sm transition-transform duration-200 has-[>button:active]:scale-[0.98]"
+          className="h-52 flex-col gap-0 overflow-hidden p-0 shadow-sm transition-transform duration-200 has-[button:active]:scale-[0.98]"
         >
-          <button
-            aria-label={`Открыть вишлист ${cardWishlist.name}`}
+          <div
             className={`relative flex h-full cursor-pointer flex-col overflow-hidden bg-gradient-to-br text-left ${getWishlistGradient(cardWishlist.uuid, cardWishlist.settings?.color)} ${!cardWishlist.is_active ? "grayscale" : ""}`}
-            type="button"
-            onClick={() => router.push(`/wishlists/${wishlist.uuid}`)}
           >
+            <button
+              aria-label={`Открыть вишлист ${cardWishlist.name}`}
+              className="absolute inset-0 z-10 cursor-pointer"
+              type="button"
+              onClick={() => router.push(`/wishlists/${wishlist.uuid}`)}
+            />
             <span
               aria-hidden="true"
               className="pointer-events-none absolute -right-6 -top-4 flex size-52 rotate-[-18deg] select-none items-center justify-center text-[180px] leading-none opacity-[0.16] transition-transform duration-500 ease-out [mask-image:linear-gradient(135deg,transparent_5%,black_65%)] group-has-[:focus-visible]:rotate-[-8deg] group-has-[:focus-visible]:scale-110 motion-reduce:transition-none motion-reduce:group-has-[:focus-visible]:transform-none dark:opacity-[0.12] md:group-hover:rotate-[-8deg] md:group-hover:scale-110 motion-reduce:md:group-hover:transform-none"
             >
               {cardWishlist.settings?.emoji || DEFAULT_WISHLIST_EMOJI}
             </span>
-            <div className="relative flex h-16 shrink-0 items-center px-2">
+            <div className="pointer-events-none relative flex h-16 shrink-0 items-center px-2">
               <div className="relative z-10 flex size-12 items-center justify-center rounded-2xl bg-white/40 text-slate-900 shadow-[0_4px_12px_rgba(15,23,42,0.24)] dark:bg-white/10 dark:text-white">
                 <span
                   aria-label="Эмодзи вишлиста"
@@ -67,7 +71,7 @@ export const WishlistItem = forwardRef(
               </div>
             </div>
 
-            <div className="relative z-10 flex min-h-0 flex-1 flex-col overflow-hidden">
+            <div className="pointer-events-none relative z-10 flex min-h-0 flex-1 flex-col overflow-hidden">
               <Card.Header className="shrink-0 flex-col items-start px-4 pb-0 pt-1">
                 <p
                   className={`w-full truncate text-xl font-semibold ${!cardWishlist.is_active ? "text-slate-900/50 dark:text-white/50" : "text-slate-900 dark:text-white"}`}
@@ -84,8 +88,9 @@ export const WishlistItem = forwardRef(
                   {cardWishlist.description}
                 </p>
               </Card.Content>
-              <Card.Footer className="flex shrink-0 items-center justify-between gap-3 p-2">
-                <span className="shrink-0 rounded-full bg-black/5 px-3 py-1 text-sm font-medium text-slate-800 backdrop-blur-sm dark:bg-black/15 dark:text-white">
+              <Card.Footer className="flex shrink-0 flex-wrap items-center gap-1.5 p-2">
+                <WishlistTypeChip forOther={cardWishlist.settings?.for_other} />
+                <span className={`${wishlistChipClassName} shrink-0`}>
                   {cardWishlist.wishes_count}{" "}
                   {getLabelForCount(cardWishlist.wishes_count, [
                     "желание",
@@ -95,15 +100,17 @@ export const WishlistItem = forwardRef(
                 </span>
                 {cardWishlist.date ? (
                   <time
-                    className="truncate rounded-full bg-black/5 px-3 py-1 text-sm font-medium text-slate-800 backdrop-blur-sm dark:bg-black/15 dark:text-white"
+                    className={`${wishlistChipClassName} ml-auto`}
                     dateTime={cardWishlist.date}
                   >
-                    {new Date(cardWishlist.date).toLocaleDateString("ru-RU")}
+                    <span className="truncate">
+                      {new Date(cardWishlist.date).toLocaleDateString("ru-RU")}
+                    </span>
                   </time>
                 ) : null}
               </Card.Footer>
             </div>
-          </button>
+          </div>
           {edit ? (
             <>
               <div className="absolute left-1/2 top-2 z-20 w-max max-w-[calc(100%-8rem)] -translate-x-1/2">

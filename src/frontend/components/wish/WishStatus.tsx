@@ -16,7 +16,10 @@ const WishStatus = ({
   hideReserved?: boolean;
 }) => {
   const checked =
-    wish.actions.edit && wish.uuid && !hideReserved
+    wish.actions.edit &&
+    !wish.actions.show_reservations &&
+    wish.uuid &&
+    !hideReserved
       ? userStore.getCheckedReservation(wish.uuid)
       : undefined;
   const byYou = wish.actions.cancel_reserve ? " вами" : "";
