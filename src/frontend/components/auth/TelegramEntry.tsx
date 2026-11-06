@@ -41,6 +41,7 @@ const TelegramEntry = observer(function TelegramEntry({
   const [store] = useState(() => new TelegramStore());
   const router = useRouter();
   const isCreatingAccount = store.status === "choice" && store.busy;
+  const isOpening = store.status === "loading" || store.status === "done";
 
   useEffect(() => {
     const preview = getLinkPreview();
@@ -88,124 +89,122 @@ const TelegramEntry = observer(function TelegramEntry({
             );
         }}
       />
-      <Surface className="relative flex w-full max-w-md flex-col gap-5 rounded-3xl p-6 text-center shadow-md">
-        {isCreatingAccount && (
-          <div
-            className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-3xl bg-surface"
-            role="status"
-          >
-            <Spinner aria-label="Создаём ваш аккаунт…" />
-            <p>Создаём ваш аккаунт…</p>
-          </div>
-        )}
-        <div
-          aria-hidden={isCreatingAccount}
-          className="contents"
-          inert={isCreatingAccount}
-        >
-          <div>
-            <p className="mb-2 flex flex-wrap items-center justify-center gap-2 text-sm text-muted">
-              <span className="inline-flex items-center gap-1.5">
-                <BsStars
-                  aria-hidden="true"
-                  className="size-4 text-yellow-400"
-                />
-                MyWishlists
-              </span>
-              <span>в</span>
-              <span className="inline-flex items-center gap-1.5">
-                <FaTelegramPlane
-                  aria-hidden="true"
-                  className="size-4 text-[#229ED9]"
-                />
-                Telegram
-              </span>
-            </p>
-            <h1 className="text-2xl font-semibold">
-              Ваши желания всегда рядом
-            </h1>
-          </div>
-          {(store.status === "loading" || store.status === "done") && (
-            <div className="flex flex-col items-center gap-3" role="status">
-              <Spinner aria-label="Вход в приложение" />
-              <p>Открываем ваши вишлисты…</p>
+      {isOpening ? (
+        <Spinner aria-label="Вход в приложение" />
+      ) : (
+        <Surface className="relative flex w-full max-w-md flex-col gap-5 rounded-3xl p-6 text-center shadow-md">
+          {isCreatingAccount && (
+            <div
+              className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-3xl bg-surface"
+              role="status"
+            >
+              <Spinner aria-label="Создаём ваш аккаунт…" />
+              <p>Создаём ваш аккаунт…</p>
             </div>
           )}
-          {store.status === "outside" && (
-            <p>
-              Откройте мини-приложение через Telegram, чтобы связать аккаунт.
-            </p>
-          )}
-          {store.status === "choice" && (
-            <>
-              <p>
-                Войдите в существующий аккаунт или создайте новый, чтобы связать
-                его с Telegram.
+          <div
+            aria-hidden={isCreatingAccount}
+            className="contents"
+            inert={isCreatingAccount}
+          >
+            <div>
+              <p className="mb-2 flex flex-wrap items-center justify-center gap-2 text-sm text-muted">
+                <span className="inline-flex items-center gap-1.5">
+                  <BsStars
+                    aria-hidden="true"
+                    className="size-4 text-yellow-400"
+                  />
+                  MyWishlists
+                </span>
+                <span>в</span>
+                <span className="inline-flex items-center gap-1.5">
+                  <FaTelegramPlane
+                    aria-hidden="true"
+                    className="size-4 text-[#229ED9]"
+                  />
+                  Telegram
+                </span>
               </p>
+              <h1 className="text-2xl font-semibold">
+                Ваши желания всегда рядом
+              </h1>
+            </div>
+            {store.status === "outside" && (
               <p>
-                Создавая аккаунт, вы соглашаетесь с{" "}
-                <Link
-                  className="text-accent no-underline"
-                  href={`${process.env.NEXT_PUBLIC_STATIC_URL}/docs/terms-of-service.pdf`}
+                Откройте мини-приложение через Telegram, чтобы связать аккаунт.
+              </p>
+            )}
+            {store.status === "choice" && (
+              <>
+                <p>
+                  Войдите в существующий аккаунт или создайте новый, чтобы
+                  связать его с Telegram.
+                </p>
+                <p>
+                  Создавая аккаунт, вы соглашаетесь с{" "}
+                  <Link
+                    className="text-accent no-underline"
+                    href={`${process.env.NEXT_PUBLIC_STATIC_URL}/docs/terms-of-service.pdf`}
+                  >
+                    пользовательским соглашением
+                    <LinkIcon />
+                  </Link>
+                </p>
+                <Button
+                  fullWidth
+                  isDisabled={store.busy}
+                  onPress={() => router.push(`/auth/login?ret=${returnTo}`)}
                 >
-                  пользовательским соглашением
-                  <LinkIcon />
-                </Link>
-              </p>
-              <Button
-                fullWidth
-                isDisabled={store.busy}
-                onPress={() => router.push(`/auth/login?ret=${returnTo}`)}
-              >
-                Войти в существующий аккаунт
-              </Button>
-              <Button
-                fullWidth
-                isDisabled={store.busy}
-                variant="secondary"
-                onPress={() => void store.register()}
-              >
-                Создать аккаунт
-              </Button>
-            </>
-          )}
-          <TelegramLinkConflict store={store} />
-          <TelegramLinkConfirmation store={store} />
-          {store.status === "error" && (
-            <>
-              {store.isLinkConflict && store.accountName && (
-                <TelegramAccountCard store={store} />
-              )}
-              <p className="text-danger" role="alert">
-                {store.error}
-              </p>
-              <Button
-                fullWidth
-                variant="secondary"
-                onPress={() => {
-                  if (store.isLinkConflict) {
-                    router.push("/settings");
-                  } else if (store.isLinkExpired) {
-                    if (window.Telegram?.WebApp) {
-                      window.Telegram.WebApp.close();
+                  Войти в существующий аккаунт
+                </Button>
+                <Button
+                  fullWidth
+                  isDisabled={store.busy}
+                  variant="secondary"
+                  onPress={() => void store.register()}
+                >
+                  Создать аккаунт
+                </Button>
+              </>
+            )}
+            <TelegramLinkConflict store={store} />
+            <TelegramLinkConfirmation store={store} />
+            {store.status === "error" && (
+              <>
+                {store.isLinkConflict && store.accountName && (
+                  <TelegramAccountCard store={store} />
+                )}
+                <p className="text-danger" role="alert">
+                  {store.error}
+                </p>
+                <Button
+                  fullWidth
+                  variant="secondary"
+                  onPress={() => {
+                    if (store.isLinkConflict) {
+                      router.push("/settings");
+                    } else if (store.isLinkExpired) {
+                      if (window.Telegram?.WebApp) {
+                        window.Telegram.WebApp.close();
+                      } else {
+                        router.replace("/");
+                      }
                     } else {
-                      router.replace("/");
+                      window.location.reload();
                     }
-                  } else {
-                    window.location.reload();
-                  }
-                }}
-              >
-                {store.isLinkConflict
-                  ? "Перейти в настройки"
-                  : store.isLinkExpired
-                    ? "Закрыть"
-                    : "Попробовать ещё раз"}
-              </Button>
-            </>
-          )}
-        </div>
-      </Surface>
+                  }}
+                >
+                  {store.isLinkConflict
+                    ? "Перейти в настройки"
+                    : store.isLinkExpired
+                      ? "Закрыть"
+                      : "Попробовать ещё раз"}
+                </Button>
+              </>
+            )}
+          </div>
+        </Surface>
+      )}
     </main>
   );
 });
