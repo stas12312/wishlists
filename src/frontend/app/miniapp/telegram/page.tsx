@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 
 import TelegramEntry from "@/components/auth/TelegramEntry";
@@ -13,7 +14,11 @@ export const metadata: Metadata = {
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ link?: string }>;
+  searchParams: Promise<{
+    link?: string;
+    link_code?: string;
+    tgWebAppStartParam?: string;
+  }>;
 }) {
   const [params, cookieStore] = await Promise.all([searchParams, cookies()]);
   const accessToken = cookieStore.get("access_token")?.value;
@@ -25,6 +30,14 @@ export default async function Page({
     } catch {
       // Повреждённый токен пропускаем, чтобы Telegram мог создать новую сессию.
     }
+  }
+  if (
+    sessionUserId &&
+    params.link === undefined &&
+    params.link_code === undefined &&
+    params.tgWebAppStartParam === undefined
+  ) {
+    redirect("/");
   }
   return (
     <TelegramEntry
