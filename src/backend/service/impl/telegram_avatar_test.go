@@ -8,13 +8,44 @@ import (
 	"main/repository"
 	"main/repository/mocks"
 	"main/service"
+	"main/telegram"
 	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/mock"
 )
+
+func TestTelegramAvatarDownloadUsesBotProxy(t *testing.T) {
+	const photoURL = "http://avatar.invalid/photo.jpg"
+	proxy := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet || r.URL.String() != photoURL {
+			t.Errorf("unexpected proxy request: %s %s", r.Method, r.URL)
+		}
+		_, _ = io.WriteString(w, "avatar")
+	}))
+	defer proxy.Close()
+
+	bot := telegram.NewAPIClient("test-token")
+	if err := bot.SetProxy(proxy.URL); err != nil {
+		t.Fatal(err)
+	}
+	storage := &avatarImageService{}
+	images := &ImageServiceImpl{
+		ImageRepository: storage,
+		UUIDGenerator:   func() string { return "avatar" },
+		MaxDownloadSize: 1024,
+	}
+	got, err := images.WithDownloadTransport(bot.Transport()).UploadByURL(photoURL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got != "https://storage.local/images/avatar.jpg" || storage.data != "avatar" {
+		t.Fatalf("unexpected uploaded avatar: %q, data %q", got, storage.data)
+	}
+}
 
 type avatarImageService struct {
 	service.ImageService
