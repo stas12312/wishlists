@@ -21,14 +21,14 @@ export default function WishlistSaveModal({
     <Modal.Backdrop isOpen={isOpen} onOpenChange={onOpenChange}>
       <Modal.Container placement="center">
         <Modal.Dialog
-          className={`w-full max-w-160 px-2 md:px-4 ${className ?? ""}`}
+          className={`flex max-h-[calc(100dvh-2rem)] w-full max-w-160 flex-col overflow-hidden px-2 md:px-4 ${className ?? ""}`}
         >
           <Modal.Header className="flex flex-col gap-1 text-center">
             <Modal.Heading>
               {wishlist ? "Редактирование вишлиста" : "Добавление вишлиста"}
             </Modal.Heading>
           </Modal.Header>
-          <Modal.Body className="p-1">
+          <Modal.Body className="min-h-0 overflow-y-auto p-1">
             <WishlistCreateForm wishlist={wishlist} onCreate={onSaveWishlist} />
           </Modal.Body>
         </Modal.Dialog>

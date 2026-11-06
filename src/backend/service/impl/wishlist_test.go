@@ -910,3 +910,31 @@ func TestWishlistImpl_CopyWish(t *testing.T) {
 		})
 	}
 }
+
+func TestPrepareWishReservationVisibility(t *testing.T) {
+	presenter := func(id int64) model.NullInt64 {
+		return model.NullInt64{NullInt64: sql.NullInt64{Int64: id, Valid: id != 0}}
+	}
+	for _, tc := range []struct {
+		name                     string
+		viewer, bookedBy         int64
+		settings                 model.WishlistSettings
+		visible, reserve, cancel bool
+	}{
+		{name: "личный вишлист", viewer: 1, bookedBy: 2},
+		{name: "чужая бронь в вишлисте для близкого", viewer: 1, bookedBy: 2, settings: model.WishlistSettings{ForOther: true}, visible: true},
+		{name: "бронь за гостя", viewer: 1, bookedBy: 1, settings: model.WishlistSettings{ForOther: true}, visible: true, cancel: true},
+		{name: "свободное желание в вишлисте для близкого", viewer: 1, settings: model.WishlistSettings{ForOther: true}, reserve: true},
+		{name: "посетитель без авторизации", bookedBy: 2, settings: model.WishlistSettings{ForOther: true}},
+		{name: "бронь авторизованного гостя", viewer: 2, bookedBy: 2, visible: true, cancel: true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			wish := prepareWish(tc.viewer, model.Wish{
+				UserId: 1, PresenterId: presenter(tc.bookedBy), IsReserved: tc.bookedBy != 0, WishlistSettings: tc.settings,
+			})
+			if wish.IsReserved != tc.visible || wish.Actions.Reserve != tc.reserve || wish.Actions.CancelReserve != tc.cancel {
+				t.Errorf("is_reserved = %t, reserve = %t, cancel_reserve = %t", wish.IsReserved, wish.Actions.Reserve, wish.Actions.CancelReserve)
+			}
+		})
+	}
+}

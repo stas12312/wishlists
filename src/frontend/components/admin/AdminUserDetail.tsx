@@ -1,10 +1,12 @@
 "use client";
 
-import { Button } from "@heroui/react";
+import { Button, Tabs } from "@heroui/react";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FaTelegramPlane } from "react-icons/fa";
+
+import { AdminUserWishlists } from "./AdminUserWishlists";
 
 import ConfirmationModal from "@/components/ConfirmationModal";
 import { CustomBreadcrumbs } from "@/components/Breadcrumbs";
@@ -73,40 +75,69 @@ export const AdminUserDetail = observer(function AdminUserDetail({
               <dt className="text-muted">Пароль</dt>
               <dd>{user.has_password ? "Установлен" : "Не установлен"}</dd>
             </dl>
-            <h2 className="text-xl font-semibold">Привязки для входа</h2>
-            {!user.links.length && <p className="text-muted">Привязок нет</p>}
-            {user.links.map((link) => (
-              <div
-                key={`${link.provider}:${link.oauth_user_id}`}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-surface p-4"
-              >
-                <div className="min-w-0">
-                  <p className="flex items-center gap-2 font-semibold">
-                    <span aria-hidden="true" className="shrink-0">
-                      {link.provider === "yandex" && (
-                        <Yandex className="size-6 rounded-full" />
-                      )}
-                      {link.provider === "telegram" && (
-                        <FaTelegramPlane className="size-6 text-[#229ED9]" />
-                      )}
-                    </span>
-                    {providerName(link.provider)}
-                  </p>
-                  <p className="text-sm text-muted break-all">
-                    ID: {link.oauth_user_id}
-                  </p>
-                </div>
-                {["yandex", "telegram"].includes(link.provider) && (
-                  <Button
-                    isDisabled={store.deleting}
-                    variant="danger-soft"
-                    onPress={() => store.selectLink(link)}
+            <Tabs key={id} defaultSelectedKey="wishlists">
+              <Tabs.ListContainer>
+                <Tabs.List aria-label="Данные пользователя">
+                  <Tabs.Tab id="wishlists">
+                    Вишлисты
+                    <Tabs.Indicator />
+                  </Tabs.Tab>
+                  <Tabs.Tab
+                    className="px-2 whitespace-nowrap sm:px-4"
+                    id="login-links"
                   >
-                    Удалить привязку
-                  </Button>
-                )}
-              </div>
-            ))}
+                    Привязки для входа
+                    <Tabs.Indicator />
+                  </Tabs.Tab>
+                </Tabs.List>
+              </Tabs.ListContainer>
+              <Tabs.Panel
+                shouldForceMount
+                className="mt-4 inert:hidden"
+                id="wishlists"
+              >
+                <AdminUserWishlists id={id} />
+              </Tabs.Panel>
+              <Tabs.Panel className="mt-4" id="login-links">
+                <div className="flex flex-col gap-4">
+                  {!user.links.length && (
+                    <p className="text-muted">Привязок нет</p>
+                  )}
+                  {user.links.map((link) => (
+                    <div
+                      key={`${link.provider}:${link.oauth_user_id}`}
+                      className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-surface p-4"
+                    >
+                      <div className="min-w-0">
+                        <p className="flex items-center gap-2 font-semibold">
+                          <span aria-hidden="true" className="shrink-0">
+                            {link.provider === "yandex" && (
+                              <Yandex className="size-6 rounded-full" />
+                            )}
+                            {link.provider === "telegram" && (
+                              <FaTelegramPlane className="size-6 text-[#229ED9]" />
+                            )}
+                          </span>
+                          {providerName(link.provider)}
+                        </p>
+                        <p className="text-sm text-muted break-all">
+                          ID: {link.oauth_user_id}
+                        </p>
+                      </div>
+                      {["yandex", "telegram"].includes(link.provider) && (
+                        <Button
+                          isDisabled={store.deleting}
+                          variant="danger-soft"
+                          onPress={() => store.selectLink(link)}
+                        >
+                          Удалить привязку
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </Tabs.Panel>
+            </Tabs>
           </>
         )}
       </div>

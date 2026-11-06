@@ -58,3 +58,22 @@ func (s *adminUserService) DeleteLink(id int64, provider, externalID string) err
 	}
 	return nil
 }
+
+func (s *adminUserService) ListWishlists(id int64, offset int) ([]model.AdminUserWishlist, error) {
+	wishlists, err := s.repository.ListWishlists(id, offset)
+	if err != nil {
+		return nil, apperror.NewError(apperror.DatabaseError, "Не удалось получить вишлисты пользователя")
+	}
+	return wishlists, nil
+}
+
+func (s *adminUserService) SetWishlistType(id int64, uuid string, forOther bool) error {
+	err := s.repository.SetWishlistType(id, uuid, forOther)
+	if errors.Is(err, sql.ErrNoRows) {
+		return apperror.NewError(apperror.NotFound, "Вишлист пользователя не найден")
+	}
+	if err != nil {
+		return apperror.NewError(apperror.DatabaseError, "Не удалось изменить тип вишлиста")
+	}
+	return nil
+}

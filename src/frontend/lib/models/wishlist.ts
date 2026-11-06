@@ -10,6 +10,7 @@ export enum Visible {
 export interface IWishlistSettings {
   color: string;
   emoji: string;
+  for_other?: boolean;
 }
 
 export interface IWishlist {
