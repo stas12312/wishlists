@@ -116,18 +116,24 @@ export const Wishlists = observer(
       />
     ));
 
+    const showAddButton =
+      actions.edit && !filter.showArchive && (isLoading || items.length > 0);
+
     return (
       <>
         <PageHeader dividerClassName="mt-4 mb-5">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <h1 className="text-center text-2xl font-semibold sm:text-left">
-              {title}
-            </h1>
-            {actions.edit &&
-            !filter.showArchive &&
-            (isLoading || items.length > 0) ? (
+          <h1 className="text-center text-2xl font-semibold sm:text-left">
+            {title}
+          </h1>
+        </PageHeader>
+        {actions.filter || showAddButton ? (
+          <div className="col-span-full mb-5 flex items-center justify-between gap-4">
+            {actions.filter ? (
+              <WishlistFilter filter={filter} setFilter={setFilter} />
+            ) : null}
+            {showAddButton ? (
               <Button
-                className="w-full shrink-0 sm:w-auto"
+                className="ml-auto shrink-0"
                 variant="primary"
                 onPress={open}
               >
@@ -135,11 +141,6 @@ export const Wishlists = observer(
                 Добавить вишлист
               </Button>
             ) : null}
-          </div>
-        </PageHeader>
-        {actions.filter ? (
-          <div className="col-span-full mb-5 flex">
-            <WishlistFilter filter={filter} setFilter={setFilter} />
           </div>
         ) : null}
         {isLoading ? <PageSpinner /> : null}
