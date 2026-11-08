@@ -5,6 +5,7 @@ import { MdOutlinePublic, MdOutlinePublicOff, MdPerson } from "react-icons/md";
 import { wishlistChipClassName } from "./wishlist/WishlistChips";
 
 import { IWishlist, Visible } from "@/lib/models/wishlist";
+import { wishlistVisibility } from "@/lib/wishlistVisibility";
 
 interface IVisibleInfo {
   title: string;
@@ -45,6 +46,7 @@ export const VisibleChip = ({
   short?: boolean;
 }) => {
   const info = getVisibleInfo(wishlist.visible);
+  const visibility = wishlistVisibility[wishlist.visible];
 
   if (onlyIcon) {
     return (
@@ -65,8 +67,10 @@ export const VisibleChip = ({
         className={`${wishlistChipClassName} max-w-full`}
         title={info.title}
       >
-        <span className="shrink-0">{info.icon}</span>
-        <span className="truncate">{info.shortTitle}</span>
+        <span aria-hidden="true" className="shrink-0">
+          {visibility.emoji}
+        </span>
+        <span className="truncate">{visibility.label}</span>
       </span>
     );
   }
