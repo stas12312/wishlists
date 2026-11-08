@@ -91,7 +91,7 @@ export function WishlistChips({
       className={"flex flex-wrap items-center gap-2 " + className}
       initial={{ opacity: 0 }}
     >
-      <WishlistTypeChip forOther={wishlist.settings?.for_other} />
+      {isOwner && <WishlistTypeChip forOther={wishlist.settings?.for_other} />}
       {chips.map((chip) => (
         <span
           key={chip.label}

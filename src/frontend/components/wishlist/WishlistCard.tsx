@@ -22,11 +22,13 @@ export const WishlistItem = forwardRef(
       onDelete,
       onRestore,
       edit = true,
+      isOwner = false,
     }: {
       wishlist: IWishlist;
       onDelete: { (wishlist: IWishlist): Promise<void> };
       onRestore: { (wishlist: IWishlist): void };
       edit?: boolean;
+      isOwner?: boolean;
     },
     ref: any,
   ) => {
@@ -88,14 +90,16 @@ export const WishlistItem = forwardRef(
                 </p>
               </Card.Content>
               <Card.Footer className="flex shrink-0 flex-col items-stretch gap-1 px-4 pb-3 pt-1 text-sm text-slate-800 dark:text-white/85">
-                <span className="flex items-center gap-1.5">
-                  <span aria-hidden="true">
-                    {cardWishlist.settings?.for_other ? "👨‍👩‍👧" : "🙋"}
+                {isOwner && (
+                  <span className="flex items-center gap-1.5">
+                    <span aria-hidden="true">
+                      {cardWishlist.settings?.for_other ? "👨‍👩‍👧" : "🙋"}
+                    </span>
+                    {cardWishlist.settings?.for_other
+                      ? "Для другого"
+                      : "Для себя"}
                   </span>
-                  {cardWishlist.settings?.for_other
-                    ? "Для другого"
-                    : "Для себя"}
-                </span>
+                )}
                 <div className="flex items-center justify-between gap-2 text-sm text-slate-700 dark:text-white/70">
                   <span>
                     {cardWishlist.wishes_count}{" "}
