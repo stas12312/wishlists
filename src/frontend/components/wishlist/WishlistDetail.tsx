@@ -1,8 +1,7 @@
 "use client";
-import { Alert, Button, Link, toast, useOverlayState } from "@heroui/react";
+import { Alert, Button, toast, useOverlayState } from "@heroui/react";
 import { motion } from "framer-motion";
 import { observer } from "mobx-react-lite";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   MdDeleteOutline,
@@ -13,7 +12,6 @@ import {
 
 import ConfirmationModal from "../ConfirmationModal";
 import PageHeader from "../PageHeader";
-import UserCard from "../user/UserCard";
 import { IStatistic } from "../wish/WishList";
 
 import { WishlistChips } from "./WishlistChips";
@@ -52,7 +50,6 @@ export const WishlistDetail = observer(
     statistic?: IStatistic;
   }) => {
     const user = wishlist.user;
-    const router = useRouter();
     const isOwner = user && user.id === userStore.user.id;
     const gradient = getWishlistGradient(
       wishlist.uuid,
@@ -77,20 +74,7 @@ export const WishlistDetail = observer(
 
     return (
       <div className="flex flex-col">
-        {user && user.id != userStore.user.id ? (
-          <UserCard username={user.username} />
-        ) : null}
         <PageHeader dividerClassName="mt-3 mb-4">
-          <Link
-            className="mx-auto text-2xl text-muted md:mx-0"
-            onPress={() => {
-              router.push(
-                isEditable ? "/" : `/users/${wishlist.user?.username}`,
-              );
-            }}
-          >
-            {isEditable ? "Вишлисты" : "Вишлисты пользователя"}
-          </Link>
           <div
             className={`group relative mt-2 overflow-hidden rounded-3xl bg-gradient-to-br ${gradient} ${
               !wishlist.is_active ? "grayscale" : ""
