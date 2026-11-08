@@ -70,7 +70,7 @@ export const VisibleChip = ({
         <span aria-hidden="true" className="shrink-0">
           {visibility.emoji}
         </span>
-        <span className="truncate">{visibility.label}</span>
+        <span className="truncate">{info.shortTitle}</span>
       </span>
     );
   }
