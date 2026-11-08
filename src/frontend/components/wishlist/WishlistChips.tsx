@@ -2,24 +2,11 @@ import type { IStatistic } from "../wish/WishList";
 
 import { motion } from "framer-motion";
 
-import { IWishlist, Visible } from "@/lib/models/wishlist";
+import { IWishlist } from "@/lib/models/wishlist";
+import { wishlistVisibility } from "@/lib/wishlistVisibility";
 
 export const wishlistChipClassName =
   "inline-flex items-center gap-1.5 rounded-full bg-white/30 px-3 py-1 text-sm font-medium text-slate-900 backdrop-blur-sm dark:bg-white/10 dark:text-white";
-
-const visibleLabels: Record<Visible, string> = {
-  [Visible.Private]: "только для меня",
-  [Visible.Public]: "Публичный",
-  [Visible.ForFriends]: "для друзей",
-  [Visible.ForSelectedFriends]: "для выбранных друзей",
-};
-
-const visibleEmoji: Record<Visible, string> = {
-  [Visible.Private]: "🔒",
-  [Visible.Public]: "🌍",
-  [Visible.ForFriends]: "👥",
-  [Visible.ForSelectedFriends]: "⭐",
-};
 
 export function WishlistTypeChip({ forOther }: { forOther?: boolean }) {
   const label = forOther ? "Для другого" : "Для себя";
@@ -59,10 +46,10 @@ export function WishlistChips({
   }
   if (isOwner && wishlist.is_active) {
     chips.push({
-      label: visibleLabels[wishlist.visible],
+      label: wishlistVisibility[wishlist.visible].label,
       textClassName: "text-slate-900 dark:text-white",
       backgroundClassName: "bg-white/30 dark:bg-white/10",
-      emoji: visibleEmoji[wishlist.visible],
+      emoji: wishlistVisibility[wishlist.visible].emoji,
     });
   }
   if (!isOwner && wishlist.settings?.for_other) {
