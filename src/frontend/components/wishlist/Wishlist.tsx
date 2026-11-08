@@ -109,6 +109,7 @@ export const Wishlists = observer(
       <WishlistItem
         key={`${wishlist.uuid}-${wishlist.is_active}`}
         edit={actions.edit}
+        isOwner={wishlist.user_id === userStore.user.id}
         wishlist={wishlist}
         onDelete={onDelete}
         onRestore={onRestore}
