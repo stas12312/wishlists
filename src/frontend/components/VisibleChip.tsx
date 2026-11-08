@@ -26,7 +26,7 @@ const visibleInfo: IVisibleInfo[] = [
   },
   {
     title: "Доступен друзьям",
-    shortTitle: "Для друзей",
+    shortTitle: "Друзьям",
     icon: <MdPerson />,
   },
   {

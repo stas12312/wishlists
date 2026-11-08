@@ -6,7 +6,6 @@ import { forwardRef, useState } from "react";
 
 import { VisibleChip } from "../VisibleChip";
 
-import { wishlistChipClassName, WishlistTypeChip } from "./WishlistChips";
 import WishlistItemMenu from "./WishlistMenu";
 import {
   DEFAULT_WISHLIST_EMOJI,
@@ -88,26 +87,30 @@ export const WishlistItem = forwardRef(
                   {cardWishlist.description}
                 </p>
               </Card.Content>
-              <Card.Footer className="flex shrink-0 flex-wrap items-center gap-1.5 p-2">
-                <WishlistTypeChip forOther={cardWishlist.settings?.for_other} />
-                <span className={`${wishlistChipClassName} shrink-0`}>
-                  {cardWishlist.wishes_count}{" "}
-                  {getLabelForCount(cardWishlist.wishes_count, [
-                    "желание",
-                    "желания",
-                    "желаний",
-                  ])}
+              <Card.Footer className="flex shrink-0 flex-col items-stretch gap-1 px-4 pb-3 pt-1 text-sm text-slate-800 dark:text-white/85">
+                <span className="flex items-center gap-1.5">
+                  <span aria-hidden="true">
+                    {cardWishlist.settings?.for_other ? "👨‍👩‍👧" : "🙋"}
+                  </span>
+                  {cardWishlist.settings?.for_other
+                    ? "Для другого"
+                    : "Для себя"}
                 </span>
-                {cardWishlist.date ? (
-                  <time
-                    className={`${wishlistChipClassName} ml-auto`}
-                    dateTime={cardWishlist.date}
-                  >
-                    <span className="truncate">
+                <div className="flex items-center justify-between gap-2 text-sm text-slate-700 dark:text-white/70">
+                  <span>
+                    {cardWishlist.wishes_count}{" "}
+                    {getLabelForCount(cardWishlist.wishes_count, [
+                      "желание",
+                      "желания",
+                      "желаний",
+                    ])}
+                  </span>
+                  {cardWishlist.date ? (
+                    <time className="shrink-0" dateTime={cardWishlist.date}>
                       {new Date(cardWishlist.date).toLocaleDateString("ru-RU")}
-                    </span>
-                  </time>
-                ) : null}
+                    </time>
+                  ) : null}
+                </div>
               </Card.Footer>
             </div>
           </div>
