@@ -2,12 +2,15 @@ import { Surface } from "@heroui/react";
 import { motion, useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { IconType } from "react-icons";
+import { FaTelegramPlane } from "react-icons/fa";
 import {
   MdBlock,
   MdBolt,
   MdBookmarkAdded,
   MdDevices,
+  MdFamilyRestroom,
   MdLock,
+  MdPalette,
   MdPeople,
   MdQuestionAnswer,
   MdVolunteerActivism,
@@ -50,6 +53,20 @@ const items = [
     iconColor: "text-accent",
   },
   {
+    title: "Вишлист в вашем стиле",
+    description: "Выбирайте цвет и эмодзи, чтобы настроить вишлист под себя",
+    className: "",
+    icon: MdPalette,
+    iconColor: "text-orange-500",
+  },
+  {
+    title: "Приложение в Telegram",
+    description: "Создавай вишлисты прямо в Telegram",
+    className: "",
+    icon: FaTelegramPlane,
+    iconColor: "text-sky-500",
+  },
+  {
     title: "Анонимные вопросы",
     description: "Друзья уточнят размер или цвет, не раскрывая себя",
     className: "",
@@ -64,6 +81,14 @@ const items = [
     iconColor: "text-pink-500",
   },
   {
+    title: "Вишлисты для близких",
+    description:
+      "Создавайте вишлисты для близких и управляйте бронированиями их подарков",
+    className: "lg:col-span-2",
+    icon: MdFamilyRestroom,
+    iconColor: "text-rose-500",
+  },
+  {
     title: "Без одинаковых подарков",
     description:
       "Друзья бронируют подарок заранее, поэтому никто не подарит одно и то же дважды",
@@ -75,7 +100,7 @@ const items = [
   {
     title: "Видят только свои",
     description: "Откройте вишлист всем, только друзьям или самым близким",
-    className: "lg:col-span-2",
+    className: "md:col-span-2",
     icon: MdLock,
     iconColor: "text-indigo-500",
   },
