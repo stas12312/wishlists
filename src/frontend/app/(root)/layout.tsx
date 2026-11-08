@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { twMerge } from "tailwind-merge";
 
 import { Contacts } from "@/components/Contacts";
@@ -10,6 +10,9 @@ import { SupportLink } from "@/components/SupportLink";
 import Version from "@/components/Version";
 import { BackgroundDecoration } from "@/components/BackgroundDecoration";
 import { LeftPanel } from "@/components/left-panel/LeftPanel";
+import { getUserFromCookies } from "@/lib/auth";
+import { getWishlist } from "@/lib/server-requests/wishlist";
+import { ProfileProvider } from "@/providers/ProfileProvider";
 export default async function Layout({
   children,
 }: {
@@ -17,6 +20,12 @@ export default async function Layout({
 }) {
   const cookieStore = await cookies();
   const isLogin = cookieStore.has("refresh_token");
+  const pathname = (await headers()).get("x-profile-pathname") ?? "";
+  const wishlistUUID = pathname.match(/^\/wishlists\/([^/]+)\/?$/)?.[1];
+  const [wishlist, userId] = await Promise.all([
+    wishlistUUID ? getWishlist(wishlistUUID) : null,
+    getUserFromCookies(),
+  ]);
   return (
     <div className="relative flex flex-col min-h-screen justify-between">
       <div>
@@ -36,7 +45,17 @@ export default async function Layout({
             </LeftPanel>
           ) : null}
           <div className="px-3 md:px-4 lg:px-4 py-3 w-full">
-            <main>{children}</main>
+            <main>
+              <ProfileProvider
+                initialUserId={userId ?? 0}
+                initialWishlist={
+                  wishlist && !("message" in wishlist) ? wishlist : null
+                }
+                initialWishlistUUID={wishlistUUID}
+              >
+                {children}
+              </ProfileProvider>
+            </main>
           </div>
         </div>
       </div>

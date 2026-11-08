@@ -31,9 +31,10 @@ export default async function proxy(request: NextRequest) {
       return NextResponse.redirect(authUrl);
     }
   }
-  return NextResponse.next({
-    request: request,
-  });
+  const requestHeaders = new Headers(request.headers);
+  // Общему layout нужен исходный маршрут только для первого серверного рендера.
+  requestHeaders.set("x-profile-pathname", request.nextUrl.pathname);
+  return NextResponse.next({ request: { headers: requestHeaders } });
 }
 
 export const config = {

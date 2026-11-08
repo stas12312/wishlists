@@ -1,10 +1,11 @@
 "use client";
 import { Chip, Skeleton } from "@heroui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { MdCake } from "react-icons/md";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { UserAvatar } from "./UserAvatar";
 import UserStatus from "./UserStatus";
@@ -21,6 +22,8 @@ import userStore from "@/store/userStore";
 import { defaultVariants } from "@/lib/animations/default";
 
 const UserCard = observer(({ username }: { username: string }) => {
+  const pathname = usePathname();
+  const hasLoaded = useRef(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const [user, setUser] = useState<IUser>({} as IUser);
@@ -29,32 +32,49 @@ const UserCard = observer(({ username }: { username: string }) => {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    let cancelled = false;
+
     async function fetchData() {
-      const me = await userStore.getMe();
-      const responses = await Promise.all([
-        getUserByUsername(username),
-        me.id ? getUserFriendsCount(username) : null,
-      ]);
-      const responseUser = responses[0];
+      try {
+        const me = await userStore.getMe();
+        if (cancelled) return;
 
-      if ("message" in responseUser) {
-        setError(responseUser.message);
-        setIsLoading(false);
-        return;
-      }
+        const [responseUser, count] = await Promise.all([
+          getUserByUsername(username),
+          me.id ? getUserFriendsCount(username) : 0,
+        ]);
+        if (cancelled) return;
+        if ("message" in responseUser) {
+          throw new Error(responseUser.message);
+        }
 
-      if (userStore.user.id) {
-        setFriendsCount(responses[1] ?? 0);
-      }
+        const status = me.id ? await getFriendStatus(responseUser.id) : 0;
+        if (cancelled) return;
 
-      setUser(responseUser);
-      if (userStore.user.id) {
-        setFriendStatus(await getFriendStatus(responseUser.id));
+        setUser(responseUser);
+        setFriendsCount(count);
+        setFriendStatus(status);
+        setError("");
+        hasLoaded.current = true;
+      } catch (error) {
+        // Ошибка фонового обновления не должна скрывать уже загруженную карточку.
+        if (!cancelled && !hasLoaded.current) {
+          setError(
+            error instanceof Error
+              ? error.message
+              : "Не удалось загрузить профиль пользователя",
+          );
+        }
+      } finally {
+        if (!cancelled) setIsLoading(false);
       }
-      setIsLoading(false);
     }
     fetchData();
-  }, []);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [username, pathname]);
 
   if (error) {
     return <h2 className="text-center text-2xl my-4 text-bold">{error}</h2>;
@@ -127,6 +147,14 @@ const UserCard = observer(({ username }: { username: string }) => {
 });
 
 export default UserCard;
+
+export function UserCardSkeleton() {
+  return (
+    <div className="justify-center my-4 gap-4 rounded-3xl p-4">
+      <CardSkeleton />
+    </div>
+  );
+}
 
 const CardSkeleton = () => {
   return (
