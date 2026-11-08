@@ -2,7 +2,8 @@
 import { Alert, Button, Skeleton, toast, useOverlayState } from "@heroui/react";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { MdOutlineAdd } from "react-icons/md";
 import useWebSocket from "react-use-websocket";
 
@@ -29,6 +30,10 @@ import { IWish } from "@/lib/models/wish";
 import { IWishlist } from "@/lib/models/wishlist";
 import { defaultParams, getWebsocketUrl, isEvent, WSEvent } from "@/lib/socket";
 import userStore from "@/store/userStore";
+import {
+  useProfileViewerId,
+  useRememberWishlists,
+} from "@/providers/ProfileProvider";
 
 interface IPriceInfo {
   minPrice: number;
@@ -41,7 +46,21 @@ export interface IStatistic {
   totalCount: number;
 }
 
-const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
+const Wishes = observer(function Wishes({
+  wishlistUUID,
+  initialWishlist,
+}: {
+  wishlistUUID: string;
+  initialWishlist: IWishlist | IError;
+}) {
+  const rememberWishlists = useRememberWishlists();
+  useLayoutEffect(() => {
+    if (!("message" in initialWishlist)) {
+      rememberWishlists([initialWishlist]);
+    } else {
+      rememberWishlists([], { unavailableUUID: wishlistUUID });
+    }
+  }, [initialWishlist, wishlistUUID, rememberWishlists]);
   const router = useRouter();
   const [items, setItems] = useState<IWish[]>([]);
 
@@ -70,10 +89,15 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
     priceTo: Infinity,
   });
 
-  const [wishlist, setWishlist] = useState<IWishlist>({} as IWishlist);
+  const [wishlist, setWishlist] = useState<IWishlist>(
+    "message" in initialWishlist ? ({} as IWishlist) : initialWishlist,
+  );
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState({} as IError);
-  const isEditable = userStore.user.id == wishlist.user_id;
+  const [error, setError] = useState<IError>(
+    "message" in initialWishlist ? initialWishlist : ({} as IError),
+  );
+  const viewerId = useProfileViewerId();
+  const isEditable = viewerId === wishlist.user_id;
 
   const { isOpen, open, toggle } = useOverlayState();
 
@@ -94,6 +118,8 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
   }, [items]);
 
   useEffect(() => {
+    let cancelled = false;
+
     async function fetchWishlists() {
       // Дожидаемся загрузки пользователя, чтобы кнопки шапки с isEditable
       // не появлялись отдельной вспышкой после отрисовки вишлиста
@@ -103,12 +129,16 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
         getWishlist(wishlistUUID),
         userPromise,
       ]);
+      if (cancelled) return;
       if ("message" in response[1]) {
         setError(response[1]);
+        rememberWishlists([], { unavailableUUID: wishlistUUID });
       } else {
         const responseWishes = response[0];
         setItems(responseWishes);
         setWishlist(response[1]);
+        setError({} as IError);
+        rememberWishlists([response[1]]);
         setIsLoading(false);
         sendJsonMessage({
           event: WSEvent.Subscribe,
@@ -119,6 +149,7 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
     fetchWishlists();
 
     return () => {
+      cancelled = true;
       sendJsonMessage({
         event: WSEvent.Unsubscribe,
         channel: getChannelName(wishlistUUID),
@@ -187,9 +218,15 @@ const Wishes = observer(({ wishlistUUID }: { wishlistUUID: string }) => {
     <div
       className={`${accentClass ?? ""} flex min-h-[calc(100dvh-11rem)] flex-col`}
     >
+      <Link
+        className="mx-auto text-2xl text-muted md:mx-0"
+        href={isEditable ? "/" : `/users/${wishlist.user?.username}`}
+      >
+        {isEditable ? "Вишлисты" : "Вишлисты пользователя"}
+      </Link>
       {isLoading ? (
         <PageHeader>
-          <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto] gap-x-2 gap-y-3 md:gap-y-2">
+          <div className="mt-2 grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto] gap-x-2 gap-y-3 md:gap-y-2">
             <div className="min-w-0 flex justify-center md:justify-start">
               <Skeleton className="h-8 w-3/5 md:w-2/5 rounded-full" />
             </div>

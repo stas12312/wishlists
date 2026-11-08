@@ -47,5 +47,13 @@ export default async function Page({
 }) {
   const wishlist_uuid = (await params).uuid;
 
-  return <Wishes wishlistUUID={wishlist_uuid} />;
+  const wishlist = await getWishlist(wishlist_uuid);
+
+  return (
+    <Wishes
+      key={wishlist_uuid}
+      initialWishlist={wishlist}
+      wishlistUUID={wishlist_uuid}
+    />
+  );
 }

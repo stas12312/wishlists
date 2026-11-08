@@ -20,6 +20,7 @@ import { IWishlist, IWishlistAction } from "@/lib/models/wishlist";
 import { getWishlists } from "@/lib/client-requests/wishlist";
 import { deleteWishlist } from "@/lib/client-requests/wishlist";
 import userStore from "@/store/userStore";
+import { useRememberWishlists } from "@/providers/ProfileProvider";
 
 export interface IWishlistFilter {
   showArchive: boolean;
@@ -42,6 +43,7 @@ export const Wishlists = observer(
     username?: string;
   }) => {
     const [items, setItems] = useState<IWishlist[]>([]);
+    const rememberWishlists = useRememberWishlists();
     const [isLoading, setIsLoading] = useState(true);
     const cursorRef = useRef<Cursor>(["", ""]);
     // Номер последнего запроса: ответы на устаревшие запросы
@@ -87,6 +89,7 @@ export const Wishlists = observer(
       if (requestId !== requestIdRef.current) {
         return false;
       }
+      rememberWishlists(result.data, { username });
       cursorRef.current = result.navigation.cursor;
       setItems((prev) =>
         firstRequest ? result.data : prev.concat(result.data),
@@ -100,6 +103,7 @@ export const Wishlists = observer(
     }
 
     function OnCreateWishlist(wishlist: IWishlist) {
+      rememberWishlists([wishlist]);
       setItems((prev) => [wishlist, ...prev]);
       router.push(`/wishlists/${wishlist.uuid}`);
       toggle();
