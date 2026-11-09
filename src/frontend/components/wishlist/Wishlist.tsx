@@ -125,13 +125,13 @@ export const Wishlists = observer(
 
     return (
       <>
-        <PageHeader dividerClassName="mt-4 mb-5">
+        <PageHeader>
           <h1 className="text-center text-2xl font-normal sm:text-left">
             {title}
           </h1>
         </PageHeader>
         {actions.filter || showAddButton ? (
-          <div className="col-span-full mb-5 flex items-center justify-between gap-4">
+          <div className="col-span-full mb-4 flex items-center justify-between gap-4">
             {actions.filter ? (
               <WishlistFilter filter={filter} setFilter={setFilter} />
             ) : null}
