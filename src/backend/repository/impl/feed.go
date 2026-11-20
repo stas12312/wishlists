@@ -36,7 +36,8 @@ func (r *FeedRepositoryPostgres) Get(userId int64, navigation *model.Navigation)
 		users.user_id AS "user.user_id",
 		
 		wishlists.name AS "wishlist.name",
-		wishlists.date AS "wishlist.date"
+		wishlists.date AS "wishlist.date",
+		wishlists.settings AS "wishlist.settings"
 	FROM wishlists
 	JOIN users USING (user_id)
 	JOIN wishes ON wishlists.wishlist_uuid = wishes.wishlist_uuid

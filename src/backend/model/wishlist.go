@@ -52,8 +52,9 @@ type Wishlist struct {
 }
 
 type WishlistShort struct {
-	Name string   `json:"name" db:"name"`
-	Date NullTime `json:"date" db:"date"`
+	Name     string            `json:"name" db:"name"`
+	Date     NullTime          `json:"date" db:"date"`
+	Settings *WishlistSettings `json:"settings,omitempty" db:"settings"`
 }
 
 type WishlistFilter struct {
