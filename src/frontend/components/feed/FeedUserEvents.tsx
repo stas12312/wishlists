@@ -9,11 +9,13 @@ import { WishlistChip } from "../wishlist/WishlistChip";
 import { IUserInfo } from "./FeedList";
 
 import { IWish } from "@/lib/models/wish";
+import { IWishlistSettings } from "@/lib/models/wishlist";
 import { UserChip } from "@/components/user/UserChip";
 
 interface IWishlistInfo {
   uuid: string;
   name: string;
+  settings?: IWishlistSettings;
   wishes: IWish[];
 }
 
@@ -48,10 +50,10 @@ export const UserEvents = ({
               добавил(а) <span className="hidden md:inline">желания </span>в
             </span>
             <WishlistChip
-              className="flex gap-2 shadow-md hover:bg-surface-secondary transition"
+              className="flex gap-2 shadow-md transition hover:bg-(--accent-soft-hover)"
               name={wishlist.name}
+              settings={wishlist.settings}
               uuid={wishlist.uuid}
-              variant="secondary"
             />
           </motion.div>
           <WishesGrid wishes={wishlist.wishes} onUpdate={onUpdate} />
@@ -95,6 +97,7 @@ function groupByWishlist(wishes: IWish[]): IWishlistInfo[] {
       group = {
         uuid: wish.wishlist_uuid,
         name: wish.wishlist.name,
+        settings: wish.wishlist.settings,
         wishes: [],
       };
       groups.set(wish.wishlist_uuid, group);
