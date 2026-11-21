@@ -1,10 +1,13 @@
 package impl
 
 import (
+	"context"
 	apperror "main/error"
 	"main/model"
 	"main/repository"
 	"main/service"
+	"main/uof"
+	"strconv"
 
 	"github.com/gofiber/fiber/v2/log"
 )
@@ -13,14 +16,16 @@ func NewQuestionServiceImpl(
 	wishlistService service.WishlistService,
 	repository repository.QuestionRepository,
 	ws service.WSService,
+	work uof.UnitOfWork,
 ) *QuestionServiceImpl {
-	return &QuestionServiceImpl{wishlistService, repository, ws}
+	return &QuestionServiceImpl{wishlistService, repository, ws, work}
 }
 
 type QuestionServiceImpl struct {
 	service.WishlistService
 	repository.QuestionRepository
 	service.WSService
+	work uof.UnitOfWork
 }
 
 func (q *QuestionServiceImpl) Create(userId int64, question *model.Question) (*model.Question, error) {
@@ -35,11 +40,28 @@ func (q *QuestionServiceImpl) Create(userId int64, question *model.Question) (*m
 	if question.AuthorID == wish.UserId {
 		return nil, apperror.NewError(apperror.WrongRequest, "Нельзя задавать вопрос себе")
 	}
-	q.WSService.SendMessage(question.AnsweredId, model.WSMessage{Event: service.ChangeQuestionsCount})
-	newQuestion, err := q.QuestionRepository.Create(question)
+	var newQuestion *model.Question
+	err = q.work.Do(context.Background(), func(_ context.Context, store uof.UnitOfWorkStore) error {
+		created, err := store.QuestionRepository().Create(question)
+		if err != nil {
+			return err
+		}
+		newQuestion = created
+		questionKey := strconv.FormatInt(created.Id, 10)
+		return store.NotificationRepository().Create(model.Notification{
+			RecipientId: created.AnsweredId,
+			Kind:        model.NotificationQuestionCreated,
+			EventKey:    questionKey,
+			ResourceKey: questionKey,
+			Body:        created.Content,
+		})
+	})
 	if err != nil {
-		return nil, err
+		log.Errorf("Не удалось сохранить вопрос и уведомление: %v", err)
+		return nil, apperror.NewError(apperror.DatabaseError, "Не удалось сохранить вопрос")
 	}
+	q.WSService.SendMessage(newQuestion.AnsweredId, model.WSMessage{Event: service.ChangeQuestionsCount})
+	q.WSService.SendMessage(newQuestion.AnsweredId, model.WSMessage{Event: service.NotificationsChanged})
 
 	questions := []model.Question{*newQuestion}
 	q.PrepareQuestions(userId, questions)
@@ -102,17 +124,31 @@ func (q *QuestionServiceImpl) CreateAnswer(userId int64, questionId int64, answe
 		return nil, apperror.NewError(apperror.WrongRequest, "Вы не можете ответить на вопрос")
 	}
 
-	err = q.QuestionRepository.CreateAnswer(userId, questionId, answer)
+	err = q.work.Do(context.Background(), func(_ context.Context, store uof.UnitOfWorkStore) error {
+		questions := store.QuestionRepository()
+		answerId, err := questions.CreateAnswer(userId, questionId, answer)
+		if err != nil {
+			return err
+		}
+		question.Status = model.QuestionStatusResolved
+		if err := questions.Update(question); err != nil {
+			return err
+		}
+		return store.NotificationRepository().Create(model.Notification{
+			RecipientId: question.AuthorID,
+			Kind:        model.NotificationQuestionAnswered,
+			EventKey:    strconv.FormatInt(answerId, 10),
+			ResourceKey: strconv.FormatInt(questionId, 10),
+			Body:        answer,
+		})
+	})
 	if err != nil {
-		return nil, err
-	}
-	question.Status = model.QuestionStatusResolved
-	err = q.QuestionRepository.Update(question)
-	if err != nil {
-		return nil, err
+		log.Errorf("Не удалось сохранить ответ на вопрос и уведомление: %v", err)
+		return nil, apperror.NewError(apperror.DatabaseError, "Не удалось сохранить ответ")
 	}
 	q.WSService.SendMessage(question.AnsweredId, model.WSMessage{Event: service.ChangeQuestionsCount})
 	q.WSService.SendMessage(question.AuthorID, model.WSMessage{Event: service.ChangeQuestionsCount})
+	q.WSService.SendMessage(question.AuthorID, model.WSMessage{Event: service.NotificationsChanged})
 
 	return q.GetById(userId, questionId)
 }

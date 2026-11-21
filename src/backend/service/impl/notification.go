@@ -63,6 +63,16 @@ var notificationTemplates = map[string]struct {
 		hrefPrefix: "/tickets/",
 		emoji:      "💬",
 	},
+	model.NotificationQuestionCreated: {
+		title:      "Вам задали вопрос о желании",
+		hrefPrefix: "/questions/",
+		emoji:      "❓",
+	},
+	model.NotificationQuestionAnswered: {
+		title:      "На ваш вопрос ответили",
+		hrefPrefix: "/questions/",
+		emoji:      "💬",
+	},
 }
 
 func (s *NotificationService) SupportsKind(kind string) bool {

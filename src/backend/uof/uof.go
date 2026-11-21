@@ -20,4 +20,5 @@ type UnitOfWorkStore interface {
 	TicketRepository() repository.TicketRepository
 	MessageRepository() repository.MessageRepository
 	NotificationRepository() repository.NotificationRepository
+	QuestionRepository() repository.QuestionRepository
 }

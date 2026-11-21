@@ -30,6 +30,7 @@ func (r *NotificationRepositoryPostgres) Create(n model.Notification) error {
 		LEFT JOIN notification_preferences p
 		  ON p.user_id = inserted.recipient_id AND p.kind = inserted.kind AND p.channel = channels.channel
 		LEFT JOIN oauth_user o ON o.user_id = inserted.recipient_id AND o.provider = $7 AND channels.channel = $7
+		  AND pg_input_is_valid(o.oauth_user_id, 'bigint')
 		WHERE COALESCE(p.enabled, TRUE)
 		  AND (channels.channel <> $7 OR o.oauth_user_id IS NOT NULL)
 	`
@@ -103,7 +104,7 @@ func (r *NotificationRepositoryPostgres) Preferences(userId int64, kind string) 
 		SELECT channels.channel, COALESCE(p.enabled, TRUE) AS enabled,
 		       (u.is_active IS TRUE AND CASE channels.channel
 		           WHEN $3 THEN NULLIF(u.email, '') IS NOT NULL
-		           WHEN $4 THEN o.oauth_user_id IS NOT NULL
+		           WHEN $4 THEN COALESCE(pg_input_is_valid(o.oauth_user_id, 'bigint'), FALSE)
 		       END) AS available,
 		       (channels.channel = $4 AND o.oauth_user_id IS NOT NULL) AS linked
 		FROM users u
@@ -123,7 +124,8 @@ func (r *NotificationRepositoryPostgres) SetPreference(userId int64, kind, chann
 			INSERT INTO notification_preferences (user_id, kind, channel, enabled)
 			SELECT u.user_id, $2, $3, TRUE
 			FROM users u
-			JOIN oauth_user o ON o.user_id = u.user_id AND o.provider = $3 AND o.oauth_user_id IS NOT NULL
+			JOIN oauth_user o ON o.user_id = u.user_id AND o.provider = $3
+			  AND pg_input_is_valid(o.oauth_user_id, 'bigint')
 			WHERE u.user_id = $1 AND u.is_active
 			ON CONFLICT (user_id, kind, channel) DO UPDATE SET enabled = EXCLUDED.enabled
 		`

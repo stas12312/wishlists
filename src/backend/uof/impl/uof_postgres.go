@@ -45,6 +45,7 @@ type UowStore struct {
 	ticketRepository       repository.TicketRepository
 	messageRepository      repository.MessageRepository
 	notificationRepository repository.NotificationRepository
+	questionRepository     repository.QuestionRepository
 }
 
 func (u *UowStore) UserRepository() repository.UserRepository {
@@ -70,6 +71,10 @@ func (u *UowStore) TicketRepository() repository.TicketRepository   { return u.t
 func (u *UowStore) MessageRepository() repository.MessageRepository { return u.messageRepository }
 func (u *UowStore) NotificationRepository() repository.NotificationRepository {
 	return u.notificationRepository
+}
+
+func (u *UowStore) QuestionRepository() repository.QuestionRepository {
+	return u.questionRepository
 }
 
 type UnitOfWorkPostgres struct {
@@ -116,5 +121,6 @@ func StoreFactory(connection db.Connection) uof.UnitOfWorkStore {
 	store.ticketRepository = impl.NewTicketRepositoryPostgres(connection)
 	store.messageRepository = impl.NewMessageRepositoryPostgres(connection)
 	store.notificationRepository = impl.NewNotificationRepositoryPostgres(connection)
+	store.questionRepository = impl.NewQuestionRepositoryPostgres(connection)
 	return store
 }

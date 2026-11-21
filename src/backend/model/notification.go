@@ -3,9 +3,11 @@ package model
 import "time"
 
 const (
-	NotificationSupportReply = "support.reply"
-	NotificationEmail        = "email"
-	NotificationTelegram     = "telegram"
+	NotificationSupportReply     = "support.reply"
+	NotificationQuestionCreated  = "question.created"
+	NotificationQuestionAnswered = "question.answered"
+	NotificationEmail            = "email"
+	NotificationTelegram         = "telegram"
 )
 
 type Notification struct {

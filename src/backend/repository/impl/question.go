@@ -62,15 +62,15 @@ func (r *QuestionRepositoryPostgres) ListBy(wishUUID string, userId int64, autho
 
 }
 
-func (r *QuestionRepositoryPostgres) CreateAnswer(userId int64, questionId int64, answer string) error {
-
+func (r *QuestionRepositoryPostgres) CreateAnswer(userId int64, questionId int64, answer string) (int64, error) {
 	query := `
 		INSERT INTO answers (question_id, author_id, content) 
 		VALUES ($1, $2, $3)
+		RETURNING answer_id
 `
-
-	_, err := r.Connection.Exec(query, questionId, userId, answer)
-	return err
+	var answerId int64
+	err := r.Connection.Get(&answerId, query, questionId, userId, answer)
+	return answerId, err
 }
 
 func (r *QuestionRepositoryPostgres) Counters(userId int64) (int, int, error) {
