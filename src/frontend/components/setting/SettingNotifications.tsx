@@ -125,6 +125,8 @@ export const SettingNotifications = observer(function SettingNotifications({
               </th>
               {channels.map(({ id, switchLabel }) => {
                 const preference = id === "email" ? email : telegram;
+                const isTelegramUnavailable =
+                  id === "telegram" && preference?.available === false;
                 return (
                   <td key={id} className="px-2 py-4 align-middle">
                     <div className="flex min-h-6 items-center justify-center">
@@ -132,13 +134,15 @@ export const SettingNotifications = observer(function SettingNotifications({
                         <Switch
                           aria-label={switchLabel}
                           isDisabled={
-                            !preference.available && !preference.enabled
+                            isTelegramUnavailable ||
+                            (!preference.available && !preference.enabled)
                           }
                           isReadOnly={pendingPreference !== null}
                           isSelected={
-                            pendingPreference?.channel === id
+                            !isTelegramUnavailable &&
+                            (pendingPreference?.channel === id
                               ? pendingPreference.enabled
-                              : preference.enabled
+                              : preference.enabled)
                           }
                           onChange={(value) => void change(id, value)}
                         >
