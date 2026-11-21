@@ -7,6 +7,7 @@ import { MdBolt } from "react-icons/md";
 import { ActiveIcon } from "./ActiveIcon";
 import Login from "./auth/Login";
 import { Logo } from "./Logo";
+import { NotificationsLink } from "./notifications/NotificationsLink";
 import { UserItem } from "./user/UserProfile";
 
 import { useHeader } from "@/providers/HeaderProviders";
@@ -81,7 +82,14 @@ export const Header = ({ isLogin }: { isLogin: boolean }) => {
         <p>Блог</p>
       </Link>
       <div className="gap-4 px-4 flex justify-between md:justify-end">
-        {isLogin ? <UserItem /> : <Login />}
+        {isLogin ? (
+          <>
+            <NotificationsLink />
+            <UserItem />
+          </>
+        ) : (
+          <Login />
+        )}
       </div>
     </header>
   );
