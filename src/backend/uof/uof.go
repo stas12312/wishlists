@@ -17,4 +17,7 @@ type UnitOfWorkStore interface {
 	OAuthRepository() repository.OAuthUserRepository
 	FriendRepository() repository.FriendRepository
 	AccountRepository() repository.AccountRepository
+	TicketRepository() repository.TicketRepository
+	MessageRepository() repository.MessageRepository
+	NotificationRepository() repository.NotificationRepository
 }

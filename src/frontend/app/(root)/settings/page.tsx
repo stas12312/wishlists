@@ -9,6 +9,7 @@ import { SettingLinks } from "@/components/setting/SettingLinks";
 import { ProfileSection } from "@/components/setting/SettingProfile";
 import { SettingsLinksStore } from "@/store/settingsLinksStore";
 import { SettingEmail } from "@/components/setting/SettingEmail";
+import { SettingNotifications } from "@/components/setting/SettingNotifications";
 import {
   DeleteAccountButton,
   ExitButton,
@@ -42,8 +43,18 @@ export default function SettingsPage() {
           </h2>
           <SettingLinks store={linksStore} />
         </section>
+        <section
+          aria-labelledby="notifications-heading"
+          className="flex scroll-mt-24 flex-col gap-3"
+          id="notifications"
+        >
+          <h2 className="text-xl" id="notifications-heading">
+            Уведомления
+          </h2>
+          <SettingNotifications />
+        </section>
       </div>
-      <div className="flex flex-col gap-2 mt-2">
+      <div className="flex flex-col gap-2 mt-6">
         <ExitButton />
         <DeleteAccountButton />
       </div>

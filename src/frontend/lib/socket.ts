@@ -11,6 +11,7 @@ export enum WSEvent {
   ChangeIncomingFriendsRequests = "ChangeIncomingFriendsRequests",
   ChangeQuestionCount = "ChangeQuestionsCount",
   ChangeTicketsCount = "ChangeTicketsCount",
+  NotificationsChanged = "NotificationsChanged",
 
   Update = "Update",
   Subscribe = "Subscribe",

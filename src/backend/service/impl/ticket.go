@@ -1,6 +1,7 @@
 package impl
 
 import (
+	"context"
 	"fmt"
 	"html"
 	"io"
@@ -9,6 +10,7 @@ import (
 	"main/model"
 	"main/repository"
 	"main/service"
+	"main/uof"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -65,6 +67,7 @@ func NewTicketServiceImpl(
 	userRepository repository.UserRepository,
 	mailClient mail.MailClient,
 	baseUrl string,
+	work uof.UnitOfWork,
 ) *TicketServiceImpl {
 	return &TicketServiceImpl{
 		ticketRepository:         ticketRepository,
@@ -77,6 +80,7 @@ func NewTicketServiceImpl(
 		userRepository:           userRepository,
 		mailClient:               mailClient,
 		baseUrl:                  baseUrl,
+		work:                     work,
 	}
 }
 
@@ -91,6 +95,7 @@ type TicketServiceImpl struct {
 	userRepository           repository.UserRepository
 	mailClient               mail.MailClient
 	baseUrl                  string
+	work                     uof.UnitOfWork
 }
 
 func (t *TicketServiceImpl) CreateCategory(ticketCategory *model.TicketCategory) (*model.TicketCategory, error) {
@@ -173,7 +178,7 @@ func (t *TicketServiceImpl) AddMessage(userId int64, ticketId int64, message *mo
 	return createdMessage, nil
 }
 
-func (t *TicketServiceImpl) AddMessageFromAdmin(userId int64, ticketId int64, message *model.Message) (*model.Message, error) {
+func (t *TicketServiceImpl) AddMessageFromAdmin(ctx context.Context, userId int64, ticketId int64, message *model.Message) (*model.Message, error) {
 	ticket, err := t.Get(0, ticketId)
 	if err != nil {
 		return nil, err
@@ -190,28 +195,44 @@ func (t *TicketServiceImpl) AddMessageFromAdmin(userId int64, ticketId int64, me
 		}
 	}
 
-	if status != "" {
-		_, err = t.ticketRepository.Update(&model.Ticket{Id: ticketId, Status: status})
-		if err != nil {
+	if commandOnly {
+		if _, err = t.ticketRepository.Update(&model.Ticket{Id: ticketId, Status: status}); err != nil {
 			return nil, err
 		}
 		t.wsService.SendMessage(ticket.AuthorId, model.WSMessage{Event: service.ChangeTicketsCount})
-	}
-
-	if commandOnly {
 		t.wsService.SendMessageToChannel(getChannelNameForTicket(ticketId), model.WSMessage{
 			Event: service.Update,
 		})
 		return nil, nil
 	}
 
-	createdMessage, err := t.messageService.CreateMessage(userId, ticket.ConversationId, message.Content, message.Attachments)
+	var createdMessage *model.Message
+	err = t.work.Do(ctx, func(_ context.Context, store uof.UnitOfWorkStore) error {
+		if status != "" {
+			if _, err := store.TicketRepository().Update(&model.Ticket{Id: ticketId, Status: status}); err != nil {
+				return err
+			}
+		}
+		message.SenderId = userId
+		message.ConversationId = ticket.ConversationId
+		saved, err := store.MessageRepository().CreateMessage(message)
+		if err != nil {
+			return err
+		}
+		createdMessage = saved
+		return store.NotificationRepository().Create(supportReplyNotification(ticket, saved))
+	})
 	if err != nil {
-		return nil, err
+		log.Errorf("Не удалось сохранить ответ поддержки и уведомление: %v", err)
+		return nil, apperror.NewError(apperror.DatabaseError, "Не удалось сохранить ответ")
+	}
+	if status != "" {
+		t.wsService.SendMessage(ticket.AuthorId, model.WSMessage{Event: service.ChangeTicketsCount})
 	}
 	t.wsService.SendMessageToChannel(getChannelNameForTicket(ticketId), model.WSMessage{
 		Event: service.Update,
 	})
+	t.wsService.SendMessage(ticket.AuthorId, model.WSMessage{Event: service.NotificationsChanged})
 	return createdMessage, nil
 }
 

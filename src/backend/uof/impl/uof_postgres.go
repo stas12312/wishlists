@@ -26,22 +26,25 @@ func NewUofStore(
 	accountRepository repository.AccountRepository,
 ) *UowStore {
 	return &UowStore{
-		userRepository,
-		wishlistRepository,
-		wishRepository,
-		oAuthRepository,
-		friendRepository,
-		accountRepository,
+		userRepository:     userRepository,
+		wishlistRepository: wishlistRepository,
+		wishRepository:     wishRepository,
+		oAuthRepository:    oAuthRepository,
+		friendRepository:   friendRepository,
+		accountRepository:  accountRepository,
 	}
 }
 
 type UowStore struct {
-	userRepository     repository.UserRepository
-	wishlistRepository repository.WishlistRepository
-	wishRepository     repository.WishRepository
-	oAuthRepository    repository.OAuthUserRepository
-	friendRepository   repository.FriendRepository
-	accountRepository  repository.AccountRepository
+	userRepository         repository.UserRepository
+	wishlistRepository     repository.WishlistRepository
+	wishRepository         repository.WishRepository
+	oAuthRepository        repository.OAuthUserRepository
+	friendRepository       repository.FriendRepository
+	accountRepository      repository.AccountRepository
+	ticketRepository       repository.TicketRepository
+	messageRepository      repository.MessageRepository
+	notificationRepository repository.NotificationRepository
 }
 
 func (u *UowStore) UserRepository() repository.UserRepository {
@@ -63,6 +66,11 @@ func (u *UowStore) FriendRepository() repository.FriendRepository {
 	return u.friendRepository
 }
 func (u *UowStore) AccountRepository() repository.AccountRepository { return u.accountRepository }
+func (u *UowStore) TicketRepository() repository.TicketRepository   { return u.ticketRepository }
+func (u *UowStore) MessageRepository() repository.MessageRepository { return u.messageRepository }
+func (u *UowStore) NotificationRepository() repository.NotificationRepository {
+	return u.notificationRepository
+}
 
 type UnitOfWorkPostgres struct {
 	db      db.DB
@@ -97,7 +105,7 @@ func (uof *UnitOfWorkPostgres) Do(
 }
 
 func StoreFactory(connection db.Connection) uof.UnitOfWorkStore {
-	return NewUofStore(
+	store := NewUofStore(
 		impl.NewUserRepositoryImpl(connection),
 		impl.NewWishlistRepository(connection),
 		impl.NewWishRepositoryImpl(connection),
@@ -105,4 +113,8 @@ func StoreFactory(connection db.Connection) uof.UnitOfWorkStore {
 		impl.NewFriendRepositoryPostgres(connection),
 		impl.NewAccountPostgres(connection),
 	)
+	store.ticketRepository = impl.NewTicketRepositoryPostgres(connection)
+	store.messageRepository = impl.NewMessageRepositoryPostgres(connection)
+	store.notificationRepository = impl.NewNotificationRepositoryPostgres(connection)
+	return store
 }

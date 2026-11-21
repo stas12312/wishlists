@@ -1,18 +1,22 @@
 package impl
 
 import (
+	"crypto/tls"
+	"errors"
 	"fmt"
 	"main/config"
 	"mime"
+	"net"
 	"net/mail"
 	"net/smtp"
 	"strings"
+	"time"
 )
 
 func NewSMPTClient(config *config.SMTPConfig) *SMTPClient {
 	auth := smtp.PlainAuth("", config.Username, config.Password, config.Host)
 
-	host := fmt.Sprintf("%s:%d", config.Host, config.Port)
+	host := net.JoinHostPort(config.Host, fmt.Sprint(config.Port))
 
 	return &SMTPClient{
 		Auth: auth,
@@ -46,7 +50,61 @@ func (c SMTPClient) Send(toList []string, subject, body string) error {
 		Body:    body,
 	}
 	message := BuildMessage(request)
-	return smtp.SendMail(c.Host, c.Auth, c.From, toList, []byte(message))
+	return c.send(toList, []byte(message))
+}
+
+func (c SMTPClient) send(recipients []string, message []byte) error {
+	host, _, err := net.SplitHostPort(c.Host)
+	if err != nil {
+		return err
+	}
+	deadline := time.Now().Add(20 * time.Second)
+	dialer := net.Dialer{Deadline: deadline}
+	conn, err := dialer.Dial("tcp", c.Host)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+	if err := conn.SetDeadline(deadline); err != nil {
+		return err
+	}
+	client, err := smtp.NewClient(conn, host)
+	if err != nil {
+		return err
+	}
+	if supported, _ := client.Extension("STARTTLS"); supported {
+		if err := client.StartTLS(&tls.Config{ServerName: host}); err != nil {
+			return err
+		}
+	}
+	if c.Auth != nil {
+		if supported, _ := client.Extension("AUTH"); !supported {
+			return errors.New("SMTP-сервер не поддерживает авторизацию")
+		}
+		if err := client.Auth(c.Auth); err != nil {
+			return err
+		}
+	}
+	if err := client.Mail(c.From); err != nil {
+		return err
+	}
+	for _, recipient := range recipients {
+		if err := client.Rcpt(recipient); err != nil {
+			return err
+		}
+	}
+	writer, err := client.Data()
+	if err != nil {
+		return err
+	}
+	if _, err := writer.Write(message); err != nil {
+		return err
+	}
+	if err := writer.Close(); err != nil {
+		return err
+	}
+	_ = client.Quit()
+	return nil
 }
 
 func BuildMessage(mail Mail) string {

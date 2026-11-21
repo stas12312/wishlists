@@ -10,6 +10,7 @@ import (
 	apperror "main/error"
 	"main/mail/impl"
 	"main/middleware"
+	"main/model"
 	"main/oauth"
 	"main/oauth/yandex"
 	repository "main/repository/impl"
@@ -59,7 +60,8 @@ func main() {
 	codeRepository := repository.NewConfirmCodeRedis(redisClient, 60*time.Minute)
 	mailLogRepository := repository.NewMailLogRepositoryPostgres(db)
 	mailLogService := service.NewMailLogService(mailLogRepository)
-	mailClient := impl.NewLoggingClient(impl.NewSMPTClient(&appConfig.SMTP), mailLogRepository)
+	smtpClient := impl.NewSMPTClient(&appConfig.SMTP)
+	mailClient := impl.NewLoggingClient(smtpClient, mailLogRepository)
 	userService := service.NewUserService(uof, codeRepository, mailClient, appConfig, oAuthManager)
 	userController := controller.NewUserController(&userService, appConfig)
 	imageRepository := repository.NewS3ImageRepository(&appConfig.S3)
@@ -74,6 +76,9 @@ func main() {
 	telegramImages := imageService.WithDownloadTransport(telegramBotClient.Transport())
 	telegramService := service.NewTelegramService(uof, appConfig.TelegramBotToken, appConfig.TelegramBotUsername, telegramCodeRepository, telegramImages)
 	telegramController := controller.NewTelegramController(telegramService, appConfig)
+	notificationRepository := repository.NewNotificationRepositoryPostgres(db)
+	notificationService := service.NewNotificationService(notificationRepository, websocketService, smtpClient, appConfig.BaseUrl)
+	notificationController := controller.NewNotificationController(notificationService)
 	telegramBotService := service.NewTelegramBotService(telegramBotClient, appConfig.BaseUrl, telegramCodeRepository)
 	telegramBotController := controller.NewTelegramBotController(telegramBotService, appConfig.TelegramWebhookSecret)
 
@@ -123,6 +128,7 @@ func main() {
 		repository.NewUserRepositoryImpl(postgresDB),
 		mailClient,
 		appConfig.BaseUrl,
+		uof,
 	)
 	ticketController := controller.NewTicketController(ticketService)
 
@@ -144,8 +150,10 @@ func main() {
 	articleController.Route(api)
 	questionController.Route(api)
 	ticketController.Route(api)
+	notificationController.Route(api)
 
 	configureTelegramWebhook(telegramBotClient, appConfig)
+	go notificationService.Run(context.Background(), model.NotificationEmail)
 	log.Fatal(app.Listen(":8080"))
 }
 

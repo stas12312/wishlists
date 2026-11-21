@@ -1,8 +1,8 @@
 "use client";
 import { Button, Chip, Separator, Surface, toast } from "@heroui/react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { MdDone } from "react-icons/md";
-import useWebSocket from "react-use-websocket";
+import useWebSocket, { ReadyState } from "react-use-websocket";
 import { twMerge } from "tailwind-merge";
 
 import { CustomBreadcrumbs } from "../Breadcrumbs";
@@ -28,7 +28,7 @@ import {
   ITicket,
   TicketStatus,
 } from "@/lib/models/ticket";
-import { getWebsocketUrl, isEvent, WSEvent } from "@/lib/socket";
+import { defaultParams, getWebsocketUrl, isEvent, WSEvent } from "@/lib/socket";
 import { prepareDateString } from "@/lib/date";
 
 const MESSAGE_MAX_LENGTH = 2000;
@@ -106,6 +106,7 @@ export const TicketDetailPage = ({
   getTicketFunc,
   getTicketMessageFunc,
   addTicketMessageFunc,
+  onMessagesViewed,
   withAuthor = false,
   withStatusCommands = false,
 }: {
@@ -121,6 +122,7 @@ export const TicketDetailPage = ({
   };
   withAuthor?: boolean;
   withStatusCommands?: boolean;
+  onMessagesViewed?: (ticketId: number) => Promise<void>;
 }) => {
   const [ticket, setTicket] = useState<ITicket>();
   const [draft, setDraft] = useState("");
@@ -129,44 +131,91 @@ export const TicketDetailPage = ({
   const [isLoading, setIsLoading] = useState(true);
   const bottomRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const fetchVersion = useRef(0);
   const [isFirstScroll, setIsFirstScroll] = useState(true);
   const attachments = useTicketAttachments();
 
-  const { lastJsonMessage, sendJsonMessage } = useWebSocket(getWebsocketUrl, {
-    share: true,
-    filter: (message) => {
-      return isEvent(message, WSEvent.Update, `ticket_${ticketId}`);
+  const { lastJsonMessage, readyState, sendJsonMessage } = useWebSocket(
+    getWebsocketUrl,
+    {
+      ...defaultParams,
+      shouldReconnect: () => true,
+      filter: (message) => {
+        return isEvent(message, WSEvent.Update, `ticket_${ticketId}`);
+      },
     },
-  });
+  );
+  const connected = readyState === ReadyState.OPEN;
 
-  async function fetchData() {
-    const data = await getTicketFunc(ticketId);
-    const messages = await getTicketMessageFunc(ticketId);
-    if ("message" in data) {
-      setError(data.message);
-    } else {
-      setTicket(data.data);
-      setMessages(messages);
+  const fetchData = useCallback(async () => {
+    const version = ++fetchVersion.current;
+    try {
+      const [data, messages] = await Promise.all([
+        getTicketFunc(ticketId),
+        getTicketMessageFunc(ticketId),
+      ]);
+      if (version !== fetchVersion.current) return;
+      if ("message" in data) {
+        setError(data.message);
+      } else if (Array.isArray(messages)) {
+        setError(undefined);
+        setTicket(data.data);
+        setMessages(messages);
+      } else {
+        setError("Не удалось загрузить сообщения");
+      }
+    } catch {
+      if (version === fetchVersion.current)
+        setError("Не удалось загрузить обращение");
+    } finally {
+      if (version === fetchVersion.current) setIsLoading(false);
     }
-    setIsLoading(false);
-  }
+  }, [getTicketFunc, getTicketMessageFunc, ticketId]);
 
   useEffect(() => {
-    fetchData();
-  }, [lastJsonMessage]);
-
-  useEffect(() => {
-    sendJsonMessage({
-      event: WSEvent.Subscribe,
-      channel: `ticket_${ticketId}`,
-    });
-    return () => {
-      sendJsonMessage({
-        event: WSEvent.Unsubscribe,
+    if (!connected) return;
+    sendJsonMessage(
+      {
+        event: WSEvent.Subscribe,
         channel: `ticket_${ticketId}`,
-      });
+      },
+      false,
+    );
+    return () => {
+      sendJsonMessage(
+        {
+          event: WSEvent.Unsubscribe,
+          channel: `ticket_${ticketId}`,
+        },
+        false,
+      );
     };
-  }, []);
+  }, [connected, sendJsonMessage, ticketId]);
+
+  useEffect(() => {
+    void fetchData();
+    return () => {
+      fetchVersion.current++;
+    };
+  }, [connected, fetchData, lastJsonMessage]);
+
+  useEffect(() => {
+    if (
+      !onMessagesViewed ||
+      error ||
+      ticket?.id !== ticketId ||
+      !messages.length
+    )
+      return;
+    const markRead = () => {
+      if (document.visibilityState === "visible") {
+        void onMessagesViewed(ticketId);
+      }
+    };
+    markRead();
+    document.addEventListener("visibilitychange", markRead);
+    return () => document.removeEventListener("visibilitychange", markRead);
+  }, [error, messages, onMessagesViewed, ticket?.id, ticketId]);
 
   async function createMessage(message: string) {
     const sentAttachments = attachments.attachments;
