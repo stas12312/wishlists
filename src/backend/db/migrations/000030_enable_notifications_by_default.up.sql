@@ -1,0 +1,1 @@
+ALTER TABLE notification_preferences ADD COLUMN enabled BOOLEAN NOT NULL DEFAULT TRUE;
