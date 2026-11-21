@@ -40,17 +40,28 @@ func TestAPIClientSendMiniApp(t *testing.T) {
 
 func TestAPIClientSendNotification(t *testing.T) {
 	const miniAppURL = "https://mywishlists.example/miniapp/telegram?ret=%2Ftickets%2F1"
+	const siteURL = "https://mywishlists.example/tickets/1"
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var request sendMessageRequest
 		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 			t.Error(err)
 		}
-		if r.URL.Path != "/bottoken/sendMessage" || request.ChatID != 42 || request.Text != "Ответ поддержки" {
+		if r.URL.Path != "/bottoken/sendMessage" || request.ChatID != 42 ||
+			request.ParseMode != "HTML" || request.Text != "<b>💬 Ответ поддержки</b>\n\nПроверили &lt;файл&gt; &amp; ссылку" {
 			t.Errorf("unexpected request: %s %+v", r.URL.Path, request)
 		}
 		keyboard := request.ReplyMarkup.InlineKeyboard
-		if len(keyboard) != 1 || len(keyboard[0]) != 1 || keyboard[0][0].WebApp == nil || keyboard[0][0].WebApp.URL != miniAppURL {
+		if len(keyboard) != 2 || len(keyboard[0]) != 1 || len(keyboard[1]) != 1 {
 			t.Errorf("unexpected keyboard: %+v", keyboard)
+		} else {
+			appButton := keyboard[0][0]
+			if appButton.Text != "Открыть в приложении" || appButton.WebApp == nil || appButton.WebApp.URL != miniAppURL || appButton.URL != "" {
+				t.Errorf("unexpected mini app button: %+v", appButton)
+			}
+			siteButton := keyboard[1][0]
+			if siteButton.Text != "Открыть на сайте" || siteButton.URL != siteURL || siteButton.WebApp != nil {
+				t.Errorf("unexpected website button: %+v", siteButton)
+			}
 		}
 		w.WriteHeader(http.StatusTooManyRequests)
 		_, _ = w.Write([]byte(`{"ok":false,"error_code":429,"parameters":{"retry_after":120}}`))
@@ -58,7 +69,7 @@ func TestAPIClientSendNotification(t *testing.T) {
 	defer server.Close()
 	client := NewAPIClient("token")
 	client.baseURL = server.URL
-	err := client.SendNotification(context.Background(), 42, "Ответ поддержки", miniAppURL)
+	err := client.SendNotification(context.Background(), 42, "💬 Ответ поддержки", "Проверили <файл> & ссылку", miniAppURL, siteURL)
 	var apiError *APIError
 	if !errors.As(err, &apiError) || apiError.Code != http.StatusTooManyRequests || apiError.RetryAfter != 2*time.Minute {
 		t.Fatalf("unexpected error: %+v", err)
