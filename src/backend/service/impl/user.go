@@ -475,7 +475,8 @@ func getConfirmEmailMessage(code *model.Code, baseUrl string) string {
 
 	return mail.CompileTemplate(template, map[string]string{
 		"code":       code.Code,
-		"code_title": "Код для подтверждения email",
+		"code_title": "Подтвердите почту",
+		"action":     "Подтвердить почту",
 		"link":       link,
 	})
 }
@@ -489,7 +490,8 @@ func getRestorePasswordMessage(code *model.Code, baseUrl string) string {
 
 	return mail.CompileTemplate(template, map[string]string{
 		"code":       code.Code,
-		"code_title": "Код для восстановления пароля",
+		"code_title": "Восстановление пароля",
+		"action":     "Сбросить пароль",
 		"link":       link,
 	})
 }

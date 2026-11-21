@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"html"
 	"main/mail"
 	"main/model"
 	"main/repository"
@@ -231,12 +230,9 @@ func (s *NotificationService) sendTelegram(ctx context.Context, address string, 
 }
 
 func (s *NotificationService) sendEmail(address string, item model.NotificationItem) error {
-	link := s.baseURL + item.Href
-	body := "<p>" + html.EscapeString(item.Title) + ".</p>"
-	if item.Body != "" {
-		message := strings.ReplaceAll(html.EscapeString(item.Body), "\n", "<br>")
-		body += "<p>" + message + "</p>"
+	body, err := mail.RenderNotification(item.Title, item.Body, s.baseURL+item.Href, s.baseURL+"/settings#notifications")
+	if err != nil {
+		return err
 	}
-	body += "<p><a href=\"" + html.EscapeString(link) + "\">Открыть в MyWishlists</a></p>"
 	return s.mail.Send([]string{address}, item.Title, body)
 }
