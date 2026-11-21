@@ -53,14 +53,9 @@ export const SettingNotifications = observer(function SettingNotifications({
       loadRequest.current?.abort();
       const { signal } = (loadRequest.current = new AbortController());
       try {
-        const result = await Promise.all(
-          notificationTypes.map(
-            async ({ kind }) =>
-              [kind, await getNotificationPreferences(kind, signal)] as const,
-          ),
-        );
+        const result = await getNotificationPreferences(signal);
         if (!signal.aborted) {
-          setPreferences(Object.fromEntries(result));
+          setPreferences(result);
           setError("");
         }
       } catch {

@@ -74,14 +74,10 @@ export async function markNotificationEventsRead(
   }
 }
 
-export async function getNotificationPreferences(
-  kind: NotificationKind,
-  signal: AbortSignal,
-) {
-  const response = await clientAxios.get<{ data: NotificationPreference[] }>(
-    `/notifications/preferences/${kind}`,
-    { signal },
-  );
+export async function getNotificationPreferences(signal: AbortSignal) {
+  const response = await clientAxios.get<{
+    data: Record<NotificationKind, NotificationPreference[]>;
+  }>("/notifications/preferences", { signal });
   return notificationData(response);
 }
 
