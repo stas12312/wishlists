@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "@heroui/react";
 
+import { EmptyState } from "../EmptyState";
 import { PageSpinner } from "../PageSpinner";
 import ConfirmationModal from "../ConfirmationModal";
 import { AnimatedList } from "../animated-list/AnimatedList";
@@ -55,7 +56,7 @@ const FriendsList = observer(
     }
 
     if (!friends.length) {
-      return <h2 className="text-2xl text-center">Список пуст</h2>;
+      return <EmptyState title="Пока нет друзей" />;
     }
 
     const users = friends.map((friend) => (

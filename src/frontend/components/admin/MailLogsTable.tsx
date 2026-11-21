@@ -5,8 +5,9 @@ import { MdOutlineDrafts } from "react-icons/md";
 
 import { MailLogModal } from "./MailLogModal";
 import { MAIL_STATUSES } from "./mailCommon";
-import { EmptyState, formatDate, StatusChip } from "./parseCommon";
+import { formatDate, StatusChip } from "./parseCommon";
 
+import { EmptyState } from "@/components/EmptyState";
 import { InfinityLoader } from "@/components/InfinityLoader";
 import { getMailLogs } from "@/lib/client-requests/admin/mail";
 import { INavigation } from "@/lib/models";
@@ -57,9 +58,9 @@ export const MailLogsTable = ({ status }: { status?: MailStatus }) => {
               </Table.Header>
               <Table.Body
                 items={mailLogs}
-                renderEmptyState={() => (
-                  <EmptyState text={hasMore ? "" : "Нет писем"} />
-                )}
+                renderEmptyState={() =>
+                  hasMore ? null : <EmptyState compact title="Нет писем" />
+                }
               >
                 {(item) => (
                   <Table.Row

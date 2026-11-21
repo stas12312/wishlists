@@ -19,9 +19,10 @@ import {
 import { ButtonWithLoader } from "../ButtonWithLoader";
 import ConfirmationModal from "../ConfirmationModal";
 
-import { EmptyState, formatDate, LoadingOverlay } from "./parseCommon";
+import { formatDate, LoadingOverlay } from "./parseCommon";
 import { ProxyChecksModal, ProxyChecksStrip } from "./ProxyChecksHistory";
 
+import { EmptyState } from "@/components/EmptyState";
 import {
   activateParseProxy,
   addParseProxy,
@@ -230,7 +231,9 @@ export const ParseProxiesPanel = ({
               <Table.Body
                 dependencies={[proxies, isBusy, checkingIds]}
                 items={proxies?.items ?? []}
-                renderEmptyState={() => <EmptyState text={emptyText} />}
+                renderEmptyState={() =>
+                  emptyText ? <EmptyState compact title={emptyText} /> : null
+                }
               >
                 {(item) => (
                   <Table.Row id={item.id}>

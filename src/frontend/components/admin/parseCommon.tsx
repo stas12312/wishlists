@@ -30,10 +30,6 @@ export const StatusChip = ({
   );
 };
 
-export const EmptyState = ({ text }: { text: string }) => {
-  return <div className="flex justify-center p-4 text-muted">{text}</div>;
-};
-
 export const LoadingOverlay = ({
   isLoading,
   children,
