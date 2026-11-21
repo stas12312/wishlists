@@ -14,7 +14,12 @@ const FriendsPage = observer(() => {
   const incomingCounts = countersStore.friendCounters.incoming_requests;
   return (
     <div className="flex flex-col">
-      <PageHeader title="Друзья" />
+      <PageHeader>
+        <div className="flex flex-wrap items-center gap-2">
+          <h1 className="text-2xl">Друзья</h1>
+          <CopyLinkButton username={userStore.user.username} />
+        </div>
+      </PageHeader>
       <Tabs aria-label="friends">
         <Tabs.ListContainer className="mx-auto  w-70">
           <Tabs.List>
@@ -36,7 +41,6 @@ const FriendsPage = observer(() => {
           </Tabs.List>
         </Tabs.ListContainer>
         <Tabs.Panel id="my-friends">
-          <CopyLinkButton username={userStore.user.username} />
           <FriendsList withMenu={true} />
         </Tabs.Panel>
         <Tabs.Panel id="reqeusts">
@@ -51,18 +55,16 @@ export default FriendsPage;
 
 const CopyLinkButton = ({ username }: { username: string }) => {
   return (
-    <div className="flex justify-center mb-4">
-      <Button
-        className="my-auto"
-        variant="primary"
-        onPress={() => {
-          navigator.clipboard.writeText(getUserLink(username));
-          toast("Ссылка скопирована");
-        }}
-      >
-        <IoMdLink />
-        Скопировать ссылку для друзей
-      </Button>
-    </div>
+    <Button
+      className="ml-auto"
+      variant="primary"
+      onPress={() => {
+        navigator.clipboard.writeText(getUserLink(username));
+        toast("Ссылка скопирована");
+      }}
+    >
+      <IoMdLink />
+      Скопировать ссылку для друзей
+    </Button>
   );
 };
