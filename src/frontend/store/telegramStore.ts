@@ -22,6 +22,7 @@ interface TelegramWebApp {
   isFullscreen?: boolean;
   isVersionAtLeast?(version: string): boolean;
   onEvent?(event: "fullscreenChanged", callback: () => void): void;
+  disableVerticalSwipes?(): void;
   requestFullscreen?(): void;
   ready(): void;
   expand(): void;
