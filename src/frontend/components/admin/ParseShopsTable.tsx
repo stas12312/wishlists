@@ -4,7 +4,6 @@ import { useMemo } from "react";
 
 import {
   ChipColor,
-  EmptyState,
   formatDate,
   formatDuration,
   LoadingOverlay,
@@ -12,6 +11,7 @@ import {
   StatusChip,
 } from "./parseCommon";
 
+import { EmptyState } from "@/components/EmptyState";
 import {
   ParseOutcome,
   ParseShopsStatus,
@@ -80,11 +80,11 @@ export const ParseShopsTable = ({
             <Table.Body
               dependencies={[selectedShop, stats, shopUrls]}
               items={shopsStatus?.shops ?? []}
-              renderEmptyState={() => (
-                <EmptyState
-                  text={shopsStatus === undefined ? "" : "Нет данных"}
-                />
-              )}
+              renderEmptyState={() =>
+                shopsStatus === undefined ? null : (
+                  <EmptyState compact title="Нет данных" />
+                )
+              }
             >
               {(item) => (
                 <Table.Row id={item.shop}>

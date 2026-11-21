@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import useWebSocket from "react-use-websocket";
 
+import { EmptyState } from "../EmptyState";
 import { PageSpinner } from "../PageSpinner";
 
 import { FriendRequestItem } from "./FriendRequestItem";
@@ -44,7 +45,7 @@ const FriendRequestsItems = observer(() => {
   }
 
   if (!requests.length) {
-    return <h2 className="text-2xl text-center">Заявок нет</h2>;
+    return <EmptyState title="Заявок нет" />;
   }
 
   const incomingRequests = requests.filter((r) => {

@@ -5,6 +5,7 @@ import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 
+import { EmptyState } from "@/components/EmptyState";
 import PageHeader from "@/components/PageHeader";
 import { useAdminUsersStore } from "@/components/admin/AdminUsersProvider";
 
@@ -83,14 +84,11 @@ export default observer(function AdminUsersPage() {
             !store.loading &&
             !store.error &&
             !store.users.length && (
-              <div className="flex min-h-80 flex-col items-center justify-center rounded-3xl border border-dashed border-default px-5 py-14 text-center md:py-20">
-                <h2 className="text-xl font-semibold md:text-2xl">
-                  Пользователи не найдены
-                </h2>
-                <p className="mt-2 max-w-sm text-sm text-muted md:text-base">
-                  Попробуйте изменить запрос или проверить написание.
-                </p>
-              </div>
+              <EmptyState
+                className="min-h-80"
+                description="Попробуйте изменить запрос или проверить написание."
+                title="Пользователи не найдены"
+              />
             )}
         </div>
         <div ref={loadMoreRef} aria-hidden="true" className="h-px" />

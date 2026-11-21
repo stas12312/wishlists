@@ -10,7 +10,6 @@ import {
 import { ParseErrorModal } from "./ParseErrorModal";
 import {
   ChipColor,
-  EmptyState,
   formatDate,
   formatDuration,
   LoadingOverlay,
@@ -18,6 +17,7 @@ import {
   StatusChip,
 } from "./parseCommon";
 
+import { EmptyState } from "@/components/EmptyState";
 import { ParseEvent, ParseEvents, ParseOutcome } from "@/lib/models/parse";
 
 const OUTCOMES: Record<ParseOutcome, [string, ChipColor]> = {
@@ -96,11 +96,11 @@ export const ParseEventsTable = ({
               </Table.Header>
               <Table.Body
                 items={events?.items ?? []}
-                renderEmptyState={() => (
-                  <EmptyState
-                    text={events === undefined ? "" : "Нет событий"}
-                  />
-                )}
+                renderEmptyState={() =>
+                  events === undefined ? null : (
+                    <EmptyState compact title="Нет событий" />
+                  )
+                }
               >
                 {(item) => (
                   <Table.Row id={`${item.task_id}-${item.created_at}`}>

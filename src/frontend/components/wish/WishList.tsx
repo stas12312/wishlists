@@ -9,6 +9,7 @@ import useWebSocket from "react-use-websocket";
 
 import { AnimatedList } from "../animated-list/AnimatedList";
 import { LoginButton } from "../auth/Login";
+import { EmptyState } from "../EmptyState";
 import PageHeader from "../PageHeader";
 import { PageSpinner } from "../PageSpinner";
 import {
@@ -311,30 +312,24 @@ const Wishes = observer(function Wishes({
             </div>
           ) : null}
           {!items.length ? (
-            <div className="flex flex-1 flex-col items-center justify-center rounded-3xl border border-dashed border-default px-4 py-8 text-center sm:px-5 sm:py-14 md:py-20">
-              <div className="mb-4 flex size-16 items-center justify-center rounded-2xl bg-accent-soft sm:mb-6 sm:size-24 sm:rounded-3xl">
-                <span aria-hidden="true" className="text-4xl sm:text-5xl">
-                  {wishlist.settings?.emoji || DEFAULT_WISHLIST_EMOJI}
-                </span>
-              </div>
-              <h2 className="text-lg font-semibold sm:text-xl md:text-2xl">
-                Здесь пока нет желаний
-              </h2>
-              <p className="mt-2 max-w-sm text-sm text-muted md:text-base">
-                {canAddWish
+            <EmptyState
+              action={
+                canAddWish ? (
+                  <Button className="w-full sm:w-auto" onPress={open}>
+                    <MdOutlineAdd className="text-lg" />
+                    Добавить желание
+                  </Button>
+                ) : null
+              }
+              className="flex-1"
+              description={
+                canAddWish
                   ? "Добавьте первое желание — пусть близкие знают, чем вас порадовать."
-                  : "Владелец ещё не добавил желания. Загляните сюда позже."}
-              </p>
-              {canAddWish ? (
-                <Button
-                  className="mt-5 w-full sm:mt-6 sm:w-auto"
-                  onPress={open}
-                >
-                  <MdOutlineAdd className="text-lg" />
-                  Добавить желание
-                </Button>
-              ) : null}
-            </div>
+                  : "Владелец ещё не добавил желания. Загляните сюда позже."
+              }
+              icon={wishlist.settings?.emoji || DEFAULT_WISHLIST_EMOJI}
+              title="Здесь пока нет желаний"
+            />
           ) : null}
           <div className={`relative ${items.length ? "flex-1" : ""}`}>
             <AnimatedList

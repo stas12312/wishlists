@@ -2,6 +2,7 @@
 import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { EmptyState } from "../EmptyState";
 import { InfinityLoader } from "../InfinityLoader";
 import { PageSpinner } from "../PageSpinner";
 
@@ -77,19 +78,13 @@ const FeedList = observer(() => {
             })}
           </InfinityLoader>
         </div>
+      ) : isLoading ? (
+        <PageSpinner />
       ) : (
-        <>
-          {isLoading ? (
-            <PageSpinner />
-          ) : (
-            <div className="flex align-middle justify-center items-center flex-col mt-4">
-              <h3 className="text-2xl">Ваша лента пуста</h3>
-              <span className="text-default-500">
-                Добавляйте друзей, чтобы быть в курсе их желаний
-              </span>
-            </div>
-          )}
-        </>
+        <EmptyState
+          description="Добавляйте друзей, чтобы быть в курсе их желаний"
+          title="Ваша лента пуста"
+        />
       )}
     </>
   );

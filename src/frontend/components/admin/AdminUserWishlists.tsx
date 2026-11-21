@@ -2,6 +2,7 @@ import { Button } from "@heroui/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { EmptyState } from "@/components/EmptyState";
 import {
   AdminUserWishlist,
   getAdminUserWishlists,
@@ -65,7 +66,7 @@ export function AdminUserWishlists({ id }: { id: number }) {
       ) : null}
       {loading ? <p className="text-muted">Загрузка…</p> : null}
       {!loading && !error && !items.length ? (
-        <p className="text-muted">Вишлистов нет</p>
+        <EmptyState compact title="Вишлистов нет" />
       ) : null}
       <ul className="flex flex-col gap-2">
         {items.map((item) => (

@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Button, toast, useOverlayState } from "@heroui/react";
 
 import { AnimatedList } from "../animated-list/AnimatedList";
+import { EmptyState } from "../EmptyState";
 import { InfinityLoader } from "../InfinityLoader";
 import PageHeader from "../PageHeader";
 import { PageSpinner } from "../PageSpinner";
@@ -161,33 +162,29 @@ export const Wishlists = observer(
             />
           </InfinityLoader>
         ) : isLoading ? null : !filter.showArchive ? (
-          <div className="col-span-full flex min-h-80 flex-col items-center justify-center rounded-3xl border border-dashed border-default px-5 py-14 text-center md:py-20">
-            <div className="mb-6 flex size-24 items-center justify-center rounded-3xl bg-accent-soft">
-              <span aria-hidden="true" className="text-5xl">
-                🎁
-              </span>
-            </div>
-            <h2 className="text-xl font-semibold md:text-2xl">
-              Здесь пока нет вишлистов
-            </h2>
-            <p className="mt-2 max-w-sm text-sm text-muted md:text-base">
-              {actions.edit
+          <EmptyState
+            action={
+              actions.edit ? (
+                <Button className="w-full sm:w-auto" onPress={open}>
+                  <IoMdAdd />
+                  Создать первый вишлист
+                </Button>
+              ) : null
+            }
+            className="col-span-full min-h-80"
+            description={
+              actions.edit
                 ? "Создайте первый вишлист и соберите в нём всё, о чём мечтаете."
-                : "Пользователь ещё не добавил вишлисты. Загляните сюда позже."}
-            </p>
-            {actions.edit ? (
-              <Button className="mt-6 w-full sm:w-auto" onPress={open}>
-                <IoMdAdd />
-                Создать первый вишлист
-              </Button>
-            ) : null}
-          </div>
+                : "Пользователь ещё не добавил вишлисты. Загляните сюда позже."
+            }
+            icon="🎁"
+            title="Здесь пока нет вишлистов"
+          />
         ) : (
-          <div className="col-span-full flex min-h-60 flex-col items-center justify-center gap-3 text-center">
-            <h2 className="text-xl text-default-foreground/60">
-              Список архивированных вишлистов пуст
-            </h2>
-          </div>
+          <EmptyState
+            className="col-span-full"
+            title="Список архивированных вишлистов пуст"
+          />
         )}
         <WishlistSaveModal
           isOpen={isOpen}

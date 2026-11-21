@@ -4,6 +4,7 @@ import { Alert } from "@heroui/react";
 import { twMerge } from "tailwind-merge";
 
 import { AnimatedList } from "../animated-list/AnimatedList";
+import { EmptyState } from "../EmptyState";
 import { InfinityLoader } from "../InfinityLoader";
 import { MessageForm } from "../MessageForm";
 import { PageSpinner } from "../PageSpinner";
@@ -142,7 +143,7 @@ export const QuestionList = observer(
         </div>
         <div className="flex flex-col gap-4 object-cover">
           {questions.length === 0 && emptyMessage ? (
-            <p className="text-2xl w-full text-center mt-4">{emptyMessage}</p>
+            <EmptyState title={emptyMessage} />
           ) : (
             <InfinityLoader hasMore={hasMore} onLoad={fetchData}>
               <AnimatedList
