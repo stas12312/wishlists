@@ -228,7 +228,7 @@ export function NotificationInbox() {
                   <div className="flex items-baseline gap-3">
                     <span
                       className={
-                        item.read_at ? "text-muted" : "font-semibold text-muted"
+                        item.read_at ? "text-sm" : "text-sm font-semibold"
                       }
                     >
                       {!item.read_at ? (
@@ -244,7 +244,7 @@ export function NotificationInbox() {
                     </time>
                   </div>
                   {item.body ? (
-                    <p className="text-sm wrap-anywhere whitespace-pre-wrap">
+                    <p className="wrap-anywhere whitespace-pre-wrap text-muted">
                       {item.body}
                     </p>
                   ) : null}
