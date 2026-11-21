@@ -28,7 +28,7 @@ type Question struct {
 }
 
 type Answer struct {
-	Id        NullInt64  `json:"-" db:"answer_id"`
+	Id        NullInt64  `json:"id" db:"answer_id"`
 	AuthorID  NullInt64  `json:"-" db:"author_id"`
 	Content   NullString `json:"content"`
 	CreatedAt NullTime   `json:"created_at" db:"created_at"`

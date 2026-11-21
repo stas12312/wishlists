@@ -74,15 +74,15 @@ func (q *QuestionServiceImpl) ListByAuthor(userId int64, navigation model.Naviga
 func (q *QuestionServiceImpl) GetById(userId int64, id int64) (*model.Question, error) {
 
 	questions, err := q.QuestionRepository.ListBy("", 0, 0, []int64{id}, model.Navigation{Cursor: []string{""}, Count: 1})
-	q.PrepareQuestions(userId, questions)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if len(questions) == 0 {
+	if len(questions) == 0 || (questions[0].AuthorID != userId && questions[0].AnsweredId != userId) {
 		return nil, apperror.NewError(apperror.NotFound, "Вопрос недоступен или был удален")
 	}
+	q.PrepareQuestions(userId, questions)
 	return &questions[0], nil
 }
 
