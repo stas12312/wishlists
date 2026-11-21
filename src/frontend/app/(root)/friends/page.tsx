@@ -14,12 +14,10 @@ const FriendsPage = observer(() => {
   const incomingCounts = countersStore.friendCounters.incoming_requests;
   return (
     <div className="flex flex-col">
-      <PageHeader>
-        <div className="flex flex-wrap items-center gap-2">
-          <h1 className="text-2xl">Друзья</h1>
-          <CopyLinkButton username={userStore.user.username} />
-        </div>
-      </PageHeader>
+      <PageHeader
+        actions={<CopyLinkButton username={userStore.user.username} />}
+        title="Друзья"
+      />
       <Tabs aria-label="friends">
         <Tabs.ListContainer className="mx-auto  w-70">
           <Tabs.List>
@@ -56,7 +54,6 @@ export default FriendsPage;
 const CopyLinkButton = ({ username }: { username: string }) => {
   return (
     <Button
-      className="ml-auto"
       variant="primary"
       onPress={() => {
         navigator.clipboard.writeText(getUserLink(username));
