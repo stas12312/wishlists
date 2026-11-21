@@ -21,6 +21,12 @@ import {
 } from "@/lib/client-requests/notification";
 import { NotificationPage } from "@/lib/models/notification";
 
+const notificationIcons: Record<string, string> = {
+  "support.reply": "💬",
+  "question.created": "❓",
+  "question.answered": "💬",
+};
+
 function showMarkReadError() {
   toast.danger("Не удалось отметить уведомления прочитанными");
 }
@@ -216,12 +222,12 @@ export function NotificationInbox() {
                 className="flex items-start gap-3 rounded-3xl bg-surface px-4 py-3 shadow-md transition-colors hover:bg-default"
                 href={item.href}
               >
-                {item.kind === "support.reply" ? (
+                {notificationIcons[item.kind] ? (
                   <span
                     aria-hidden="true"
                     className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-sky-100 text-3xl leading-none shadow-sm dark:bg-sky-400/20"
                   >
-                    💬
+                    {notificationIcons[item.kind]}
                   </span>
                 ) : null}
                 <div className="flex min-w-0 flex-1 flex-col gap-1 self-center">

@@ -2,6 +2,7 @@ import { AxiosResponse } from "axios";
 
 import {
   NotificationChannel,
+  NotificationKind,
   NotificationPage,
   NotificationPreference,
 } from "../models/notification";
@@ -73,23 +74,26 @@ export async function markNotificationEventsRead(
   }
 }
 
-const preferencesURL = "/notifications/preferences/support.reply";
-
-export async function getNotificationPreferences(signal: AbortSignal) {
+export async function getNotificationPreferences(
+  kind: NotificationKind,
+  signal: AbortSignal,
+) {
   const response = await clientAxios.get<{ data: NotificationPreference[] }>(
-    preferencesURL,
+    `/notifications/preferences/${kind}`,
     { signal },
   );
   return notificationData(response);
 }
 
 export async function setNotificationPreference(
+  kind: NotificationKind,
   channel: NotificationChannel,
   enabled: boolean,
 ) {
-  const response = await clientAxios.put(`${preferencesURL}/${channel}`, {
-    enabled,
-  });
+  const response = await clientAxios.put(
+    `/notifications/preferences/${kind}/${channel}`,
+    { enabled },
+  );
   if (response.status !== 204) {
     throw new Error("Не удалось сохранить настройки уведомлений");
   }

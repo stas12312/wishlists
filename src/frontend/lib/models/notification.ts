@@ -1,3 +1,8 @@
+export type NotificationKind =
+  | "support.reply"
+  | "question.created"
+  | "question.answered";
+
 export interface NotificationItem {
   id: number;
   kind: string;

@@ -11,17 +11,20 @@ import {
 } from "@/lib/client-requests/notification";
 import {
   NotificationChannel,
+  NotificationKind,
   NotificationPreference,
 } from "@/lib/models/notification";
 import { SettingsLinksStore } from "@/store/settingsLinksStore";
 
 const channels = [
-  { id: "email", label: "Email", switchLabel: "Ответы поддержки по Email" },
-  {
-    id: "telegram",
-    label: "Telegram",
-    switchLabel: "Ответы поддержки в Telegram",
-  },
+  { id: "email", label: "Email" },
+  { id: "telegram", label: "Telegram" },
+] as const;
+
+const notificationTypes = [
+  { kind: "support.reply", label: "Ответы поддержки" },
+  { kind: "question.created", label: "Новые вопросы о желаниях" },
+  { kind: "question.answered", label: "Ответы на мои вопросы" },
 ] as const;
 
 export const SettingNotifications = observer(function SettingNotifications({
@@ -29,8 +32,11 @@ export const SettingNotifications = observer(function SettingNotifications({
 }: {
   linksStore?: SettingsLinksStore;
 }) {
-  const [preferences, setPreferences] = useState<NotificationPreference[]>([]);
+  const [preferences, setPreferences] = useState<
+    Partial<Record<NotificationKind, NotificationPreference[]>>
+  >({});
   const [pendingPreference, setPendingPreference] = useState<{
+    kind: NotificationKind;
     channel: NotificationChannel;
     enabled: boolean;
   } | null>(null);
@@ -47,9 +53,14 @@ export const SettingNotifications = observer(function SettingNotifications({
       loadRequest.current?.abort();
       const { signal } = (loadRequest.current = new AbortController());
       try {
-        const result = await getNotificationPreferences(signal);
+        const result = await Promise.all(
+          notificationTypes.map(
+            async ({ kind }) =>
+              [kind, await getNotificationPreferences(kind, signal)] as const,
+          ),
+        );
         if (!signal.aborted) {
-          setPreferences(result);
+          setPreferences(Object.fromEntries(result));
           setError("");
         }
       } catch {
@@ -65,19 +76,24 @@ export const SettingNotifications = observer(function SettingNotifications({
     };
   }, [telegramLinked]);
 
-  async function change(channel: NotificationChannel, enabled: boolean) {
+  async function change(
+    kind: NotificationKind,
+    channel: NotificationChannel,
+    enabled: boolean,
+  ) {
     if (isSaving.current) return;
     isSaving.current = true;
     loadRequest.current?.abort();
-    setPendingPreference({ channel, enabled });
+    setPendingPreference({ kind, channel, enabled });
     setError("");
     try {
-      await setNotificationPreference(channel, enabled);
-      setPreferences((previous) =>
-        previous.map((item) =>
+      await setNotificationPreference(kind, channel, enabled);
+      setPreferences((previous) => ({
+        ...previous,
+        [kind]: previous[kind]?.map((item) =>
           item.channel === channel ? { ...item, enabled } : item,
         ),
-      );
+      }));
     } catch {
       setError("Не удалось сохранить настройки уведомлений");
     } finally {
@@ -86,8 +102,12 @@ export const SettingNotifications = observer(function SettingNotifications({
     }
   }
 
-  const email = preferences.find(({ channel }) => channel === "email");
-  const telegram = preferences.find(({ channel }) => channel === "telegram");
+  const email = preferences["support.reply"]?.find(
+    ({ channel }) => channel === "email",
+  );
+  const telegram = preferences["support.reply"]?.find(
+    ({ channel }) => channel === "telegram",
+  );
 
   return (
     <div className="flex flex-col gap-3">
@@ -116,53 +136,63 @@ export const SettingNotifications = observer(function SettingNotifications({
             </tr>
           </thead>
           <tbody className="text-foreground">
-            <tr>
-              <th
-                className="px-3 py-4 text-left font-medium sm:px-6"
-                scope="row"
+            {notificationTypes.map(({ kind, label }) => (
+              <tr
+                key={kind}
+                className="border-b border-border/50 last:border-b-0"
               >
-                Ответы поддержки
-              </th>
-              {channels.map(({ id, switchLabel }) => {
-                const preference = id === "email" ? email : telegram;
-                const isTelegramUnavailable =
-                  id === "telegram" && preference?.available === false;
-                return (
-                  <td key={id} className="px-2 py-4 align-middle">
-                    <div className="flex min-h-6 items-center justify-center">
-                      {preference ? (
-                        <Switch
-                          aria-label={switchLabel}
-                          isDisabled={
-                            isTelegramUnavailable ||
-                            (!preference.available && !preference.enabled)
-                          }
-                          isReadOnly={pendingPreference !== null}
-                          isSelected={
-                            !isTelegramUnavailable &&
-                            (pendingPreference?.channel === id
-                              ? pendingPreference.enabled
-                              : preference.enabled)
-                          }
-                          onChange={(value) => void change(id, value)}
-                        >
-                          <Switch.Content>
-                            <Switch.Control>
-                              <Switch.Thumb />
-                            </Switch.Control>
-                          </Switch.Content>
-                        </Switch>
-                      ) : (
-                        <span className="text-muted" role="status">
-                          <span aria-hidden>—</span>
-                          {!error && <span className="sr-only">Загрузка…</span>}
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                );
-              })}
-            </tr>
+                <th
+                  className="px-3 py-4 text-left font-medium sm:px-6"
+                  scope="row"
+                >
+                  {label}
+                </th>
+                {channels.map(({ id, label: channelLabel }) => {
+                  const preference = preferences[kind]?.find(
+                    ({ channel }) => channel === id,
+                  );
+                  const isTelegramUnavailable =
+                    id === "telegram" && preference?.available === false;
+                  return (
+                    <td key={id} className="px-2 py-4 align-middle">
+                      <div className="flex min-h-6 items-center justify-center">
+                        {preference ? (
+                          <Switch
+                            aria-label={`${label} · ${channelLabel}`}
+                            isDisabled={
+                              isTelegramUnavailable ||
+                              (!preference.available && !preference.enabled)
+                            }
+                            isReadOnly={pendingPreference !== null}
+                            isSelected={
+                              !isTelegramUnavailable &&
+                              (pendingPreference?.kind === kind &&
+                              pendingPreference.channel === id
+                                ? pendingPreference.enabled
+                                : preference.enabled)
+                            }
+                            onChange={(value) => void change(kind, id, value)}
+                          >
+                            <Switch.Content>
+                              <Switch.Control>
+                                <Switch.Thumb />
+                              </Switch.Control>
+                            </Switch.Content>
+                          </Switch>
+                        ) : (
+                          <span className="text-muted" role="status">
+                            <span aria-hidden>—</span>
+                            {!error && (
+                              <span className="sr-only">Загрузка…</span>
+                            )}
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
