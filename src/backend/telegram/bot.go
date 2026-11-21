@@ -7,6 +7,7 @@ import (
 	"errors"
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
 )
 
@@ -68,8 +69,8 @@ type webAppInfo struct {
 }
 
 type inlineKeyboardButton struct {
-	Text   string     `json:"text"`
-	WebApp webAppInfo `json:"web_app"`
+	Text   string      `json:"text"`
+	WebApp *webAppInfo `json:"web_app,omitempty"`
 }
 
 type sendMessageRequest struct {
@@ -83,9 +84,26 @@ type sendMessageRequest struct {
 func (c *APIClient) SendMiniApp(ctx context.Context, chatID int64, text, url string) error {
 	request := sendMessageRequest{ChatID: chatID, Text: text}
 	request.ReplyMarkup.InlineKeyboard = [][]inlineKeyboardButton{{
-		{Text: "Открыть ✨ MyWishlists", WebApp: webAppInfo{URL: url}},
+		{Text: "Открыть ✨ MyWishlists", WebApp: &webAppInfo{URL: url}},
 	}}
 	return c.do(ctx, "sendMessage", request)
+}
+
+func (c *APIClient) SendNotification(ctx context.Context, chatID int64, text, url string) error {
+	request := sendMessageRequest{ChatID: chatID, Text: text}
+	request.ReplyMarkup.InlineKeyboard = [][]inlineKeyboardButton{{
+		{Text: "Открыть в MyWishlists", WebApp: &webAppInfo{URL: url}},
+	}}
+	return c.do(ctx, "sendMessage", request)
+}
+
+type APIError struct {
+	Code       int
+	RetryAfter time.Duration
+}
+
+func (e *APIError) Error() string {
+	return "Telegram отклонил запрос (" + strconv.Itoa(e.Code) + ")"
 }
 
 func (c *APIClient) SetWebhook(ctx context.Context, url, secret string) error {
@@ -111,10 +129,18 @@ func (c *APIClient) do(ctx context.Context, method string, payload any) error {
 	}
 	defer response.Body.Close()
 	var result struct {
-		OK bool `json:"ok"`
+		OK         bool `json:"ok"`
+		ErrorCode  int  `json:"error_code"`
+		Parameters struct {
+			RetryAfter int `json:"retry_after"`
+		} `json:"parameters"`
 	}
-	if response.StatusCode != http.StatusOK || json.NewDecoder(response.Body).Decode(&result) != nil || !result.OK {
-		return errors.New("Telegram отклонил запрос")
+	if err := json.NewDecoder(response.Body).Decode(&result); response.StatusCode != http.StatusOK || err != nil || !result.OK {
+		code := result.ErrorCode
+		if code == 0 {
+			code = response.StatusCode
+		}
+		return &APIError{Code: code, RetryAfter: time.Duration(result.Parameters.RetryAfter) * time.Second}
 	}
 	return nil
 }

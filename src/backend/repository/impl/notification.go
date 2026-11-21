@@ -1,9 +1,9 @@
 package impl
 
 import (
+	"database/sql"
 	"main/db"
 	"main/model"
-	"main/repository"
 	"time"
 )
 
@@ -11,7 +11,7 @@ type NotificationRepositoryPostgres struct {
 	conn db.Connection
 }
 
-func NewNotificationRepositoryPostgres(conn db.Connection) repository.NotificationRepository {
+func NewNotificationRepositoryPostgres(conn db.Connection) *NotificationRepositoryPostgres {
 	return &NotificationRepositoryPostgres{conn}
 }
 
@@ -23,13 +23,14 @@ func (r *NotificationRepositoryPostgres) Create(n model.Notification) error {
 			ON CONFLICT (recipient_id, kind, event_key) DO NOTHING
 			RETURNING notification_id, recipient_id, kind
 		)
-		INSERT INTO notification_deliveries (notification_id, channel)
-		SELECT notification_id, channel
+		INSERT INTO notification_deliveries (notification_id, channel, telegram_chat_id)
+		SELECT inserted.notification_id, p.channel, o.oauth_user_id::bigint
 		FROM inserted
 		JOIN notification_preferences p ON p.user_id = inserted.recipient_id AND p.kind = inserted.kind
-		WHERE p.channel = $6
+		LEFT JOIN oauth_user o ON o.user_id = inserted.recipient_id AND o.provider = $6 AND p.channel = $6
+		WHERE p.channel <> $6 OR o.oauth_user_id IS NOT NULL
 	`
-	_, err := r.conn.Exec(query, n.RecipientId, n.Kind, n.EventKey, n.ResourceKey, n.Body, model.NotificationEmail)
+	_, err := r.conn.Exec(query, n.RecipientId, n.Kind, n.EventKey, n.ResourceKey, n.Body, model.NotificationTelegram)
 	return err
 }
 
@@ -96,18 +97,43 @@ func (r *NotificationRepositoryPostgres) MarkRead(userId int64, kind, resourceKe
 func (r *NotificationRepositoryPostgres) Preferences(userId int64, kind string) ([]model.NotificationPreference, error) {
 	preferences := []model.NotificationPreference{}
 	query := `
-		SELECT $3::text AS channel, p.user_id IS NOT NULL AS enabled,
-		       (u.is_active IS TRUE AND NULLIF(u.email, '') IS NOT NULL) AS available
+		SELECT channels.channel, p.user_id IS NOT NULL AS enabled,
+		       (u.is_active IS TRUE AND CASE channels.channel
+		           WHEN $3 THEN NULLIF(u.email, '') IS NOT NULL
+		           WHEN $4 THEN o.oauth_user_id IS NOT NULL
+		       END) AS available,
+		       (channels.channel = $4 AND o.oauth_user_id IS NOT NULL) AS linked
 		FROM users u
+		CROSS JOIN (VALUES ($3::text), ($4::text)) AS channels(channel)
 		LEFT JOIN notification_preferences p
-		  ON p.user_id = u.user_id AND p.kind = $2 AND p.channel = $3
+		  ON p.user_id = u.user_id AND p.kind = $2 AND p.channel = channels.channel
+		LEFT JOIN oauth_user o ON o.user_id = u.user_id AND o.provider = $4
 		WHERE u.user_id = $1
 	`
-	err := r.conn.Select(&preferences, query, userId, kind, model.NotificationEmail)
+	err := r.conn.Select(&preferences, query, userId, kind, model.NotificationEmail, model.NotificationTelegram)
 	return preferences, err
 }
 
 func (r *NotificationRepositoryPostgres) SetPreference(userId int64, kind, channel string, enabled bool) error {
+	if enabled && channel == model.NotificationTelegram {
+		query := `
+			INSERT INTO notification_preferences (user_id, kind, channel)
+			SELECT u.user_id, $2, $3
+			FROM users u
+			JOIN oauth_user o ON o.user_id = u.user_id AND o.provider = $3 AND o.oauth_user_id IS NOT NULL
+			WHERE u.user_id = $1 AND u.is_active
+			ON CONFLICT (user_id, kind, channel) DO UPDATE SET channel = EXCLUDED.channel
+		`
+		result, err := r.conn.Exec(query, userId, kind, channel)
+		if err != nil {
+			return err
+		}
+		count, err := result.RowsAffected()
+		if err == nil && count == 0 {
+			return sql.ErrNoRows
+		}
+		return err
+	}
 	if enabled {
 		query := `
 			INSERT INTO notification_preferences (user_id, kind, channel)
@@ -154,11 +180,17 @@ func (r *NotificationRepositoryPostgres) CompleteDelivery(d model.NotificationDe
 func (r *NotificationRepositoryPostgres) DeliveryAddress(d model.NotificationDelivery) (string, error) {
 	var address string
 	query := `
-		SELECT COALESCE(u.email, '')
+		SELECT CASE p.channel
+		    WHEN $4 THEN COALESCE(u.email, '')
+		    WHEN $5 THEN COALESCE(o.oauth_user_id, '')
+		END
 		FROM users u
 		JOIN notification_preferences p ON p.user_id = u.user_id AND p.kind = $2 AND p.channel = $3
-		WHERE u.user_id = $1 AND u.is_active AND p.channel = $4
+		JOIN notification_deliveries d ON d.notification_id = $6 AND d.channel = p.channel
+		LEFT JOIN oauth_user o ON o.user_id = u.user_id AND o.provider = $5 AND p.channel = $5
+		  AND o.oauth_user_id = d.telegram_chat_id::text
+		WHERE u.user_id = $1 AND u.is_active
 	`
-	err := r.conn.Get(&address, query, d.RecipientId, d.Kind, d.Channel, model.NotificationEmail)
+	err := r.conn.Get(&address, query, d.RecipientId, d.Kind, d.Channel, model.NotificationEmail, model.NotificationTelegram, d.Id)
 	return address, err
 }

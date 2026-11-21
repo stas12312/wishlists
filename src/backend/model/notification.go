@@ -5,6 +5,7 @@ import "time"
 const (
 	NotificationSupportReply = "support.reply"
 	NotificationEmail        = "email"
+	NotificationTelegram     = "telegram"
 )
 
 type Notification struct {
@@ -34,4 +35,5 @@ type NotificationPreference struct {
 	Channel   string `json:"channel" db:"channel"`
 	Enabled   bool   `json:"enabled" db:"enabled"`
 	Available bool   `json:"available" db:"available"`
+	Linked    bool   `json:"linked,omitempty" db:"linked"`
 }
