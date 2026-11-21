@@ -2,10 +2,14 @@ package impl
 
 import (
 	"bytes"
+	"context"
+	"io"
 	"main/model"
+	"main/repository"
 	"main/repository/mocks"
 	"main/service"
 	servicemocks "main/service/mocks"
+	"main/uof"
 	"strings"
 	"testing"
 )
@@ -63,9 +67,9 @@ func TestTicketServiceImpl_AddMessageFromAdminCommandOnly(t *testing.T) {
 	wsService := servicemocks.NewWSService(t)
 	wsService.On("SendMessage", int64(42), model.WSMessage{Event: service.ChangeTicketsCount}).Once()
 	wsService.On("SendMessageToChannel", "ticket_1", model.WSMessage{Event: service.Update}).Once()
-	s := NewTicketServiceImpl(ticketRepository, nil, messageService, wsService, nil, nil, "", nil, nil, "")
+	s := NewTicketServiceImpl(ticketRepository, nil, messageService, wsService, nil, nil, "", nil, nil, "", nil)
 
-	message, err := s.AddMessageFromAdmin(1, 1, &model.Message{Content: "/status resolved"})
+	message, err := s.AddMessageFromAdmin(context.Background(), 1, 1, &model.Message{Content: "/status resolved"})
 	if err != nil {
 		t.Fatalf("AddMessageFromAdmin() error = %v", err)
 	}
@@ -77,6 +81,93 @@ func TestTicketServiceImpl_AddMessageFromAdminCommandOnly(t *testing.T) {
 	}
 	if messageService.createMessageCalls != 0 {
 		t.Errorf("CreateMessage() calls = %d, want 0", messageService.createMessageCalls)
+	}
+}
+
+type replyTestWork struct {
+	store     uof.UnitOfWorkStore
+	commitErr error
+}
+
+func (w replyTestWork) Do(ctx context.Context, save func(context.Context, uof.UnitOfWorkStore) error) error {
+	if err := save(ctx, w.store); err != nil {
+		return err
+	}
+	return w.commitErr
+}
+
+type replyTestStore struct {
+	uof.UnitOfWorkStore
+	messages      repository.MessageRepository
+	notifications repository.NotificationRepository
+}
+
+func (s replyTestStore) MessageRepository() repository.MessageRepository { return s.messages }
+func (s replyTestStore) NotificationRepository() repository.NotificationRepository {
+	return s.notifications
+}
+
+type replyTestMessages struct {
+	repository.MessageRepository
+	input *model.Message
+}
+
+func (r *replyTestMessages) CreateMessage(message *model.Message) (*model.Message, error) {
+	r.input = message
+	saved := *message
+	saved.Id = 11
+	return &saved, nil
+}
+
+type replyTestNotifications struct {
+	repository.NotificationRepository
+	saved model.Notification
+}
+
+func (r *replyTestNotifications) Create(notification model.Notification) error {
+	r.saved = notification
+	return nil
+}
+
+func TestTicketServiceImpl_PublishesReplyOnlyAfterCommit(t *testing.T) {
+	for _, commitErr := range []error{nil, io.ErrUnexpectedEOF} {
+		name := "успешный коммит"
+		if commitErr != nil {
+			name = "ошибка коммита"
+		}
+		t.Run(name, func(t *testing.T) {
+			tickets := &ticketRepositoryStub{ticket: model.Ticket{Id: 1, AuthorId: 42, ConversationId: 7}}
+			messages := &replyTestMessages{}
+			notifications := &replyTestNotifications{}
+			ws := servicemocks.NewWSService(t)
+			if commitErr == nil {
+				ws.On("SendMessageToChannel", "ticket_1", model.WSMessage{Event: service.Update}).Once()
+				ws.On("SendMessage", int64(42), model.WSMessage{Event: service.NotificationsChanged}).Once()
+			}
+			work := replyTestWork{store: replyTestStore{messages: messages, notifications: notifications}, commitErr: commitErr}
+			s := &TicketServiceImpl{ticketRepository: tickets, wsService: ws, work: work}
+
+			reply, err := s.AddMessageFromAdmin(context.Background(), 2, 1, &model.Message{Content: " Ответ "})
+			if commitErr == nil && (err != nil || reply == nil || reply.Id != 11) {
+				t.Fatalf("reply = %+v, error = %v", reply, err)
+			}
+			if commitErr != nil && (err == nil || reply != nil) {
+				t.Fatalf("reply = %+v, error = %v after failed commit", reply, err)
+			}
+			want := model.Notification{
+				RecipientId: 42,
+				Kind:        model.NotificationSupportReply,
+				EventKey:    "11",
+				ResourceKey: "1",
+				Body:        "Ответ",
+			}
+			if notifications.saved != want {
+				t.Errorf("notification = %+v, want %+v", notifications.saved, want)
+			}
+			if messages.input == nil || messages.input.ConversationId != 7 || messages.input.SenderId != 2 || messages.input.Content != "Ответ" {
+				t.Errorf("saved message = %+v", messages.input)
+			}
+		})
 	}
 }
 
@@ -184,7 +275,7 @@ func TestTicketServiceImpl_UploadAttachment(t *testing.T) {
 			if size == 0 {
 				size = 4
 			}
-			s := NewTicketServiceImpl(nil, nil, nil, nil, fileRepository, func() string { return "UUID" }, "https://cdn", nil, nil, "")
+			s := NewTicketServiceImpl(nil, nil, nil, nil, fileRepository, func() string { return "UUID" }, "https://cdn", nil, nil, "", nil)
 
 			got, err := s.UploadAttachment(tt.filename, size, file)
 			if (err != nil) != tt.wantErr {
@@ -254,7 +345,7 @@ func TestTicketServiceImpl_ValidateMessage(t *testing.T) {
 			wantErr: true,
 		},
 	}
-	s := NewTicketServiceImpl(nil, nil, nil, nil, nil, nil, "https://cdn", nil, nil, "")
+	s := NewTicketServiceImpl(nil, nil, nil, nil, nil, nil, "https://cdn", nil, nil, "", nil)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := s.validateMessage(&tt.message)

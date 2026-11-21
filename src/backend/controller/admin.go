@@ -208,8 +208,10 @@ func (c *AdminController) AddTicketMessage(ctx *fiber.Ctx) error {
 	id, _ := strconv.ParseInt(ctx.Params("id"), 10, 64)
 	userId := GetUserIdFromCtx(ctx)
 	message := &model.Message{}
-	err := ctx.BodyParser(message)
-	messages, err := c.ticketService.AddMessageFromAdmin(userId, id, message)
+	if err := ctx.BodyParser(message); err != nil || id <= 0 {
+		return ctx.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{Message: "Некорректный запрос"})
+	}
+	messages, err := c.ticketService.AddMessageFromAdmin(ctx.UserContext(), userId, id, message)
 	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(model.ErrorResponse{Message: err.Error()})
 	}

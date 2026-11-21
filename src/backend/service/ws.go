@@ -10,6 +10,7 @@ const (
 	ChangeIncomingFriendsRequests = "ChangeIncomingFriendsRequests"
 	ChangeQuestionsCount          = "ChangeQuestionsCount"
 	ChangeTicketsCount            = "ChangeTicketsCount"
+	NotificationsChanged          = "NotificationsChanged"
 
 	Subscribe   = "Subscribe"
 	Unsubscribe = "Unsubscribe"

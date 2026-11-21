@@ -10,12 +10,17 @@ import (
 	"main/service"
 )
 
-func NewWebSocketController(service service.WSService) *WebSocketController {
-	return &WebSocketController{service}
+type websocketHub interface {
+	service.WSService
+	Reply(conn *websocket.Conn, messageType int, data []byte) error
+}
+
+func NewWebSocketController(hub websocketHub) *WebSocketController {
+	return &WebSocketController{hub}
 }
 
 type WebSocketController struct {
-	service.WSService
+	websocketHub
 }
 
 func (c *WebSocketController) Connect() fiber.Handler {
@@ -43,7 +48,6 @@ func (c *WebSocketController) Connect() fiber.Handler {
 			c.AddConnection(userId, conn)
 			for {
 				if mt, msg, err = conn.ReadMessage(); err != nil {
-					c.DeleteConnection(userId, conn)
 					break
 				}
 				wsMessage := &model.WSMessage{}
@@ -67,7 +71,7 @@ func (c *WebSocketController) Connect() fiber.Handler {
 				}
 
 				jsonResponse, _ := json.Marshal(response)
-				if err = conn.WriteMessage(mt, jsonResponse); err != nil {
+				if err = c.Reply(conn, mt, jsonResponse); err != nil {
 					break
 				}
 			}

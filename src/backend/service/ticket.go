@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"io"
 	"main/model"
 )
@@ -13,7 +14,7 @@ type TicketService interface {
 	ListCategory() ([]model.TicketCategory, error)
 	GetConversation(userId int64, ticketId int64) ([]model.Message, error)
 	AddMessage(userId int64, ticketId int64, message *model.Message) (*model.Message, error)
-	AddMessageFromAdmin(userId int64, ticketId int64, message *model.Message) (*model.Message, error)
+	AddMessageFromAdmin(ctx context.Context, userId int64, ticketId int64, message *model.Message) (*model.Message, error)
 	Close(userId int64, ticketId int64) error
 	GetCounters(userId int64) (int, error)
 	UploadAttachment(filename string, size int64, file io.Reader) (*model.Attachment, error)
