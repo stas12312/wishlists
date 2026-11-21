@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"main/db"
 	"main/model"
+	"main/repository"
 	"time"
 )
 
@@ -98,23 +99,24 @@ func (r *NotificationRepositoryPostgres) MarkRead(userId int64, kind, resourceKe
 	return count > 0, err
 }
 
-func (r *NotificationRepositoryPostgres) Preferences(userId int64, kind string) ([]model.NotificationPreference, error) {
-	preferences := []model.NotificationPreference{}
+func (r *NotificationRepositoryPostgres) Preferences(userId int64, kinds []string) ([]repository.NotificationPreferenceRow, error) {
+	var preferences []repository.NotificationPreferenceRow
 	query := `
-		SELECT channels.channel, COALESCE(p.enabled, TRUE) AS enabled,
+		SELECT kinds.kind, channels.channel, COALESCE(p.enabled, TRUE) AS enabled,
 		       (u.is_active IS TRUE AND CASE channels.channel
 		           WHEN $3 THEN NULLIF(u.email, '') IS NOT NULL
 		           WHEN $4 THEN COALESCE(pg_input_is_valid(o.oauth_user_id, 'bigint'), FALSE)
 		       END) AS available,
 		       (channels.channel = $4 AND o.oauth_user_id IS NOT NULL) AS linked
 		FROM users u
+		CROSS JOIN unnest($2::text[]) AS kinds(kind)
 		CROSS JOIN (VALUES ($3::text), ($4::text)) AS channels(channel)
 		LEFT JOIN notification_preferences p
-		  ON p.user_id = u.user_id AND p.kind = $2 AND p.channel = channels.channel
+		  ON p.user_id = u.user_id AND p.kind = kinds.kind AND p.channel = channels.channel
 		LEFT JOIN oauth_user o ON o.user_id = u.user_id AND o.provider = $4
 		WHERE u.user_id = $1
 	`
-	err := r.conn.Select(&preferences, query, userId, kind, model.NotificationEmail, model.NotificationTelegram)
+	err := r.conn.Select(&preferences, query, userId, kinds, model.NotificationEmail, model.NotificationTelegram)
 	return preferences, err
 }
 

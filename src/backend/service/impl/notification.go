@@ -135,15 +135,28 @@ func (s *NotificationService) MarkEventsRead(userId int64, kind, resourceKey str
 	return err
 }
 
-func (s *NotificationService) Preferences(userId int64, kind string) ([]model.NotificationPreference, error) {
-	preferences, err := s.repository.Preferences(userId, kind)
-	for i := range preferences {
-		preference := &preferences[i]
+func (s *NotificationService) Preferences(userId int64, kinds ...string) (map[string][]model.NotificationPreference, error) {
+	if len(kinds) == 0 {
+		for kind := range notificationTemplates {
+			kinds = append(kinds, kind)
+		}
+	}
+	rows, err := s.repository.Preferences(userId, kinds)
+	if err != nil {
+		return nil, err
+	}
+	preferences := make(map[string][]model.NotificationPreference, len(kinds))
+	for _, kind := range kinds {
+		preferences[kind] = []model.NotificationPreference{}
+	}
+	for _, row := range rows {
+		preference := row.NotificationPreference
 		if preference.Channel == model.NotificationTelegram {
 			preference.Available = preference.Available && s.botURL != ""
 		}
+		preferences[row.Kind] = append(preferences[row.Kind], preference)
 	}
-	return preferences, err
+	return preferences, nil
 }
 
 func (s *NotificationService) SetPreference(userId int64, kind, channel string, enabled bool) error {
