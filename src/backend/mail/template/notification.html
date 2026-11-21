@@ -1,0 +1,14 @@
+<h1 class="mail-title" style="margin:0 0 20px; font-size:32px; line-height:38px; letter-spacing:-0.5px; word-wrap:break-word; overflow-wrap:anywhere;">{{.Title}}</h1>
+{{if .Lines}}
+<p style="margin:0 0 24px; color:#514b58; word-wrap:break-word; overflow-wrap:anywhere;">{{range $index, $line := .Lines}}{{if $index}}<br>{{end}}{{$line}}{{end}}</p>
+{{end}}
+<table role="presentation" align="center" cellspacing="0" cellpadding="0" border="0" style="margin:0 auto;">
+  <tr>
+    <td bgcolor="#ffd76b" style="border-radius:9px; mso-padding-alt:12px 20px;">
+      <a href="{{.Link}}" style="display:inline-block; padding:12px 20px; mso-padding-alt:0; color:#292431; font-size:16px; line-height:24px; font-weight:700; text-decoration:none;">Открыть в MyWishlists</a>
+    </td>
+  </tr>
+</table>
+<p style="margin:16px 0 0; font-size:14px; line-height:20px; text-align:center;">
+  <a href="{{.SettingsLink}}" style="color:#605a66; text-decoration:underline;">Настроить уведомления</a>
+</p>

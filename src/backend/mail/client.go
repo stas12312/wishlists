@@ -1,6 +1,7 @@
 package mail
 
 import (
+	_ "embed"
 	"errors"
 	"io"
 	"log"
@@ -8,6 +9,9 @@ import (
 	"path/filepath"
 	"strings"
 )
+
+//go:embed template/layout.html
+var layoutHTML string
 
 var TemplateByName = map[string]string{
 	"email_change":   "./mail/template/email_change.html",
@@ -39,8 +43,14 @@ func LoadTemplate(name string) (string, error) {
 	}()
 
 	body, err := io.ReadAll(file)
-	return string(body), err
+	if err != nil {
+		return "", err
+	}
+	return withLayout(string(body)), nil
+}
 
+func withLayout(content string) string {
+	return strings.Replace(layoutHTML, "<!-- mail-content -->", content, 1)
 }
 
 func CompileTemplate(template string, values map[string]string) string {
