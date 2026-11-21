@@ -30,7 +30,10 @@ export const SettingNotifications = observer(function SettingNotifications({
   linksStore?: SettingsLinksStore;
 }) {
   const [preferences, setPreferences] = useState<NotificationPreference[]>([]);
-  const [saving, setSaving] = useState(false);
+  const [pendingPreference, setPendingPreference] = useState<{
+    channel: NotificationChannel;
+    enabled: boolean;
+  } | null>(null);
   const [error, setError] = useState("");
   const loadRequest = useRef<AbortController>(null);
   const isSaving = useRef(false);
@@ -66,7 +69,7 @@ export const SettingNotifications = observer(function SettingNotifications({
     if (isSaving.current) return;
     isSaving.current = true;
     loadRequest.current?.abort();
-    setSaving(true);
+    setPendingPreference({ channel, enabled });
     setError("");
     try {
       await setNotificationPreference(channel, enabled);
@@ -79,7 +82,7 @@ export const SettingNotifications = observer(function SettingNotifications({
       setError("Не удалось сохранить настройки уведомлений");
     } finally {
       isSaving.current = false;
-      setSaving(false);
+      setPendingPreference(null);
     }
   }
 
@@ -129,10 +132,14 @@ export const SettingNotifications = observer(function SettingNotifications({
                         <Switch
                           aria-label={switchLabel}
                           isDisabled={
-                            saving ||
-                            (!preference.available && !preference.enabled)
+                            !preference.available && !preference.enabled
                           }
-                          isSelected={preference.enabled}
+                          isReadOnly={pendingPreference !== null}
+                          isSelected={
+                            pendingPreference?.channel === id
+                              ? pendingPreference.enabled
+                              : preference.enabled
+                          }
                           onChange={(value) => void change(id, value)}
                         >
                           <Switch.Content>
