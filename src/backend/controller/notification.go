@@ -27,6 +27,7 @@ func (c *NotificationController) Route(router fiber.Router) {
 	group.Put("/read", c.markAllRead)
 	group.Put("/read/visible", c.markVisibleRead)
 	group.Put("/read/events", c.markEventsRead)
+	group.Get("/preferences", c.allPreferences)
 	group.Get("/preferences/:kind", c.preferences)
 	group.Put("/preferences/:kind/:channel", c.setPreference)
 }
@@ -71,6 +72,14 @@ func (c *NotificationController) markVisibleRead(ctx *fiber.Ctx) error {
 	return ctx.SendStatus(fiber.StatusNoContent)
 }
 
+func (c *NotificationController) allPreferences(ctx *fiber.Ctx) error {
+	preferences, err := c.service.Preferences(GetUserIdFromCtx(ctx))
+	if err != nil {
+		return notificationFailure(ctx, err)
+	}
+	return ctx.JSON(model.Response{Data: preferences})
+}
+
 func (c *NotificationController) preferences(ctx *fiber.Ctx) error {
 	kind := ctx.Params("kind")
 	if !c.service.SupportsKind(kind) {
@@ -80,7 +89,7 @@ func (c *NotificationController) preferences(ctx *fiber.Ctx) error {
 	if err != nil {
 		return notificationFailure(ctx, err)
 	}
-	return ctx.JSON(model.Response{Data: preferences})
+	return ctx.JSON(model.Response{Data: preferences[kind]})
 }
 
 func (c *NotificationController) setPreference(ctx *fiber.Ctx) error {

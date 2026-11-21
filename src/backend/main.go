@@ -109,7 +109,7 @@ func main() {
 	feedController := controller.NewFeedController(feedService)
 
 	questionRepository := repository.NewQuestionRepositoryPostgres(db)
-	questionService := service.NewQuestionServiceImpl(wishlistService, questionRepository, websocketService)
+	questionService := service.NewQuestionServiceImpl(wishlistService, questionRepository, websocketService, uof)
 	questionController := controller.NewQuestionController(questionService)
 
 	messageRepository := repository.NewMessageRepositoryPostgres(db)

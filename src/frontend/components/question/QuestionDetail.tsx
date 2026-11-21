@@ -5,8 +5,10 @@ import { useEffect, useState } from "react";
 
 import { QuestionItem } from "./QuestionItem";
 
+import { refreshNotifications } from "@/components/notifications/useNotificationRefresh";
 import PageHeader from "@/components/PageHeader";
 import { PageSpinner } from "@/components/PageSpinner";
+import { markNotificationEventsRead } from "@/lib/client-requests/notification";
 import { getQuestion, markQuestionClose } from "@/lib/client-requests/question";
 import { IQuestion, QuestionStatus } from "@/lib/models/question";
 import countersStore from "@/store/counterStore";
@@ -49,6 +51,23 @@ export function QuestionDetail({ id }: { id: string }) {
       });
     return () => controller.abort();
   }, [id]);
+
+  const canAnswer = question?.actions?.answer;
+  const canDelete = question?.actions?.delete;
+  const answerId = question?.answer?.id;
+  useEffect(() => {
+    if (canAnswer) {
+      void markNotificationEventsRead("question.created", id, [id])
+        .then(refreshNotifications)
+        .catch(() => {});
+    } else if (canDelete && answerId) {
+      void markNotificationEventsRead("question.answered", id, [
+        String(answerId),
+      ])
+        .then(refreshNotifications)
+        .catch(() => {});
+    }
+  }, [id, answerId, canAnswer, canDelete]);
 
   return (
     <div className="flex flex-col">
