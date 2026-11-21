@@ -155,10 +155,9 @@ export function NotificationInbox() {
 
   return (
     <div className="flex flex-col gap-3">
-      <PageHeader dividerClassName="mt-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <h1 className="text-2xl">Уведомления</h1>
-          <div className="ml-auto flex items-center gap-2">
+      <PageHeader
+        actions={
+          <>
             {unreadCount > 0 ? (
               <Button
                 isPending={markingAllRead}
@@ -193,9 +192,11 @@ export function NotificationInbox() {
                 </Modal.Container>
               </Modal.Backdrop>
             </Modal>
-          </div>
-        </div>
-      </PageHeader>
+          </>
+        }
+        dividerClassName="mt-2"
+        title="Уведомления"
+      />
       {error ? <p role="alert">{error}</p> : null}
       {!page && !error ? <p role="status">Загрузка…</p> : null}
       {!error && page?.items.length === 0 ? (
