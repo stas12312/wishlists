@@ -10,12 +10,30 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+function getReturnPath(value: string | string[] | undefined) {
+  if (typeof value !== "string" || !value.startsWith("/")) return "/";
+
+  const origin = "https://miniapp.invalid";
+  const target = URL.parse(value, origin);
+  if (
+    !target ||
+    target.origin !== origin ||
+    target.pathname.startsWith("//") ||
+    target.pathname.replace(/\/+$/, "") === "/miniapp/telegram"
+  ) {
+    return "/";
+  }
+
+  return target.pathname + target.search + target.hash;
+}
+
 export default async function Page({
   searchParams,
 }: {
   searchParams: Promise<{
     link?: string;
     link_code?: string;
+    ret?: string | string[];
     tgWebAppStartParam?: string;
   }>;
 }) {
@@ -33,6 +51,7 @@ export default async function Page({
   return (
     <TelegramEntry
       linkMode={params.link === "1"}
+      returnPath={getReturnPath(params.ret)}
       sessionUserId={sessionUserId}
     />
   );

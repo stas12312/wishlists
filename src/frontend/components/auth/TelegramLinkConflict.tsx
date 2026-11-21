@@ -10,8 +10,10 @@ import ConfirmationModal from "@/components/ConfirmationModal";
 import { TelegramStore } from "@/store/telegramStore";
 
 export const TelegramLinkConflict = observer(function TelegramLinkConflict({
+  returnPath,
   store,
 }: {
+  returnPath: string;
   store: TelegramStore;
 }) {
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
@@ -63,7 +65,9 @@ export const TelegramLinkConflict = observer(function TelegramLinkConflict({
           fullWidth
           isDisabled={store.busy && !store.openingLinkedAccount}
           isPending={store.openingLinkedAccount}
-          onPress={() => void store.loginLinkedAccount(openSettings)}
+          onPress={() =>
+            void store.loginLinkedAccount(openSettings, returnPath)
+          }
         >
           {openSettings ? "Перейти в настройки" : "Войти"}
         </Button>

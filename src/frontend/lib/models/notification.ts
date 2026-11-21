@@ -13,8 +13,11 @@ export interface NotificationPage {
   next: number;
 }
 
+export type NotificationChannel = "email" | "telegram";
+
 export interface NotificationPreference {
-  channel: string;
+  channel: NotificationChannel;
   enabled: boolean;
   available: boolean;
+  linked?: boolean;
 }

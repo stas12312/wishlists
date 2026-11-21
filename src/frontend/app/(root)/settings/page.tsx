@@ -36,7 +36,8 @@ export default function SettingsPage() {
         </SettingItem>
         <section
           aria-labelledby="login-methods-heading"
-          className="flex flex-col gap-3"
+          className="flex scroll-mt-24 flex-col gap-3"
+          id="login-methods"
         >
           <h2 className="text-xl" id="login-methods-heading">
             Способы входа
@@ -51,7 +52,7 @@ export default function SettingsPage() {
           <h2 className="text-xl" id="notifications-heading">
             Уведомления
           </h2>
-          <SettingNotifications />
+          <SettingNotifications linksStore={linksStore} />
         </section>
       </div>
       <div className="flex flex-col gap-2 mt-6">
