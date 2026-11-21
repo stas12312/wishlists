@@ -16,6 +16,7 @@ type Notification struct {
 	Kind        string     `json:"kind" db:"kind"`
 	EventKey    string     `json:"-" db:"event_key"`
 	ResourceKey string     `json:"-" db:"resource_key"`
+	EntityTitle *string    `json:"entity_title,omitempty" db:"entity_title"`
 	Body        string     `json:"body" db:"body"`
 	CreatedAt   time.Time  `json:"created_at" db:"created_at"`
 	ReadAt      *time.Time `json:"read_at" db:"read_at"`

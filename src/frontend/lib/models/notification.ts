@@ -7,6 +7,7 @@ export interface NotificationItem {
   id: number;
   kind: string;
   title: string;
+  entity_title?: string;
   body: string;
   href: string;
   created_at: string;

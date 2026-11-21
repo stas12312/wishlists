@@ -249,6 +249,11 @@ export function NotificationInbox() {
                       {new Date(item.created_at).toLocaleDateString("ru-RU")}
                     </time>
                   </div>
+                  {item.entity_title ? (
+                    <p className="wrap-anywhere text-sm font-medium">
+                      {item.entity_title}
+                    </p>
+                  ) : null}
                   {item.body ? (
                     <p className="wrap-anywhere whitespace-pre-wrap text-muted">
                       {item.body}

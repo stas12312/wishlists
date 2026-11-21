@@ -19,23 +19,23 @@ func NewNotificationRepositoryPostgres(conn db.Connection) *NotificationReposito
 func (r *NotificationRepositoryPostgres) Create(n model.Notification) error {
 	query := `
 		WITH inserted AS (
-			INSERT INTO notifications (recipient_id, kind, event_key, resource_key, body)
-			VALUES ($1, $2, $3, $4, $5)
+			INSERT INTO notifications (recipient_id, kind, event_key, resource_key, body, entity_title)
+			VALUES ($1, $2, $3, $4, $5, NULLIF($6, ''))
 			ON CONFLICT (recipient_id, kind, event_key) DO NOTHING
 			RETURNING notification_id, recipient_id, kind
 		)
 		INSERT INTO notification_deliveries (notification_id, channel, telegram_chat_id)
 		SELECT inserted.notification_id, channels.channel, o.oauth_user_id::bigint
 		FROM inserted
-		CROSS JOIN (VALUES ($6::text), ($7::text)) AS channels(channel)
+		CROSS JOIN (VALUES ($7::text), ($8::text)) AS channels(channel)
 		LEFT JOIN notification_preferences p
 		  ON p.user_id = inserted.recipient_id AND p.kind = inserted.kind AND p.channel = channels.channel
-		LEFT JOIN oauth_user o ON o.user_id = inserted.recipient_id AND o.provider = $7 AND channels.channel = $7
+		LEFT JOIN oauth_user o ON o.user_id = inserted.recipient_id AND o.provider = $8 AND channels.channel = $8
 		  AND pg_input_is_valid(o.oauth_user_id, 'bigint')
 		WHERE COALESCE(p.enabled, TRUE)
-		  AND (channels.channel <> $7 OR o.oauth_user_id IS NOT NULL)
+		  AND (channels.channel <> $8 OR o.oauth_user_id IS NOT NULL)
 	`
-	_, err := r.conn.Exec(query, n.RecipientId, n.Kind, n.EventKey, n.ResourceKey, n.Body, model.NotificationEmail, model.NotificationTelegram)
+	_, err := r.conn.Exec(query, n.RecipientId, n.Kind, n.EventKey, n.ResourceKey, n.Body, n.EntityTitle, model.NotificationEmail, model.NotificationTelegram)
 	return err
 }
 

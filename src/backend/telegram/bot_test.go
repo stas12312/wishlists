@@ -47,7 +47,7 @@ func TestAPIClientSendNotification(t *testing.T) {
 			t.Error(err)
 		}
 		if r.URL.Path != "/bottoken/sendMessage" || request.ChatID != 42 ||
-			request.ParseMode != "HTML" || request.Text != "<b>💬 Ответ поддержки</b>\n\nПроверили &lt;файл&gt; &amp; ссылку" {
+			request.ParseMode != "HTML" || request.Text != "<b>💬 Ответ поддержки</b>\n<b>Ошибка &lt;входа&gt;</b>\n\nПроверили &lt;файл&gt; &amp; ссылку" {
 			t.Errorf("unexpected request: %s %+v", r.URL.Path, request)
 		}
 		keyboard := request.ReplyMarkup.InlineKeyboard
@@ -69,7 +69,7 @@ func TestAPIClientSendNotification(t *testing.T) {
 	defer server.Close()
 	client := NewAPIClient("token")
 	client.baseURL = server.URL
-	err := client.SendNotification(context.Background(), 42, "💬 Ответ поддержки", "Проверили <файл> & ссылку", miniAppURL, siteURL)
+	err := client.SendNotification(context.Background(), 42, "💬 Ответ поддержки", "Ошибка <входа>", "Проверили <файл> & ссылку", miniAppURL, siteURL)
 	var apiError *APIError
 	if !errors.As(err, &apiError) || apiError.Code != http.StatusTooManyRequests || apiError.RetryAfter != 2*time.Minute {
 		t.Fatalf("unexpected error: %+v", err)

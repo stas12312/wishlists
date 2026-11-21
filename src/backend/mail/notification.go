@@ -12,13 +12,14 @@ var notificationHTML string
 
 var notificationTemplate = template.Must(template.New("notification").Parse(notificationHTML))
 
-func RenderNotification(title, message, link, settingsLink string) (string, error) {
+func RenderNotification(title string, entityTitle *string, message, link, settingsLink string) (string, error) {
 	data := struct {
 		Title        string
+		EntityTitle  *string
 		Lines        []string
 		Link         string
 		SettingsLink string
-	}{Title: title, Link: link, SettingsLink: settingsLink}
+	}{Title: title, EntityTitle: entityTitle, Link: link, SettingsLink: settingsLink}
 	if message != "" {
 		data.Lines = strings.Split(message, "\n")
 	}
