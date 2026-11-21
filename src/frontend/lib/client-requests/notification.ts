@@ -1,6 +1,7 @@
 import { AxiosResponse } from "axios";
 
 import {
+  NotificationChannel,
   NotificationPage,
   NotificationPreference,
 } from "../models/notification";
@@ -74,16 +75,19 @@ export async function markNotificationEventsRead(
 
 const preferencesURL = "/notifications/preferences/support.reply";
 
-export async function getEmailNotificationPreference(signal: AbortSignal) {
+export async function getNotificationPreferences(signal: AbortSignal) {
   const response = await clientAxios.get<{ data: NotificationPreference[] }>(
     preferencesURL,
     { signal },
   );
-  return notificationData(response).find(({ channel }) => channel === "email");
+  return notificationData(response);
 }
 
-export async function setEmailNotificationPreference(enabled: boolean) {
-  const response = await clientAxios.put(`${preferencesURL}/email`, {
+export async function setNotificationPreference(
+  channel: NotificationChannel,
+  enabled: boolean,
+) {
+  const response = await clientAxios.put(`${preferencesURL}/${channel}`, {
     enabled,
   });
   if (response.status !== 204) {

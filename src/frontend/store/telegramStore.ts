@@ -132,7 +132,7 @@ export class TelegramStore {
   async initialize(
     linkMode: boolean,
     sessionUserId: number | undefined,
-    openHome: () => void,
+    openApp: () => void,
   ) {
     if (this.busy || this.status !== "loading") return;
     const app = window.Telegram?.WebApp;
@@ -144,7 +144,7 @@ export class TelegramStore {
         !params.has("link_code") &&
         !params.has("tgWebAppStartParam")
       ) {
-        openHome();
+        openApp();
         return;
       }
       this.status = "outside";
@@ -174,8 +174,9 @@ export class TelegramStore {
         linkMode || params.get("link") === "1" || startParam === "link";
       if (!isLinkRequest) {
         if (sessionUserId) {
-          openHome();
-          void this.checkSessionAccount(app.initData, sessionUserId);
+          const entryURL = `/miniapp/telegram${window.location.search}`;
+          openApp();
+          void this.checkSessionAccount(app.initData, sessionUserId, entryURL);
           return;
         }
         const result = await authenticateTelegram(app.initData);
@@ -206,7 +207,7 @@ export class TelegramStore {
     }
   }
 
-  async loginLinkedAccount(openSettings: boolean) {
+  async loginLinkedAccount(openSettings: boolean, returnPath: string) {
     if (this.busy || this.status !== "linkConflict") return;
     const initData = window.Telegram?.WebApp.initData;
     if (!initData) {
@@ -225,7 +226,7 @@ export class TelegramStore {
       }
       await saveTelegramSession(result);
       authManager.accessToken = result.access_token;
-      window.location.replace(openSettings ? "/settings" : "/");
+      window.location.replace(openSettings ? "/settings" : returnPath);
     } catch (error) {
       authManager.accessToken = previousAccessToken;
       this.fail(this.errorMessage(error));
@@ -281,12 +282,16 @@ export class TelegramStore {
     authManager.logout();
   }
 
-  private async checkSessionAccount(initData: string, sessionUserId: number) {
+  private async checkSessionAccount(
+    initData: string,
+    sessionUserId: number,
+    entryURL: string,
+  ) {
     try {
       const inspection = await inspectTelegram(initData);
       if (inspection.linked && inspection.user.id !== sessionUserId) {
         await this.endSession();
-        window.location.replace("/miniapp/telegram");
+        window.location.replace(entryURL);
       }
     } catch {
       // Сбой фоновой проверки не должен прерывать работу на главной.

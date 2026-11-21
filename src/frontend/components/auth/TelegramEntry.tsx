@@ -29,13 +29,13 @@ function getLinkPreview() {
   return null;
 }
 
-const returnTo = encodeURIComponent("/miniapp/telegram?link=1");
-
 const TelegramEntry = observer(function TelegramEntry({
   linkMode,
+  returnPath,
   sessionUserId,
 }: {
   linkMode: boolean;
+  returnPath: string;
   sessionUserId?: number;
 }) {
   const [store] = useState(() => new TelegramStore());
@@ -72,17 +72,19 @@ const TelegramEntry = observer(function TelegramEntry({
 
   useEffect(() => {
     if (store.status === "done") {
-      router.replace("/");
+      router.replace(returnPath);
     }
-  }, [router, store.status]);
+  }, [returnPath, router, store.status]);
 
   useEffect(() => {
     if (getLinkPreview()) return;
     if (scriptStatus === "error") store.failIfWaitingForScript();
     if (scriptStatus === "ready") {
-      void store.initialize(linkMode, sessionUserId, () => router.replace("/"));
+      void store.initialize(linkMode, sessionUserId, () =>
+        router.replace(returnPath),
+      );
     }
-  }, [linkMode, router, scriptStatus, sessionUserId, store]);
+  }, [linkMode, returnPath, router, scriptStatus, sessionUserId, store]);
 
   return (
     <main className="flex min-h-[calc(100dvh-var(--telegram-top-inset))] items-center justify-center p-4 pt-[max(1rem,calc(env(safe-area-inset-top)-var(--telegram-top-inset)))] pb-[max(1rem,env(safe-area-inset-bottom))]">
@@ -150,7 +152,14 @@ const TelegramEntry = observer(function TelegramEntry({
                 <Button
                   fullWidth
                   isDisabled={store.busy}
-                  onPress={() => router.push(`/auth/login?ret=${returnTo}`)}
+                  onPress={() => {
+                    const params = new URLSearchParams({ link: "1" });
+                    if (returnPath !== "/") params.set("ret", returnPath);
+                    const returnTo = `/miniapp/telegram?${params}`;
+                    router.push(
+                      `/auth/login?ret=${encodeURIComponent(returnTo)}`,
+                    );
+                  }}
                 >
                   Войти в существующий аккаунт
                 </Button>
@@ -164,7 +173,7 @@ const TelegramEntry = observer(function TelegramEntry({
                 </Button>
               </>
             )}
-            <TelegramLinkConflict store={store} />
+            <TelegramLinkConflict returnPath={returnPath} store={store} />
             <TelegramLinkConfirmation store={store} />
             {store.status === "error" && (
               <>

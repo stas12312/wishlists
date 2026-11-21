@@ -9,7 +9,10 @@ import (
 	"main/model"
 	"main/repository"
 	"main/service"
+	"main/telegram"
+	"net/http"
 	"net/textproto"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -17,15 +20,24 @@ import (
 	"github.com/gofiber/fiber/v2/log"
 )
 
+type telegramNotificationSender interface {
+	SendNotification(ctx context.Context, chatID int64, text, url string) error
+}
+
 type NotificationService struct {
 	repository repository.NotificationRepository
 	ws         service.WSService
 	mail       mail.MailClient
 	baseURL    string
+	telegram   telegramNotificationSender
+	botURL     string
 }
 
-func NewNotificationService(repo repository.NotificationRepository, ws service.WSService, mailClient mail.MailClient, baseURL string) *NotificationService {
-	return &NotificationService{repo, ws, mailClient, strings.TrimRight(baseURL, "/")}
+func NewNotificationService(repo repository.NotificationRepository, ws service.WSService, mailClient mail.MailClient, baseURL string, bot telegramNotificationSender, botUsername string) *NotificationService {
+	return &NotificationService{
+		repository: repo, ws: ws, mail: mailClient, baseURL: strings.TrimRight(baseURL, "/"),
+		telegram: bot, botURL: telegramAuthDeepLink(botUsername),
+	}
 }
 
 func supportReplyNotification(ticket *model.Ticket, message *model.Message) model.Notification {
@@ -113,10 +125,20 @@ func (s *NotificationService) MarkEventsRead(userId int64, kind, resourceKey str
 }
 
 func (s *NotificationService) Preferences(userId int64, kind string) ([]model.NotificationPreference, error) {
-	return s.repository.Preferences(userId, kind)
+	preferences, err := s.repository.Preferences(userId, kind)
+	for i := range preferences {
+		preference := &preferences[i]
+		if preference.Channel == model.NotificationTelegram {
+			preference.Available = preference.Available && s.botURL != ""
+		}
+	}
+	return preferences, err
 }
 
 func (s *NotificationService) SetPreference(userId int64, kind, channel string, enabled bool) error {
+	if enabled && channel == model.NotificationTelegram && s.botURL == "" {
+		return sql.ErrNoRows
+	}
 	return s.repository.SetPreference(userId, kind, channel, enabled)
 }
 
@@ -126,7 +148,7 @@ func (s *NotificationService) Run(ctx context.Context, channel string) {
 	for ctx.Err() == nil {
 		delivery, err := s.repository.ClaimDelivery(channel)
 		if err == nil {
-			s.deliver(delivery)
+			s.deliver(ctx, delivery)
 			continue
 		}
 		if !errors.Is(err, sql.ErrNoRows) {
@@ -140,7 +162,7 @@ func (s *NotificationService) Run(ctx context.Context, channel string) {
 	}
 }
 
-func (s *NotificationService) deliver(delivery model.NotificationDelivery) {
+func (s *NotificationService) deliver(ctx context.Context, delivery model.NotificationDelivery) {
 	address, err := s.repository.DeliveryAddress(delivery)
 	item := notificationItem(delivery.Notification)
 	status := "sent"
@@ -155,7 +177,11 @@ func (s *NotificationService) deliver(delivery model.NotificationDelivery) {
 		status = "failed"
 		lastError = "Неизвестный тип уведомления"
 	default:
-		err = s.sendEmail(address, item)
+		if delivery.Channel == model.NotificationTelegram {
+			err = s.sendTelegram(ctx, address, item)
+		} else {
+			err = s.sendEmail(address, item)
+		}
 		if err != nil {
 			lastError = "Провайдер не подтвердил отправку"
 		}
@@ -163,19 +189,43 @@ func (s *NotificationService) deliver(delivery model.NotificationDelivery) {
 	if err != nil && status == "sent" {
 		status = "failed"
 		var smtpError *textproto.Error
+		var telegramError *telegram.APIError
 		permanent := false
+		var retryAfter time.Duration
 		if errors.As(err, &smtpError) {
 			permanent = smtpError.Code >= 500 && smtpError.Code < 600
 			lastError = "SMTP отклонил отправку (" + strconv.Itoa(smtpError.Code) + ")"
 		}
+		if errors.As(err, &telegramError) {
+			permanent = telegramError.Code >= 400 && telegramError.Code < 500 && telegramError.Code != http.StatusTooManyRequests
+			retryAfter = telegramError.RetryAfter
+			lastError = telegramError.Error()
+		}
 		if delivery.Attempts < 5 && !permanent {
 			status = "pending"
-			delay = time.Minute << (delivery.Attempts - 1)
+			delay = max(time.Minute<<(delivery.Attempts-1), retryAfter)
 		}
 	}
 	if err := s.repository.CompleteDelivery(delivery, status, lastError, delay); err != nil {
 		log.Errorf("Не удалось обновить доставку уведомления %d через %s: %v", delivery.Id, delivery.Channel, err)
 	}
+}
+
+func (s *NotificationService) sendTelegram(ctx context.Context, address string, item model.NotificationItem) error {
+	chatId, err := strconv.ParseInt(address, 10, 64)
+	if err != nil {
+		return err
+	}
+	text := item.Title
+	if item.Body != "" {
+		preview := []rune(item.Body)
+		if len(preview) > 1000 {
+			preview = append(preview[:1000], '…')
+		}
+		text += "\n\n" + string(preview)
+	}
+	link := s.baseURL + "/miniapp/telegram?ret=" + url.QueryEscape(item.Href)
+	return s.telegram.SendNotification(ctx, chatId, text, link)
 }
 
 func (s *NotificationService) sendEmail(address string, item model.NotificationItem) error {

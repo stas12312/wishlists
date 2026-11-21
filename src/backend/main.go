@@ -77,7 +77,7 @@ func main() {
 	telegramService := service.NewTelegramService(uof, appConfig.TelegramBotToken, appConfig.TelegramBotUsername, telegramCodeRepository, telegramImages)
 	telegramController := controller.NewTelegramController(telegramService, appConfig)
 	notificationRepository := repository.NewNotificationRepositoryPostgres(db)
-	notificationService := service.NewNotificationService(notificationRepository, websocketService, smtpClient, appConfig.BaseUrl)
+	notificationService := service.NewNotificationService(notificationRepository, websocketService, smtpClient, appConfig.BaseUrl, telegramBotClient, appConfig.TelegramBotUsername)
 	notificationController := controller.NewNotificationController(notificationService)
 	telegramBotService := service.NewTelegramBotService(telegramBotClient, appConfig.BaseUrl, telegramCodeRepository)
 	telegramBotController := controller.NewTelegramBotController(telegramBotService, appConfig.TelegramWebhookSecret)
@@ -154,6 +154,7 @@ func main() {
 
 	configureTelegramWebhook(telegramBotClient, appConfig)
 	go notificationService.Run(context.Background(), model.NotificationEmail)
+	go notificationService.Run(context.Background(), model.NotificationTelegram)
 	log.Fatal(app.Listen(":8080"))
 }
 
