@@ -70,7 +70,11 @@ export async function uploadTicketAttachment(
 }
 
 export async function closeTicket(ticketId: number) {
-  await clientAxios.post(`/tickets/${ticketId}/close`);
+  const response = await clientAxios.post(`/tickets/${ticketId}/close`);
+
+  if (response.status >= 400) {
+    throw new Error("Не удалось закрыть обращение");
+  }
 }
 
 export async function getTicketCounters(): Promise<number> {

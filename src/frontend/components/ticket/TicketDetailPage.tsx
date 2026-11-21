@@ -313,7 +313,10 @@ export const TicketDetailPage = ({
               <div ref={bottomRef} />
             </div>
 
-            <div className="mt-auto">
+            <div
+              className="mt-auto"
+              hidden={ticket.status === "closed" && !withStatusCommands}
+            >
               <Separator />
               {withStatusCommands ? (
                 <div className="mt-4 flex flex-wrap gap-2">
@@ -334,6 +337,27 @@ export const TicketDetailPage = ({
                     </Button>
                   ))}
                 </div>
+              ) : null}
+              {ticket.status !== "closed" ? (
+                <Button
+                  fullWidth
+                  className="mt-4 bg-success text-success-foreground"
+                  size="lg"
+                  onPress={async () => {
+                    try {
+                      await closeTicket(ticketId);
+                    } catch {
+                      toast.danger("Не удалось закрыть обращение");
+                      return;
+                    }
+
+                    toast.success("Обращение закрыто");
+                    await fetchData();
+                  }}
+                >
+                  Вопрос решен
+                  <MdDone />
+                </Button>
               ) : null}
               <div className="mt-4">
                 <MessageForm
@@ -363,20 +387,6 @@ export const TicketDetailPage = ({
                   </div>
                 ) : null}
               </div>
-            </div>
-            <div className="w-full flex justify-end">
-              {ticket.status != "closed" ? (
-                <Button
-                  className="bg-success mt-2"
-                  onPress={async () => {
-                    closeTicket(ticketId);
-                    await fetchData();
-                  }}
-                >
-                  Закрыть обращение
-                  <MdDone />
-                </Button>
-              ) : null}
             </div>
           </Surface>
         </div>
