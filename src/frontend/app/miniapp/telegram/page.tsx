@@ -1,6 +1,5 @@
 import { Metadata } from "next";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 
 import TelegramEntry from "@/components/auth/TelegramEntry";
@@ -30,14 +29,6 @@ export default async function Page({
     } catch {
       // Повреждённый токен пропускаем, чтобы Telegram мог создать новую сессию.
     }
-  }
-  if (
-    sessionUserId &&
-    params.link === undefined &&
-    params.link_code === undefined &&
-    params.tgWebAppStartParam === undefined
-  ) {
-    redirect("/");
   }
   return (
     <TelegramEntry

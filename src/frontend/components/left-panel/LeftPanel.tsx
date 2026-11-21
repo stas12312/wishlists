@@ -11,7 +11,9 @@ export const LeftPanel = ({ children }: { children: ReactNode }) => {
       <div
         className={clsx(
           "sticky hidden md:block ml-2",
-          isVisible ? "top-22" : "top-4",
+          isVisible
+            ? "top-[calc(var(--telegram-top-inset)+--spacing(22))]"
+            : "top-[calc(var(--telegram-top-inset)+--spacing(4))]",
         )}
       >
         {children}

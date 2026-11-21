@@ -27,7 +27,7 @@ export default async function Layout({
     getUserFromCookies(),
   ]);
   return (
-    <div className="relative flex flex-col min-h-screen justify-between">
+    <div className="relative flex flex-col min-h-[calc(100vh-var(--telegram-top-inset))] justify-between">
       <div>
         <Header isLogin={isLogin} />
         {isLogin ? <BackgroundDecoration /> : null}
