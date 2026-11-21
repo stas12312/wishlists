@@ -55,6 +55,9 @@ export function TelegramProvider({ children }: { children: React.ReactNode }) {
               app.onEvent?.("fullscreenChanged", updateFullscreen);
               updateFullscreen();
               app.ready();
+              if (app.isVersionAtLeast?.("7.7")) {
+                app.disableVerticalSwipes?.();
+              }
               app.expand();
               if (!app.isFullscreen && app.isVersionAtLeast?.("8.0")) {
                 app.requestFullscreen?.();
