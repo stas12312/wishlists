@@ -1,4 +1,7 @@
 <h1 class="mail-title" style="margin:0 0 20px; font-size:32px; line-height:38px; letter-spacing:-0.5px; word-wrap:break-word; overflow-wrap:anywhere;">{{.Title}}</h1>
+{{if .EntityTitle}}
+<p style="margin:0 0 16px; font-weight:700; word-wrap:break-word; overflow-wrap:anywhere;">{{.EntityTitle}}</p>
+{{end}}
 {{if .Lines}}
 <p style="margin:0 0 24px; color:#514b58; word-wrap:break-word; overflow-wrap:anywhere;">{{range $index, $line := .Lines}}{{if $index}}<br>{{end}}{{$line}}{{end}}</p>
 {{end}}

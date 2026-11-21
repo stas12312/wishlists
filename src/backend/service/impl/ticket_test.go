@@ -10,6 +10,7 @@ import (
 	"main/service"
 	servicemocks "main/service/mocks"
 	"main/uof"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -136,7 +137,8 @@ func TestTicketServiceImpl_PublishesReplyOnlyAfterCommit(t *testing.T) {
 			name = "ошибка коммита"
 		}
 		t.Run(name, func(t *testing.T) {
-			tickets := &ticketRepositoryStub{ticket: model.Ticket{Id: 1, AuthorId: 42, ConversationId: 7}}
+			subject := "Не приходит письмо для входа"
+			tickets := &ticketRepositoryStub{ticket: model.Ticket{Id: 1, AuthorId: 42, ConversationId: 7, Subject: subject}}
 			messages := &replyTestMessages{}
 			notifications := &replyTestNotifications{}
 			ws := servicemocks.NewWSService(t)
@@ -159,9 +161,10 @@ func TestTicketServiceImpl_PublishesReplyOnlyAfterCommit(t *testing.T) {
 				Kind:        model.NotificationSupportReply,
 				EventKey:    "11",
 				ResourceKey: "1",
+				EntityTitle: &subject,
 				Body:        "Ответ",
 			}
-			if notifications.saved != want {
+			if !reflect.DeepEqual(notifications.saved, want) {
 				t.Errorf("notification = %+v, want %+v", notifications.saved, want)
 			}
 			if messages.input == nil || messages.input.ConversationId != 7 || messages.input.SenderId != 2 || messages.input.Content != "Ответ" {

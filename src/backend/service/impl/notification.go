@@ -20,7 +20,7 @@ import (
 )
 
 type telegramNotificationSender interface {
-	SendNotification(ctx context.Context, chatID int64, title, body, miniAppURL, siteURL string) error
+	SendNotification(ctx context.Context, chatID int64, title, entityTitle, body, miniAppURL, siteURL string) error
 }
 
 type NotificationService struct {
@@ -49,6 +49,7 @@ func supportReplyNotification(ticket *model.Ticket, message *model.Message) mode
 		Kind:        model.NotificationSupportReply,
 		EventKey:    strconv.FormatInt(message.Id, 10),
 		ResourceKey: strconv.FormatInt(ticket.Id, 10),
+		EntityTitle: &ticket.Subject,
 		Body:        body,
 	}
 }
@@ -248,12 +249,20 @@ func (s *NotificationService) sendTelegram(ctx context.Context, address string, 
 	if len(preview) > 1000 {
 		preview = append(preview[:1000], '…')
 	}
+	var entityTitle string
+	if item.EntityTitle != nil {
+		runes := []rune(*item.EntityTitle)
+		if len(runes) > 500 {
+			runes = append(runes[:500], '…')
+		}
+		entityTitle = string(runes)
+	}
 	miniAppURL := s.baseURL + "/miniapp/telegram?ret=" + url.QueryEscape(item.Href)
-	return s.telegram.SendNotification(ctx, chatId, title, string(preview), miniAppURL, s.baseURL+item.Href)
+	return s.telegram.SendNotification(ctx, chatId, title, entityTitle, string(preview), miniAppURL, s.baseURL+item.Href)
 }
 
 func (s *NotificationService) sendEmail(address string, item model.NotificationItem) error {
-	body, err := mail.RenderNotification(item.Title, item.Body, s.baseURL+item.Href, s.baseURL+"/settings#notifications")
+	body, err := mail.RenderNotification(item.Title, item.EntityTitle, item.Body, s.baseURL+item.Href, s.baseURL+"/settings#notifications")
 	if err != nil {
 		return err
 	}

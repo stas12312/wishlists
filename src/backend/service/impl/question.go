@@ -53,6 +53,7 @@ func (q *QuestionServiceImpl) Create(userId int64, question *model.Question) (*m
 			Kind:        model.NotificationQuestionCreated,
 			EventKey:    questionKey,
 			ResourceKey: questionKey,
+			EntityTitle: &wish.Name,
 			Body:        created.Content,
 		})
 	})
@@ -139,6 +140,7 @@ func (q *QuestionServiceImpl) CreateAnswer(userId int64, questionId int64, answe
 			Kind:        model.NotificationQuestionAnswered,
 			EventKey:    strconv.FormatInt(answerId, 10),
 			ResourceKey: strconv.FormatInt(questionId, 10),
+			EntityTitle: &wish.Name,
 			Body:        answer,
 		})
 	})
