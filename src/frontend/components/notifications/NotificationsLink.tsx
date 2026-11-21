@@ -18,7 +18,7 @@ export function NotificationsLink() {
       // Счётчик обновится при следующем событии или возвращении на вкладку.
     }
   }, []);
-  useNotificationRefresh(load);
+  useNotificationRefresh(load, { waitForConnection: true });
 
   return (
     <Link
