@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"html"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -71,11 +72,13 @@ type webAppInfo struct {
 type inlineKeyboardButton struct {
 	Text   string      `json:"text"`
 	WebApp *webAppInfo `json:"web_app,omitempty"`
+	URL    string      `json:"url,omitempty"`
 }
 
 type sendMessageRequest struct {
 	ChatID      int64  `json:"chat_id"`
 	Text        string `json:"text"`
+	ParseMode   string `json:"parse_mode,omitempty"`
 	ReplyMarkup struct {
 		InlineKeyboard [][]inlineKeyboardButton `json:"inline_keyboard"`
 	} `json:"reply_markup"`
@@ -89,11 +92,16 @@ func (c *APIClient) SendMiniApp(ctx context.Context, chatID int64, text, url str
 	return c.do(ctx, "sendMessage", request)
 }
 
-func (c *APIClient) SendNotification(ctx context.Context, chatID int64, text, url string) error {
-	request := sendMessageRequest{ChatID: chatID, Text: text}
-	request.ReplyMarkup.InlineKeyboard = [][]inlineKeyboardButton{{
-		{Text: "Открыть в MyWishlists", WebApp: &webAppInfo{URL: url}},
-	}}
+func (c *APIClient) SendNotification(ctx context.Context, chatID int64, title, body, miniAppURL, siteURL string) error {
+	text := "<b>" + html.EscapeString(title) + "</b>"
+	if body != "" {
+		text += "\n\n" + html.EscapeString(body)
+	}
+	request := sendMessageRequest{ChatID: chatID, Text: text, ParseMode: "HTML"}
+	request.ReplyMarkup.InlineKeyboard = [][]inlineKeyboardButton{
+		{{Text: "Открыть в приложении", WebApp: &webAppInfo{URL: miniAppURL}}},
+		{{Text: "Открыть на сайте", URL: siteURL}},
+	}
 	return c.do(ctx, "sendMessage", request)
 }
 

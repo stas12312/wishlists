@@ -21,7 +21,7 @@ import (
 )
 
 type telegramNotificationSender interface {
-	SendNotification(ctx context.Context, chatID int64, text, url string) error
+	SendNotification(ctx context.Context, chatID int64, title, body, miniAppURL, siteURL string) error
 }
 
 type NotificationService struct {
@@ -57,10 +57,12 @@ func supportReplyNotification(ticket *model.Ticket, message *model.Message) mode
 var notificationTemplates = map[string]struct {
 	title      string
 	hrefPrefix string
+	emoji      string
 }{
 	model.NotificationSupportReply: {
 		title:      "Получен ответ от поддержки",
 		hrefPrefix: "/tickets/",
+		emoji:      "💬",
 	},
 }
 
@@ -216,16 +218,16 @@ func (s *NotificationService) sendTelegram(ctx context.Context, address string, 
 	if err != nil {
 		return err
 	}
-	text := item.Title
-	if item.Body != "" {
-		preview := []rune(item.Body)
-		if len(preview) > 1000 {
-			preview = append(preview[:1000], '…')
-		}
-		text += "\n\n" + string(preview)
+	title := item.Title
+	if emoji := notificationTemplates[item.Kind].emoji; emoji != "" {
+		title = emoji + " " + title
 	}
-	link := s.baseURL + "/miniapp/telegram?ret=" + url.QueryEscape(item.Href)
-	return s.telegram.SendNotification(ctx, chatId, text, link)
+	preview := []rune(item.Body)
+	if len(preview) > 1000 {
+		preview = append(preview[:1000], '…')
+	}
+	miniAppURL := s.baseURL + "/miniapp/telegram?ret=" + url.QueryEscape(item.Href)
+	return s.telegram.SendNotification(ctx, chatId, title, string(preview), miniAppURL, s.baseURL+item.Href)
 }
 
 func (s *NotificationService) sendEmail(address string, item model.NotificationItem) error {
