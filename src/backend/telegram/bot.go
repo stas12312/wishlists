@@ -95,10 +95,10 @@ func (c *APIClient) SendMiniApp(ctx context.Context, chatID int64, text, url str
 func (c *APIClient) SendNotification(ctx context.Context, chatID int64, title, entityTitle, body, miniAppURL, siteURL string) error {
 	text := "<b>" + html.EscapeString(title) + "</b>"
 	if entityTitle != "" {
-		text += "\n<b>" + html.EscapeString(entityTitle) + "</b>"
+		text += "\n\n<b>" + html.EscapeString(entityTitle) + "</b>"
 	}
 	if body != "" {
-		text += "\n\n" + html.EscapeString(body)
+		text += "\n" + html.EscapeString(body)
 	}
 	request := sendMessageRequest{ChatID: chatID, Text: text, ParseMode: "HTML"}
 	request.ReplyMarkup.InlineKeyboard = [][]inlineKeyboardButton{
