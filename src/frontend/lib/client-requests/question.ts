@@ -8,6 +8,19 @@ export async function createQuestion(question: IQuestion): Promise<IQuestion> {
   return response.data.data;
 }
 
+export async function getQuestion(
+  questionId: string,
+  signal: AbortSignal,
+): Promise<IQuestion | null> {
+  const response = await clientAxios.get<{ data: IQuestion }>(
+    `/questions/${encodeURIComponent(questionId)}`,
+    { signal },
+  );
+  if (response.status === 404) return null;
+  if (response.status !== 200) throw new Error("Не удалось загрузить вопрос");
+  return response.data.data;
+}
+
 export async function getQuestionsForWish(
   wishUUID: string,
 ): Promise<ListResponse<IQuestion>> {
@@ -73,9 +86,10 @@ export async function deleteAnswer(
 }
 
 export async function markQuestionClose(ids: number[]) {
-  await clientAxios.post(`/questions/close`, {
+  const response = await clientAxios.post(`/questions/close`, {
     ids: ids,
   });
+  return response.status === 200;
 }
 
 export async function getQuestionCounters(): Promise<IQuestionCounters> {

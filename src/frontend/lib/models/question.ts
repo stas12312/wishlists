@@ -13,7 +13,7 @@ export interface IQuestionActions {
 }
 
 export interface IAnswer {
-  id: number;
+  id: number | null;
   content: string;
   created_at: string;
 }

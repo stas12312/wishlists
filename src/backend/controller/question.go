@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"errors"
+	apperror "main/error"
 	"main/middleware"
 	"main/model"
 	"main/service"
@@ -8,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
 )
 
 func NewQuestionController(service service.QuestionService) *QuestionController {
@@ -124,6 +127,24 @@ func (c *QuestionController) Answer(ctx *fiber.Ctx) error {
 	return ctx.JSON(model.Response{Data: question})
 }
 
+func (c *QuestionController) Get(ctx *fiber.Ctx) error {
+	notFound := model.ErrorResponse{Message: "Вопрос недоступен или был удален", Code: apperror.NotFound}
+	questionId, err := strconv.ParseInt(ctx.Params("id"), 10, 64)
+	if err != nil || questionId <= 0 {
+		return ctx.Status(fiber.StatusNotFound).JSON(notFound)
+	}
+	question, err := c.QuestionService.GetById(GetUserIdFromCtx(ctx), questionId)
+	if err != nil {
+		var appError *apperror.Error
+		if errors.As(err, &appError) && appError.Code == apperror.NotFound {
+			return ctx.Status(fiber.StatusNotFound).JSON(notFound)
+		}
+		log.Errorf("Не удалось загрузить вопрос %d: %v", questionId, err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(model.ErrorResponse{Message: "Не удалось загрузить вопрос"})
+	}
+	return ctx.JSON(model.Response{Data: question})
+}
+
 func (c *QuestionController) Counters(ctx *fiber.Ctx) error {
 	userId := GetUserIdFromCtx(ctx)
 	waiting, answered, err := c.QuestionService.Counters(userId)
@@ -187,6 +208,7 @@ func (c *QuestionController) Route(router fiber.Router) {
 	group.Get("/for-me", middleware.Protected(true), c.ListForMe)
 	group.Get("/counters", middleware.Protected(true), c.Counters)
 	group.Post("/close", middleware.Protected(true), c.CloseQuestions)
+	group.Get("/:id", middleware.Protected(true), c.Get)
 
 	router.Get("/wishes/:uuid/questions", middleware.Protected(false), c.ListForWish)
 }

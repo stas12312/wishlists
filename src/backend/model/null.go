@@ -133,11 +133,11 @@ type NullInt64 struct {
 	sql.NullInt64
 }
 
-func (nf *NullInt64) MarshalJSON() ([]byte, error) {
-	if !nf.Valid {
+func (ni *NullInt64) MarshalJSON() ([]byte, error) {
+	if !ni.Valid {
 		return []byte("null"), nil
 	}
-	return json.Marshal(nf.NullInt64)
+	return json.Marshal(ni.Int64)
 }
 
 type Int64Array struct {
