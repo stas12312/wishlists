@@ -19,6 +19,7 @@ import { ITokens } from "@/lib/models/auth";
 interface TelegramWebApp {
   initData: string;
   initDataUnsafe?: { start_param?: string };
+  platform: string;
   isFullscreen?: boolean;
   isVersionAtLeast?(version: string): boolean;
   onEvent?(event: "fullscreenChanged", callback: () => void): void;

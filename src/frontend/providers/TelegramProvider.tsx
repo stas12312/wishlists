@@ -59,7 +59,13 @@ export function TelegramProvider({ children }: { children: React.ReactNode }) {
                 app.disableVerticalSwipes?.();
               }
               app.expand();
-              if (!app.isFullscreen && app.isVersionAtLeast?.("8.0")) {
+              const isDesktop =
+                app.platform === "tdesktop" || app.platform === "macos";
+              if (
+                !isDesktop &&
+                !app.isFullscreen &&
+                app.isVersionAtLeast?.("8.0")
+              ) {
                 app.requestFullscreen?.();
               }
             }
