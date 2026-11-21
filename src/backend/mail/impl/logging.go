@@ -9,13 +9,18 @@ import (
 )
 
 func NewLoggingClient(client mail.MailClient, repository repository.MailLogRepository) *LoggingClient {
+	return &LoggingClient{client: client, repository: repository, asynchronous: true}
+}
+
+// Обработчику уведомлений нужен результат SMTP для решения о повторной попытке.
+func NewSynchronousLoggingClient(client mail.MailClient, repository repository.MailLogRepository) *LoggingClient {
 	return &LoggingClient{client: client, repository: repository}
 }
 
-// LoggingClient отправляет письма в фоне и сохраняет результат каждой отправки в mail_logs
 type LoggingClient struct {
-	client     mail.MailClient
-	repository repository.MailLogRepository
+	client       mail.MailClient
+	repository   repository.MailLogRepository
+	asynchronous bool
 }
 
 func (c LoggingClient) Send(toList []string, subject, body string) error {
@@ -26,7 +31,7 @@ func (c LoggingClient) Send(toList []string, subject, body string) error {
 		mailLog = nil
 	}
 
-	go func() {
+	send := func() error {
 		sendErr := c.client.Send(toList, subject, body)
 		if sendErr != nil {
 			log.Error(fmt.Sprintf("Failed to send email to %v: %s", toList, sendErr))
@@ -34,12 +39,16 @@ func (c LoggingClient) Send(toList []string, subject, body string) error {
 			log.Info(fmt.Sprintf("Email was sent to %v", toList))
 		}
 
-		if mailLog == nil {
-			return
+		if mailLog != nil {
+			if err := c.repository.SetResult(mailLog.Id, sendErr); err != nil {
+				log.Error(fmt.Sprintf("Failed to update mail log %d: %s", mailLog.Id, err))
+			}
 		}
-		if err := c.repository.SetResult(mailLog.Id, sendErr); err != nil {
-			log.Error(fmt.Sprintf("Failed to update mail log %d: %s", mailLog.Id, err))
-		}
-	}()
-	return nil
+		return sendErr
+	}
+	if c.asynchronous {
+		go send()
+		return nil
+	}
+	return send()
 }
