@@ -56,7 +56,7 @@ export const Header = ({ isLogin }: { isLogin: boolean }) => {
   return (
     <header
       className={clsx(
-        "flex z-50 justify-between justify rounded-3xl m-2 items-center sticky top-2",
+        "flex z-50 justify-between justify rounded-3xl m-2 items-center sticky top-[calc(var(--telegram-top-inset)+--spacing(2))]",
         showBg
           ? "bg-white/50 dark:bg-default/50 backdrop-blur-xl shadow-md ring-gray-500/10 ring-1 "
           : null,

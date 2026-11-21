@@ -9,6 +9,7 @@ import { fontSans } from "@/config/fonts";
 import { siteConfig } from "@/config/site";
 import { Metrika } from "@/components/YandexMetrika";
 import { getOgImageUrl } from "@/lib/label";
+import { TelegramProvider } from "@/providers/TelegramProvider";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || ""),
@@ -58,7 +59,7 @@ export default async function RootLayout({
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
-          {children}
+          <TelegramProvider>{children}</TelegramProvider>
         </Providers>
         <Suspense>
           <Metrika />

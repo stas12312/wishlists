@@ -24,7 +24,9 @@ export const DateEvents = ({
       <div
         className={clsx(
           "bg-surface/50 backdrop-blur-xl sticky text-center p-2 z-20 md:float-left rounded-3xl my-4 mx-6 md:mx-0",
-          isVisible ? "top-22" : "top-4",
+          isVisible
+            ? "top-[calc(var(--telegram-top-inset)+--spacing(22))]"
+            : "top-[calc(var(--telegram-top-inset)+--spacing(4))]",
         )}
       >
         <p className="text-bold text-3xl mx-2">{dateEvents.date}</p>

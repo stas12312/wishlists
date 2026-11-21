@@ -19,6 +19,10 @@ import { ITokens } from "@/lib/models/auth";
 interface TelegramWebApp {
   initData: string;
   initDataUnsafe?: { start_param?: string };
+  isFullscreen?: boolean;
+  isVersionAtLeast?(version: string): boolean;
+  onEvent?(event: "fullscreenChanged", callback: () => void): void;
+  requestFullscreen?(): void;
   ready(): void;
   expand(): void;
   close(): void;
@@ -131,15 +135,22 @@ export class TelegramStore {
   ) {
     if (this.busy || this.status !== "loading") return;
     const app = window.Telegram?.WebApp;
+    const params = new URLSearchParams(window.location.search);
     if (!app?.initData) {
+      if (
+        sessionUserId &&
+        !params.has("link") &&
+        !params.has("link_code") &&
+        !params.has("tgWebAppStartParam")
+      ) {
+        openHome();
+        return;
+      }
       this.status = "outside";
       return;
     }
     this.busy = true;
     try {
-      app.ready();
-      app.expand();
-      const params = new URLSearchParams(window.location.search);
       const startParam =
         params.get("link_code") ||
         (!(linkMode || params.get("link") === "1")

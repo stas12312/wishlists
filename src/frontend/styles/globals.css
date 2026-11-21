@@ -28,6 +28,19 @@
 
     html {
         scrollbar-gutter: stable;
+        --telegram-top-inset: 0px;
+    }
+
+    html[data-telegram-fullscreen] {
+        --telegram-top-inset: calc(
+            max(var(--tg-safe-area-inset-top, 0px), env(safe-area-inset-top, 0px))
+            + var(--tg-content-safe-area-inset-top, 0px)
+        );
+        scroll-padding-top: var(--telegram-top-inset);
+    }
+
+    html[data-telegram-fullscreen] body {
+        padding-top: var(--telegram-top-inset);
     }
 }
 

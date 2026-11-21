@@ -4,8 +4,7 @@ import { Button, Link, LinkIcon, Spinner, Surface } from "@heroui/react";
 import { runInAction } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
-import Script from "next/script";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { BsStars } from "react-icons/bs";
 import { FaTelegramPlane } from "react-icons/fa";
 
@@ -15,6 +14,7 @@ import {
 } from "./TelegramLinkConfirmation";
 import { TelegramLinkConflict } from "./TelegramLinkConflict";
 
+import { TelegramScriptContext } from "@/providers/TelegramProvider";
 import { TelegramStore } from "@/store/telegramStore";
 
 function getLinkPreview() {
@@ -40,6 +40,7 @@ const TelegramEntry = observer(function TelegramEntry({
 }) {
   const [store] = useState(() => new TelegramStore());
   const router = useRouter();
+  const scriptStatus = useContext(TelegramScriptContext);
   const isCreatingAccount = store.status === "choice" && store.busy;
   const isOpening = store.status === "loading" || store.status === "done";
 
@@ -75,20 +76,16 @@ const TelegramEntry = observer(function TelegramEntry({
     }
   }, [router, store.status]);
 
+  useEffect(() => {
+    if (getLinkPreview()) return;
+    if (scriptStatus === "error") store.failIfWaitingForScript();
+    if (scriptStatus === "ready") {
+      void store.initialize(linkMode, sessionUserId, () => router.replace("/"));
+    }
+  }, [linkMode, router, scriptStatus, sessionUserId, store]);
+
   return (
-    <main className="flex min-h-dvh items-center justify-center p-4 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]">
-      <Script
-        src="https://telegram.org/js/telegram-web-app.js"
-        onError={() => {
-          if (!getLinkPreview()) store.failIfWaitingForScript();
-        }}
-        onReady={() => {
-          if (!getLinkPreview())
-            void store.initialize(linkMode, sessionUserId, () =>
-              router.replace("/"),
-            );
-        }}
-      />
+    <main className="flex min-h-[calc(100dvh-var(--telegram-top-inset))] items-center justify-center p-4 pt-[max(1rem,calc(env(safe-area-inset-top)-var(--telegram-top-inset)))] pb-[max(1rem,env(safe-area-inset-bottom))]">
       {isOpening ? (
         <Spinner aria-label="Вход в приложение" />
       ) : (
