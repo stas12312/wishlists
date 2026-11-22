@@ -3,16 +3,17 @@ package model
 import "time"
 
 const (
-	NotificationSupportReply     = "support.reply"
-	NotificationQuestionCreated  = "question.created"
-	NotificationQuestionAnswered = "question.answered"
-	NotificationFriendRequested  = "friend.requested"
-	NotificationFriendAccepted   = "friend.accepted"
-	NotificationFriendDeclined   = "friend.declined"
-	NotificationFriendPreference = "friend.requests"
-	NotificationEmail            = "email"
-	NotificationTelegram         = "telegram"
-	NotificationWebPush          = "web_push"
+	NotificationSupportReply       = "support.reply"
+	NotificationQuestionCreated    = "question.created"
+	NotificationQuestionAnswered   = "question.answered"
+	NotificationFriendRequested    = "friend.requested"
+	NotificationFriendAccepted     = "friend.accepted"
+	NotificationFriendDeclined     = "friend.declined"
+	NotificationFriendPreference   = "friend.requests"
+	NotificationQuestionPreference = "wish.questions"
+	NotificationEmail              = "email"
+	NotificationTelegram           = "telegram"
+	NotificationWebPush            = "web_push"
 )
 
 type Notification struct {

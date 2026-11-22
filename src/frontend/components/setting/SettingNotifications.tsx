@@ -17,7 +17,6 @@ import {
   NotificationPreference,
   NotificationPreferenceKind,
   notificationChannels as channels,
-  notificationTypes,
 } from "@/lib/models/notification";
 import { SettingsLinksStore } from "@/store/settingsLinksStore";
 
@@ -28,9 +27,16 @@ const friendKinds = [
 ] as const;
 
 const preferenceRows = [
-  ...notificationTypes
-    .filter(({ kind }) => !kind.startsWith("friend."))
-    .map(({ kind, label }) => ({ kind, label, kinds: [kind] })),
+  {
+    kind: "support.reply",
+    label: "Ответы поддержки",
+    kinds: ["support.reply"],
+  },
+  {
+    kind: "wish.questions",
+    label: "Вопросы и ответы о желаниях",
+    kinds: ["question.created", "question.answered"],
+  },
   { kind: "friend.requests", label: "Заявки в друзья", kinds: friendKinds },
 ] as const;
 

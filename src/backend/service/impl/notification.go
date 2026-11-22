@@ -194,6 +194,10 @@ func (s *NotificationService) SetPreference(userId int64, kind, channel string, 
 		return s.repository.SetPreference(userId, channel, enabled,
 			model.NotificationFriendRequested, model.NotificationFriendAccepted, model.NotificationFriendDeclined)
 	}
+	if kind == model.NotificationQuestionPreference {
+		return s.repository.SetPreference(userId, channel, enabled,
+			model.NotificationQuestionCreated, model.NotificationQuestionAnswered)
+	}
 	return s.repository.SetPreference(userId, channel, enabled, kind)
 }
 
