@@ -27,5 +27,7 @@ type NotificationRepository interface {
 	DeletePushSubscription(userId int64, endpoint string) error
 	HasPushSubscription(userId int64, endpoint string) (bool, error)
 	PushDeliverySubscriptions(delivery model.NotificationDelivery) ([]model.PushSubscription, error)
+	RecordPushSend(notificationID int64, subscriptionKey, provider, reason string, retryable bool) error
+	HasPushSends(notificationID int64) (bool, error)
 	DeliveryAddress(delivery model.NotificationDelivery) (string, error)
 }

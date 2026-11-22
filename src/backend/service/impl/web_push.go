@@ -135,27 +135,37 @@ func (s *NotificationService) sendPush(ctx context.Context, delivery model.Notif
 		if !validPushEndpoint(sub.Endpoint) {
 			continue
 		}
-		response, err := webpush.SendNotificationWithContext(ctx, payload, &webpush.Subscription{
+		target, _ := url.Parse(sub.Endpoint)
+		response, sendErr := webpush.SendNotificationWithContext(ctx, payload, &webpush.Subscription{
 			Endpoint: sub.Endpoint, Keys: webpush.Keys{Auth: sub.Auth, P256dh: sub.P256dh},
 		}, &options)
-		if err != nil {
+		status, reason, canRetry := 0, "", false
+		if sendErr != nil {
+			reason, canRetry = "Не удалось отправить запрос в push-сервис", true
+		} else {
+			response.Body.Close()
+			status = response.StatusCode
+			if status < 200 || status >= 300 {
+				canRetry = status == http.StatusTooManyRequests || status >= 500
+				sendErr = &pushDeliveryError{status: status, permanent: !canRetry}
+				reason = sendErr.Error()
+			}
+		}
+		if err := s.repository.RecordPushSend(delivery.Id, sub.Key, target.Hostname(), reason, canRetry && delivery.Attempts < 5); err != nil {
 			retryable = err
 			continue
 		}
-		response.Body.Close()
-
-		status := response.StatusCode
 		switch {
-		case status >= 200 && status < 300:
+		case sendErr == nil:
 			sent = true
 		case status == http.StatusNotFound || status == http.StatusGone:
 			if err := s.DeletePushSubscription(delivery.RecipientId, sub.Endpoint); err != nil {
 				retryable = err
 			}
-		case status == http.StatusTooManyRequests || status >= 500:
-			retryable = &pushDeliveryError{status: status}
+		case canRetry:
+			retryable = sendErr
 		default:
-			rejected = &pushDeliveryError{status: status, permanent: true}
+			rejected = sendErr
 		}
 	}
 	switch {
@@ -163,11 +173,15 @@ func (s *NotificationService) sendPush(ctx context.Context, delivery model.Notif
 		return retryable
 	case sent:
 		return nil
-	case rejected != nil:
-		return rejected
-	default:
-		return sql.ErrNoRows
 	}
+	previouslySent, err := s.repository.HasPushSends(delivery.Id)
+	if err != nil || previouslySent {
+		return err
+	}
+	if rejected != nil {
+		return rejected
+	}
+	return sql.ErrNoRows
 }
 
 func pushPreview(item model.NotificationItem) string {
