@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { FaTelegramPlane } from "react-icons/fa";
 
 import { AdminUserNotifications } from "./AdminUserNotifications";
+import { AdminNotifications } from "./AdminNotifications";
 import { AdminUserWishlists } from "./AdminUserWishlists";
 
 import ConfirmationModal from "@/components/ConfirmationModal";
@@ -142,8 +143,20 @@ export const AdminUserDetail = observer(function AdminUserDetail({
                   ))}
                 </div>
               </Tabs.Panel>
-              <Tabs.Panel className="mt-4" id="notifications">
+              <Tabs.Panel className="mt-4 space-y-6" id="notifications">
                 <AdminUserNotifications user={user} />
+                <section
+                  aria-labelledby="user-notification-history"
+                  className="space-y-3"
+                >
+                  <h2
+                    className="text-lg font-semibold"
+                    id="user-notification-history"
+                  >
+                    История уведомлений
+                  </h2>
+                  <AdminNotifications recipientId={user.id} />
+                </section>
               </Tabs.Panel>
             </Tabs>
           </>
