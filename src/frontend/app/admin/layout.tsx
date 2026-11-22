@@ -14,7 +14,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
     throw notFound();
   }
   return (
-    <div className="has-[[data-admin-telegram]]:flex has-[[data-admin-telegram]]:h-[calc(100dvh-var(--telegram-top-inset))] has-[[data-admin-telegram]]:flex-col has-[[data-admin-telegram]]:overflow-hidden">
+    <div className="has-[[data-admin-telegram]]:flex has-[[data-admin-telegram]]:h-[calc(100dvh-var(--telegram-top-inset))] has-[[data-admin-telegram]]:flex-col has-[[data-admin-telegram]]:overflow-hidden has-[[data-admin-telegram]]:[&>header]:static has-[[data-admin-telegram]]:[&>header]:shrink-0">
       <Header isLogin />
       <main className="has-[[data-admin-telegram]]:flex has-[[data-admin-telegram]]:min-h-0 has-[[data-admin-telegram]]:flex-1 has-[[data-admin-telegram]]:flex-col">
         <div className="gap-1 flex mt-4 has-[[data-admin-telegram]]:mt-2 has-[[data-admin-telegram]]:min-h-0 has-[[data-admin-telegram]]:flex-1">
