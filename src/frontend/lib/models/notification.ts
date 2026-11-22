@@ -22,7 +22,7 @@ export interface NotificationPage {
   next: number;
 }
 
-export type NotificationChannel = "email" | "telegram";
+export type NotificationChannel = "email" | "telegram" | "web_push";
 export type NotificationPreferenceKind = NotificationKind | "friend.requests";
 
 export interface NotificationPreference {
@@ -35,6 +35,7 @@ export interface NotificationPreference {
 export const notificationChannels = [
   { id: "email", label: "Email" },
   { id: "telegram", label: "Telegram" },
+  { id: "web_push", label: "Push" },
 ] as const;
 
 export const notificationTypes = [

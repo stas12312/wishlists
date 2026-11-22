@@ -50,6 +50,7 @@ ENV HOSTNAME 0.0.0.0
 
 COPY --from=base /app/.next/standalone ./
 COPY --from=base /app/.next/static ./.next/static
+COPY --from=base /app/public ./public
 
 # Sourcemaps не должны попадать в образ и отдаваться браузеру
 RUN find .next -name '*.map' -delete \

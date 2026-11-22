@@ -10,6 +10,42 @@ import {
 
 import { clientAxios } from "./base";
 
+export async function getWebPushKey(signal: AbortSignal) {
+  const response = await clientAxios.get<{ data: { public_key: string } }>(
+    "/notifications/push/key",
+    { signal },
+  );
+  return notificationData(response).public_key;
+}
+
+export async function isWebPushLinked(endpoint: string, signal: AbortSignal) {
+  const response = await clientAxios.post<{ data: { linked: boolean } }>(
+    "/notifications/push/status",
+    { endpoint },
+    { signal },
+  );
+  return notificationData(response).linked;
+}
+
+export async function saveWebPushSubscription(subscription: PushSubscription) {
+  const response = await clientAxios.put(
+    "/notifications/push/subscription",
+    subscription.toJSON(),
+  );
+  if (response.status !== 204) throw new Error("Не удалось сохранить подписку");
+}
+
+export async function deleteWebPushSubscription(endpoint: string) {
+  const response = await clientAxios.delete(
+    "/notifications/push/subscription",
+    {
+      data: { endpoint },
+      timeout: 5000,
+    },
+  );
+  if (response.status !== 204) throw new Error("Не удалось удалить подписку");
+}
+
 function notificationData<T>(response: AxiosResponse<{ data: T }>): T {
   if (response.status >= 400) {
     throw new Error("Не удалось выполнить запрос уведомлений");

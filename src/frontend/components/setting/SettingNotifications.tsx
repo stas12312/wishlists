@@ -5,6 +5,8 @@ import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
+import { BrowserPushSettings } from "./BrowserPushSettings";
+
 import {
   getNotificationPreferences,
   setNotificationPreference,
@@ -40,6 +42,7 @@ export const SettingNotifications = observer(function SettingNotifications({
   const [preferences, setPreferences] = useState<
     Partial<Record<NotificationKind, NotificationPreference[]>>
   >({});
+  const [pushRevision, setPushRevision] = useState(0);
   const [pendingPreference, setPendingPreference] = useState<{
     kind: NotificationPreferenceKind;
     channel: NotificationChannel;
@@ -74,7 +77,7 @@ export const SettingNotifications = observer(function SettingNotifications({
       loadRequest.current?.abort();
       window.removeEventListener("focus", load);
     };
-  }, [telegramLinked]);
+  }, [telegramLinked, pushRevision]);
 
   async function change(
     kind: NotificationPreferenceKind,
@@ -113,14 +116,21 @@ export const SettingNotifications = observer(function SettingNotifications({
     ({ channel }) => channel === "telegram",
   );
 
+  const pushConfigured = preferences["support.reply"]?.some(
+    ({ channel }) => channel === "web_push",
+  );
+  const visibleChannels = channels.filter(
+    ({ id }) => id !== "web_push" || pushConfigured,
+  );
+
   return (
-    <div className="flex flex-col gap-3">
-      <div className="overflow-hidden rounded-3xl border border-border/50 bg-surface shadow-sm">
+    <div className="@container flex min-w-0 flex-col gap-3">
+      <div className="rounded-3xl border border-border/50 bg-surface shadow-sm">
         <table
           aria-label="Уведомления"
-          className="w-full border-collapse text-sm"
+          className="block w-full border-collapse text-sm @min-[32rem]:table"
         >
-          <thead className="border-b border-border/50 text-muted">
+          <thead className="hidden border-b border-border/50 text-muted @min-[32rem]:table-header-group">
             <tr>
               <th
                 className="px-3 py-3 text-left font-medium sm:px-6"
@@ -128,7 +138,7 @@ export const SettingNotifications = observer(function SettingNotifications({
               >
                 Тип уведомления
               </th>
-              {channels.map(({ id, label }) => (
+              {visibleChannels.map(({ id, label }) => (
                 <th
                   key={id}
                   className="w-20 px-2 py-3 text-center font-medium sm:w-36"
@@ -139,19 +149,22 @@ export const SettingNotifications = observer(function SettingNotifications({
               ))}
             </tr>
           </thead>
-          <tbody className="text-foreground">
+          <tbody className="block text-foreground @min-[32rem]:table-row-group">
             {preferenceRows.map(({ kind, label, kinds }) => (
               <tr
                 key={kind}
-                className="border-b border-border/50 last:border-b-0"
+                className="grid gap-x-1 gap-y-2 border-b border-border/50 px-3 py-3 last:border-b-0 @min-[32rem]:table-row"
+                style={{
+                  gridTemplateColumns: `repeat(${visibleChannels.length}, minmax(0, 1fr))`,
+                }}
               >
                 <th
-                  className="px-3 py-4 text-left font-medium sm:px-6"
+                  className="col-span-full text-left font-medium @min-[32rem]:px-6 @min-[32rem]:py-4"
                   scope="row"
                 >
                   {label}
                 </th>
-                {channels.map(({ id, label: channelLabel }) => {
+                {visibleChannels.map(({ id, label: channelLabel }) => {
                   const channelPreferences = kinds.map((eventKind) =>
                     preferences[eventKind]?.find(
                       ({ channel }) => channel === id,
@@ -165,7 +178,16 @@ export const SettingNotifications = observer(function SettingNotifications({
                     (item) => item?.enabled,
                   );
                   return (
-                    <td key={id} className="px-2 py-4 align-middle">
+                    <td
+                      key={id}
+                      className="align-middle @min-[32rem]:px-2 @min-[32rem]:py-4"
+                    >
+                      <span
+                        aria-hidden="true"
+                        className="block text-center text-xs text-muted @min-[32rem]:hidden"
+                      >
+                        {channelLabel}
+                      </span>
                       <div className="flex min-h-6 items-center justify-center">
                         {loaded ? (
                           <Switch
@@ -230,6 +252,11 @@ export const SettingNotifications = observer(function SettingNotifications({
             </>
           )}
         </p>
+      )}
+      {pushConfigured && (
+        <BrowserPushSettings
+          onChange={() => setPushRevision((value) => value + 1)}
+        />
       )}
       {error && <p role="alert">{error}</p>}
     </div>
