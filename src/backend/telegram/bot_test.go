@@ -28,13 +28,21 @@ func TestAPIClientSendMiniApp(t *testing.T) {
 			}
 		}
 		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write([]byte(`{"ok":true}`))
+		_, _ = w.Write([]byte(`{"ok":true,"result":{"message_id":7,"date":1785000000,"chat":{"id":42,"type":"private"},"text":"Login"}}`))
 	}))
 	defer server.Close()
 	client := NewAPIClient("token")
 	client.baseURL = server.URL
+	var recorded Message
+	client.SetMessageRecorder(func(_ context.Context, message Message) error {
+		recorded = message
+		return nil
+	})
 	if err := client.SendMiniApp(context.Background(), 42, "Login", "https://mywishlists.example/miniapp/telegram"); err != nil {
 		t.Fatal(err)
+	}
+	if recorded.ID != 7 || recorded.Chat.ID != 42 || recorded.Text != "Login" {
+		t.Fatalf("unexpected recorded message: %+v", recorded)
 	}
 }
 
