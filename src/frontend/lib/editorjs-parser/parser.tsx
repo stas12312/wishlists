@@ -88,9 +88,13 @@ function image(data: BlockToolData): ReactNode {
   return (
     <div>
       <ResponsiveImage
-        fill
         alt={data.caption}
-        className={`mx-auto ${data.stretched ? "w-full" : ""}`}
+        className={
+          data.stretched
+            ? "mx-auto w-full"
+            : "mx-auto w-fit max-w-[min(70%,32rem)]"
+        }
+        imageClassName={data.stretched ? "w-full" : undefined}
         src={data.file.url}
       />
       <p className="font-light italic text-center">{data.caption}</p>

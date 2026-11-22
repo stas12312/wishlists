@@ -23,6 +23,15 @@ export default function Editor({
       const editorInstance = new EditorJS({
         holder: holder,
         data: value,
+        i18n: {
+          messages: {
+            tools: {
+              image: {
+                "Stretch image": "На всю ширину",
+              },
+            },
+          },
+        },
         tools: {
           header: Header,
           list: List,
@@ -71,9 +80,23 @@ export default function Editor({
       .codex-editor h3 {
         font-size: var(--text-xl);
         font-weight: var(--font-weight-bold)
+      }
+      .article-editor .ce-block--stretched .ce-block__content {
+        max-width: 650px;
+      }
+      .article-editor .image-tool .image-tool__image-picture {
+        margin-inline: auto;
+        max-width: min(70%, 32rem);
+      }
+      .article-editor .image-tool--stretched .image-tool__image-picture {
+        width: 100%;
+        max-width: 100%;
       }`}</style>
       <div className="w-full">
-        <div className="bg-content1 rounded-xl mx-auto" id={holder} />
+        <div
+          className="article-editor bg-content1 rounded-xl mx-auto"
+          id={holder}
+        />
       </div>
     </>
   );
