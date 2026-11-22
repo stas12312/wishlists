@@ -12,6 +12,7 @@ const (
 	NotificationFriendPreference = "friend.requests"
 	NotificationEmail            = "email"
 	NotificationTelegram         = "telegram"
+	NotificationWebPush          = "web_push"
 )
 
 type Notification struct {

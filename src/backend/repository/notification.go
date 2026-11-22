@@ -23,5 +23,9 @@ type NotificationRepository interface {
 	SetPreference(userId int64, channel string, enabled bool, kinds ...string) error
 	ClaimDelivery(channel string) (model.NotificationDelivery, error)
 	CompleteDelivery(delivery model.NotificationDelivery, status, lastError string, delay time.Duration) error
+	SavePushSubscription(userId int64, subscription model.PushSubscription) (bool, error)
+	DeletePushSubscription(userId int64, endpoint string) error
+	HasPushSubscription(userId int64, endpoint string) (bool, error)
+	PushDeliverySubscriptions(delivery model.NotificationDelivery) ([]model.PushSubscription, error)
 	DeliveryAddress(delivery model.NotificationDelivery) (string, error)
 }
