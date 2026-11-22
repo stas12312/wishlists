@@ -249,15 +249,19 @@ export function NotificationInbox() {
                       {new Date(item.created_at).toLocaleDateString("ru-RU")}
                     </time>
                   </div>
-                  {item.entity_title ? (
-                    <p className="wrap-anywhere text-sm font-medium">
-                      {item.entity_title}
-                    </p>
-                  ) : null}
-                  {item.body ? (
-                    <p className="wrap-anywhere whitespace-pre-wrap text-muted">
-                      {item.body}
-                    </p>
+                  {item.entity_title || item.body ? (
+                    <div>
+                      {item.entity_title ? (
+                        <p className="wrap-anywhere text-sm font-medium">
+                          {item.entity_title}
+                        </p>
+                      ) : null}
+                      {item.body ? (
+                        <p className="wrap-anywhere leading-5 whitespace-pre-wrap text-muted">
+                          {item.body}
+                        </p>
+                      ) : null}
+                    </div>
                   ) : null}
                 </div>
               </Link>
