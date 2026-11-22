@@ -24,16 +24,32 @@ func (r *AdminUserPostgres) List(search string, before int64, count int) ([]mode
 			created_at,
 			password <> '' AS has_password
 		FROM users
+		CROSS JOIN LATERAL (
+			SELECT CASE
+				WHEN user_id::text = $1 THEN 3
+				WHEN starts_with(user_id::text, NULLIF($1, '')) THEN 2
+				WHEN strpos(user_id::text, NULLIF($1, '')) > 0 THEN 1
+				ELSE 0
+			END AS id_match
+		) AS search_match
 		WHERE
-			($2 = 0 OR user_id < $2)
+			($2::bigint = 0 OR (id_match, user_id) < (
+				CASE
+					WHEN $2::text = $1 THEN 3
+					WHEN starts_with($2::text, NULLIF($1, '')) THEN 2
+					WHEN strpos($2::text, NULLIF($1, '')) > 0 THEN 1
+					ELSE 0
+				END,
+				$2
+			))
 			AND (
 				$1 = ''
 				OR strpos(lower(name), lower($1)) > 0
 				OR strpos(lower(username), lower($1)) > 0
 				OR strpos(lower(COALESCE(email, '')), lower($1)) > 0
-				OR user_id::text = $1
+				OR id_match > 0
 			)
-		ORDER BY user_id DESC
+		ORDER BY id_match DESC, user_id DESC
 		LIMIT $3
 `
 	users := make([]model.AdminUser, 0)
