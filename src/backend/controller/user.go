@@ -25,10 +25,14 @@ type UserController struct {
 
 func (c *UserController) Me(ctx *fiber.Ctx) error {
 	userId := GetUserIdFromCtx(ctx)
-	user, _ := c.UserService.GetById(ctx.UserContext(), userId)
-
-	return ctx.JSON(user)
-
+	user, err := c.UserService.GetById(ctx.UserContext(), userId)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(struct {
+		*model.User
+		IsAdmin bool `json:"is_admin,omitempty"`
+	}{User: user, IsAdmin: user.IsAdmin})
 }
 
 func (c *UserController) Register(ctx *fiber.Ctx) error {
