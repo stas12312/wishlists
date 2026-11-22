@@ -28,9 +28,11 @@ export default function SettingsPage() {
         <SettingItem header="Профиль">
           <ProfileSection />
         </SettingItem>
-        <SettingItem header="Email">
-          <SettingEmail />
-        </SettingItem>
+        <section className="flex scroll-mt-24 flex-col gap-3" id="email">
+          <SettingItem header="Email">
+            <SettingEmail />
+          </SettingItem>
+        </section>
         <SettingItem header="Безопасность">
           <SecuritySection />
         </SettingItem>

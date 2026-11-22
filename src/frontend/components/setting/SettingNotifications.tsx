@@ -137,21 +137,16 @@ export const SettingNotifications = observer(function SettingNotifications({
                   const preference = preferences[kind]?.find(
                     ({ channel }) => channel === id,
                   );
-                  const isTelegramUnavailable =
-                    id === "telegram" && preference?.available === false;
                   return (
                     <td key={id} className="px-2 py-4 align-middle">
                       <div className="flex min-h-6 items-center justify-center">
                         {preference ? (
                           <Switch
                             aria-label={`${label} · ${channelLabel}`}
-                            isDisabled={
-                              isTelegramUnavailable ||
-                              (!preference.available && !preference.enabled)
-                            }
+                            isDisabled={!preference.available}
                             isReadOnly={pendingPreference !== null}
                             isSelected={
-                              !isTelegramUnavailable &&
+                              preference.available &&
                               (pendingPreference?.kind === kind &&
                               pendingPreference.channel === id
                                 ? pendingPreference.enabled
@@ -183,7 +178,12 @@ export const SettingNotifications = observer(function SettingNotifications({
         </table>
       </div>
       {email && !email.available && (
-        <p className="text-sm text-muted">Добавьте адрес в настройках Email</p>
+        <p className="text-sm text-muted">
+          <Link className="text-accent underline" href="/settings#email">
+            Добавьте email
+          </Link>
+          , чтобы получать уведомления на почту.
+        </p>
       )}
       {telegram && !telegram.available && (
         <p className="text-sm text-muted">
