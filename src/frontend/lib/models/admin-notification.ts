@@ -5,6 +5,7 @@ export interface AdminNotificationFilters {
   channel: string;
   status: string;
   period: string;
+  pushSends?: boolean;
 }
 
 export interface AdminNotification {
@@ -19,6 +20,12 @@ export interface AdminNotification {
   read_at: string | null;
   email_status: string | null;
   telegram_status: string | null;
+  push_status: string | null;
+  push_send_id?: number;
+  push_attempted_at?: string;
+  push_provider?: string;
+  push_device?: string;
+  push_send_error?: string;
 }
 
 export interface AdminNotificationDetail extends AdminNotification {
@@ -28,6 +35,15 @@ export interface AdminNotificationDetail extends AdminNotification {
   email_error: string | null;
   telegram_attempts: number | null;
   telegram_error: string | null;
+  push_attempts: number | null;
+  push_error: string | null;
+  push_sends: {
+    id: number;
+    attempted_at: string;
+    provider: string;
+    device: string;
+    error: string | null;
+  }[];
 }
 
 export interface AdminNotificationPage {

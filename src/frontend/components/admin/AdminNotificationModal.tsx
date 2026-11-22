@@ -2,7 +2,7 @@
 
 import { Button, Modal, Spinner } from "@heroui/react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 
 import { notificationDateTime, NotificationStatus } from "./notificationCommon";
 
@@ -151,6 +151,41 @@ function NotificationDetail({ item }: { item: AdminNotificationDetail }) {
             error={item.telegram_error}
             status={item.telegram_status}
           />
+          <DeliveryDetails
+            attempts={item.push_attempts}
+            channel="Push"
+            error={item.push_error}
+            status={item.push_status}
+          >
+            {item.push_sends?.length ? (
+              <ul className="mt-2 space-y-2 border-t border-border/60 pt-2">
+                {item.push_sends.map((send) => (
+                  <li key={send.id} className="text-xs">
+                    <span className="block text-foreground">
+                      {send.provider} · {send.device}
+                    </span>
+                    <time dateTime={send.attempted_at}>
+                      {notificationDateTime(send.attempted_at)}
+                    </time>
+                    <div className="mt-1">
+                      <NotificationStatus
+                        status={send.error ? "failed" : "sent"}
+                      />
+                      {send.error && (
+                        <p className="text-danger">{send.error}</p>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              item.push_status === "sent" && (
+                <p className="mt-1 text-xs">
+                  Нет данных об отправках по подпискам
+                </p>
+              )
+            )}
+          </DeliveryDetails>
         </dl>
       </section>
     </>
@@ -172,11 +207,13 @@ function DeliveryDetails({
   status,
   attempts,
   error,
+  children,
 }: {
   channel: string;
   status: string | null;
   attempts: number | null;
   error: string | null;
+  children?: ReactNode;
 }) {
   return (
     <div className="grid grid-cols-[5rem_minmax(0,1fr)] items-start gap-x-2 py-2 md:grid-cols-[8rem_7rem_minmax(0,1fr)]">
@@ -189,6 +226,7 @@ function DeliveryDetails({
           ? "Отправка не планировалась"
           : `${attempts} ${attemptWord[attemptPlural.select(attempts)]}`}
         {error && <span className="block text-danger">{error}</span>}
+        {children}
       </dd>
     </div>
   );

@@ -5,6 +5,7 @@ import {
   MdOutlineSupport,
   MdOutlinePeople,
   MdOutlineNotifications,
+  MdNotificationsActive,
   MdSend,
 } from "react-icons/md";
 
@@ -39,6 +40,12 @@ export const AdminMenuItems: IMenuItem[] = [
     title: "Уведомления",
     href: "/admin/notifications",
     icon: <MdOutlineNotifications />,
+    selectedIconClassName: "text-amber-600",
+  },
+  {
+    title: "Пуши",
+    href: "/admin/pushes",
+    icon: <MdNotificationsActive />,
     selectedIconClassName: "text-amber-600",
   },
   {

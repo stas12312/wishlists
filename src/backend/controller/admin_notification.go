@@ -16,6 +16,7 @@ func (c *AdminController) ListNotifications(ctx *fiber.Ctx) error {
 	filter := model.AdminNotificationFilter{
 		Search: strings.TrimPrefix(strings.TrimSpace(ctx.Query("search")), "@"),
 		Kind:   ctx.Query("kind"), Channel: ctx.Query("channel"), Status: ctx.Query("status"),
+		PushSends: ctx.Query("push_sends") == "true",
 	}
 	if value := ctx.Query("recipient_id"); value != "" {
 		recipientID, err := strconv.ParseInt(value, 10, 64)
@@ -28,7 +29,7 @@ func (c *AdminController) ListNotifications(ctx *fiber.Ctx) error {
 		return apperror.NewError(apperror.ValidateError, "Некорректный тип уведомления")
 	}
 	switch filter.Channel {
-	case "", "site", model.NotificationEmail, model.NotificationTelegram:
+	case "", "site", model.NotificationEmail, model.NotificationTelegram, model.NotificationWebPush:
 	default:
 		return apperror.NewError(apperror.ValidateError, "Некорректный канал уведомлений")
 	}
@@ -63,7 +64,11 @@ func (c *AdminController) ListNotifications(ctx *fiber.Ctx) error {
 	if len(items) > pageSize {
 		items = items[:pageSize]
 		last := items[pageSize-1]
-		next = last.CreatedAt.UTC().Format(time.RFC3339Nano) + "/" + strconv.FormatInt(last.ID, 10)
+		date, id := last.CreatedAt, last.ID
+		if last.PushAttemptedAt != nil {
+			date, id = *last.PushAttemptedAt, last.PushSendID
+		}
+		next = date.UTC().Format(time.RFC3339Nano) + "/" + strconv.FormatInt(id, 10)
 	}
 	return ctx.JSON(model.Response{Data: fiber.Map{"items": items, "next": next}})
 }

@@ -26,6 +26,7 @@ const channelOptions: [string, string][] = [
   ["site", "На сайте"],
   ["email", "Email"],
   ["telegram", "Telegram"],
+  ["web_push", "Push"],
 ];
 const periodOptions: [string, string][] = [
   ["", "За всё время"],
@@ -41,14 +42,21 @@ const kindOptions: [string, string][] = [
   ]),
 ];
 
-export function AdminNotifications({ recipientId }: { recipientId?: number }) {
+export function AdminNotifications({
+  recipientId,
+  pushJournal = false,
+}: {
+  recipientId?: number;
+  pushJournal?: boolean;
+}) {
   const [searchInput, setSearchInput] = useState("");
   const [filters, setFilters] = useState<AdminNotificationFilters>({
     search: "",
     kind: "",
-    channel: "",
+    channel: pushJournal ? "web_push" : "",
     status: "",
     period: "",
+    pushSends: pushJournal,
   });
 
   useEffect(() => {
@@ -107,22 +115,26 @@ export function AdminNotifications({ recipientId }: { recipientId?: number }) {
           value={filters.kind}
           onChange={(kind) => setFilters((current) => ({ ...current, kind }))}
         />
-        <NotificationFilter
-          label="Канал"
-          options={channelOptions}
-          value={filters.channel}
-          onChange={(channel) =>
-            setFilters((current) => ({ ...current, channel, status: "" }))
-          }
-        />
-        <NotificationFilter
-          label="Статус"
-          options={statusOptions}
-          value={filters.status}
-          onChange={(status) =>
-            setFilters((current) => ({ ...current, status }))
-          }
-        />
+        {!pushJournal && (
+          <>
+            <NotificationFilter
+              label="Канал"
+              options={channelOptions}
+              value={filters.channel}
+              onChange={(channel) =>
+                setFilters((current) => ({ ...current, channel, status: "" }))
+              }
+            />
+            <NotificationFilter
+              label="Статус"
+              options={statusOptions}
+              value={filters.status}
+              onChange={(status) =>
+                setFilters((current) => ({ ...current, status }))
+              }
+            />
+          </>
+        )}
         <NotificationFilter
           label="Период"
           options={periodOptions}
@@ -135,6 +147,7 @@ export function AdminNotifications({ recipientId }: { recipientId?: number }) {
       <NotificationResults
         key={JSON.stringify([recipientId, filters])}
         filters={filters}
+        pushJournal={pushJournal}
         recipientId={recipientId}
       />
     </div>
@@ -182,9 +195,11 @@ function NotificationFilter({
 function NotificationResults({
   filters,
   recipientId,
+  pushJournal,
 }: {
   filters: AdminNotificationFilters;
   recipientId?: number;
+  pushJournal: boolean;
 }) {
   const [items, setItems] = useState<AdminNotification[]>([]);
   const [next, setNext] = useState("");
@@ -236,32 +251,55 @@ function NotificationResults({
                 <Table.Content
                   aria-label="Журнал уведомлений"
                   className={
-                    recipientId === undefined
-                      ? "min-w-[770px]"
-                      : "min-w-[610px]"
+                    pushJournal
+                      ? "min-w-[480px]"
+                      : recipientId === undefined
+                        ? "min-w-[870px]"
+                        : "min-w-[710px]"
                   }
-                  onRowAction={(key) => setOpenedId(Number(key))}
+                  onRowAction={(key) => {
+                    const item = items.find(
+                      (item) => (item.push_send_id ?? item.id) === Number(key),
+                    );
+                    if (item) setOpenedId(item.id);
+                  }}
                 >
                   <Table.Header>
                     <Table.Column isRowHeader aria-sort="descending">
-                      Создано ↓
+                      {pushJournal ? "Последняя попытка" : "Создано"} ↓
                     </Table.Column>
                     {recipientId === undefined && (
                       <Table.Column>Получатель</Table.Column>
                     )}
                     <Table.Column>Уведомление</Table.Column>
-                    <Table.Column>На сайте</Table.Column>
-                    <Table.Column>Email</Table.Column>
-                    <Table.Column>Telegram</Table.Column>
+                    {pushJournal && <Table.Column>Подписка</Table.Column>}
+                    {pushJournal && <Table.Column>Статус</Table.Column>}
+                    {!pushJournal && (
+                      <>
+                        <Table.Column>На сайте</Table.Column>
+                        <Table.Column>Email</Table.Column>
+                        <Table.Column>Telegram</Table.Column>
+                        <Table.Column>Push</Table.Column>
+                      </>
+                    )}
                     <Table.Column aria-label="Подробнее" />
                   </Table.Header>
                   <Table.Body items={items}>
                     {(item) => (
-                      <Table.Row className="cursor-pointer" id={item.id}>
+                      <Table.Row
+                        className="cursor-pointer"
+                        id={item.push_send_id ?? item.id}
+                      >
                         <Table.Cell className="whitespace-nowrap">
-                          {notificationDate.format(new Date(item.created_at))}
+                          {notificationDate.format(
+                            new Date(item.push_attempted_at ?? item.created_at),
+                          )}
                           <span className="block text-xs text-muted">
-                            {notificationTime.format(new Date(item.created_at))}
+                            {notificationTime.format(
+                              new Date(
+                                item.push_attempted_at ?? item.created_at,
+                              ),
+                            )}
                           </span>
                         </Table.Cell>
                         {recipientId === undefined && (
@@ -282,18 +320,45 @@ function NotificationResults({
                             </span>
                           )}
                         </Table.Cell>
-                        <Table.Cell>
-                          <NotificationStatus
-                            site
-                            status={item.read_at ? "read" : "unread"}
-                          />
-                        </Table.Cell>
-                        <Table.Cell>
-                          <NotificationStatus status={item.email_status} />
-                        </Table.Cell>
-                        <Table.Cell>
-                          <NotificationStatus status={item.telegram_status} />
-                        </Table.Cell>
+                        {pushJournal && (
+                          <Table.Cell>
+                            {item.push_provider}
+                            <span className="block text-xs text-muted">
+                              {item.push_device}
+                            </span>
+                          </Table.Cell>
+                        )}
+                        {pushJournal && (
+                          <Table.Cell>
+                            <NotificationStatus status={item.push_status} />
+                            {item.push_send_error && (
+                              <span className="block text-xs text-danger">
+                                {item.push_send_error}
+                              </span>
+                            )}
+                          </Table.Cell>
+                        )}
+                        {!pushJournal && (
+                          <>
+                            <Table.Cell>
+                              <NotificationStatus
+                                site
+                                status={item.read_at ? "read" : "unread"}
+                              />
+                            </Table.Cell>
+                            <Table.Cell>
+                              <NotificationStatus status={item.email_status} />
+                            </Table.Cell>
+                            <Table.Cell>
+                              <NotificationStatus
+                                status={item.telegram_status}
+                              />
+                            </Table.Cell>
+                            <Table.Cell>
+                              <NotificationStatus status={item.push_status} />
+                            </Table.Cell>
+                          </>
+                        )}
                         <Table.Cell>
                           <MdChevronRight
                             aria-hidden="true"
@@ -309,7 +374,7 @@ function NotificationResults({
           </div>
           <ul aria-label="Журнал уведомлений" className="space-y-2 lg:hidden">
             {items.map((item) => (
-              <li key={item.id}>
+              <li key={item.push_send_id ?? item.id}>
                 <button
                   className="w-full cursor-pointer space-y-2 rounded-2xl bg-surface p-3 text-left hover:bg-default-hover focus-visible:outline-2 focus-visible:outline-accent"
                   type="button"
@@ -340,27 +405,51 @@ function NotificationResults({
                       </span>
                     )}
                     <span>
-                      {notificationDate.format(new Date(item.created_at))},{" "}
-                      {notificationTime.format(new Date(item.created_at))}
+                      {notificationDate.format(
+                        new Date(item.push_attempted_at ?? item.created_at),
+                      )}
+                      ,{" "}
+                      {notificationTime.format(
+                        new Date(item.push_attempted_at ?? item.created_at),
+                      )}
                     </span>
                   </span>
-                  <span className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
-                    <span className="inline-flex items-center gap-1">
-                      <span className="text-muted">На сайте</span>{" "}
-                      <NotificationStatus
-                        site
-                        status={item.read_at ? "read" : "unread"}
-                      />
+                  {pushJournal && (
+                    <span className="block text-xs text-muted">
+                      {item.push_provider} · {item.push_device}
+                      <span className="mt-1 block">
+                        <NotificationStatus status={item.push_status} />
+                        {item.push_send_error && (
+                          <span className="block text-danger">
+                            {item.push_send_error}
+                          </span>
+                        )}
+                      </span>
                     </span>
-                    <span className="inline-flex items-center gap-1">
-                      <span className="text-muted">Email</span>{" "}
-                      <NotificationStatus status={item.email_status} />
+                  )}
+                  {!pushJournal && (
+                    <span className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
+                      <span className="inline-flex items-center gap-1">
+                        <span className="text-muted">На сайте</span>{" "}
+                        <NotificationStatus
+                          site
+                          status={item.read_at ? "read" : "unread"}
+                        />
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <span className="text-muted">Email</span>{" "}
+                        <NotificationStatus status={item.email_status} />
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <span className="text-muted">Telegram</span>{" "}
+                        <NotificationStatus status={item.telegram_status} />
+                      </span>
+                      <span className="inline-flex items-center gap-1">
+                        <span className="text-muted">Push</span>{" "}
+                        <NotificationStatus status={item.push_status} />
+                      </span>
                     </span>
-                    <span className="inline-flex items-center gap-1">
-                      <span className="text-muted">Telegram</span>{" "}
-                      <NotificationStatus status={item.telegram_status} />
-                    </span>
-                  </span>
+                  )}
                 </button>
               </li>
             ))}
@@ -386,7 +475,14 @@ function NotificationResults({
         </div>
       )}
       {!isLoading && !hasError && items.length === 0 && (
-        <EmptyState compact title="Уведомлений не найдено" />
+        <EmptyState
+          compact
+          title={
+            pushJournal
+              ? "Попыток отправки пушей не найдено"
+              : "Уведомлений не найдено"
+          }
+        />
       )}
       {!isLoading && !hasError && next && (
         <Button
