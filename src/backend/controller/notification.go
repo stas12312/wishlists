@@ -101,7 +101,7 @@ func (c *NotificationController) setPreference(ctx *fiber.Ctx) error {
 	var input struct {
 		Enabled *bool `json:"enabled"`
 	}
-	if (kind != model.NotificationFriendPreference && !c.service.SupportsKind(kind)) ||
+	if (kind != model.NotificationFriendPreference && kind != model.NotificationQuestionPreference && !c.service.SupportsKind(kind)) ||
 		(channel != model.NotificationEmail && channel != model.NotificationTelegram && channel != model.NotificationWebPush) ||
 		ctx.BodyParser(&input) != nil || input.Enabled == nil {
 		return notificationBadRequest(ctx)
