@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"html"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -21,6 +22,11 @@ type APIClient struct {
 	token      string
 	baseURL    string
 	httpClient *http.Client
+	recordSent func(context.Context, Message) error
+}
+
+func (c *APIClient) SetMessageRecorder(record func(context.Context, Message) error) {
+	c.recordSent = record
 }
 
 func NewAPIClient(token string) *APIClient {
@@ -52,12 +58,23 @@ func (c *APIClient) Transport() http.RoundTripper {
 }
 
 type Update struct {
-	Message *Message `json:"message"`
+	ID                    int64    `json:"update_id"`
+	Message               *Message `json:"message"`
+	EditedMessage         *Message `json:"edited_message"`
+	ChannelPost           *Message `json:"channel_post"`
+	EditedChannelPost     *Message `json:"edited_channel_post"`
+	BusinessMessage       *Message `json:"business_message"`
+	EditedBusinessMessage *Message `json:"edited_business_message"`
 }
 
 type Message struct {
-	Text string `json:"text"`
-	Chat Chat   `json:"chat"`
+	ID       int64  `json:"message_id"`
+	Date     int64  `json:"date"`
+	EditDate int64  `json:"edit_date"`
+	Text     string `json:"text"`
+	Caption  string `json:"caption"`
+	Chat     Chat   `json:"chat"`
+	kind     string
 }
 
 type Chat struct {
@@ -119,9 +136,13 @@ func (e *APIError) Error() string {
 
 func (c *APIClient) SetWebhook(ctx context.Context, url, secret string) error {
 	return c.do(ctx, "setWebhook", struct {
-		URL         string `json:"url"`
-		SecretToken string `json:"secret_token"`
-	}{URL: url, SecretToken: secret})
+		URL            string   `json:"url"`
+		SecretToken    string   `json:"secret_token"`
+		AllowedUpdates []string `json:"allowed_updates"`
+	}{
+		URL: url, SecretToken: secret,
+		AllowedUpdates: []string{"message", "edited_message", "channel_post", "edited_channel_post", "business_message", "edited_business_message"},
+	})
 }
 
 func (c *APIClient) do(ctx context.Context, method string, payload any) error {
@@ -140,8 +161,9 @@ func (c *APIClient) do(ctx context.Context, method string, payload any) error {
 	}
 	defer response.Body.Close()
 	var result struct {
-		OK         bool `json:"ok"`
-		ErrorCode  int  `json:"error_code"`
+		OK         bool            `json:"ok"`
+		ErrorCode  int             `json:"error_code"`
+		Result     json.RawMessage `json:"result"`
 		Parameters struct {
 			RetryAfter int `json:"retry_after"`
 		} `json:"parameters"`
@@ -152,6 +174,18 @@ func (c *APIClient) do(ctx context.Context, method string, payload any) error {
 			code = response.StatusCode
 		}
 		return &APIError{Code: code, RetryAfter: time.Duration(result.Parameters.RetryAfter) * time.Second}
+	}
+	if method == "sendMessage" && c.recordSent != nil {
+		var message Message
+		if err := json.Unmarshal(result.Result, &message); err != nil || message.Chat.ID == 0 {
+			slog.Error("В ответе Telegram отсутствует отправленное сообщение")
+			return nil
+		}
+		recordCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 5*time.Second)
+		defer cancel()
+		if err := c.recordSent(recordCtx, message); err != nil {
+			slog.Error("Не удалось записать отправленное сообщение Telegram", "chat_id", message.Chat.ID, "message_id", message.ID)
+		}
 	}
 	return nil
 }
