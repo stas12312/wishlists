@@ -3,6 +3,8 @@ import type {
   BlockToolConstructorOptions,
 } from "@editorjs/editorjs";
 
+import clsx from "clsx";
+
 import { getArticleButtonUrl } from "@/lib/editorjs-parser/button";
 
 const alignmentLabels = {
@@ -11,16 +13,10 @@ const alignmentLabels = {
   right: "Справа",
 } as const;
 
-const alignmentIconClasses = {
-  left: "items-start",
-  center: "items-center",
-  right: "items-end",
-} as const;
-
 type ButtonData = {
   text: string;
   url: string;
-  alignment: string;
+  alignment: keyof typeof alignmentLabels;
   fullWidth: boolean;
 };
 
@@ -36,13 +32,32 @@ export default class ButtonTool implements BlockTool {
     return { text: false, url: false, alignment: false, fullWidth: false };
   }
 
+  private alignment: ButtonData["alignment"];
+  private fullWidth: boolean;
+  private preview?: HTMLDivElement;
+
   constructor(
     private options: BlockToolConstructorOptions<Partial<ButtonData>>,
-  ) {}
+  ) {
+    const { alignment, fullWidth } = options.data;
+
+    this.alignment =
+      alignment === "center" || alignment === "right" ? alignment : "left";
+    this.fullWidth = fullWidth === true;
+  }
 
   render(): HTMLElement {
     const container = document.createElement("div");
     container.className = "grid gap-2 sm:grid-cols-2";
+
+    const preview = document.createElement("div");
+    preview.setAttribute("aria-hidden", "true");
+    const previewButton = document.createElement("span");
+    previewButton.className = "button button--primary no-underline";
+    previewButton.textContent = this.options.data.text?.trim() || "Кнопка";
+    preview.append(previewButton);
+    this.preview = preview;
+    this.updatePreviewLayout();
 
     for (const [name, title, placeholder] of [
       ["text", "Текст кнопки", "Например, открыть вишлисты"],
@@ -57,6 +72,11 @@ export default class ButtonTool implements BlockTool {
       input.name = name;
       input.placeholder = placeholder;
       input.value = this.options.data[name] ?? "";
+      if (name === "text") {
+        input.addEventListener("input", () => {
+          previewButton.textContent = input.value.trim() || "Кнопка";
+        });
+      }
       input.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
           event.preventDefault();
@@ -68,82 +88,45 @@ export default class ButtonTool implements BlockTool {
       container.append(label);
     }
 
-    const settings = document.createElement("div");
-    settings.className =
-      "mt-1 flex flex-wrap items-center justify-between gap-x-5 gap-y-3 rounded-2xl bg-default/40 px-3 py-2 sm:col-span-2";
-    settings.addEventListener("keydown", (event) => event.stopPropagation());
-
-    const alignment = document.createElement("fieldset");
-    alignment.className = "flex items-center gap-3";
-    alignment.setAttribute("aria-label", "Выравнивание");
-
-    const alignmentTitle = document.createElement("span");
-    alignmentTitle.className = "text-xs font-medium text-muted";
-    alignmentTitle.textContent = "Выравнивание";
-    alignmentTitle.setAttribute("aria-hidden", "true");
-
-    const segments = document.createElement("div");
-    segments.className = "inline-flex gap-0.5 rounded-xl bg-surface p-0.5";
-
-    const savedAlignment = this.options.data.alignment;
-    const selectedAlignment =
-      savedAlignment === "center" || savedAlignment === "right"
-        ? savedAlignment
-        : "left";
-
-    for (const value of ["left", "center", "right"] as const) {
-      const label = document.createElement("label");
-      label.className = "relative cursor-pointer";
-      label.title = alignmentLabels[value];
-
-      const option = document.createElement("input");
-      option.className = "peer sr-only";
-      option.type = "radio";
-      option.name = `alignment-${this.options.block.id}`;
-      option.value = value;
-      option.checked = value === selectedAlignment;
-      option.setAttribute("aria-label", alignmentLabels[value]);
-
-      const icon = document.createElement("span");
-      icon.className =
-        "flex size-8 items-center rounded-lg text-muted transition-colors hover:bg-default peer-checked:bg-accent-soft peer-checked:text-accent-soft-foreground peer-focus-visible:status-focused motion-reduce:transition-none";
-      icon.setAttribute("aria-hidden", "true");
-
-      const lines = document.createElement("span");
-      lines.className = `mx-auto flex w-4 flex-col gap-0.5 ${alignmentIconClasses[value]}`;
-      for (const width of ["w-full", "w-2.5", "w-full"]) {
-        const line = document.createElement("span");
-        line.className = `h-0.5 rounded-full bg-current ${width}`;
-        lines.append(line);
-      }
-
-      icon.append(lines);
-      label.append(option, icon);
-      segments.append(label);
-    }
-
-    alignment.append(alignmentTitle, segments);
-
-    const fullWidthLabel = document.createElement("label");
-    fullWidthLabel.className =
-      "relative flex cursor-pointer items-center gap-2 text-xs font-medium";
-
-    const fullWidth = document.createElement("input");
-    fullWidth.type = "checkbox";
-    fullWidth.name = "fullWidth";
-    fullWidth.className = "peer sr-only";
-    fullWidth.setAttribute("role", "switch");
-    fullWidth.checked = this.options.data.fullWidth === true;
-    const track = document.createElement("span");
-    track.className =
-      "relative inline-flex h-5 w-9 shrink-0 rounded-full bg-default transition-colors before:absolute before:top-0.5 before:left-0.5 before:size-4 before:rounded-full before:bg-surface before:shadow-sm before:transition-transform peer-checked:bg-accent peer-checked:before:translate-x-4 peer-checked:before:bg-accent-foreground peer-focus-visible:status-focused motion-reduce:transition-none motion-reduce:before:transition-none";
-    track.setAttribute("aria-hidden", "true");
-    fullWidthLabel.append(fullWidth, track, "На всю ширину");
-
-    settings.append(alignment, fullWidthLabel);
-    container.append(settings);
-
+    container.append(preview);
     return container;
+  }
+
+  private updatePreviewLayout() {
+    if (!this.preview) return;
+
+    this.preview.className = clsx("flex sm:col-span-2", {
+      "justify-center": this.alignment === "center",
+      "justify-end": this.alignment === "right",
+    });
+    this.preview.firstElementChild?.classList.toggle("w-full", this.fullWidth);
+  }
+
+  renderSettings() {
+    return [
+      ...(["left", "center", "right"] as const).map((alignment) => ({
+        name: alignment,
+        title: alignmentLabels[alignment],
+        toggle: "alignment",
+        isActive: () => this.alignment === alignment,
+        onActivate: () => {
+          this.alignment = alignment;
+          this.updatePreviewLayout();
+          this.options.block.dispatchChange();
+        },
+      })),
+      {
+        name: "fullWidth",
+        title: "На всю ширину",
+        toggle: true,
+        isActive: () => this.fullWidth,
+        onActivate: () => {
+          this.fullWidth = !this.fullWidth;
+          this.updatePreviewLayout();
+          this.options.block.dispatchChange();
+        },
+      },
+    ];
   }
 
   save(container: HTMLElement): ButtonData {
@@ -154,12 +137,8 @@ export default class ButtonTool implements BlockTool {
       url: container
         .querySelector<HTMLInputElement>('[name="url"]')!
         .value.trim(),
-      alignment:
-        container.querySelector<HTMLInputElement>('input[type="radio"]:checked')
-          ?.value ?? "left",
-      fullWidth:
-        container.querySelector<HTMLInputElement>('[name="fullWidth"]')!
-          .checked,
+      alignment: this.alignment,
+      fullWidth: this.fullWidth,
     };
   }
 
