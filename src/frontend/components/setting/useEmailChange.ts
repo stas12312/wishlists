@@ -100,7 +100,7 @@ export function useEmailChange() {
         return false;
       }
       runInAction(() => {
-        userStore.user = result;
+        userStore.user = { ...result, is_admin: userStore.user.is_admin };
       });
       setRequest(null);
       updateCode("");

@@ -5,6 +5,7 @@ export interface IUser {
   username: string;
   image: string;
   birthday?: string;
+  is_admin?: true;
 }
 
 export interface OAuthLink {

@@ -4,6 +4,7 @@ import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { Key, useEffect } from "react";
 import {
+  MdAdminPanelSettings,
   MdLink,
   MdOutlineExitToApp,
   MdSettings,
@@ -37,6 +38,9 @@ export const UserItem = observer(() => {
     }
     if (key == "settings") {
       router.push("/settings");
+    }
+    if (key == "admin") {
+      router.push("/admin");
     }
     if (key == "support") {
       router.push("/tickets");
@@ -75,6 +79,12 @@ export const UserItem = observer(() => {
                 <MdSettings />
                 <Label>Настройки</Label>
               </Dropdown.Item>
+              {user.is_admin === true && (
+                <Dropdown.Item id="admin" textValue="Админка">
+                  <MdAdminPanelSettings />
+                  <Label>Админка</Label>
+                </Dropdown.Item>
+              )}
               <Dropdown.Item id="support">
                 <MdSupportAgent />
                 <Label className="flex gap-2">
