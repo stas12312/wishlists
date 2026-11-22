@@ -9,7 +9,14 @@ import {
 import { IResponse } from "@/lib/models/response";
 
 export async function listAdminNotifications(
-  { recipientId, search, kind, channel, status }: AdminNotificationFilters,
+  {
+    recipientId,
+    search,
+    kind,
+    channel,
+    status,
+    pushSends,
+  }: AdminNotificationFilters,
   since: string | undefined,
   before: string,
   signal: AbortSignal,
@@ -23,6 +30,7 @@ export async function listAdminNotifications(
         kind,
         channel,
         status,
+        push_sends: pushSends || undefined,
         since,
         before,
       },
