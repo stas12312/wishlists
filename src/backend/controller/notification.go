@@ -28,6 +28,10 @@ func (c *NotificationController) Route(router fiber.Router) {
 	group.Put("/read/visible", c.markVisibleRead)
 	group.Put("/read/events", c.markEventsRead)
 	group.Get("/preferences", c.allPreferences)
+	group.Get("/push/key", c.pushKey)
+	group.Post("/push/status", c.pushStatus)
+	group.Put("/push/subscription", c.savePushSubscription)
+	group.Delete("/push/subscription", c.deletePushSubscription)
 	group.Get("/preferences/:kind", c.preferences)
 	group.Put("/preferences/:kind/:channel", c.setPreference)
 }
@@ -98,12 +102,15 @@ func (c *NotificationController) setPreference(ctx *fiber.Ctx) error {
 		Enabled *bool `json:"enabled"`
 	}
 	if (kind != model.NotificationFriendPreference && !c.service.SupportsKind(kind)) ||
-		(channel != model.NotificationEmail && channel != model.NotificationTelegram) ||
+		(channel != model.NotificationEmail && channel != model.NotificationTelegram && channel != model.NotificationWebPush) ||
 		ctx.BodyParser(&input) != nil || input.Enabled == nil {
 		return notificationBadRequest(ctx)
 	}
 	if err := c.service.SetPreference(GetUserIdFromCtx(ctx), kind, channel, *input.Enabled); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
+			if channel == model.NotificationWebPush {
+				return ctx.SendStatus(fiber.StatusServiceUnavailable)
+			}
 			return ctx.Status(fiber.StatusConflict).JSON(model.ErrorResponse{Message: "Подключите Telegram для получения уведомлений"})
 		}
 		return notificationFailure(ctx, err)

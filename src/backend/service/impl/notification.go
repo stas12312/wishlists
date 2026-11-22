@@ -30,6 +30,7 @@ type NotificationService struct {
 	baseURL    string
 	telegram   telegramNotificationSender
 	botURL     string
+	push       *pushSender
 }
 
 func NewNotificationService(repo repository.NotificationRepository, ws service.WSService, mailClient mail.MailClient, baseURL string, bot telegramNotificationSender, botUsername string) *NotificationService {
@@ -174,12 +175,18 @@ func (s *NotificationService) Preferences(userId int64, kinds ...string) (map[st
 		if preference.Channel == model.NotificationTelegram {
 			preference.Available = preference.Available && s.botURL != ""
 		}
+		if preference.Channel == model.NotificationWebPush && s.push == nil {
+			continue
+		}
 		preferences[row.Kind] = append(preferences[row.Kind], preference)
 	}
 	return preferences, nil
 }
 
 func (s *NotificationService) SetPreference(userId int64, kind, channel string, enabled bool) error {
+	if channel == model.NotificationWebPush && s.push == nil {
+		return sql.ErrNoRows
+	}
 	if enabled && channel == model.NotificationTelegram && s.botURL == "" {
 		return sql.ErrNoRows
 	}
@@ -211,13 +218,17 @@ func (s *NotificationService) Run(ctx context.Context, channel string) {
 }
 
 func (s *NotificationService) deliver(ctx context.Context, delivery model.NotificationDelivery) {
-	address, err := s.repository.DeliveryAddress(delivery)
+	var address string
+	var err error
+	if delivery.Channel != model.NotificationWebPush {
+		address, err = s.repository.DeliveryAddress(delivery)
+	}
 	item := notificationItem(delivery.Notification)
 	status := "sent"
 	lastError := ""
 	var delay time.Duration
 	switch {
-	case errors.Is(err, sql.ErrNoRows), err == nil && address == "":
+	case errors.Is(err, sql.ErrNoRows), err == nil && address == "" && delivery.Channel != model.NotificationWebPush:
 		status = "skipped"
 	case err != nil:
 		lastError = "Не удалось получить адрес доставки"
@@ -225,9 +236,15 @@ func (s *NotificationService) deliver(ctx context.Context, delivery model.Notifi
 		status = "failed"
 		lastError = "Неизвестный тип уведомления"
 	default:
-		if delivery.Channel == model.NotificationTelegram {
+		switch delivery.Channel {
+		case model.NotificationWebPush:
+			err = s.sendPush(ctx, delivery, item)
+			if errors.Is(err, sql.ErrNoRows) {
+				status, err = "skipped", nil
+			}
+		case model.NotificationTelegram:
 			err = s.sendTelegram(ctx, address, item)
-		} else {
+		default:
 			err = s.sendEmail(address, item)
 		}
 		if err != nil {
@@ -248,6 +265,11 @@ func (s *NotificationService) deliver(ctx context.Context, delivery model.Notifi
 			permanent = telegramError.Code >= 400 && telegramError.Code < 500 && telegramError.Code != http.StatusTooManyRequests
 			retryAfter = telegramError.RetryAfter
 			lastError = telegramError.Error()
+		}
+		var pushError *pushDeliveryError
+		if errors.As(err, &pushError) {
+			permanent = pushError.permanent
+			lastError = pushError.Error()
 		}
 		if delivery.Attempts < 5 && !permanent {
 			status = "pending"

@@ -158,6 +158,9 @@ func main() {
 	notificationController.Route(api)
 
 	configureTelegramWebhook(telegramBotClient, appConfig)
+	if notificationService.ConfigurePush(appConfig.WebPushPublicKey, appConfig.WebPushPrivateKey, appConfig.WebPushContact) {
+		go notificationService.Run(context.Background(), model.NotificationWebPush)
+	}
 	go notificationService.Run(context.Background(), model.NotificationEmail)
 	go notificationService.Run(context.Background(), model.NotificationTelegram)
 	log.Fatal(app.Listen(":8080"))

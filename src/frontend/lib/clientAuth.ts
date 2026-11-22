@@ -4,6 +4,8 @@ import { clearSession, logout } from "./auth";
 import { refreshTokens } from "./client-requests/auth";
 
 export async function logoutFromClient() {
+  const { disconnectBrowserPush } = await import("./browserPush");
+  await disconnectBrowserPush().catch(() => undefined);
   if (window.Telegram?.WebApp.initData) {
     await clearSession();
     window.Telegram.WebApp.close();

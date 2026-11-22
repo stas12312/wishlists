@@ -27,15 +27,18 @@ func (r *NotificationRepositoryPostgres) Create(n model.Notification) error {
 		INSERT INTO notification_deliveries (notification_id, channel, telegram_chat_id)
 		SELECT inserted.notification_id, channels.channel, o.oauth_user_id::bigint
 		FROM inserted
-		CROSS JOIN (VALUES ($7::text), ($8::text)) AS channels(channel)
+		CROSS JOIN (VALUES ($7::text), ($8::text), ($9::text)) AS channels(channel)
 		LEFT JOIN notification_preferences p
 		  ON p.user_id = inserted.recipient_id AND p.kind = inserted.kind AND p.channel = channels.channel
 		LEFT JOIN oauth_user o ON o.user_id = inserted.recipient_id AND o.provider = $8 AND channels.channel = $8
 		  AND pg_input_is_valid(o.oauth_user_id, 'bigint')
 		WHERE COALESCE(p.enabled, TRUE)
 		  AND (channels.channel <> $8 OR o.oauth_user_id IS NOT NULL)
+		  AND (channels.channel <> $9 OR EXISTS (
+		    SELECT 1 FROM notification_push_subscriptions WHERE user_id = inserted.recipient_id
+		  ))
 	`
-	_, err := r.conn.Exec(query, n.RecipientId, n.Kind, n.EventKey, n.ResourceKey, n.Body, n.EntityTitle, model.NotificationEmail, model.NotificationTelegram)
+	_, err := r.conn.Exec(query, n.RecipientId, n.Kind, n.EventKey, n.ResourceKey, n.Body, n.EntityTitle, model.NotificationEmail, model.NotificationTelegram, model.NotificationWebPush)
 	return err
 }
 
@@ -106,17 +109,25 @@ func (r *NotificationRepositoryPostgres) Preferences(userId int64, kinds []strin
 		       (u.is_active IS TRUE AND CASE channels.channel
 		           WHEN $3 THEN NULLIF(u.email, '') IS NOT NULL
 		           WHEN $4 THEN COALESCE(pg_input_is_valid(o.oauth_user_id, 'bigint'), FALSE)
+                   WHEN $5 THEN push.linked
 		       END) AS available,
-		       (channels.channel = $4 AND o.oauth_user_id IS NOT NULL) AS linked
+		       CASE channels.channel
+                   WHEN $4 THEN o.oauth_user_id IS NOT NULL
+                   WHEN $5 THEN push.linked
+                   ELSE FALSE
+               END AS linked
 		FROM users u
 		CROSS JOIN unnest($2::text[]) AS kinds(kind)
-		CROSS JOIN (VALUES ($3::text), ($4::text)) AS channels(channel)
+		CROSS JOIN (VALUES ($3::text), ($4::text), ($5::text)) AS channels(channel)
 		LEFT JOIN notification_preferences p
 		  ON p.user_id = u.user_id AND p.kind = kinds.kind AND p.channel = channels.channel
 		LEFT JOIN oauth_user o ON o.user_id = u.user_id AND o.provider = $4
+        CROSS JOIN LATERAL (
+            SELECT EXISTS (SELECT 1 FROM notification_push_subscriptions WHERE user_id = u.user_id) AS linked
+        ) push
 		WHERE u.user_id = $1
 	`
-	err := r.conn.Select(&preferences, query, userId, kinds, model.NotificationEmail, model.NotificationTelegram)
+	err := r.conn.Select(&preferences, query, userId, kinds, model.NotificationEmail, model.NotificationTelegram, model.NotificationWebPush)
 	return preferences, err
 }
 

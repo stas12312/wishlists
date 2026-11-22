@@ -95,6 +95,9 @@ type Config struct {
 	ImageMaxDownloadSize     int64
 	TelegramBotToken         string
 	TelegramBotUsername      string
+	WebPushPublicKey         string
+	WebPushPrivateKey        string
+	WebPushContact           string
 	TelegramProxyURL         string
 	TelegramWebhookSecret    string
 	ReservationCheckInterval time.Duration
@@ -151,6 +154,9 @@ func NewConfig() *Config {
 	return &Config{
 		ImageMaxDownloadSize:     imageMaxDownloadSize,
 		TelegramBotUsername:      os.Getenv("TELEGRAM_BOT_USERNAME"),
+		WebPushPublicKey:         os.Getenv("WEB_PUSH_PUBLIC_KEY"),
+		WebPushPrivateKey:        os.Getenv("WEB_PUSH_PRIVATE_KEY"),
+		WebPushContact:           os.Getenv("WEB_PUSH_CONTACT"),
 		TelegramBotToken:         os.Getenv("TELEGRAM_BOT_TOKEN"),
 		TelegramProxyURL:         os.Getenv("TELEGRAM_PROXY_URL"),
 		TelegramWebhookSecret:    telegramWebhookSecret,
