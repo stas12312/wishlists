@@ -189,7 +189,7 @@ export function NotificationInbox() {
               </Button>
               <Modal.Backdrop>
                 <Modal.Container placement="center">
-                  <Modal.Dialog className="md:max-w-xl">
+                  <Modal.Dialog className="md:max-w-4xl">
                     <Modal.CloseTrigger aria-label="Закрыть" />
                     <Modal.Header className="pr-8">
                       <Modal.Heading>Настройки уведомлений</Modal.Heading>

@@ -23,7 +23,10 @@ export interface NotificationPage {
 }
 
 export type NotificationChannel = "email" | "telegram" | "web_push";
-export type NotificationPreferenceKind = NotificationKind | "friend.requests";
+export type NotificationPreferenceKind =
+  | NotificationKind
+  | "friend.requests"
+  | "wish.questions";
 
 export interface NotificationPreference {
   channel: NotificationChannel;
