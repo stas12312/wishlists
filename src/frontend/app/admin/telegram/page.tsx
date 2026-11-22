@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { Button, Input, Spinner } from "@heroui/react";
+import { Button, Input, Spinner, Tabs } from "@heroui/react";
 import {
   MdArrowBack,
   MdChatBubbleOutline,
@@ -449,70 +449,76 @@ function Journal({
 }
 
 export default function TelegramJournalPage() {
-  const [view, setView] = useState<"chats" | "messages">("chats");
   const [filter, setFilter] = useState("");
   const [value, setValue] = useState("");
 
   return (
     <div data-admin-telegram className="flex min-h-0 flex-1 flex-col">
       <PageHeader title="Telegram" />
-      <div aria-label="Вид журнала" className="mb-3 flex gap-2" role="group">
-        {(["chats", "messages"] as const).map((option) => (
-          <button
-            key={option}
-            aria-pressed={view === option}
-            className="rounded-lg border border-default px-3 py-2 text-sm hover:bg-accent-soft aria-pressed:bg-accent-soft aria-pressed:text-accent-soft-foreground"
-            type="button"
-            onClick={() => setView(option)}
-          >
-            {option === "chats" ? "Чаты" : "Сообщения"}
-          </button>
-        ))}
-      </div>
-      {view === "messages" && <MessageList />}
-      <div className={view === "chats" ? "flex min-h-0 flex-1" : "hidden"}>
-        <Journal
-          key={filter}
-          filter={filter}
-          search={
-            <form
-              className="flex min-h-16 shrink-0 flex-wrap items-center gap-2 border-b border-default p-3"
-              onSubmit={(event) => {
-                event.preventDefault();
-                setFilter(value.trim());
-              }}
-            >
-              <div className="relative min-w-0 flex-1 basis-36">
-                <MdSearch
-                  aria-hidden="true"
-                  className="pointer-events-none absolute top-1/2 left-3 z-10 -translate-y-1/2 text-xl text-muted"
-                />
-                <Input
-                  aria-label="ID чата"
-                  className="w-full pl-10"
-                  pattern="-?[0-9]{1,19}"
-                  placeholder="Поиск по ID чата"
-                  title="Введите числовой ID чата"
-                  value={value}
-                  onChange={(event) => setValue(event.target.value)}
-                />
-              </div>
-              <Button type="submit">Найти</Button>
-              {filter && (
-                <Button
-                  variant="secondary"
-                  onPress={() => {
-                    setValue("");
-                    setFilter("");
-                  }}
-                >
-                  Все чаты
-                </Button>
-              )}
-            </form>
-          }
-        />
-      </div>
+      <Tabs className="min-h-0 min-w-0 flex-1 gap-3" defaultSelectedKey="chats">
+        <Tabs.ListContainer className="max-w-full shrink-0 self-start">
+          <Tabs.List aria-label="Вид журнала">
+            <Tabs.Tab id="chats">
+              Чаты
+              <Tabs.Indicator />
+            </Tabs.Tab>
+            <Tabs.Tab id="messages">
+              Сообщения
+              <Tabs.Indicator />
+            </Tabs.Tab>
+          </Tabs.List>
+        </Tabs.ListContainer>
+        <Tabs.Panel
+          shouldForceMount
+          className="mt-0 flex min-h-0 flex-1 p-0 data-[inert]:hidden"
+          id="chats"
+        >
+          <Journal
+            key={filter}
+            filter={filter}
+            search={
+              <form
+                className="flex min-h-16 shrink-0 flex-wrap items-center gap-2 border-b border-default p-3"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  setFilter(value.trim());
+                }}
+              >
+                <div className="relative min-w-0 flex-1 basis-36">
+                  <MdSearch
+                    aria-hidden="true"
+                    className="pointer-events-none absolute top-1/2 left-3 z-10 -translate-y-1/2 text-xl text-muted"
+                  />
+                  <Input
+                    aria-label="ID чата"
+                    className="w-full pl-10"
+                    pattern="-?[0-9]{1,19}"
+                    placeholder="Поиск по ID чата"
+                    title="Введите числовой ID чата"
+                    value={value}
+                    onChange={(event) => setValue(event.target.value)}
+                  />
+                </div>
+                <Button type="submit">Найти</Button>
+                {filter && (
+                  <Button
+                    variant="secondary"
+                    onPress={() => {
+                      setValue("");
+                      setFilter("");
+                    }}
+                  >
+                    Все чаты
+                  </Button>
+                )}
+              </form>
+            }
+          />
+        </Tabs.Panel>
+        <Tabs.Panel className="mt-0 flex min-h-0 flex-1 p-0" id="messages">
+          <MessageList />
+        </Tabs.Panel>
+      </Tabs>
     </div>
   );
 }
