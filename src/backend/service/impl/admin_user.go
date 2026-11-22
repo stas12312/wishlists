@@ -11,11 +11,12 @@ import (
 )
 
 type adminUserService struct {
-	repository repository.AdminUserRepository
+	repository    repository.AdminUserRepository
+	notifications *NotificationService
 }
 
-func NewAdminUserService(repository repository.AdminUserRepository) service.AdminUserService {
-	return &adminUserService{repository}
+func NewAdminUserService(repository repository.AdminUserRepository, notifications *NotificationService) service.AdminUserService {
+	return &adminUserService{repository: repository, notifications: notifications}
 }
 
 func adminUserError(err error) error {
@@ -42,7 +43,15 @@ func (s *adminUserService) Get(id int64) (*model.AdminUserDetail, error) {
 	if err != nil {
 		return nil, adminUserError(err)
 	}
-	return &model.AdminUserDetail{AdminUser: *user, Links: links}, nil
+	preferences, err := s.notifications.Preferences(id)
+	if err != nil {
+		return nil, adminUserError(err)
+	}
+	return &model.AdminUserDetail{
+		AdminUser:               *user,
+		Links:                   links,
+		NotificationPreferences: preferences,
+	}, nil
 }
 
 func (s *adminUserService) DeleteLink(id int64, provider, externalID string) error {

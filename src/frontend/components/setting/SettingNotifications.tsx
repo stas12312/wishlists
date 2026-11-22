@@ -13,19 +13,10 @@ import {
   NotificationChannel,
   NotificationKind,
   NotificationPreference,
+  notificationChannels as channels,
+  notificationTypes,
 } from "@/lib/models/notification";
 import { SettingsLinksStore } from "@/store/settingsLinksStore";
-
-const channels = [
-  { id: "email", label: "Email" },
-  { id: "telegram", label: "Telegram" },
-] as const;
-
-const notificationTypes = [
-  { kind: "support.reply", label: "Ответы поддержки" },
-  { kind: "question.created", label: "Новые вопросы о желаниях" },
-  { kind: "question.answered", label: "Ответы на мои вопросы" },
-] as const;
 
 export const SettingNotifications = observer(function SettingNotifications({
   linksStore,

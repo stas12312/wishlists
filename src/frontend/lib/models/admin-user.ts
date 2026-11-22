@@ -1,3 +1,5 @@
+import { NotificationKind, NotificationPreference } from "./notification";
+
 export interface IAdminUser {
   id: number;
   name: string;
@@ -17,4 +19,7 @@ export interface IUserLink {
 
 export interface IAdminUserDetail extends IAdminUser {
   links: IUserLink[];
+  notification_preferences?: Partial<
+    Record<NotificationKind, NotificationPreference[]>
+  >;
 }

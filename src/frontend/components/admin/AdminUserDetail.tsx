@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FaTelegramPlane } from "react-icons/fa";
 
+import { AdminUserNotifications } from "./AdminUserNotifications";
 import { AdminUserWishlists } from "./AdminUserWishlists";
 
 import ConfirmationModal from "@/components/ConfirmationModal";
@@ -89,6 +90,10 @@ export const AdminUserDetail = observer(function AdminUserDetail({
                     Привязки для входа
                     <Tabs.Indicator />
                   </Tabs.Tab>
+                  <Tabs.Tab className="px-2 sm:px-4" id="notifications">
+                    Уведомления
+                    <Tabs.Indicator />
+                  </Tabs.Tab>
                 </Tabs.List>
               </Tabs.ListContainer>
               <Tabs.Panel
@@ -136,6 +141,9 @@ export const AdminUserDetail = observer(function AdminUserDetail({
                     </div>
                   ))}
                 </div>
+              </Tabs.Panel>
+              <Tabs.Panel className="mt-4" id="notifications">
+                <AdminUserNotifications user={user} />
               </Tabs.Panel>
             </Tabs>
           </>

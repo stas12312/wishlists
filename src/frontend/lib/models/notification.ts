@@ -27,3 +27,14 @@ export interface NotificationPreference {
   available: boolean;
   linked?: boolean;
 }
+
+export const notificationChannels = [
+  { id: "email", label: "Email" },
+  { id: "telegram", label: "Telegram" },
+] as const;
+
+export const notificationTypes = [
+  { kind: "support.reply", label: "Ответы поддержки" },
+  { kind: "question.created", label: "Новые вопросы о желаниях" },
+  { kind: "question.answered", label: "Ответы на мои вопросы" },
+] as const;
