@@ -14,19 +14,19 @@ export default async function Layout({ children }: { children: ReactNode }) {
     throw notFound();
   }
   return (
-    <>
+    <div className="has-[[data-admin-telegram]]:flex has-[[data-admin-telegram]]:h-[calc(100dvh-var(--telegram-top-inset))] has-[[data-admin-telegram]]:flex-col has-[[data-admin-telegram]]:overflow-hidden">
       <Header isLogin />
-      <main>
-        <div className="gap-1 flex mt-4">
+      <main className="has-[[data-admin-telegram]]:flex has-[[data-admin-telegram]]:min-h-0 has-[[data-admin-telegram]]:flex-1 has-[[data-admin-telegram]]:flex-col">
+        <div className="gap-1 flex mt-4 has-[[data-admin-telegram]]:min-h-0 has-[[data-admin-telegram]]:flex-1">
           <LeftPanel>
             <AdminMenu variant="desktop" />
           </LeftPanel>
-          <div className="w-full min-w-0 px-3 md:px-0 md:pr-4 pb-28 md:pb-6">
+          <div className="w-full min-w-0 px-3 md:px-0 md:pr-4 pb-28 md:pb-6 has-[[data-admin-telegram]]:flex has-[[data-admin-telegram]]:min-h-0 has-[[data-admin-telegram]]:flex-col">
             {children}
           </div>
         </div>
       </main>
       <AdminMenu variant="mobile" />
-    </>
+    </div>
   );
 }

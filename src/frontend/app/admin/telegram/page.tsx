@@ -1,9 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
-import { Button, Chip, Input, Spinner, Table } from "@heroui/react";
-import { MdChevronRight, MdSearch, MdSend } from "react-icons/md";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+import { Button, Input, Spinner } from "@heroui/react";
+import {
+  MdArrowBack,
+  MdChatBubbleOutline,
+  MdSearch,
+  MdSend,
+} from "react-icons/md";
 
 import { EmptyState } from "@/components/EmptyState";
 import PageHeader from "@/components/PageHeader";
@@ -39,72 +50,93 @@ const kinds: Record<string, string> = {
   story: "История",
 };
 
-function useTelegramPage<T>(
+function useTelegramHistory<T>(
   load: (
     before: string | undefined,
     signal: AbortSignal,
   ) => Promise<TelegramPage<T>>,
+  scrollUp = false,
 ) {
-  const [cursors, setCursors] = useState<string[]>([]);
+  const viewport = useRef<HTMLDivElement>(null);
+  const boundary = useRef<HTMLElement | null>(null);
+  const anchor = useRef<number | undefined>(undefined);
+  const [request, setRequest] = useState<{ before?: string }>({});
   const [result, setResult] = useState<{
-    cursors: string[];
+    request: typeof request;
     page?: TelegramPage<T>;
+    error?: boolean;
   }>();
-  const [attempt, setAttempt] = useState(0);
+  const page = result?.page;
+  const loading = result?.request !== request;
 
   useEffect(() => {
     const controller = new AbortController();
-    load(cursors.at(-1), controller.signal).then(
-      (page) => {
-        if (!controller.signal.aborted) setResult({ cursors, page });
+    load(request.before, controller.signal).then(
+      (batch) => {
+        if (controller.signal.aborted) return;
+        if (scrollUp && viewport.current) {
+          anchor.current = request.before
+            ? viewport.current.scrollHeight
+            : undefined;
+        }
+        setResult((current) => ({
+          request,
+          page: {
+            data: request.before
+              ? [...(current?.page?.data ?? []), ...batch.data]
+              : batch.data,
+            next: batch.next,
+          },
+        }));
       },
       () => {
-        if (!controller.signal.aborted) setResult({ cursors });
+        if (!controller.signal.aborted)
+          setResult((current) => ({
+            request,
+            page: current?.page,
+            error: true,
+          }));
       },
     );
     return () => controller.abort();
-  }, [load, cursors, attempt]);
+  }, [load, request, scrollUp]);
 
-  const current = result?.cursors === cursors ? result : undefined;
+  useLayoutEffect(() => {
+    const element = viewport.current;
+    if (!scrollUp || !element || !page) return;
+    element.scrollTop =
+      anchor.current === undefined
+        ? element.scrollHeight
+        : element.scrollTop + element.scrollHeight - anchor.current;
+  }, [page, scrollUp]);
+
+  const next = page?.next;
+  const failed = !loading && result?.error === true;
+  useEffect(() => {
+    const root = viewport.current;
+    const target = boundary.current;
+    if (!root || !target || loading || failed || !next) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          observer.disconnect();
+          setRequest({ before: next });
+        }
+      },
+      { root },
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [failed, loading, next]);
+
   return {
-    page: current?.page,
-    loading: !current,
-    previous: cursors.length
-      ? () => setCursors(cursors.slice(0, -1))
-      : undefined,
-    next: current?.page?.next
-      ? () => setCursors([...cursors, current.page!.next!])
-      : undefined,
-    retry: () => {
-      setResult(undefined);
-      setAttempt((value) => value + 1);
-    },
+    page,
+    loading,
+    failed,
+    viewport,
+    boundary,
+    retry: () => setRequest({ ...request }),
   };
-}
-
-function Pagination({
-  previous,
-  next,
-}: {
-  previous?: () => void;
-  next?: () => void;
-}) {
-  if (!previous && !next) return null;
-  return (
-    <div className="flex justify-end gap-2">
-      <Button
-        isDisabled={!previous}
-        size="sm"
-        variant="secondary"
-        onPress={previous}
-      >
-        Назад
-      </Button>
-      <Button isDisabled={!next} size="sm" variant="secondary" onPress={next}>
-        Дальше
-      </Button>
-    </div>
-  );
 }
 
 function LoadError({ retry }: { retry: () => void }) {
@@ -136,150 +168,217 @@ function LinkedUser({ chat }: { chat: TelegramChat }) {
   );
 }
 
-function Conversation({ chat }: { chat: TelegramChat }) {
+function ChatAvatar({ chat }: { chat: TelegramChat }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="grid size-10 shrink-0 place-items-center rounded-full bg-accent-soft font-medium text-accent-soft-foreground"
+    >
+      {chat.username ? chat.username[0].toUpperCase() : <MdChatBubbleOutline />}
+    </span>
+  );
+}
+
+function Conversation({
+  chat,
+  onBack,
+}: {
+  chat: TelegramChat;
+  onBack: () => void;
+}) {
   const load = useCallback(
     (before: string | undefined, signal: AbortSignal) =>
       getTelegramMessages(chat.chat_id, before, signal),
     [chat.chat_id],
   );
-  const { page, loading, previous, next, retry } = useTelegramPage(load);
+  const { page, loading, failed, viewport, boundary, retry } =
+    useTelegramHistory(load, true);
 
   return (
-    <section className="flex min-w-0 flex-col gap-3">
-      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-        <h2 className="break-all text-lg font-medium">Чат {chat.chat_id}</h2>
-        <LinkedUser chat={chat} />
-      </div>
-      <div className="flex flex-col gap-3">
-        {loading && (
-          <Spinner aria-label="Загрузка сообщений" className="self-center" />
+    <section
+      aria-label="Переписка"
+      className="flex min-h-0 min-w-0 flex-col bg-background lg:row-span-2 lg:grid lg:grid-rows-subgrid"
+    >
+      <header className="flex shrink-0 items-center gap-3 border-b border-default bg-surface p-3">
+        <button
+          aria-label="К списку чатов"
+          className="grid size-10 shrink-0 place-items-center rounded-full text-xl hover:bg-accent-soft lg:hidden"
+          type="button"
+          onClick={onBack}
+        >
+          <MdArrowBack aria-hidden="true" />
+        </button>
+        <ChatAvatar chat={chat} />
+        <div className="min-w-0 text-sm">
+          <h2 className="break-all font-medium">Чат {chat.chat_id}</h2>
+          <LinkedUser chat={chat} />
+        </div>
+      </header>
+      <div
+        ref={viewport}
+        className="min-h-0 flex-1 overflow-y-auto [overflow-anchor:none] p-3 sm:p-4"
+      >
+        {loading && !page && (
+          <div className="flex justify-center">
+            <Spinner aria-label="Загрузка сообщений" />
+          </div>
         )}
-        {!loading && !page && <LoadError retry={retry} />}
+        {failed && <LoadError retry={retry} />}
         {page?.data.length === 0 && (
           <EmptyState compact title="В чате пока нет сообщений" />
         )}
         {page && page.data.length > 0 && (
-          <ol className="divide-y divide-default overflow-hidden rounded-2xl bg-surface">
-            {page?.data.map((message) => {
-              const edited = message.kind.startsWith("edited_");
-              const kind = message.kind.replace(/^edited_/, "");
-              return (
-                <li key={message.id} className="px-3 py-3 sm:px-4">
-                  <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-muted">
-                    <span className="flex flex-wrap items-center gap-2">
-                      <Chip
-                        color={
-                          message.direction === "incoming"
-                            ? "default"
-                            : "accent"
-                        }
-                        size="sm"
-                        variant="soft"
-                      >
-                        {message.direction === "incoming"
-                          ? "Входящее"
-                          : "Исходящее"}
-                      </Chip>
-                      <span>
-                        {kinds[kind] ?? kind}
-                        {edited && " · Изменено"}
-                      </span>
+          <ol className="mx-auto flex min-h-full max-w-4xl flex-col justify-end gap-2">
+            {page.next && (
+              <li
+                ref={(element) => {
+                  boundary.current = element;
+                }}
+                aria-hidden="true"
+                className="h-px"
+              />
+            )}
+            {page.data
+              .slice()
+              .reverse()
+              .map((message) => {
+                const outgoing = message.direction === "outgoing";
+                const edited = message.kind.startsWith("edited_");
+                const kind = message.kind.replace(/^edited_/, "");
+                return (
+                  <li
+                    key={message.id}
+                    className={
+                      outgoing
+                        ? "max-w-[88%] self-end rounded-2xl rounded-br-sm bg-accent-soft px-3 py-2 text-sm sm:max-w-[75%]"
+                        : "max-w-[88%] self-start rounded-2xl rounded-bl-sm bg-surface px-3 py-2 text-sm sm:max-w-[75%]"
+                    }
+                  >
+                    <span className="sr-only">
+                      {outgoing ? "Исходящее" : "Входящее"}
                     </span>
-                    <time dateTime={message.sent_at}>
-                      {formatter.format(new Date(message.sent_at))}
-                    </time>
-                  </div>
-                  {message.text && (
-                    <p className="mt-2 text-sm whitespace-pre-wrap wrap-anywhere">
-                      {message.text}
-                    </p>
-                  )}
-                </li>
-              );
-            })}
+                    {message.text && (
+                      <p className="whitespace-pre-wrap wrap-anywhere">
+                        {message.text}
+                      </p>
+                    )}
+                    <div className="flex flex-wrap justify-end gap-x-2 text-xs text-muted">
+                      {(kind !== "text" || !message.text) && (
+                        <span>{kinds[kind] ?? kind}</span>
+                      )}
+                      {edited && <span>Изменено</span>}
+                      <time dateTime={message.sent_at}>
+                        {formatter.format(new Date(message.sent_at))}
+                      </time>
+                    </div>
+                  </li>
+                );
+              })}
           </ol>
         )}
-        <Pagination next={next} previous={previous} />
       </div>
     </section>
   );
 }
 
-function Journal({ filter }: { filter: string }) {
-  const [selected, setSelected] = useState<TelegramChat>();
+function Journal({
+  filter,
+  search,
+}: {
+  filter: string;
+  search: React.ReactNode;
+}) {
+  const [selected, setSelected] = useState<TelegramChat | null>();
   const load = useCallback(
     (before: string | undefined, signal: AbortSignal) =>
       getTelegramChats(filter, before, signal),
     [filter],
   );
-  const { page, loading, previous, next, retry } = useTelegramPage(load);
-  const chat = selected ?? (filter ? page?.data[0] : undefined);
+  const { page, loading, failed, viewport, boundary, retry } =
+    useTelegramHistory(load);
+  const chat = selected === undefined && filter ? page?.data[0] : selected;
 
   return (
-    <div
-      className={
-        chat
-          ? "grid gap-4 lg:grid-cols-[minmax(17rem,24rem)_minmax(0,1fr)]"
-          : undefined
-      }
-    >
-      <section className="flex min-w-0 flex-col gap-3">
-        {loading && (
-          <Spinner aria-label="Загрузка чатов" className="self-center" />
-        )}
-        {!loading && !page && <LoadError retry={retry} />}
-        {page?.data.length === 0 && (
-          <EmptyState
-            icon={<MdSend />}
-            title={filter ? "Чат не найден" : "В журнале пока нет чатов"}
-          />
-        )}
-        {page && page.data.length > 0 && (
-          <Table>
-            <Table.ScrollContainer>
-              <Table.Content
-                aria-label="Чаты Telegram"
-                onRowAction={(key) =>
-                  setSelected(page.data.find((item) => item.chat_id === key))
-                }
-              >
-                <Table.Header>
-                  <Table.Column isRowHeader>ID чата</Table.Column>
-                  <Table.Column>Пользователь</Table.Column>
-                  <Table.Column aria-label="Открыть чат" />
-                </Table.Header>
-                <Table.Body items={page.data}>
-                  {(item) => (
-                    <Table.Row
-                      className={
-                        chat?.chat_id === item.chat_id
-                          ? "cursor-pointer bg-accent-soft"
-                          : "cursor-pointer"
-                      }
-                      id={item.chat_id}
-                    >
-                      <Table.Cell className="font-medium tabular-nums">
-                        {item.chat_id}
-                      </Table.Cell>
-                      <Table.Cell>
-                        <LinkedUser chat={item} />
-                      </Table.Cell>
-                      <Table.Cell>
-                        <MdChevronRight
-                          aria-hidden="true"
-                          className="text-lg text-muted"
-                        />
-                      </Table.Cell>
-                    </Table.Row>
-                  )}
-                </Table.Body>
-              </Table.Content>
-            </Table.ScrollContainer>
-          </Table>
-        )}
-        <Pagination next={next} previous={previous} />
+    <div className="grid min-h-0 min-w-0 flex-1 grid-cols-1 grid-rows-[minmax(0,1fr)] overflow-hidden rounded-2xl border border-default bg-surface lg:grid-cols-[minmax(15rem,20rem)_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)]">
+      <section
+        aria-label="Чаты Telegram"
+        className={
+          chat
+            ? "hidden min-h-0 min-w-0 flex-col lg:row-span-2 lg:grid lg:grid-rows-subgrid lg:border-r lg:border-default"
+            : "flex min-h-0 min-w-0 flex-col lg:row-span-2 lg:grid lg:grid-rows-subgrid lg:border-r lg:border-default"
+        }
+      >
+        {search}
+        <div ref={viewport} className="min-h-0 flex-1 overflow-y-auto">
+          {loading && !page && (
+            <div className="flex justify-center p-4">
+              <Spinner aria-label="Загрузка чатов" />
+            </div>
+          )}
+          {failed && <LoadError retry={retry} />}
+          {page?.data.length === 0 && (
+            <EmptyState
+              compact
+              icon={<MdSend />}
+              title={filter ? "Чат не найден" : "В журнале пока нет чатов"}
+            />
+          )}
+          {page && page.data.length > 0 && (
+            <ul className="space-y-1 p-2">
+              {page.data.map((item) => (
+                <li key={item.chat_id}>
+                  <button
+                    aria-current={
+                      chat?.chat_id === item.chat_id ? "true" : undefined
+                    }
+                    className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left hover:bg-accent-soft aria-[current=true]:bg-accent-soft"
+                    type="button"
+                    onClick={() => setSelected(item)}
+                  >
+                    <ChatAvatar chat={item} />
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-medium">
+                        {item.username
+                          ? "@" + item.username
+                          : item.user_id
+                            ? "Пользователь №" + item.user_id
+                            : "Чат " + item.chat_id}
+                      </span>
+                      <span className="block truncate text-xs text-muted">
+                        {item.user_id ? "Чат " + item.chat_id : "Нет привязки"}
+                      </span>
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+          {page?.next && (
+            <div
+              ref={(element) => {
+                boundary.current = element;
+              }}
+              aria-hidden="true"
+              className="h-px"
+            />
+          )}
+        </div>
       </section>
-      {chat && <Conversation key={chat.chat_id} chat={chat} />}
+      {chat ? (
+        <Conversation
+          key={chat.chat_id}
+          chat={chat}
+          onBack={() => setSelected(null)}
+        />
+      ) : (
+        <div className="hidden place-items-center bg-background lg:row-span-2 lg:grid">
+          <EmptyState
+            compact
+            icon={<MdChatBubbleOutline />}
+            title="Выберите чат"
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -289,46 +388,49 @@ export default function TelegramJournalPage() {
   const [value, setValue] = useState("");
 
   return (
-    <>
+    <div data-admin-telegram className="flex min-h-0 flex-1 flex-col">
       <PageHeader title="Telegram" />
-      <div className="flex flex-col gap-4">
-        <form
-          className="flex flex-wrap items-center gap-2"
-          onSubmit={(event) => {
-            event.preventDefault();
-            setFilter(value.trim());
-          }}
-        >
-          <div className="relative w-full sm:max-w-[280px]">
-            <MdSearch
-              aria-hidden="true"
-              className="pointer-events-none absolute top-1/2 left-3 z-10 -translate-y-1/2 text-xl text-muted"
-            />
-            <Input
-              aria-label="ID чата"
-              className="w-full pl-10"
-              pattern="-?[0-9]{1,19}"
-              placeholder="Поиск по ID чата"
-              title="Введите числовой ID чата"
-              value={value}
-              onChange={(event) => setValue(event.target.value)}
-            />
-          </div>
-          <Button type="submit">Найти</Button>
-          {filter && (
-            <Button
-              variant="secondary"
-              onPress={() => {
-                setValue("");
-                setFilter("");
-              }}
-            >
-              Все чаты
-            </Button>
-          )}
-        </form>
-        <Journal key={filter} filter={filter} />
-      </div>
-    </>
+      <Journal
+        key={filter}
+        filter={filter}
+        search={
+          <form
+            className="flex shrink-0 flex-wrap items-center gap-2 border-b border-default p-3"
+            onSubmit={(event) => {
+              event.preventDefault();
+              setFilter(value.trim());
+            }}
+          >
+            <div className="relative min-w-0 flex-1 basis-36">
+              <MdSearch
+                aria-hidden="true"
+                className="pointer-events-none absolute top-1/2 left-3 z-10 -translate-y-1/2 text-xl text-muted"
+              />
+              <Input
+                aria-label="ID чата"
+                className="w-full pl-10"
+                pattern="-?[0-9]{1,19}"
+                placeholder="Поиск по ID чата"
+                title="Введите числовой ID чата"
+                value={value}
+                onChange={(event) => setValue(event.target.value)}
+              />
+            </div>
+            <Button type="submit">Найти</Button>
+            {filter && (
+              <Button
+                variant="secondary"
+                onPress={() => {
+                  setValue("");
+                  setFilter("");
+                }}
+              >
+                Все чаты
+              </Button>
+            )}
+          </form>
+        }
+      />
+    </div>
   );
 }

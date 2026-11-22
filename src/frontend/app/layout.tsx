@@ -45,7 +45,11 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html suppressHydrationWarning lang="ru">
+    <html
+      suppressHydrationWarning
+      className="has-[[data-admin-telegram]]:overflow-hidden"
+      lang="ru"
+    >
       <head>
         <meta
           content="width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1, maximum-scale=5"
@@ -54,7 +58,7 @@ export default async function RootLayout({
       </head>
       <body
         className={clsx(
-          "h-screen bg-background font-sans antialiased",
+          "h-screen bg-background font-sans antialiased has-[[data-admin-telegram]]:h-dvh",
           fontSans.variable,
         )}
       >
