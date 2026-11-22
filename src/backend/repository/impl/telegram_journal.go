@@ -43,12 +43,12 @@ func (r *TelegramJournalRepository) Chats(ctx context.Context, chatID, before *i
 	return chats, err
 }
 
-func (r *TelegramJournalRepository) Messages(ctx context.Context, chatID int64, before *int64, limit int) ([]model.TelegramMessage, error) {
+func (r *TelegramJournalRepository) Messages(ctx context.Context, chatID, before *int64, limit int) ([]model.TelegramMessage, error) {
 	messages := make([]model.TelegramMessage, 0, limit)
 	err := r.db.SelectContext(ctx, &messages, `
-		SELECT id::text, message_id::text, direction, kind, text, sent_at
+		SELECT id::text, chat_id::text, message_id::text, direction, kind, text, sent_at
 		FROM telegram_messages
-		WHERE chat_id = $1 AND ($2::bigint IS NULL OR id < $2)
+		WHERE ($1::bigint IS NULL OR chat_id = $1) AND ($2::bigint IS NULL OR id < $2)
 		ORDER BY telegram_messages.id DESC LIMIT $3
 	`, chatID, before, limit)
 	return messages, err

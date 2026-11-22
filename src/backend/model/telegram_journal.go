@@ -10,6 +10,7 @@ type TelegramChat struct {
 
 type TelegramMessage struct {
 	ID        string    `db:"id" json:"id"`
+	ChatID    string    `db:"chat_id" json:"chat_id"`
 	MessageID string    `db:"message_id" json:"message_id"`
 	Direction string    `db:"direction" json:"direction"`
 	Kind      string    `db:"kind" json:"kind"`
