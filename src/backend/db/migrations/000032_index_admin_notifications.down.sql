@@ -1,0 +1,1 @@
+DROP INDEX notifications_created_at_idx;
