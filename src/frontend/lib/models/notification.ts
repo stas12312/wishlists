@@ -1,7 +1,10 @@
 export type NotificationKind =
   | "support.reply"
   | "question.created"
-  | "question.answered";
+  | "question.answered"
+  | "friend.requested"
+  | "friend.accepted"
+  | "friend.declined";
 
 export interface NotificationItem {
   id: number;
@@ -20,6 +23,7 @@ export interface NotificationPage {
 }
 
 export type NotificationChannel = "email" | "telegram";
+export type NotificationPreferenceKind = NotificationKind | "friend.requests";
 
 export interface NotificationPreference {
   channel: NotificationChannel;
@@ -37,4 +41,7 @@ export const notificationTypes = [
   { kind: "support.reply", label: "Ответы поддержки" },
   { kind: "question.created", label: "Новые вопросы о желаниях" },
   { kind: "question.answered", label: "Ответы на мои вопросы" },
+  { kind: "friend.requested", label: "Входящие заявки в друзья" },
+  { kind: "friend.accepted", label: "Принятие моих заявок в друзья" },
+  { kind: "friend.declined", label: "Отклонение моих заявок в друзья" },
 ] as const;

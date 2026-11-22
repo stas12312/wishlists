@@ -56,6 +56,7 @@ func supportReplyNotification(ticket *model.Ticket, message *model.Message) mode
 
 var notificationTemplates = map[string]struct {
 	title      string
+	href       string
 	hrefPrefix string
 	emoji      string
 }{
@@ -74,6 +75,21 @@ var notificationTemplates = map[string]struct {
 		hrefPrefix: "/questions/",
 		emoji:      "💬",
 	},
+	model.NotificationFriendRequested: {
+		title: "Новая заявка в друзья",
+		href:  "/friends?tab=requests",
+		emoji: "👋",
+	},
+	model.NotificationFriendAccepted: {
+		title: "Вашу заявку в друзья приняли",
+		href:  "/friends?tab=requests",
+		emoji: "🤝",
+	},
+	model.NotificationFriendDeclined: {
+		title: "Вашу заявку в друзья отклонили",
+		href:  "/friends?tab=requests",
+		emoji: "👤",
+	},
 }
 
 func (s *NotificationService) SupportsKind(kind string) bool {
@@ -85,7 +101,10 @@ func notificationItem(n model.Notification) model.NotificationItem {
 	item := model.NotificationItem{Notification: n}
 	if template, ok := notificationTemplates[n.Kind]; ok {
 		item.Title = template.title
-		item.Href = template.hrefPrefix + n.ResourceKey
+		item.Href = template.href
+		if template.hrefPrefix != "" {
+			item.Href = template.hrefPrefix + n.ResourceKey
+		}
 	}
 	return item
 }
@@ -164,7 +183,11 @@ func (s *NotificationService) SetPreference(userId int64, kind, channel string, 
 	if enabled && channel == model.NotificationTelegram && s.botURL == "" {
 		return sql.ErrNoRows
 	}
-	return s.repository.SetPreference(userId, kind, channel, enabled)
+	if kind == model.NotificationFriendPreference {
+		return s.repository.SetPreference(userId, channel, enabled,
+			model.NotificationFriendRequested, model.NotificationFriendAccepted, model.NotificationFriendDeclined)
+	}
+	return s.repository.SetPreference(userId, channel, enabled, kind)
 }
 
 func (s *NotificationService) Run(ctx context.Context, channel string) {

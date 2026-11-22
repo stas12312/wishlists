@@ -5,6 +5,7 @@ import {
   NotificationKind,
   NotificationPage,
   NotificationPreference,
+  NotificationPreferenceKind,
 } from "../models/notification";
 
 import { clientAxios } from "./base";
@@ -82,7 +83,7 @@ export async function getNotificationPreferences(signal: AbortSignal) {
 }
 
 export async function setNotificationPreference(
-  kind: NotificationKind,
+  kind: NotificationPreferenceKind,
   channel: NotificationChannel,
   enabled: boolean,
 ) {

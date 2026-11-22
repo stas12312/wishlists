@@ -72,10 +72,29 @@ func (r *FriendRepositoryPostgres) HasLink(fUserId int64, sUserId int64) bool {
 	return result
 }
 
+func (r *FriendRepositoryPostgres) LockFriendRequest(fUserId int64, sUserId int64) error {
+	_, err := r.Exec(`
+		SELECT pg_advisory_xact_lock(hashtextextended(
+			'friend_requests:' || LEAST($1::bigint, $2::bigint) || ':' || GREATEST($1::bigint, $2::bigint), 0))
+	`, fUserId, sUserId)
+	return err
+}
+
 func (r *FriendRepositoryPostgres) CreateFriendRequest(fromUserId int64, toUserId int64) error {
 	q := `
+	WITH reopened AS (
+		UPDATE friend_requests
+		SET status = 0, created_at = now(), finished_at = NULL
+		WHERE ctid = (
+			SELECT ctid FROM friend_requests
+			WHERE from_user_id = $1 AND to_user_id = $2 AND status IN (1, 2)
+			ORDER BY created_at DESC
+			LIMIT 1
+		)
+		RETURNING 1
+	)
 	INSERT INTO friend_requests (from_user_id, to_user_id)
-	VALUES ($1, $2)
+	SELECT $1, $2 WHERE NOT EXISTS (SELECT 1 FROM reopened)
 `
 
 	_, err := r.Exec(q, fromUserId, toUserId)
@@ -86,9 +105,16 @@ func (r *FriendRepositoryPostgres) UpdateFriendRequest(fromUserId int64, toUserI
 	q := `
 	UPDATE friend_requests
 	SET status = $3
-	WHERE from_user_id = $1 AND to_user_id = $2
+	WHERE from_user_id = $1 AND to_user_id = $2 AND status = 0
 `
-	_, err := r.Exec(q, fromUserId, toUserId, status)
+	result, err := r.Exec(q, fromUserId, toUserId, status)
+	if err != nil {
+		return err
+	}
+	count, err := result.RowsAffected()
+	if err == nil && count == 0 {
+		return sql.ErrNoRows
+	}
 	return err
 }
 

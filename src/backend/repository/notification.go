@@ -20,7 +20,7 @@ type NotificationRepository interface {
 	MarkReadByIds(userId int64, ids []int64) (bool, error)
 	MarkRead(userId int64, kind, resourceKey string, eventKeys []string) (bool, error)
 	Preferences(userId int64, kinds []string) ([]NotificationPreferenceRow, error)
-	SetPreference(userId int64, kind, channel string, enabled bool) error
+	SetPreference(userId int64, channel string, enabled bool, kinds ...string) error
 	ClaimDelivery(channel string) (model.NotificationDelivery, error)
 	CompleteDelivery(delivery model.NotificationDelivery, status, lastError string, delay time.Duration) error
 	DeliveryAddress(delivery model.NotificationDelivery) (string, error)

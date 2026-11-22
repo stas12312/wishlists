@@ -9,6 +9,7 @@ type FriendRepository interface {
 	DeleteFriend(fUserId int64, sUserId int64) error
 	ListFriends(userId int64) (*[]model.User, error)
 	HasLink(fUserId int64, sUserId int64) bool
+	LockFriendRequest(fUserId int64, sUserId int64) error
 	CreateFriendRequest(fromUserId int64, toUserId int64) error
 	UpdateFriendRequest(fromUserId int64, toUserId int64, status int) error
 	DeleteFriendRequest(fromUserId int64, toUserId int64) error

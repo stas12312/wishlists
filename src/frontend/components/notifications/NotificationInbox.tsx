@@ -25,6 +25,9 @@ const notificationIcons: Record<string, string> = {
   "support.reply": "💬",
   "question.created": "❓",
   "question.answered": "💬",
+  "friend.requested": "👋",
+  "friend.accepted": "🤝",
+  "friend.declined": "👤",
 };
 
 function showMarkReadError() {

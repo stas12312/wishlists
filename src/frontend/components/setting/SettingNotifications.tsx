@@ -13,10 +13,24 @@ import {
   NotificationChannel,
   NotificationKind,
   NotificationPreference,
+  NotificationPreferenceKind,
   notificationChannels as channels,
   notificationTypes,
 } from "@/lib/models/notification";
 import { SettingsLinksStore } from "@/store/settingsLinksStore";
+
+const friendKinds = [
+  "friend.requested",
+  "friend.accepted",
+  "friend.declined",
+] as const;
+
+const preferenceRows = [
+  ...notificationTypes
+    .filter(({ kind }) => !kind.startsWith("friend."))
+    .map(({ kind, label }) => ({ kind, label, kinds: [kind] })),
+  { kind: "friend.requests", label: "Заявки в друзья", kinds: friendKinds },
+] as const;
 
 export const SettingNotifications = observer(function SettingNotifications({
   linksStore,
@@ -27,7 +41,7 @@ export const SettingNotifications = observer(function SettingNotifications({
     Partial<Record<NotificationKind, NotificationPreference[]>>
   >({});
   const [pendingPreference, setPendingPreference] = useState<{
-    kind: NotificationKind;
+    kind: NotificationPreferenceKind;
     channel: NotificationChannel;
     enabled: boolean;
   } | null>(null);
@@ -63,7 +77,8 @@ export const SettingNotifications = observer(function SettingNotifications({
   }, [telegramLinked]);
 
   async function change(
-    kind: NotificationKind,
+    kind: NotificationPreferenceKind,
+    kinds: readonly NotificationKind[],
     channel: NotificationChannel,
     enabled: boolean,
   ) {
@@ -74,12 +89,15 @@ export const SettingNotifications = observer(function SettingNotifications({
     setError("");
     try {
       await setNotificationPreference(kind, channel, enabled);
-      setPreferences((previous) => ({
-        ...previous,
-        [kind]: previous[kind]?.map((item) =>
-          item.channel === channel ? { ...item, enabled } : item,
-        ),
-      }));
+      setPreferences((previous) => {
+        const updated = { ...previous };
+        for (const eventKind of kinds) {
+          updated[eventKind] = previous[eventKind]?.map((item) =>
+            item.channel === channel ? { ...item, enabled } : item,
+          );
+        }
+        return updated;
+      });
     } catch {
       setError("Не удалось сохранить настройки уведомлений");
     } finally {
@@ -122,7 +140,7 @@ export const SettingNotifications = observer(function SettingNotifications({
             </tr>
           </thead>
           <tbody className="text-foreground">
-            {notificationTypes.map(({ kind, label }) => (
+            {preferenceRows.map(({ kind, label, kinds }) => (
               <tr
                 key={kind}
                 className="border-b border-border/50 last:border-b-0"
@@ -134,25 +152,36 @@ export const SettingNotifications = observer(function SettingNotifications({
                   {label}
                 </th>
                 {channels.map(({ id, label: channelLabel }) => {
-                  const preference = preferences[kind]?.find(
-                    ({ channel }) => channel === id,
+                  const channelPreferences = kinds.map((eventKind) =>
+                    preferences[eventKind]?.find(
+                      ({ channel }) => channel === id,
+                    ),
+                  );
+                  const loaded = channelPreferences.every(Boolean);
+                  const available = channelPreferences.every(
+                    (item) => item?.available,
+                  );
+                  const enabled = channelPreferences.some(
+                    (item) => item?.enabled,
                   );
                   return (
                     <td key={id} className="px-2 py-4 align-middle">
                       <div className="flex min-h-6 items-center justify-center">
-                        {preference ? (
+                        {loaded ? (
                           <Switch
                             aria-label={`${label} · ${channelLabel}`}
-                            isDisabled={!preference.available}
+                            isDisabled={!available}
                             isReadOnly={pendingPreference !== null}
                             isSelected={
-                              preference.available &&
+                              available &&
                               (pendingPreference?.kind === kind &&
                               pendingPreference.channel === id
                                 ? pendingPreference.enabled
-                                : preference.enabled)
+                                : enabled)
                             }
-                            onChange={(value) => void change(kind, id, value)}
+                            onChange={(value) =>
+                              void change(kind, kinds, id, value)
+                            }
                           >
                             <Switch.Content>
                               <Switch.Control>
