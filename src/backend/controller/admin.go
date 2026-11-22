@@ -39,7 +39,10 @@ func (c *AdminController) IsAdmin(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	return ctx.JSON(model.Response{Data: fiber.Map{"is_admin": user.IsAdmin}})
+	data := struct {
+		IsAdmin bool `json:"is_admin,omitempty"`
+	}{IsAdmin: user.IsAdmin}
+	return ctx.JSON(model.Response{Data: data})
 }
 
 func (c *AdminController) CreateArticle(ctx *fiber.Ctx) error {
