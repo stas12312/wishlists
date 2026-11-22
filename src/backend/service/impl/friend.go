@@ -2,11 +2,15 @@ package impl
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	apperror "main/error"
 	"main/model"
 	"main/repository"
 	"main/service"
 	"main/uof"
+
+	"github.com/google/uuid"
 )
 
 func NewFriendService(
@@ -39,22 +43,35 @@ func (s *FriendServiceImpl) AddFriend(userId int64, friendId int64) error {
 	if userId == friendId {
 		return apperror.NewError(apperror.WrongCode, "Вы не можете добавлять в друзья себя")
 	}
-	if s.HasLink(userId, friendId) {
-		return apperror.NewError(apperror.WrongRequest, "Пользователь уже ваш друг")
-	}
-	existsRequest, err := s.GetFriendRequest(userId, friendId)
-	if err != nil {
+	if err := s.Do(context.Background(), func(ctx context.Context, store uof.UnitOfWorkStore) error {
+		friends := store.FriendRepository()
+		if err := friends.LockFriendRequest(userId, friendId); err != nil {
+			return err
+		}
+		if friends.HasLink(userId, friendId) {
+			return apperror.NewError(apperror.WrongRequest, "Пользователь уже ваш друг")
+		}
+		request, err := friends.GetFriendRequest(userId, friendId)
+		if err != nil {
+			return err
+		}
+		if request.FromUserId != 0 {
+			return apperror.NewError(apperror.WrongRequest, "Приглашение уже было отправлено")
+		}
+		if err := friends.CreateFriendRequest(userId, friendId); err != nil {
+			return err
+		}
+		return createFriendNotification(store, userId, friendId, model.NotificationFriendRequested)
+	}); err != nil {
 		return err
-	}
-	if existsRequest.FromUserId != 0 {
-		return apperror.NewError(apperror.WrongRequest, "Приглашение уже было отправлено")
 	}
 
 	s.SendMessage(
 		friendId,
 		model.WSMessage{Event: service.ChangeIncomingFriendsRequests, Data: ""},
 	)
-	return s.CreateFriendRequest(userId, friendId)
+	s.SendMessage(friendId, model.WSMessage{Event: service.NotificationsChanged})
+	return nil
 }
 
 func (s *FriendServiceImpl) RemoveFriend(userId int64, friendId int64) error {
@@ -62,45 +79,51 @@ func (s *FriendServiceImpl) RemoveFriend(userId int64, friendId int64) error {
 }
 
 func (s *FriendServiceImpl) ApplyRequest(userId int64, fromUserId int64) error {
-	existsRequest, err := s.GetFriendRequest(userId, fromUserId)
-
-	err = s.Do(context.Background(), func(ctx context.Context, store uof.UnitOfWorkStore) error {
-		if err != nil {
-			return err
-		}
-		if existsRequest.ToUserId != userId {
-			return apperror.NewError(apperror.WrongRequest, "Вы не можете принять данную заявку")
-		}
-		if err = s.UpdateFriendRequest(fromUserId, userId, 1); err != nil {
-			return err
-		}
-		s.SendMessage(
-			userId,
-			model.WSMessage{Event: service.ChangeIncomingFriendsRequests, Data: ""},
-		)
-		return s.CreateFriend(fromUserId, userId)
-	})
-	return err
-
+	return s.resolveRequest(userId, fromUserId, 1, model.NotificationFriendAccepted)
 }
 
 func (s *FriendServiceImpl) DeclineRequest(userId int64, fromUserId int64) error {
-	existsRequest, err := s.GetFriendRequest(userId, fromUserId)
+	return s.resolveRequest(userId, fromUserId, 2, model.NotificationFriendDeclined)
+}
 
-	err = s.Do(context.Background(), func(ctx context.Context, store uof.UnitOfWorkStore) error {
-		if err != nil {
+func (s *FriendServiceImpl) resolveRequest(userId, fromUserId int64, status int, kind string) error {
+	if err := s.Do(context.Background(), func(ctx context.Context, store uof.UnitOfWorkStore) error {
+		friends := store.FriendRepository()
+		if err := friends.LockFriendRequest(userId, fromUserId); err != nil {
 			return err
 		}
-		if existsRequest.ToUserId != userId {
-			return apperror.NewError(apperror.WrongRequest, "Вы не можете отклонить заявку")
+		if err := friends.UpdateFriendRequest(fromUserId, userId, status); err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return apperror.NewError(apperror.WrongRequest, "Входящая заявка не найдена")
+			}
+			return err
 		}
-		s.SendMessage(
-			userId,
-			model.WSMessage{Event: service.ChangeIncomingFriendsRequests, Data: ""},
-		)
-		return s.UpdateFriendRequest(fromUserId, userId, 2)
+		if kind == model.NotificationFriendAccepted {
+			if err := friends.CreateFriend(fromUserId, userId); err != nil {
+				return err
+			}
+		}
+		return createFriendNotification(store, userId, fromUserId, kind)
+	}); err != nil {
+		return err
+	}
+	s.SendMessage(userId, model.WSMessage{Event: service.ChangeIncomingFriendsRequests, Data: ""})
+	s.SendMessage(fromUserId, model.WSMessage{Event: service.NotificationsChanged})
+	return nil
+}
+
+func createFriendNotification(store uof.UnitOfWorkStore, actorId, recipientId int64, kind string) error {
+	actor, err := store.UserRepository().GetById(actorId)
+	if err != nil {
+		return err
+	}
+	return store.NotificationRepository().Create(model.Notification{
+		RecipientId: recipientId,
+		Kind:        kind,
+		EventKey:    uuid.NewString(),
+		ResourceKey: actor.Username,
+		EntityTitle: &actor.Name,
 	})
-	return err
 }
 
 func (s *FriendServiceImpl) IsFriends(userId int64, friendId int64) bool {

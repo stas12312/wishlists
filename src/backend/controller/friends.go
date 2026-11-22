@@ -48,8 +48,7 @@ func (c *FriendController) ApplyRequest(ctx *fiber.Ctx) error {
 			JSON(model.ErrorResponse{Message: "Некорректные данные"})
 	}
 	if err := c.FriendService.ApplyRequest(userId, requestUser.UserId); err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).
-			JSON(model.ErrorResponse{Message: err.Error()})
+		return err
 	}
 	return ctx.JSON(model.ErrorResponse{Message: "Заявка принята"})
 }
@@ -62,10 +61,9 @@ func (c *FriendController) DeclineRequest(ctx *fiber.Ctx) error {
 			JSON(model.ErrorResponse{Message: "Некорректные данные"})
 	}
 	if err := c.FriendService.DeclineRequest(userId, requestUser.UserId); err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).
-			JSON(model.ErrorResponse{Message: err.Error()})
+		return err
 	}
-	return ctx.JSON(model.ErrorResponse{Message: "Заявка принята"})
+	return ctx.JSON(model.ErrorResponse{Message: "Заявка отклонена"})
 }
 
 func (c *FriendController) GetFriends(ctx *fiber.Ctx) error {

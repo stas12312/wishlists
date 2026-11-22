@@ -6,6 +6,10 @@ const (
 	NotificationSupportReply     = "support.reply"
 	NotificationQuestionCreated  = "question.created"
 	NotificationQuestionAnswered = "question.answered"
+	NotificationFriendRequested  = "friend.requested"
+	NotificationFriendAccepted   = "friend.accepted"
+	NotificationFriendDeclined   = "friend.declined"
+	NotificationFriendPreference = "friend.requests"
 	NotificationEmail            = "email"
 	NotificationTelegram         = "telegram"
 )

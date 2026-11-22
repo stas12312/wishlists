@@ -13,6 +13,14 @@ type FriendRepository struct {
 	mock.Mock
 }
 
+func (_m *FriendRepository) LockFriendRequest(fUserId int64, sUserId int64) error {
+	ret := _m.Called(fUserId, sUserId)
+	if rf, ok := ret.Get(0).(func(int64, int64) error); ok {
+		return rf(fUserId, sUserId)
+	}
+	return ret.Error(0)
+}
+
 // CreateFriend provides a mock function with given fields: fUserId, sUserId
 func (_m *FriendRepository) CreateFriend(fUserId int64, sUserId int64) error {
 	ret := _m.Called(fUserId, sUserId)

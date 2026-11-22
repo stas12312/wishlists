@@ -120,18 +120,19 @@ func (r *NotificationRepositoryPostgres) Preferences(userId int64, kinds []strin
 	return preferences, err
 }
 
-func (r *NotificationRepositoryPostgres) SetPreference(userId int64, kind, channel string, enabled bool) error {
+func (r *NotificationRepositoryPostgres) SetPreference(userId int64, channel string, enabled bool, kinds ...string) error {
 	if enabled && channel == model.NotificationTelegram {
 		query := `
 			INSERT INTO notification_preferences (user_id, kind, channel, enabled)
-			SELECT u.user_id, $2, $3, TRUE
+			SELECT u.user_id, kinds.kind, $3, TRUE
 			FROM users u
+			CROSS JOIN unnest($2::text[]) AS kinds(kind)
 			JOIN oauth_user o ON o.user_id = u.user_id AND o.provider = $3
 			  AND pg_input_is_valid(o.oauth_user_id, 'bigint')
 			WHERE u.user_id = $1 AND u.is_active
 			ON CONFLICT (user_id, kind, channel) DO UPDATE SET enabled = EXCLUDED.enabled
 		`
-		result, err := r.conn.Exec(query, userId, kind, channel)
+		result, err := r.conn.Exec(query, userId, kinds, channel)
 		if err != nil {
 			return err
 		}
@@ -143,10 +144,11 @@ func (r *NotificationRepositoryPostgres) SetPreference(userId int64, kind, chann
 	}
 	query := `
 		INSERT INTO notification_preferences (user_id, kind, channel, enabled)
-		VALUES ($1, $2, $3, $4)
+		SELECT $1, kinds.kind, $3, $4
+		FROM unnest($2::text[]) AS kinds(kind)
 		ON CONFLICT (user_id, kind, channel) DO UPDATE SET enabled = EXCLUDED.enabled
 	`
-	_, err := r.conn.Exec(query, userId, kind, channel, enabled)
+	_, err := r.conn.Exec(query, userId, kinds, channel, enabled)
 	return err
 }
 
