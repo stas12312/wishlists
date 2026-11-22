@@ -17,7 +17,7 @@ const telegramJournalPageSize = 50
 
 type TelegramJournalReader interface {
 	Chats(context.Context, *int64, *int64, int) ([]model.TelegramChat, error)
-	Messages(context.Context, int64, *int64, int) ([]model.TelegramMessage, error)
+	Messages(context.Context, *int64, *int64, int) ([]model.TelegramMessage, error)
 }
 
 type TelegramJournalController struct {
@@ -47,14 +47,14 @@ func (c *TelegramJournalController) ListChats(ctx *fiber.Ctx) error {
 
 func (c *TelegramJournalController) ListMessages(ctx *fiber.Ctx) error {
 	chatID, err := telegramJournalID(ctx.Params("chatID"))
-	if err != nil || chatID == nil {
+	if err != nil {
 		return apperror.NewError(apperror.WrongRequest, "Некорректный chat_id")
 	}
 	before, err := telegramJournalID(ctx.Query("before"))
 	if err != nil {
 		return err
 	}
-	rows, err := c.journal.Messages(ctx.UserContext(), *chatID, before, telegramJournalPageSize+1)
+	rows, err := c.journal.Messages(ctx.UserContext(), chatID, before, telegramJournalPageSize+1)
 	if err != nil {
 		return telegramJournalError(err)
 	}
@@ -64,6 +64,7 @@ func (c *TelegramJournalController) ListMessages(ctx *fiber.Ctx) error {
 func (c *TelegramJournalController) Route(router fiber.Router) {
 	group := router.Group("/admin/telegram", middleware.Protected(true), middleware.ForAdmin(c.users))
 	group.Get("/chats", c.ListChats)
+	group.Get("/messages", c.ListMessages)
 	group.Get("/chats/:chatID/messages", c.ListMessages)
 }
 

@@ -14,7 +14,7 @@ import (
 type telegramJournalRepository interface {
 	Record(context.Context, telegram.Message, *int64, string, string, string) error
 	Chats(context.Context, *int64, *int64, int) ([]model.TelegramChat, error)
-	Messages(context.Context, int64, *int64, int) ([]model.TelegramMessage, error)
+	Messages(context.Context, *int64, *int64, int) ([]model.TelegramMessage, error)
 }
 
 type TelegramJournal struct {
@@ -53,6 +53,6 @@ func (s *TelegramJournal) Chats(ctx context.Context, chatID, before *int64, limi
 	return s.repo.Chats(ctx, chatID, before, limit)
 }
 
-func (s *TelegramJournal) Messages(ctx context.Context, chatID int64, before *int64, limit int) ([]model.TelegramMessage, error) {
+func (s *TelegramJournal) Messages(ctx context.Context, chatID, before *int64, limit int) ([]model.TelegramMessage, error) {
 	return s.repo.Messages(ctx, chatID, before, limit)
 }
