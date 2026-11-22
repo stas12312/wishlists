@@ -1,7 +1,9 @@
 import { BlockToolData, OutputBlockData } from "@editorjs/editorjs";
 import { ReactNode } from "react";
+import clsx from "clsx";
 
 import { list } from "./list";
+import { getArticleButtonUrl } from "./button";
 
 import { ResponsiveImage } from "@/components/ResponsiveImage";
 
@@ -23,6 +25,31 @@ export function editorjsParse(blocks: OutputBlockData[]): ReactNode[] {
       case "image":
         htmlBlock = image(block.data);
         break;
+      case "button": {
+        const { text, url, alignment, fullWidth } = block.data;
+        const href = typeof url === "string" && getArticleButtonUrl(url);
+
+        if (!href || typeof text !== "string" || !text.trim()) continue;
+
+        htmlBlock = (
+          <div
+            className={clsx("flex", {
+              "justify-center": alignment === "center",
+              "justify-end": alignment === "right",
+            })}
+          >
+            <a
+              className={clsx("button button--primary no-underline", {
+                "w-full": fullWidth === true,
+              })}
+              href={href}
+            >
+              {text}
+            </a>
+          </div>
+        );
+        break;
+      }
       default:
         throw `Not supported block: ${JSON.stringify(block)}`;
     }

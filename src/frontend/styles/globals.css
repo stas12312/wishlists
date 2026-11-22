@@ -44,6 +44,24 @@
     }
 }
 
+@layer components {
+    .article-block :where(a[href]:not(.button)) {
+        @apply text-link font-medium underline decoration-separator-tertiary decoration-[1.5px] underline-offset-4;
+
+        &:hover {
+            @apply decoration-muted/50;
+        }
+
+        &:active {
+            @apply decoration-muted;
+        }
+
+        &:focus-visible {
+            @apply rounded-sm status-focused;
+        }
+    }
+}
+
 /* Переопределение акцентного цвета HeroUI (--accent) в цвет вишлиста.
    Каскадирует в кнопки, фильтры, слайдеры и фокус-кольца внутри обёртки
    и в порталах, куда класс передан явно (см. getWishlistAccent). */
