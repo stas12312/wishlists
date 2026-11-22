@@ -13,6 +13,8 @@ type NotificationPreferenceRow struct {
 type NotificationRepository interface {
 	Create(model.Notification) error
 	List(userId, before int64, limit int) ([]model.Notification, error)
+	ListAdmin(filter model.AdminNotificationFilter, limit int) ([]model.AdminNotification, error)
+	GetAdmin(id int64) (*model.AdminNotificationDetail, error)
 	CountUnread(userId int64) (int, error)
 	MarkAllRead(userId int64) (bool, error)
 	MarkReadByIds(userId int64, ids []int64) (bool, error)

@@ -14,17 +14,23 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func NewAdminController(userService service.UserService, articleService service.ArticleService, ticketService service.TicketService, mailLogService service.MailLogService, config *config.Config, adminUserService service.AdminUserService) *AdminController {
-	return &AdminController{userService: userService, articleService: articleService, ticketService: ticketService, mailLogService: mailLogService, config: config, adminUserService: adminUserService}
+func NewAdminController(userService service.UserService, articleService service.ArticleService, ticketService service.TicketService, mailLogService service.MailLogService, config *config.Config, adminUserService service.AdminUserService, notificationService service.AdminNotificationService, questionService service.QuestionService) *AdminController {
+	return &AdminController{
+		userService: userService, articleService: articleService, ticketService: ticketService,
+		mailLogService: mailLogService, config: config, adminUserService: adminUserService,
+		notificationService: notificationService, questionService: questionService,
+	}
 }
 
 type AdminController struct {
-	adminUserService service.AdminUserService
-	userService      service.UserService
-	articleService   service.ArticleService
-	ticketService    service.TicketService
-	mailLogService   service.MailLogService
-	config           *config.Config
+	notificationService service.AdminNotificationService
+	questionService     service.QuestionService
+	adminUserService    service.AdminUserService
+	userService         service.UserService
+	articleService      service.ArticleService
+	ticketService       service.TicketService
+	mailLogService      service.MailLogService
+	config              *config.Config
 }
 
 func (c *AdminController) IsAdmin(ctx *fiber.Ctx) error {
@@ -367,6 +373,11 @@ func (c *AdminController) Route(router fiber.Router) {
 	mailsGroup.Get("/", c.ListMailLogs)
 	mailsGroup.Post("/clear", c.ClearMailBodies)
 	mailsGroup.Get("/:id", c.GetMailLog)
+
+	notificationsGroup := adminGroup.Group("/notifications", middleware.ForAdmin(c.userService))
+	notificationsGroup.Get("/", c.ListNotifications)
+	notificationsGroup.Get("/:id", c.GetNotification)
+	notificationsGroup.Get("/:id/question", c.GetNotificationQuestion)
 
 	parseGroup := adminGroup.Group("/parse", middleware.ForAdmin(c.userService))
 	parseGroup.Get("/status", c.GetParseStatus)
