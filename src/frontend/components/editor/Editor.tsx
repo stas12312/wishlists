@@ -3,21 +3,21 @@ import EditorJS, { OutputData } from "@editorjs/editorjs";
 import Header from "@editorjs/header";
 import List from "@editorjs/list";
 import ImageTool from "@editorjs/image";
-import { useEffect, useRef } from "react";
+import { useEffect, type RefObject } from "react";
+
+import ButtonTool from "./ButtonTool";
 
 import { uploadFile } from "@/lib/client-requests/file";
 
 export default function Editor({
   value,
-  onChange,
+  editorRef,
   holder = "editorjs",
 }: {
   value?: OutputData;
-  onChange: { (value: object): void };
+  editorRef: RefObject<EditorJS | null>;
   holder?: string;
 }) {
-  const editorRef = useRef<null | EditorJS>(null);
-
   useEffect(() => {
     if (!editorRef.current) {
       const editorInstance = new EditorJS({
@@ -26,6 +26,7 @@ export default function Editor({
         tools: {
           header: Header,
           list: List,
+          button: ButtonTool,
           image: {
             class: ImageTool,
             config: {
@@ -44,11 +45,6 @@ export default function Editor({
           },
         },
         minHeight: 300,
-        onReady: () => {},
-        async onChange(api) {
-          const data = await api.saver.save();
-          onChange(data);
-        },
       });
       editorRef.current = editorInstance;
     }
@@ -56,6 +52,7 @@ export default function Editor({
     return () => {
       if (editorRef.current && editorRef.current.destroy) {
         editorRef.current.destroy();
+        editorRef.current = null;
       }
     };
   }, []);
