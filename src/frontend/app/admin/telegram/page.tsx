@@ -197,9 +197,9 @@ function Conversation({
   return (
     <section
       aria-label="Переписка"
-      className="flex min-h-0 min-w-0 flex-col bg-background lg:row-span-2 lg:grid lg:grid-rows-subgrid"
+      className="flex min-h-0 min-w-0 flex-col bg-background"
     >
-      <header className="flex shrink-0 items-center gap-3 border-b border-default bg-surface p-3">
+      <header className="flex min-h-16 shrink-0 items-center gap-3 border-b border-default bg-surface p-3 lg:py-2">
         <button
           aria-label="К списку чатов"
           className="grid size-10 shrink-0 place-items-center rounded-full text-xl hover:bg-accent-soft lg:hidden"
@@ -299,13 +299,13 @@ function Journal({
   const chat = selected === undefined && filter ? page?.data[0] : selected;
 
   return (
-    <div className="grid min-h-0 min-w-0 flex-1 grid-cols-1 grid-rows-[minmax(0,1fr)] overflow-hidden rounded-2xl border border-default bg-surface lg:grid-cols-[minmax(15rem,20rem)_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)]">
+    <div className="grid min-h-0 min-w-0 flex-1 grid-cols-1 grid-rows-[minmax(0,1fr)] overflow-hidden rounded-2xl border border-default bg-surface lg:grid-cols-[minmax(15rem,20rem)_minmax(0,1fr)]">
       <section
         aria-label="Чаты Telegram"
         className={
           chat
-            ? "hidden min-h-0 min-w-0 flex-col lg:row-span-2 lg:grid lg:grid-rows-subgrid lg:border-r lg:border-default"
-            : "flex min-h-0 min-w-0 flex-col lg:row-span-2 lg:grid lg:grid-rows-subgrid lg:border-r lg:border-default"
+            ? "hidden min-h-0 min-w-0 flex-col lg:flex lg:border-r lg:border-default"
+            : "flex min-h-0 min-w-0 flex-col lg:border-r lg:border-default"
         }
       >
         {search}
@@ -371,7 +371,7 @@ function Journal({
           onBack={() => setSelected(null)}
         />
       ) : (
-        <div className="hidden place-items-center bg-background lg:row-span-2 lg:grid">
+        <div className="hidden place-items-center bg-background lg:grid">
           <EmptyState
             compact
             icon={<MdChatBubbleOutline />}
@@ -395,7 +395,7 @@ export default function TelegramJournalPage() {
         filter={filter}
         search={
           <form
-            className="flex shrink-0 flex-wrap items-center gap-2 border-b border-default p-3"
+            className="flex min-h-16 shrink-0 flex-wrap items-center gap-2 border-b border-default p-3"
             onSubmit={(event) => {
               event.preventDefault();
               setFilter(value.trim());
