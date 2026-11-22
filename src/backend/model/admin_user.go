@@ -13,7 +13,8 @@ type AdminUser struct {
 
 type AdminUserDetail struct {
 	AdminUser
-	Links []OAuthUser `json:"links"`
+	Links                   []OAuthUser                         `json:"links"`
+	NotificationPreferences map[string][]NotificationPreference `json:"notification_preferences"`
 }
 
 type AdminUserWishlist struct {

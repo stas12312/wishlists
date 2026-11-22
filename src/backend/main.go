@@ -133,7 +133,7 @@ func main() {
 	)
 	ticketController := controller.NewTicketController(ticketService)
 
-	adminUserService := service.NewAdminUserService(repository.NewAdminUserRepository(postgresDB))
+	adminUserService := service.NewAdminUserService(repository.NewAdminUserRepository(postgresDB), notificationService)
 	adminController := controller.NewAdminController(userService, articleService, ticketService, mailLogService, appConfig, adminUserService)
 	articleController := controller.NewArticleController(articleService)
 

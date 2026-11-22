@@ -38,7 +38,7 @@ func TestAdminDeleteUserLink(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			repo := &adminLinksStub{deleted: tc.deleted, err: tc.dbErr}
-			err := NewAdminUserService(repo).DeleteLink(42, tc.provider, tc.externalID)
+			err := NewAdminUserService(repo, nil).DeleteLink(42, tc.provider, tc.externalID)
 			if tc.wantCode == 0 {
 				if err != nil {
 					t.Fatal(err)
