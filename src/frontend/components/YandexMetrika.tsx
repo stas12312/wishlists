@@ -1,29 +1,45 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import Script from "next/script";
 
-declare const ym: any;
+declare function ym(
+  counterId: string,
+  method: "hit" | "reachGoal",
+  value: string,
+): void;
 const YANDEX_METRIKA_ID = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID;
 
 export function Metrika() {
   const pathName = usePathname();
   const searchParams = useSearchParams();
+  const [isReady, setIsReady] = useState(false);
+  const pwaOpenSent = useRef(false);
 
   useEffect(() => {
-    if (!YANDEX_METRIKA_ID) {
+    if (!YANDEX_METRIKA_ID || !isReady) {
       return;
     }
     ym(YANDEX_METRIKA_ID, "hit", window.location.href);
-  }, [pathName, searchParams]);
+
+    const navigator = window.navigator as Navigator & { standalone?: boolean };
+    const isStandalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      navigator.standalone === true;
+
+    if (isStandalone && !pwaOpenSent.current) {
+      ym(YANDEX_METRIKA_ID, "reachGoal", "pwa_open");
+      pwaOpenSent.current = true;
+    }
+  }, [isReady, pathName, searchParams]);
 
   if (!YANDEX_METRIKA_ID) {
     return null;
   }
 
   return (
-    <Script id="yandex-metrica">
+    <Script id="yandex-metrica" onReady={() => setIsReady(true)}>
       {`
         (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
         m[i].l=1*new Date();
