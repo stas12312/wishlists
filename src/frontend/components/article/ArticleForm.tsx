@@ -115,9 +115,9 @@ const ArticleForm = observer(
 
     return (
       <>
-        <div className="my-2 flex flex-wrap items-center gap-2">
+        <div className="my-2 flex flex-wrap items-center gap-2 *:w-66 *:max-w-full *:rounded-full *:leading-5">
           <Chip
-            className="h-9 md:h-8"
+            className="h-9 justify-center md:h-8"
             color={article.is_published ? "success" : "accent"}
             size="lg"
           >
