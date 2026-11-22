@@ -82,14 +82,14 @@ var notificationTemplates = map[string]struct {
 		emoji: "👋",
 	},
 	model.NotificationFriendAccepted: {
-		title: "Вашу заявку в друзья приняли",
-		href:  "/friends?tab=requests",
-		emoji: "🤝",
+		title:      "Вашу заявку в друзья приняли",
+		hrefPrefix: "/users/",
+		emoji:      "🤝",
 	},
 	model.NotificationFriendDeclined: {
-		title: "Вашу заявку в друзья отклонили",
-		href:  "/friends?tab=requests",
-		emoji: "👤",
+		title:      "Вашу заявку в друзья отклонили",
+		hrefPrefix: "/users/",
+		emoji:      "👤",
 	},
 }
 
