@@ -8,6 +8,7 @@ export interface TelegramChat {
 
 export interface TelegramMessage {
   id: string;
+  chat_id: string;
   message_id: string;
   direction: "incoming" | "outgoing";
   kind: string;
@@ -54,6 +55,17 @@ export function getTelegramMessages(
 ) {
   return getPage<TelegramMessage>(
     `/admin/telegram/chats/${encodeURIComponent(chatId)}/messages`,
+    { before },
+    signal,
+  );
+}
+
+export function getTelegramMessageList(
+  before: string | undefined,
+  signal: AbortSignal,
+) {
+  return getPage<TelegramMessage>(
+    "/admin/telegram/messages",
     { before },
     signal,
   );
