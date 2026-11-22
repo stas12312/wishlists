@@ -20,6 +20,7 @@ import { EmptyState } from "@/components/EmptyState";
 import PageHeader from "@/components/PageHeader";
 import {
   getTelegramChats,
+  getTelegramMessageList,
   getTelegramMessages,
   type TelegramChat,
   type TelegramPage,
@@ -281,6 +282,70 @@ function Conversation({
   );
 }
 
+function MessageList() {
+  const { page, loading, failed, viewport, boundary, retry } =
+    useTelegramHistory(getTelegramMessageList);
+
+  return (
+    <section
+      ref={viewport}
+      aria-label="Сообщения Telegram"
+      className="min-h-0 flex-1 overflow-y-auto rounded-2xl border border-default bg-surface"
+    >
+      {failed && <LoadError retry={retry} />}
+      {page?.data.length === 0 && (
+        <EmptyState compact title="В журнале пока нет сообщений" />
+      )}
+      {page && page.data.length > 0 && (
+        <ol className="divide-y divide-default">
+          {page.data.map((message) => {
+            const edited = message.kind.startsWith("edited_");
+            const kind = message.kind.replace(/^edited_/, "");
+            return (
+              <li key={message.id} className="px-4 py-3">
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-xs text-muted">
+                  <span className="font-medium">Чат {message.chat_id}</span>
+                  <span>
+                    {message.direction === "outgoing"
+                      ? "Исходящее"
+                      : "Входящее"}
+                  </span>
+                  {(kind !== "text" || !message.text) && (
+                    <span>{kinds[kind] ?? kind}</span>
+                  )}
+                  {edited && <span>Изменено</span>}
+                  <time dateTime={message.sent_at}>
+                    {formatter.format(new Date(message.sent_at))}
+                  </time>
+                </div>
+                {message.text && (
+                  <p className="mt-1 whitespace-pre-wrap wrap-anywhere text-sm">
+                    {message.text}
+                  </p>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+      )}
+      {page?.next && (
+        <div
+          ref={(element) => {
+            boundary.current = element;
+          }}
+          aria-hidden="true"
+          className="h-px"
+        />
+      )}
+      {loading && (
+        <div className="flex justify-center p-4">
+          <Spinner aria-label="Загрузка сообщений" />
+        </div>
+      )}
+    </section>
+  );
+}
+
 function Journal({
   filter,
   search,
@@ -384,53 +449,70 @@ function Journal({
 }
 
 export default function TelegramJournalPage() {
+  const [view, setView] = useState<"chats" | "messages">("chats");
   const [filter, setFilter] = useState("");
   const [value, setValue] = useState("");
 
   return (
     <div data-admin-telegram className="flex min-h-0 flex-1 flex-col">
       <PageHeader title="Telegram" />
-      <Journal
-        key={filter}
-        filter={filter}
-        search={
-          <form
-            className="flex min-h-16 shrink-0 flex-wrap items-center gap-2 border-b border-default p-3"
-            onSubmit={(event) => {
-              event.preventDefault();
-              setFilter(value.trim());
-            }}
+      <div aria-label="Вид журнала" className="mb-3 flex gap-2" role="group">
+        {(["chats", "messages"] as const).map((option) => (
+          <button
+            key={option}
+            aria-pressed={view === option}
+            className="rounded-lg border border-default px-3 py-2 text-sm hover:bg-accent-soft aria-pressed:bg-accent-soft aria-pressed:text-accent-soft-foreground"
+            type="button"
+            onClick={() => setView(option)}
           >
-            <div className="relative min-w-0 flex-1 basis-36">
-              <MdSearch
-                aria-hidden="true"
-                className="pointer-events-none absolute top-1/2 left-3 z-10 -translate-y-1/2 text-xl text-muted"
-              />
-              <Input
-                aria-label="ID чата"
-                className="w-full pl-10"
-                pattern="-?[0-9]{1,19}"
-                placeholder="Поиск по ID чата"
-                title="Введите числовой ID чата"
-                value={value}
-                onChange={(event) => setValue(event.target.value)}
-              />
-            </div>
-            <Button type="submit">Найти</Button>
-            {filter && (
-              <Button
-                variant="secondary"
-                onPress={() => {
-                  setValue("");
-                  setFilter("");
-                }}
-              >
-                Все чаты
-              </Button>
-            )}
-          </form>
-        }
-      />
+            {option === "chats" ? "Чаты" : "Сообщения"}
+          </button>
+        ))}
+      </div>
+      {view === "messages" && <MessageList />}
+      <div className={view === "chats" ? "flex min-h-0 flex-1" : "hidden"}>
+        <Journal
+          key={filter}
+          filter={filter}
+          search={
+            <form
+              className="flex min-h-16 shrink-0 flex-wrap items-center gap-2 border-b border-default p-3"
+              onSubmit={(event) => {
+                event.preventDefault();
+                setFilter(value.trim());
+              }}
+            >
+              <div className="relative min-w-0 flex-1 basis-36">
+                <MdSearch
+                  aria-hidden="true"
+                  className="pointer-events-none absolute top-1/2 left-3 z-10 -translate-y-1/2 text-xl text-muted"
+                />
+                <Input
+                  aria-label="ID чата"
+                  className="w-full pl-10"
+                  pattern="-?[0-9]{1,19}"
+                  placeholder="Поиск по ID чата"
+                  title="Введите числовой ID чата"
+                  value={value}
+                  onChange={(event) => setValue(event.target.value)}
+                />
+              </div>
+              <Button type="submit">Найти</Button>
+              {filter && (
+                <Button
+                  variant="secondary"
+                  onPress={() => {
+                    setValue("");
+                    setFilter("");
+                  }}
+                >
+                  Все чаты
+                </Button>
+              )}
+            </form>
+          }
+        />
+      </div>
     </div>
   );
 }
