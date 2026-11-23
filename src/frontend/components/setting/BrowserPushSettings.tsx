@@ -157,7 +157,7 @@ export function BrowserPushSettings({
     <div className="flex flex-col items-start gap-2 text-sm">
       {registration && (linked || !permissionDenied) && (
         <Button
-          className="self-center"
+          className="h-auto min-h-8 max-w-full flex-col self-center py-2 md:flex-row"
           isPending={pending}
           size="sm"
           variant={linked ? "danger-soft" : "primary"}
@@ -168,9 +168,11 @@ export function BrowserPushSettings({
           ) : (
             <MdNotificationsActive aria-hidden="true" />
           )}
-          {linked
-            ? "Отключить уведомления на этом устройстве"
-            : "Включить уведомления на этом устройстве"}
+          <span className="min-w-0 text-center whitespace-normal">
+            {linked
+              ? "Отключить уведомления на этом устройстве"
+              : "Включить уведомления на этом устройстве"}
+          </span>
         </Button>
       )}
       {permissionDenied && !linked && (
