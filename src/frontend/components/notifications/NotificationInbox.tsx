@@ -249,7 +249,10 @@ export function NotificationInbox() {
                       className="ml-auto shrink-0 text-xs text-muted"
                       dateTime={item.created_at}
                     >
-                      {new Date(item.created_at).toLocaleDateString("ru-RU")}
+                      {new Date(item.created_at).toLocaleString("ru-RU", {
+                        dateStyle: "short",
+                        timeStyle: "short",
+                      })}
                     </time>
                   </div>
                   {item.entity_title || item.body ? (
