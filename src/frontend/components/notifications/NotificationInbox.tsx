@@ -12,6 +12,7 @@ import {
 
 import { EmptyState } from "@/components/EmptyState";
 import PageHeader from "@/components/PageHeader";
+import { BrowserPushSettings } from "@/components/setting/BrowserPushSettings";
 import { SettingNotifications } from "@/components/setting/SettingNotifications";
 import {
   getUnreadNotifications,
@@ -40,6 +41,7 @@ export function NotificationInbox() {
   const [markingAllRead, setMarkingAllRead] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState("");
+  const [pushRevision, setPushRevision] = useState(0);
   const listRef = useRef<HTMLUListElement>(null);
   const marking = useRef(new Set<number>());
   const items = page?.items;
@@ -195,7 +197,11 @@ export function NotificationInbox() {
                       <Modal.Heading>Настройки уведомлений</Modal.Heading>
                     </Modal.Header>
                     <Modal.Body>
-                      <SettingNotifications />
+                      <SettingNotifications
+                        onPushChange={() =>
+                          setPushRevision((value) => value + 1)
+                        }
+                      />
                     </Modal.Body>
                   </Modal.Dialog>
                 </Modal.Container>
@@ -206,6 +212,7 @@ export function NotificationInbox() {
         dividerClassName="mt-2"
         title="Уведомления"
       />
+      <BrowserPushSettings key={pushRevision} prompt />
       {error ? <p role="alert">{error}</p> : null}
       {!page && !error ? <p role="status">Загрузка…</p> : null}
       {!error && page?.items.length === 0 ? (
