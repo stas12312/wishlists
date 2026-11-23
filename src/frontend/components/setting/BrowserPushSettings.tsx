@@ -1,6 +1,8 @@
 "use client";
 
+import { Alert, Button } from "@heroui/react";
 import { useEffect, useState } from "react";
+import { MdNotificationsActive, MdNotificationsOff } from "react-icons/md";
 
 import {
   browserPushWorker,
@@ -13,7 +15,13 @@ import {
   saveWebPushSubscription,
 } from "@/lib/client-requests/notification";
 
-export function BrowserPushSettings({ onChange }: { onChange: () => void }) {
+export function BrowserPushSettings({
+  onChange,
+  prompt = false,
+}: {
+  onChange?: () => void;
+  prompt?: boolean;
+}) {
   const [registration, setRegistration] = useState<ServiceWorkerRegistration>();
   const [key, setKey] = useState("");
   const [linked, setLinked] = useState(false);
@@ -79,7 +87,7 @@ export function BrowserPushSettings({ onChange }: { onChange: () => void }) {
         }
         setLinked(true);
       }
-      onChange();
+      onChange?.();
     } catch {
       setMessage(
         !linked && Notification.permission === "denied"
@@ -91,19 +99,57 @@ export function BrowserPushSettings({ onChange }: { onChange: () => void }) {
     }
   }
 
+  if (prompt) {
+    if (!registration || linked) return null;
+
+    return (
+      <Alert status="accent">
+        <Alert.Indicator />
+        <div className="flex min-w-0 flex-1 flex-col gap-2 text-sm sm:flex-row sm:items-center sm:justify-between">
+          <Alert.Content className="min-w-0">
+            <Alert.Title>Уведомления на этом устройстве</Alert.Title>
+            <Alert.Description>
+              Получайте уведомления, даже когда сайт закрыт.
+            </Alert.Description>
+            {message && (
+              <p className="text-muted" role="status">
+                {message}
+              </p>
+            )}
+          </Alert.Content>
+          <Button
+            className="shrink-0 self-start sm:self-center"
+            isPending={pending}
+            size="sm"
+            variant="primary"
+            onPress={() => void change()}
+          >
+            {pending ? "Включаем…" : "Включить уведомления"}
+          </Button>
+        </div>
+      </Alert>
+    );
+  }
+
   return (
     <div className="flex flex-col items-start gap-2 text-sm">
       {registration && (
-        <button
-          className="text-accent underline disabled:opacity-50"
-          disabled={pending}
-          type="button"
-          onClick={() => void change()}
+        <Button
+          className="self-center"
+          isPending={pending}
+          size="sm"
+          variant={linked ? "danger-soft" : "primary"}
+          onPress={() => void change()}
         >
+          {linked ? (
+            <MdNotificationsOff aria-hidden="true" />
+          ) : (
+            <MdNotificationsActive aria-hidden="true" />
+          )}
           {linked
             ? "Отключить уведомления на этом устройстве"
             : "Включить уведомления на этом устройстве"}
-        </button>
+        </Button>
       )}
       {message && (
         <p className="text-muted" role="status">

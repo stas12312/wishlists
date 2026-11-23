@@ -42,8 +42,10 @@ const preferenceRows = [
 
 export const SettingNotifications = observer(function SettingNotifications({
   linksStore,
+  onPushChange,
 }: {
   linksStore?: SettingsLinksStore;
+  onPushChange?: () => void;
 }) {
   const [preferences, setPreferences] = useState<
     Partial<Record<NotificationKind, NotificationPreference[]>>
@@ -261,7 +263,10 @@ export const SettingNotifications = observer(function SettingNotifications({
       )}
       {pushConfigured && (
         <BrowserPushSettings
-          onChange={() => setPushRevision((value) => value + 1)}
+          onChange={() => {
+            setPushRevision((value) => value + 1);
+            onPushChange?.();
+          }}
         />
       )}
       {error && <p role="alert">{error}</p>}
