@@ -15,6 +15,23 @@ import {
   saveWebPushSubscription,
 } from "@/lib/client-requests/notification";
 
+async function isPushPermissionDenied(
+  registration: ServiceWorkerRegistration,
+  key: string,
+) {
+  if (Notification.permission === "denied") return true;
+
+  try {
+    const permission = await registration.pushManager.permissionState({
+      userVisibleOnly: true,
+      applicationServerKey: key,
+    });
+    return permission === "denied";
+  } catch {
+    return false;
+  }
+}
+
 export function BrowserPushSettings({
   onChange,
   prompt = false,
@@ -25,6 +42,7 @@ export function BrowserPushSettings({
   const [registration, setRegistration] = useState<ServiceWorkerRegistration>();
   const [key, setKey] = useState("");
   const [linked, setLinked] = useState(false);
+  const [permissionDenied, setPermissionDenied] = useState(false);
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -51,11 +69,13 @@ export function BrowserPushSettings({
         const subscribed = subscription
           ? await isWebPushLinked(subscription.endpoint, signal)
           : false;
+        const denied = await isPushPermissionDenied(ready, publicKey);
         if (signal.aborted) return;
 
         setRegistration(ready);
         setKey(publicKey);
         setLinked(subscribed);
+        setPermissionDenied(denied);
       } catch {
         if (!signal.aborted)
           setMessage("Не удалось загрузить подписку браузера");
@@ -67,7 +87,7 @@ export function BrowserPushSettings({
   }, []);
 
   async function change() {
-    if (!registration || pending) return;
+    if (!registration || pending || (!linked && permissionDenied)) return;
     setPending(true);
     setMessage("");
     try {
@@ -89,18 +109,20 @@ export function BrowserPushSettings({
       }
       onChange?.();
     } catch {
-      setMessage(
-        !linked && Notification.permission === "denied"
-          ? "Разрешите уведомления для MyWishlists в настройках браузера."
-          : "Не удалось изменить подписку на этом устройстве. Попробуйте ещё раз.",
-      );
+      if (!linked && (await isPushPermissionDenied(registration, key))) {
+        setPermissionDenied(true);
+      } else {
+        setMessage(
+          "Не удалось изменить подписку на этом устройстве. Попробуйте ещё раз.",
+        );
+      }
     } finally {
       setPending(false);
     }
   }
 
   if (prompt) {
-    if (!registration || linked) return null;
+    if (!registration || linked || permissionDenied) return null;
 
     return (
       <Alert status="accent">
@@ -133,7 +155,7 @@ export function BrowserPushSettings({
 
   return (
     <div className="flex flex-col items-start gap-2 text-sm">
-      {registration && (
+      {registration && (linked || !permissionDenied) && (
         <Button
           className="self-center"
           isPending={pending}
@@ -150,6 +172,11 @@ export function BrowserPushSettings({
             ? "Отключить уведомления на этом устройстве"
             : "Включить уведомления на этом устройстве"}
         </Button>
+      )}
+      {permissionDenied && !linked && (
+        <p className="text-muted" role="status">
+          В текущем браузере или приложении уведомления заблокированы.
+        </p>
       )}
       {message && (
         <p className="text-muted" role="status">
