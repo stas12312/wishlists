@@ -43,6 +43,7 @@ jobs:
         with:
           context: "{{defaultContext}}:${{ matrix.context }}"
           push: true
+          provenance: false
           tags: ${{ vars.REGISTRY_PREFIX }}/${{ matrix.tag }}:release
           build-args: &build-args |
             build_time=${{ steps.date.outputs.build_date }}
