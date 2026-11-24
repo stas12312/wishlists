@@ -10,6 +10,7 @@ import useWebSocket from "react-use-websocket";
 import { AnimatedList } from "../animated-list/AnimatedList";
 import { LoginButton } from "../auth/Login";
 import { EmptyState } from "../EmptyState";
+import { UnavailablePage } from "../UnavailablePage";
 import PageHeader from "../PageHeader";
 import { PageSpinner } from "../PageSpinner";
 import {
@@ -209,9 +210,10 @@ const Wishes = observer(function Wishes({
 
   if (error?.message) {
     return (
-      <div className="flex justify-center">
-        <span className="text-large font-bold">{error.message}</span>
-      </div>
+      <UnavailablePage
+        description="Возможно, вишлист удалён или доступ к нему ограничен."
+        title="Вишлист недоступен"
+      />
     );
   }
 

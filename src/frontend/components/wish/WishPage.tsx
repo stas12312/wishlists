@@ -12,6 +12,7 @@ import { WishCreatedAt, WishDetails } from "./WishDetails";
 import { CustomBreadcrumbs } from "@/components/Breadcrumbs";
 import PageHeader from "@/components/PageHeader";
 import { PageSpinner } from "@/components/PageSpinner";
+import { UnavailablePage } from "@/components/UnavailablePage";
 import { UserChip } from "@/components/user/UserChip";
 import { getWishlistAccent } from "@/components/wishlist/wishlistAppearance";
 import { getWish } from "@/lib/client-requests/wish";
@@ -42,12 +43,10 @@ export function WishPage({ uuid }: { uuid: string }) {
 
   if (wish === null) {
     return (
-      <div className="flex flex-col gap-3">
-        <h1 className="text-2xl font-bold">Желание недоступно</h1>
-        <Link className="underline" href="/">
-          На главную
-        </Link>
-      </div>
+      <UnavailablePage
+        description="Возможно, желание удалено или у вас нет доступа к его вишлисту."
+        title="Желание недоступно"
+      />
     );
   }
 
