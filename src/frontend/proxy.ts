@@ -11,6 +11,7 @@ export default async function proxy(request: NextRequest) {
   if (
     !request.cookies.has("refresh_token") &&
     !request.nextUrl.pathname.startsWith("/wishlists") &&
+    !/^\/wishes\/[^/]+\/?$/.test(requestedUrl) &&
     !request.nextUrl.pathname.startsWith("/users") &&
     request.nextUrl.pathname !== "/"
   ) {

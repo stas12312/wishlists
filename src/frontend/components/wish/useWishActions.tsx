@@ -57,8 +57,8 @@ export function useWishActions({
   }
 
   async function onDeleteWish() {
-    await onDelete(wish, "Желание удалено");
     await deleteWish(wish.uuid ?? "");
+    await onDelete(wish, "Желание удалено");
     setIsConfirm(false);
   }
 
