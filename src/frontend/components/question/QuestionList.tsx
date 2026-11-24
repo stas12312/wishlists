@@ -109,56 +109,58 @@ export const QuestionList = observer(
       />
     ));
 
+    const showTitle = (withTitle && questions.length > 0) || withAskForm;
+    const showList = questions.length > 0 || hasMore || Boolean(emptyMessage);
+
+    if (!showTitle && !showList) {
+      return null;
+    }
+
     return (
-      <>
-        <div>
-          {(withTitle && questions.length > 0) || withAskForm ? (
-            <h2 className="text-2xl text-center">
-              Вопросы {questions.length ? `(${questions.length})` : null}
-            </h2>
-          ) : null}
-          {withAskForm ? (
-            <div className="mt-2 w-full">
-              <MessageForm
-                maxLength={200}
-                minLength={2}
-                placeholder="Введите вопрос"
-                rows={3}
-                onSend={sendMessage}
-              />
-              <Alert
-                className="surface surface--secondary mt-2"
-                status="warning"
-              >
-                <Alert.Indicator />
-                <Alert.Content>
-                  <Alert.Title>Вопрос отправляется анонимно</Alert.Title>
-                  <Alert.Description>
-                    Ваше имя никто не увидит
-                  </Alert.Description>
-                </Alert.Content>
-              </Alert>
-            </div>
-          ) : null}
-        </div>
-        <div className="flex flex-col gap-4 object-cover">
-          {questions.length === 0 && emptyMessage ? (
-            <EmptyState title={emptyMessage} />
-          ) : (
-            <InfinityLoader hasMore={hasMore} onLoad={fetchData}>
-              <AnimatedList
-                className={twMerge(
-                  "flex flex-col gap-2",
-                  isWithWish ? "mt-4" : null,
-                )}
-                items={items}
-                layout="position"
-                withGrid={false}
-              />
-            </InfinityLoader>
-          )}
-        </div>
-      </>
+      <div className="flex flex-col gap-3">
+        {showTitle ? (
+          <h2 className="text-2xl text-center">
+            Вопросы {questions.length ? `(${questions.length})` : null}
+          </h2>
+        ) : null}
+        {withAskForm ? (
+          <div className="flex w-full flex-col gap-3">
+            <MessageForm
+              maxLength={200}
+              minLength={2}
+              placeholder="Введите вопрос"
+              rows={3}
+              onSend={sendMessage}
+            />
+            <Alert className="surface surface--secondary" status="warning">
+              <Alert.Indicator />
+              <Alert.Content>
+                <Alert.Title>Вопрос отправляется анонимно</Alert.Title>
+                <Alert.Description>Ваше имя никто не увидит</Alert.Description>
+              </Alert.Content>
+            </Alert>
+          </div>
+        ) : null}
+        {showList ? (
+          <div>
+            {questions.length === 0 && emptyMessage ? (
+              <EmptyState title={emptyMessage} />
+            ) : (
+              <InfinityLoader hasMore={hasMore} onLoad={fetchData}>
+                <AnimatedList
+                  className={twMerge(
+                    "flex flex-col",
+                    isWithWish ? "mt-4 gap-2" : "gap-3",
+                  )}
+                  items={items}
+                  layout="position"
+                  withGrid={false}
+                />
+              </InfinityLoader>
+            )}
+          </div>
+        ) : null}
+      </div>
     );
   },
 );

@@ -8,16 +8,14 @@ import {
 import { usePress } from "react-aria";
 import { twMerge } from "tailwind-merge";
 
-import { ResponsiveImage } from "../ResponsiveImage";
-import {
-  getWishlistAccent,
-  getWishlistGradient,
-} from "../wishlist/wishlistAppearance";
+import { getWishlistAccent } from "../wishlist/wishlistAppearance";
 
+import { WISH_CARD_CLASS_NAME, WishCardBackdrop } from "./WishCardBackdrop";
 import CardImage from "./WishCardImage";
 import { WishItemMenu } from "./WishCardMenu";
 import WishFullCard from "./WishDrawer";
 import { useWishActions } from "./useWishActions";
+import { useOpenWish } from "./useOpenWish";
 
 import { IWish } from "@/lib/models/wish";
 import { IWishlist } from "@/lib/models/wishlist";
@@ -41,6 +39,7 @@ export const WishItem = observer(
     hideReservedStatus?: boolean;
   }) => {
     const fullCardDrawer = useOverlayState();
+    const openWish = useOpenWish(wish.uuid, fullCardDrawer.open);
     const accentClass = getWishlistAccent(
       wishlist?.uuid ?? wish.wishlist_uuid,
       wishlist?.settings?.color,
@@ -55,8 +54,8 @@ export const WishItem = observer(
     const reserveAction = getReserveAction(wish);
     const withReserveButton = reserveAction !== null;
 
-    let { pressProps } = usePress({
-      onPress: () => fullCardDrawer.open(),
+    const { pressProps } = usePress({
+      onPress: openWish,
     });
 
     return (
@@ -64,28 +63,17 @@ export const WishItem = observer(
         <Card
           className={twMerge(
             withUser ? "h-90" : "h-70",
-            "flex-col w-full ring-1 ring-gray-500/30 p-0 relative overflow-hidden isolate cursor-pointer gap-0",
-            "hover:scale-[1.03] active:scale-[0.97]",
+            WISH_CARD_CLASS_NAME,
+            "cursor-pointer hover:scale-[1.03] active:scale-[0.97]",
             "transition-transform will-change-transform transform-gpu",
             accentClass,
           )}
           {...pressProps}
         >
-          {wish.images && wish.images[0] ? (
-            <div className="absolute bottom-[50%] transform-[translateZ(0)]">
-              <ResponsiveImage
-                alt="Изображение желания"
-                className="z-0 blur-xl"
-                src={wish.images[0]}
-              />
-            </div>
-          ) : null}
-
-          <div
-            className={twMerge(
-              "wishlist-card-backdrop absolute z-0 inset-0 rounded-3xl opacity-60 backdrop-saturate-200 backdrop-contrast-125",
-              `bg-gradient-to-br ${getWishlistGradient(wishlist?.uuid ?? wish.wishlist_uuid, wishlist?.settings?.color)}`,
-            )}
+          <WishCardBackdrop
+            color={wishlist?.settings?.color}
+            image={wish.images?.[0]}
+            wishlistUUID={wishlist?.uuid ?? wish.wishlist_uuid}
           />
 
           <Card.Header className="flex-col items-start p-0 z-10 relative">

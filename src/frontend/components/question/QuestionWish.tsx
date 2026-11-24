@@ -6,6 +6,7 @@ import { AiFillGift } from "react-icons/ai";
 import { ResponsiveImage } from "../ResponsiveImage";
 import WishFullCard from "../wish/WishDrawer";
 import { useWishActions } from "../wish/useWishActions";
+import { useOpenWish } from "../wish/useOpenWish";
 
 import { IWish } from "@/lib/models/wish";
 import { UserChip } from "@/components/user/UserChip";
@@ -25,6 +26,7 @@ export const QuestionWish = observer(
     onUpdate: { (wish: IWish): void };
   }) => {
     const fullCardDrawer = useOverlayState();
+    const openWish = useOpenWish(wish.uuid, fullCardDrawer.open);
     const { handleOnAction, modals } = useWishActions({
       wish,
       onDelete: (_, message) => {
@@ -45,7 +47,7 @@ export const QuestionWish = observer(
           <button
             className="relative size-14 shrink-0 rounded-2xl overflow-hidden bg-default cursor-pointer active:scale-95 transition"
             title="Открыть желание"
-            onClick={fullCardDrawer.open}
+            onClick={openWish}
           >
             {wish.images?.length ? (
               <ResponsiveImage
@@ -61,7 +63,7 @@ export const QuestionWish = observer(
           <div className="flex flex-col items-start gap-1 flex-1 min-w-0">
             <button
               className="max-w-full text-left text-lg font-bold truncate cursor-pointer hover:underline"
-              onClick={fullCardDrawer.open}
+              onClick={openWish}
             >
               {wish.name}
             </button>

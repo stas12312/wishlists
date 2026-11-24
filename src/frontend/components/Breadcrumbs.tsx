@@ -17,7 +17,7 @@ export const CustomBreadcrumbs = ({ items }: { items: IBreadcrumbItem[] }) => {
     <Breadcrumbs className="justify justify-center md:justify-start flex-col md:flex-row">
       {items.map((item, i) => (
         <BreadcrumbsItem
-          key={item.title}
+          key={item.href}
           className="*:p-0 p-0 shrink"
           onPress={() => {
             router.push(item.href);
