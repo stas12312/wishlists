@@ -29,6 +29,7 @@ export const QuestionList = observer(
     withAskForm = false,
     emptyMessage = "",
     withTitle = false,
+    initialQuestions,
   }: {
     wishUUID?: string;
     isMy?: boolean;
@@ -37,6 +38,7 @@ export const QuestionList = observer(
     withAskForm?: boolean;
     emptyMessage?: string;
     withTitle?: boolean;
+    initialQuestions?: IQuestion[];
   }) => {
     const sendMessage = async (message: string) => {
       if (!wishUUID) {
@@ -49,14 +51,16 @@ export const QuestionList = observer(
       setQuestions([result, ...questions]);
     };
 
-    const [questions, setQuestions] = useState<IQuestion[]>([]);
+    const [questions, setQuestions] = useState<IQuestion[]>(
+      initialQuestions ?? [],
+    );
     const [navigation, setNavigation] = useState<INavigation>({
       count: 10,
       cursor: [""],
     });
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(initialQuestions === undefined);
 
-    const [hasMore, setHasMore] = useState(true);
+    const [hasMore, setHasMore] = useState(initialQuestions === undefined);
     async function fetchData() {
       if (!hasMore) {
         return;

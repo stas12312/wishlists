@@ -10,6 +10,7 @@ import { QuestionList } from "../question/QuestionList";
 
 import { ImageSwiper } from "./WishImageSwiper";
 
+import { IQuestion } from "@/lib/models/question";
 import { IWish } from "@/lib/models/wish";
 import { getMenuItemsByActions } from "@/lib/wish/menu";
 import userStore from "@/store/userStore";
@@ -22,6 +23,7 @@ export const WishDetails = observer(function WishDetails({
   withQuestions = true,
   afterDescription,
   twoColumns = false,
+  initialQuestions,
 }: {
   wish: IWish;
   onAction: (action: string) => void;
@@ -29,6 +31,7 @@ export const WishDetails = observer(function WishDetails({
   withQuestions?: boolean;
   afterDescription?: ReactNode;
   twoColumns?: boolean;
+  initialQuestions?: IQuestion[];
 }) {
   const menuItems = getMenuItemsByActions(wish);
 
@@ -109,6 +112,7 @@ export const WishDetails = observer(function WishDetails({
         >
           <QuestionList
             withTitle
+            initialQuestions={initialQuestions}
             wishUUID={wish.uuid}
             withAskForm={!wish.actions.edit && userStore.user.id > 0}
           />
@@ -120,7 +124,7 @@ export const WishDetails = observer(function WishDetails({
 
 export function WishCreatedAt({ wish }: { wish: IWish }) {
   return wish.created_at ? (
-    <span className="text-default-500">
+    <span suppressHydrationWarning className="text-default-500">
       Добавлено {new Date(wish.created_at).toLocaleString()}
     </span>
   ) : null;

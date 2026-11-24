@@ -3,7 +3,7 @@
 import { Card, toast } from "@heroui/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { useWishActions } from "./useWishActions";
 import { WISH_CARD_CLASS_NAME, WishCardBackdrop } from "./WishCardBackdrop";
@@ -11,81 +11,30 @@ import { WishCreatedAt, WishDetails } from "./WishDetails";
 
 import { CustomBreadcrumbs } from "@/components/Breadcrumbs";
 import PageHeader from "@/components/PageHeader";
-import { PageSpinner } from "@/components/PageSpinner";
-import { UnavailablePage } from "@/components/UnavailablePage";
 import { UserChip } from "@/components/user/UserChip";
 import { getWishlistAccent } from "@/components/wishlist/wishlistAppearance";
-import { getWish } from "@/lib/client-requests/wish";
-import { getWishlist } from "@/lib/client-requests/wishlist";
+import { IQuestion } from "@/lib/models/question";
 import { IWish } from "@/lib/models/wish";
 
-export function WishPage({ uuid }: { uuid: string }) {
-  const [wish, setWish] = useState<IWish | null>();
-
-  useEffect(() => {
-    let active = true;
-
-    getWish(uuid)
-      .then((wish) => {
-        if (active)
-          setWish(wish?.uuid && wish.is_active !== false ? wish : null);
-      })
-      .catch(() => {
-        if (active) setWish(null);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [uuid]);
-
-  if (wish === undefined) return <PageSpinner />;
-
-  if (wish === null) {
-    return (
-      <UnavailablePage
-        description="Возможно, желание удалено или у вас нет доступа к его вишлисту."
-        title="Желание недоступно"
-      />
-    );
-  }
-
-  return <WishPageContent wish={wish} onUpdate={setWish} />;
-}
-
-function WishPageContent({
-  wish,
-  onUpdate,
+export function WishPage({
+  initialWish,
+  initialQuestions,
+  wishlistColor,
 }: {
-  wish: IWish;
-  onUpdate: (wish: IWish) => void;
+  initialWish: IWish;
+  initialQuestions?: IQuestion[];
+  wishlistColor?: string;
 }) {
   const router = useRouter();
-  const [wishlistColor, setWishlistColor] = useState<string>();
+  const [wish, setWish] = useState(initialWish);
   const wishlistHref = `/wishlists/${wish.wishlist_uuid}`;
   const wishlistName = wish.wishlist?.name || "Вишлист";
   const accentClass = getWishlistAccent(wish.wishlist_uuid, wishlistColor);
 
-  useEffect(() => {
-    let active = true;
-
-    getWishlist(wish.wishlist_uuid)
-      .then((wishlist) => {
-        if (active && !("message" in wishlist)) {
-          setWishlistColor(wishlist.settings?.color);
-        }
-      })
-      .catch(() => {});
-
-    return () => {
-      active = false;
-    };
-  }, [wish.wishlist_uuid]);
-
   const { handleOnAction, modals } = useWishActions({
     wish,
     className: accentClass,
-    onUpdate,
+    onUpdate: setWish,
     onDelete: (_, message) => {
       toast(message);
       router.replace(wishlistHref);
@@ -145,6 +94,7 @@ function WishPageContent({
                 <div className="hidden md:contents">{ownerChip}</div>
               ) : null
             }
+            initialQuestions={initialQuestions}
             wish={wish}
             onAction={handleOnAction}
           />
