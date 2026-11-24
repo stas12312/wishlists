@@ -216,9 +216,7 @@ const Wishes = observer(function Wishes({
   }
 
   return (
-    <div
-      className={`${accentClass ?? ""} flex min-h-[calc(100dvh-11rem)] flex-col`}
-    >
+    <div className={`${accentClass ?? ""} flex flex-col`}>
       <Link
         className="mx-auto text-2xl text-muted md:mx-0"
         href={isEditable ? "/" : `/users/${wishlist.user?.username}`}
