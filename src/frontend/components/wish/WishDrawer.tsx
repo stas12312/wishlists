@@ -50,7 +50,7 @@ const WishFullCard = observer(
             </Drawer.Body>
             <Drawer.Footer className="flex flex-col">
               <WishCreatedAt wish={wish} />
-              <Button fullWidth slot="close">
+              <Button fullWidth slot="close" variant="danger">
                 Закрыть
               </Button>
             </Drawer.Footer>
