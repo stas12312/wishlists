@@ -1,5 +1,5 @@
 "use client";
-import { Button, Card, Chip, useOverlayState } from "@heroui/react";
+import { Button, Card, Chip } from "@heroui/react";
 import { observer } from "mobx-react-lite";
 import {
   MdOutlineBookmarkAdded,
@@ -15,7 +15,7 @@ import CardImage from "./WishCardImage";
 import { WishItemMenu } from "./WishCardMenu";
 import WishFullCard from "./WishDrawer";
 import { useWishActions } from "./useWishActions";
-import { useOpenWish } from "./useOpenWish";
+import { useWishDrawer } from "./useWishDrawer";
 
 import { IWish } from "@/lib/models/wish";
 import { IWishlist } from "@/lib/models/wishlist";
@@ -38,8 +38,7 @@ export const WishItem = observer(
     withUser?: boolean;
     hideReservedStatus?: boolean;
   }) => {
-    const fullCardDrawer = useOverlayState();
-    const openWish = useOpenWish(wish.uuid, fullCardDrawer.open);
+    const fullCardDrawer = useWishDrawer(wish.uuid);
     const accentClass = getWishlistAccent(
       wishlist?.uuid ?? wish.wishlist_uuid,
       wishlist?.settings?.color,
@@ -47,7 +46,10 @@ export const WishItem = observer(
     const { handleOnAction, modals } = useWishActions({
       wish,
       className: accentClass,
-      onDelete,
+      onDelete: (deletedWish, message) => {
+        fullCardDrawer.close();
+        onDelete(deletedWish, message);
+      },
       onUpdate,
     });
 
@@ -55,7 +57,7 @@ export const WishItem = observer(
     const withReserveButton = reserveAction !== null;
 
     const { pressProps } = usePress({
-      onPress: openWish,
+      onPress: fullCardDrawer.open,
     });
 
     return (
@@ -148,7 +150,7 @@ export const WishItem = observer(
           wish={wish}
           wishlist={wishlist}
           withUser={withUser}
-          onOpenChange={fullCardDrawer.toggle}
+          onOpenChange={fullCardDrawer.close}
         />
         {modals}
       </>
