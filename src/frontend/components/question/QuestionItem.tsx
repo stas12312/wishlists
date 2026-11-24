@@ -222,7 +222,7 @@ export const QuestionItem = observer(
 
     return (
       <>
-        <Surface className="rounded-3xl p-2 flex flex-col gap-2 shadow-md bg-surface ring-1 ring-gray-500/30">
+        <Surface className="wish-question-thread rounded-3xl p-2 flex flex-col gap-2 shadow-md bg-surface ring-1 ring-gray-500/30">
           <div className="flex flex-col w-full gap-2 h-full my-auto">
             <QuestionContent
               content={question.content}
@@ -365,7 +365,7 @@ const QuestionContent = ({
 }) => {
   return (
     <div
-      className={`${className} rounded-3xl flex flex-col justify-between bg-default px-2  min-h-10 py-1 gap-1`}
+      className={`${className} wish-question-message rounded-3xl flex flex-col justify-between bg-default px-2 min-h-10 py-1 gap-1`}
     >
       <div className="flex">
         <p className="my-auto w-full whitespace-pre-wrap break-words px-1">

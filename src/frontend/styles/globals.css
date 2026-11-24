@@ -270,6 +270,26 @@ html.dark .wishlist-card-user-chip {
     border-color: color-mix(in oklab, var(--accent) 40%, transparent);
 }
 
+.wish-questions .wish-question-thread {
+    background-color: color-mix(in oklab, var(--accent) 12%, var(--surface));
+    --tw-ring-color: color-mix(in oklab, var(--accent) 35%, transparent);
+}
+
+.wish-questions .wish-question-message,
+.wish-questions .alert {
+    background-color: color-mix(in oklab, var(--accent) 16%, var(--surface-secondary));
+}
+
+.wish-questions {
+    --wish-question-field: color-mix(in oklab, var(--accent) 16%, var(--default));
+    --wish-question-field-hover: color-mix(in oklab, var(--accent) 24%, var(--default));
+}
+
+.wish-questions .input-group--secondary {
+    --default: var(--wish-question-field);
+    --default-hover: var(--wish-question-field-hover);
+}
+
 .wishlist-card-danger-button {
     --button-bg: color-mix(in oklab, var(--danger) 18%, var(--color-default));
     --button-bg-hover: color-mix(

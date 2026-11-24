@@ -1,19 +1,12 @@
-import { Button, Drawer, Link } from "@heroui/react";
+import { Button, Drawer } from "@heroui/react";
 import { observer } from "mobx-react-lite";
-import { MdOpenInNew } from "react-icons/md";
 import { twMerge } from "tailwind-merge";
 
-import MarketIcon from "../MarketIcon";
-import { QuestionList } from "../question/QuestionList";
-
-import { ImageSwiper } from "./WishImageSwiper";
+import { WishCreatedAt, WishDetails } from "./WishDetails";
 
 import { getWishlistAccent } from "@/components/wishlist/wishlistAppearance";
 import { IWish } from "@/lib/models/wish";
 import { IWishlist } from "@/lib/models/wishlist";
-import { getMenuItemsByActions } from "@/lib/wish/menu";
-import userStore from "@/store/userStore";
-import { UserChip } from "@/components/user/UserChip";
 
 const WishFullCard = observer(
   ({
@@ -33,7 +26,6 @@ const WishFullCard = observer(
     withUser?: boolean;
     withQuestions?: boolean;
   }) => {
-    const menuItems = getMenuItemsByActions(wish);
     const accentClass = getWishlistAccent(
       wishlist?.uuid ?? wish.wishlist_uuid,
       wishlist?.settings?.color,
@@ -49,65 +41,16 @@ const WishFullCard = observer(
             </Drawer.Header>
 
             <Drawer.Body className="flex flex-col gap-4 [scrollbar-gutter:stable]">
-              {withUser ? (
-                <div className="mx-auto">
-                  <UserChip
-                    className="md:hover:scale-[1.03] transition"
-                    user={wish.user}
-                  />
-                </div>
-              ) : null}
-
-              <span className="text-default-500 whitespace-pre-wrap">
-                {wish.comment}
-              </span>
-
-              {wish.link ? (
-                <Link
-                  className="w-full button button--secondary button--lg no-underline pl-1"
-                  href={wish.link}
-                  target="_blank"
-                >
-                  <MarketIcon link={wish.link || ""} />
-                  <span className="mx-auto my-2">Перейти в магазин</span>
-                  <MdOpenInNew className="my-auto" />
-                </Link>
-              ) : null}
-
-              <ImageSwiper wish={wish} />
-
-              <div className="flex flex-col gap-2">
-                {menuItems.map((value) => (
-                  <Button
-                    key={value.key}
-                    className={twMerge("w-full", value.buttonClassName)}
-                    variant={value.variant}
-                    onPress={() => {
-                      handeAction(value.key);
-                    }}
-                  >
-                    <value.icon />
-                    {value.getTitleFunc !== undefined
-                      ? value.getTitleFunc(wish.actions)
-                      : value.title}
-                  </Button>
-                ))}
-              </div>
-              {withQuestions && wish.uuid ? (
-                <QuestionList
-                  withTitle
-                  wishUUID={wish.uuid}
-                  withAskForm={!wish.actions.edit && userStore.user.id > 0}
-                />
-              ) : null}
+              <WishDetails
+                wish={wish}
+                withQuestions={withQuestions}
+                withUser={withUser}
+                onAction={handeAction}
+              />
             </Drawer.Body>
             <Drawer.Footer className="flex flex-col">
-              {wish.created_at ? (
-                <span className="text-default-500">
-                  Добавлено {new Date(wish.created_at).toLocaleString()}
-                </span>
-              ) : null}
-              <Button fullWidth slot="close">
+              <WishCreatedAt wish={wish} />
+              <Button fullWidth slot="close" variant="danger">
                 Закрыть
               </Button>
             </Drawer.Footer>
